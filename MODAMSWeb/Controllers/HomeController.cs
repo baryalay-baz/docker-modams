@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MODAMSWeb.Models;
+using MODAMS.Models;
 using System.Diagnostics;
 
 namespace MODAMSWeb.Controllers
