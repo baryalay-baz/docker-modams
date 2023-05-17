@@ -10,8 +10,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 
-namespace MODAMSWeb.Areas.Identity.Pages.Account
+namespace PAMS.Web.Areas.Identity.Pages.Account
 {
+    [Area("Identity")]
     public class LogoutModel : PageModel
     {
         private readonly SignInManager<IdentityUser> _signInManager;

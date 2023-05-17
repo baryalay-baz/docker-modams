@@ -1,16 +1,55 @@
 using Microsoft.EntityFrameworkCore;
 using MODAMS.DataAccess.Data;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using MODAMS.Utility;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddDefaultIdentity<IdentityUser>()
+	.AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.Configure<IdentityOptions>(options =>
+{
+	// Password settings.
+	options.Password.RequireDigit = true;
+	options.Password.RequireLowercase = true;
+	options.Password.RequireNonAlphanumeric = true;
+	options.Password.RequireUppercase = true;
+	options.Password.RequiredLength = 6;
+	options.Password.RequiredUniqueChars = 1;
+
+	// Lockout settings.
+	options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+	options.Lockout.MaxFailedAccessAttempts = 5;
+	options.Lockout.AllowedForNewUsers = true;
+
+	// User settings.
+	options.User.AllowedUserNameCharacters =
+	"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+	options.User.RequireUniqueEmail = false;
+});
+builder.Services.ConfigureApplicationCookie(options =>
+{
+	options.AccessDeniedPath = new Microsoft.AspNetCore.Http.PathString("/Identity/Account/AccessDenied");
+	options.Cookie.Name = "MTSCookie";
+	options.Cookie.HttpOnly = true;
+	options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+	options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/Identity/Account/Login");
+	options.LogoutPath = new Microsoft.AspNetCore.Http.PathString("/Identity/Account/Logout");
+	// ReturnUrlParameter requires 
+	//using Microsoft.AspNetCore.Authentication.Cookies;
+	options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
+	options.SlidingExpiration = true;
+
+});
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(
 	builder.Configuration.GetConnectionString("DefaultConnection")
 	));
-
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationDbContext>();
 
 var app = builder.Build();
 
@@ -26,11 +65,13 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapRazorPages();
 
 app.MapControllerRoute(
 	name: "default",
-	pattern: "{controller=Home}/{action=Index}/{id?}");
+	pattern: "{area=Users}/{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

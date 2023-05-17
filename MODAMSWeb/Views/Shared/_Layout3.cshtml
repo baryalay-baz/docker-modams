@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    @* <title>@ViewData["Title"]  Noa</title> *@
+
+    <!-- FAVICON -->
+    <link rel="shortcut icon" type="image/x-icon" href="~/assets/images/brand/favicon.ico" />
+
+    <!-- TITLE -->
+    <title>Asset Management System UNOPS</title>
+
+    <!-- BOOTSTRAP CSS -->
+    <link id="style" href="~/assets/plugins/bootstrap/css/bootstrap.min.css" asp-append-version="true" rel="stylesheet" />
+
+    <!-- STYLE CSS -->
+    <link href="~/assets/css/style.css" rel="stylesheet" asp-append-version="true" />
+    <link href="~/assets/css/skin-modes.css" rel="stylesheet" asp-append-version="true" />
+
+    <!--- FONT-ICONS CSS -->
+    <link href="~/assets/css/icons.css" rel="stylesheet" asp-append-version="true" />
+
+    <!-- INTERNAL Switcher css -->
+    <link href="~/assets/switcher/css/switcher.css" rel="stylesheet" asp-append-version="true" />
+    <link href="~/assets/switcher/demo.css" rel="stylesheet" asp-append-version="true" />
+
+</head>
+<body class="app sidebar-mini ltr">
+
+    <!-- GLOBAL-LOADER -->
+    <div id="global-loader">
+        <img src="../assets/images/loader.svg" class="loader-img" alt="Loader">
+    </div>
+    <!-- /GLOBAL-LOADER -->
+    <!-- PAGE -->
+    <div class="page">
+        <div class="page-main">
+
+            <partial name="layouts/_app-header.cshtml" />
+            <partial name="layouts/_app-sidebar.cshtml" />
+
+            <!--app-content open-->
+            <div class="app-content main-content mt-0">
+                <div class="side-app">
+
+                    <!-- CONTAINER -->
+                    <div class="main-container container-fluid">
+                        @RenderBody()
+                    </div>
+                </div>
+            </div>
+            <!-- CONTAINER END -->
+        </div>
+
+        <partial name="layouts/_footer.cshtml" />
+
+    </div>
+
+    <!-- BACK-TO-TOP -->
+    <a href="#top" id="back-to-top"><i class="fa fa-long-arrow-up"></i></a>
+
+    <!-- JQUERY JS -->
+    <script src="~/assets/js/jquery.min.js"></script>
+
+    <!-- BOOTSTRAP JS -->
+    <script src="~/assets/plugins/bootstrap/js/popper.min.js"></script>
+    <script src="~/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- SIDE-MENU JS -->
+    <script src="~/assets/plugins/sidemenu/sidemenu.js"></script>
+
+    <!-- Perfect SCROLLBAR JS-->
+    <script src="~/assets/plugins/p-scroll/perfect-scrollbar.js"></script>
+    <script src="~/assets/plugins/p-scroll/pscroll.js"></script>
+
+    <!-- STICKY JS -->
+    <script src="~/assets/js/sticky.js"></script>
+
+    @* @RenderSection("Scripts",false/*required*/) *@
+    @await RenderSectionAsync("Scripts", required: false)
+
+    <!-- COLOR THEME JS -->
+    <script src="~/assets/js/themeColors.js"></script>
+
+    <!-- SWITCHER JS -->
+    <script src="~/assets/switcher/js/switcher.js"></script>
+
+    <!-- CUSTOM JS -->
+    <script src="~/assets/js/custom1.js"></script>
+
+</body>
+</html>

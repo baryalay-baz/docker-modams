@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MODAMS.Utility
+﻿namespace MODAMS.Utility
 {
-	public static class SD
-	{
+    public class SD
+    {
+        public const string Role_User = "User";
+        public const string Role_StoreOwner = "StoreOwner";
+        public const string Role_SeniorManagement = "SeniorManagement";
+        public const string Role_Administrator = "Administrator";
 
-	}
+
+    }
 }

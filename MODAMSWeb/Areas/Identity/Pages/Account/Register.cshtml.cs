@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading;
@@ -18,6 +19,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using MODAMS.DataAccess.Data;
+using MODAMS.Models;
+using MODAMS.Utility;
 
 namespace MODAMSWeb.Areas.Identity.Pages.Account
 {
@@ -25,17 +29,23 @@ namespace MODAMSWeb.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+
         private readonly IUserStore<IdentityUser> _userStore;
         private readonly IUserEmailStore<IdentityUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
 
+
+        private readonly ApplicationDbContext _db;
         public RegisterModel(
             UserManager<IdentityUser> userManager,
             IUserStore<IdentityUser> userStore,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender, 
+            RoleManager<IdentityRole> roleManager, 
+            ApplicationDbContext db)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -43,6 +53,8 @@ namespace MODAMSWeb.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _roleManager = roleManager;
+            _db = db;
         }
 
         /// <summary>
@@ -97,30 +109,79 @@ namespace MODAMSWeb.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
+            public string Role { get; set; }
+            public int EmployeeId { get; set; }
         }
 
 
         public async Task OnGetAsync(string returnUrl = null)
         {
+            if (!_roleManager.RoleExistsAsync(SD.Role_Administrator).GetAwaiter().GetResult())
+            {
+                _roleManager.CreateAsync(new IdentityRole(SD.Role_User)).GetAwaiter().GetResult();
+                _roleManager.CreateAsync(new IdentityRole(SD.Role_StoreOwner)).GetAwaiter().GetResult();
+                _roleManager.CreateAsync(new IdentityRole(SD.Role_SeniorManagement)).GetAwaiter().GetResult();
+                _roleManager.CreateAsync(new IdentityRole(SD.Role_Administrator)).GetAwaiter().GetResult();
+            }
+
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
+        
+        private bool EmailHasAccount(string emailAddress)
+        {
+            bool blnCheck = false;
+            var rec = _db.Users.Where(m => m.Email == emailAddress).FirstOrDefault();
+            if (rec != null)
+                blnCheck = true;
 
+            return blnCheck;
+        }
+        private int GetEmployeeIdByEmail(string emailAddress) {
+            return 1;
+        }
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
+            int nEmployeeId = GetEmployeeIdByEmail(Input.Email);
+
+            if (EmailHasAccount(Input.Email))
+                ModelState.AddModelError(string.Empty, Input.Email + " already has an assciated account!");
+
+            //if (!CheckIfEmailValid(Input.Email))
+            //    ModelState.AddModelError(string.Empty, Input.Email + " is not a UNOPS Official email address!");
+
+            if (nEmployeeId == 0)
+            {
+                ModelState.AddModelError(string.Empty, Input.Email + " is not yet registered, please contact System Administrator!");
+            }
+
             if (ModelState.IsValid)
             {
                 var user = CreateUser();
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+                user.EmployeeId = nEmployeeId;
+
                 var result = await _userManager.CreateAsync(user, Input.Password);
+
+
 
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
+
+                    if (Input.Role == null)
+                    {
+                        await _userManager.AddToRoleAsync(user, SD.Role_User);
+                    }
+                    else
+                    {
+                        await _userManager.AddToRoleAsync(user, Input.Role);
+                    }
 
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
@@ -154,11 +215,11 @@ namespace MODAMSWeb.Areas.Identity.Pages.Account
             return Page();
         }
 
-        private IdentityUser CreateUser()
+        private ApplicationUser CreateUser()
         {
             try
             {
-                return Activator.CreateInstance<IdentityUser>();
+                return Activator.CreateInstance<ApplicationUser>();
             }
             catch
             {

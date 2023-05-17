@@ -14,12 +14,13 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="7.0.6" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="7.0.5" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\MODAMS.DataAccess\MODAMS.DataAccess.csproj" />
     <ProjectReference Include="..\MODAMS.Models\MODAMS.Models.csproj" />
+    <ProjectReference Include="..\MODAMS.Utility\MODAMS.Utility.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		@* <title>@ViewData["Title"] - noa</title> *@
+
+		<!-- FAVICON -->
+		<link rel="shortcut icon" type="image/x-icon" href="~/assets/images/brand/favicon.ico" />
+
+		<!-- TITLE -->
+	<title>Asset Management System UNOPS</title>
+		
+		<!-- BOOTSTRAP CSS -->
+		<link id="style" href="~/assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" asp-append-version="true" />
+
+		<!-- STYLE CSS -->
+		<link href="~/assets/css/style.css" rel="stylesheet" asp-append-version="true"/>
+		<link href="~/assets/css/skin-modes.css" rel="stylesheet" asp-append-version="true"/>
+
+		<!--- FONT-ICONS CSS -->
+		<link href="~/assets/css/icons.css" rel="stylesheet" asp-append-version="true"/>
+
+	</head>
+	<body class="ltr error-bg">
+
+		<!-- GLOBAL-LOADER -->
+		<div id="global-loader">
+			<img src="~/assets/images/loader.svg" class="loader-img" alt="Loader">
+		</div>
+		<!-- End GLOBAL-LOADER -->
+
+		<!-- PAGE -->
+		<div class="page">
+			<!-- PAGE-CONTENT OPEN -->
+			<div class="page-content error-page error2">
+				<div class="container text-center">
+					<div class="error-template">
+						@RenderBody()
+					</div>
+				</div>
+			</div>
+			<!-- PAGE-CONTENT OPEN CLOSED -->
+	
+		</div>
+		<!-- End PAGE -->
+
+			<!-- JQUERY JS -->
+			<script src="~/assets/js/jquery.min.js"></script>
+
+			<!-- BOOTSTRAP JS -->
+			<script src="~/assets/plugins/bootstrap/js/popper.min.js"></script>
+			<script src="~/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+
+			<!-- Perfect SCROLLBAR JS-->
+			<script src="~/assets/plugins/p-scroll/perfect-scrollbar.js"></script>
+
+			<!-- STICKY JS -->
+			<script src="~/assets/js/sticky.js"></script>
+
+			@* @RenderSection("Scripts",false/*required*/) *@
+			@await RenderSectionAsync("Scripts", required: false)
+
+			<!-- COLOR THEME JS -->
+			<script src="~/assets/js/themeColors.js"></script>
+
+			<!-- CUSTOM JS -->
+			<script src="~/assets/js/custom.js"></script>
+
+			
+	</body>
+</html>
