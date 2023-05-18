@@ -109,10 +109,8 @@ namespace MODAMSWeb.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
-            public string Role { get; set; }
             public int EmployeeId { get; set; }
         }
-
 
         public async Task OnGetAsync(string returnUrl = null)
         {
@@ -148,7 +146,7 @@ namespace MODAMSWeb.Areas.Identity.Pages.Account
             int nEmployeeId = GetEmployeeIdByEmail(Input.Email);
 
             if (EmailHasAccount(Input.Email))
-                ModelState.AddModelError(string.Empty, Input.Email + " already has an assciated account!");
+                ModelState.AddModelError(string.Empty, Input.Email + " already has an associated account!");
 
             //if (!CheckIfEmailValid(Input.Email))
             //    ModelState.AddModelError(string.Empty, Input.Email + " is not a UNOPS Official email address!");
@@ -173,16 +171,8 @@ namespace MODAMSWeb.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
-
-                    if (Input.Role == null)
-                    {
-                        await _userManager.AddToRoleAsync(user, SD.Role_User);
-                    }
-                    else
-                    {
-                        await _userManager.AddToRoleAsync(user, Input.Role);
-                    }
-
+                    await _userManager.AddToRoleAsync(user, SD.Role_User);
+                    
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));

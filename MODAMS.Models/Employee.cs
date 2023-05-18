@@ -25,11 +25,12 @@ namespace MODAMS.Models
         public string Email { get; set; } = String.Empty;
 
         [Required]
-        [Display(Name = "Duty Station")]
-        public string DutyStation { get; set; } = String.Empty;
-
-        [Required]
         [Display(Name = "ID Card Number")]
         public string CardNumber { get; set; } = String.Empty;
+
+        [Required]
+        [Display(Name ="Supervisor")]
+        public int SupervisorEmployeeId { get; set; }
+
     }
 }

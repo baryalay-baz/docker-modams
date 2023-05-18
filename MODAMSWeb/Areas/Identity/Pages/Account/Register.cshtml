@@ -14,7 +14,7 @@
 <div class="container-login100">
     <div class="wrap-login100 p-0">
         <div class="card-body">
-            <form class="login100-form validate-form">
+            <form class="login100-form validate-form" id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">           
                 <span class="login100-form-title">
                     Registration
                 </span>
@@ -44,9 +44,9 @@
                     <span class="custom-control-label">Agree the <a asp-area="" asp-page="/Terms/Index">terms and policy</a></span>
                 </label>
                 <div class="container-login100-form-btn">
-                    <a href="/Login" class="login100-form-btn btn-primary">
+                    <button type="submit" class="login100-form-btn btn-primary">
                         Register
-                    </a>
+                    </button>
                 </div>
                 <div class="text-center pt-3">
                     <p class="text-dark mb-0">Already have account?<a asp-area="" asp-page="/Login/Index" class="text-primary ms-1">Sign In</a></p>

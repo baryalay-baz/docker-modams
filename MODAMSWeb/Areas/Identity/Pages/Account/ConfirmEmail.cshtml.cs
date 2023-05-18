@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 
-namespace PAMS.Web.Areas.Identity.Pages.Account
+namespace MODAMSWeb.Areas.Identity.Pages.Account
 {
     public class ConfirmEmailModel : PageModel
     {
