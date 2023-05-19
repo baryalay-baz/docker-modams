@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using MODAMS.Utility;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using PAMS.Utility;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,6 +55,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 
 builder.Services.AddRazorPages();
 builder.Services.AddSingleton<IEmailSender, EmailSender>();
+builder.Services.AddScoped<IAMSFunc, AMSFunc>();
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 

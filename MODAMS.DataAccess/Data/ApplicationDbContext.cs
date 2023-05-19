@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using MODAMS.Models;
+using MODAMS.Models.ViewModels;
 
 
 //using
@@ -15,7 +16,13 @@ namespace MODAMS.DataAccess.Data
 
         public DbSet<Employee> Employees { get; set; }
 		public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
+        public DbSet<NotificationSection> NotificationSections { get; set; }
 
-	}
+
+        //Section for Views
+        public DbSet<vwEmployees> vwEmployees { get; set; }
+
+    }
 }
 

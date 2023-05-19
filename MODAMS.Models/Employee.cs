@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-
+using System.Diagnostics.CodeAnalysis;
 
 namespace MODAMS.Models
 {
@@ -31,6 +31,9 @@ namespace MODAMS.Models
         [Required]
         [Display(Name ="Supervisor")]
         public int SupervisorEmployeeId { get; set; }
+
+        [AllowNull]
+        public string ImageUrl { get; set; } = String.Empty;
 
     }
 }

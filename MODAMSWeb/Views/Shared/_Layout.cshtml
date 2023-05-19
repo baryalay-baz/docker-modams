@@ -1,89 +1,130 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		
-		<!-- FAVICON -->
-		<link rel="shortcut icon" type="image/x-icon" href="~/assets/images/brand/favicon.ico" />
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-		<!-- TITLE -->
-		<title>MOD Asset Management System</title>
-		<!-- BOOTSTRAP CSS -->
-		<link id="style" href="~/assets/plugins/bootstrap/css/bootstrap.min.css" asp-append-version="true" rel="stylesheet" />
+    <!-- FAVICON -->
+    <link rel="shortcut icon" type="image/x-icon" href="~/assets/images/brand/favicon.ico" />
 
-		<!-- STYLE CSS -->
-		<link href="~/assets/css/style.css" rel="stylesheet" asp-append-version="true"/>
-		<link href="~/assets/css/skin-modes.css" rel="stylesheet" asp-append-version="true" />
+    <!-- TITLE -->
+    <title>MOD Asset Management System</title>
+    <!-- BOOTSTRAP CSS -->
+    <link id="style" href="~/assets/plugins/bootstrap/css/bootstrap.min.css" asp-append-version="true" rel="stylesheet" />
 
-		<!--- FONT-ICONS CSS -->
-		<link href="~/assets/css/icons.css" rel="stylesheet" asp-append-version="true"/>
-		
-	</head>
-	<body class="app sidebar-mini ltr">
-		
-		<!-- GLOBAL-LOADER -->
-		<div id="global-loader">
-			<img src="~/assets/images/loader.svg" class="loader-img" alt="Loader">
-		</div>
-		<!-- /GLOBAL-LOADER -->
-		<!-- PAGE -->
-		<div class="page">
-			<div class="page-main">
+    <!-- STYLE CSS -->
+    <link href="~/assets/css/style.css" rel="stylesheet" asp-append-version="true" />
+    <link href="~/assets/css/skin-modes.css" rel="stylesheet" asp-append-version="true" />
 
-				<!-- app header code -->
-				<partial name="layouts/_app-header.cshtml" />
-				<!-- End app header Code -->
-				<!-- app sidebar Code -->
-				<partial name="layouts/_app-sidebar.cshtml" />
-				<!-- End app sidebar Code -->
-				
-				<!--app-content open-->
-				<div class="app-content main-content mt-0">
-					<div class="side-app">
+    <!--- FONT-ICONS CSS -->
+    <link href="~/assets/css/icons.css" rel="stylesheet" asp-append-version="true" />
 
-						<!-- CONTAINER -->
-						<div class="main-container container-fluid">  
-							@RenderBody()
-					    </div>
-					</div>
-				</div>
-				<!-- CONTAINER END -->
-			</div>
+</head>
+<body class="app sidebar-mini ltr">
 
-			<partial name="layouts/-selector-model.cshtml" />
-			<partial name="layouts/_footer.cshtml" />
-         </div>
-		
-			<!-- BACK-TO-TOP -->
-			<a href="#top" id="back-to-top"><i class="fa fa-long-arrow-up"></i></a>
+    <!-- GLOBAL-LOADER -->
+    <div id="global-loader">
+        <img src="~/assets/images/loader.svg" class="loader-img" alt="Loader">
+    </div>
+    <!-- /GLOBAL-LOADER -->
+    <!-- PAGE -->
+    <div class="page">
+        <div class="page-main">
 
-			<!-- JQUERY JS -->
-			<script src="~/assets/js/jquery.min.js"></script>
+            <!-- app header code -->
+            <partial name="layouts/_app-header.cshtml" />
+            <!-- End app header Code -->
+            <!-- app sidebar Code -->
+            <partial name="layouts/_app-sidebar.cshtml" />
+            <!-- End app sidebar Code -->
+            <!--app-content open-->
+            <div class="app-content main-content mt-0">
+                <div class="side-app">
 
-			<!-- BOOTSTRAP JS -->
-			<script src="~/assets/plugins/bootstrap/js/popper.min.js"></script>
-			<script src="~/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+                    <!-- CONTAINER -->
+                    <div class="main-container container-fluid">
+                        @RenderBody()
+                    </div>
+                </div>
+            </div>
+            <!-- CONTAINER END -->
+        </div>
 
-			<!-- SIDE-MENU JS -->
-			<script src="~/assets/plugins/sidemenu/sidemenu.js"></script>
+        <partial name="layouts/-selector-model.cshtml" />
+        <partial name="layouts/_footer.cshtml" />
+    </div>
 
-			<!-- Perfect SCROLLBAR JS-->
-@*			<script src="~/assets/plugins/p-scroll/perfect-scrollbar.js"></script>
-			<script src="~/assets/plugins/p-scroll/pscroll.js"></script>
-*@
-			<!-- STICKY JS -->
-			<script src="~/assets/js/sticky.js"></script>
+    <!-- BACK-TO-TOP -->
+    <a href="#top" id="back-to-top"><i class="fa fa-long-arrow-up"></i></a>
 
-			@* @RenderSection("Scripts",false/*required*/) *@
-            @await RenderSectionAsync("Scripts", required: false)
+    <!-- JQUERY JS -->
+    <script src="~/assets/js/jquery.min.js"></script>
 
-			<!-- COLOR THEME JS -->
-			<script src="~/assets/js/themeColors.js"></script>
-			
-			<!-- CUSTOM JS -->
-			<script src="~/assets/js/custom.js"></script>
+    <!-- BOOTSTRAP JS -->
+    <script src="~/assets/plugins/bootstrap/js/popper.min.js"></script>
+    <script src="~/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
 
-			
-	 </body>
+    <!-- SIDE-MENU JS -->
+    <script src="~/assets/plugins/sidemenu/sidemenu.js"></script>
+
+    <!-- Perfect SCROLLBAR JS-->
+    @*			<script src="~/assets/plugins/p-scroll/perfect-scrollbar.js"></script>
+    <script src="~/assets/plugins/p-scroll/pscroll.js"></script>
+    *@
+    <!-- STICKY JS -->
+    <script src="~/assets/js/sticky.js"></script>
+
+    @* @RenderSection("Scripts",false/*required*/) *@
+    @await RenderSectionAsync("Scripts", required: false)
+
+    <!-- COLOR THEME JS -->
+    <script src="~/assets/js/themeColors.js"></script>
+
+    <!-- CUSTOM JS -->
+    <script src="~/assets/js/custom.js"></script>
+
+    <section id="dvProfileData" style="display:none;"></section>
+</body>
+
+<script>
+    $(document).ready(() => {
+        loadProfileData();
+    });
+
+    const loadProfileData = () => {
+        var sHTML = '';
+
+        var postData = {};
+        $.ajax({
+            url: '/Users/Home/GetProfileData',
+            datatype: "json",
+            data: postData,
+            beforeSend: function () {
+            },
+            success: function (e) {
+                $("#dvProfileData").html("").html(e);
+            },
+            complete: function () {
+                loadProfile();
+            }
+        });
+    }
+
+    const loadProfile = () => {
+        var sData = $("#dvProfileData").html();
+        if (sData != "No Records Found") {
+            var Data = JSON.parse(sData);
+            console.log(Data);
+            var sHtml = '';
+
+            Data.forEach(function (e) {
+                sHtml = '<img src="' + e.ImageUrl + '" alt="profile-user" class="avatar profile-user brround cover-image">';
+                $("#profileImage").html("").html(sHtml);
+
+                sHtml = e.FullName + '<i class="user-angle ms-1 fa fa-angle-down "></i>'
+                $("#profile-heading").html("").html(sHtml);
+            });
+        }
+    }
+</script>
 </html>

@@ -35,7 +35,7 @@ namespace MODAMSWeb.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<IdentityUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
-
+        private readonly IAMSFunc _func;
 
         private readonly ApplicationDbContext _db;
         public RegisterModel(
@@ -45,7 +45,8 @@ namespace MODAMSWeb.Areas.Identity.Pages.Account
             ILogger<RegisterModel> logger,
             IEmailSender emailSender, 
             RoleManager<IdentityRole> roleManager, 
-            ApplicationDbContext db)
+            ApplicationDbContext db,
+            IAMSFunc func)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -55,6 +56,7 @@ namespace MODAMSWeb.Areas.Identity.Pages.Account
             _emailSender = emailSender;
             _roleManager = roleManager;
             _db = db;
+            _func = func;
         }
 
         /// <summary>
@@ -135,15 +137,12 @@ namespace MODAMSWeb.Areas.Identity.Pages.Account
 
             return blnCheck;
         }
-        private int GetEmployeeIdByEmail(string emailAddress) {
-            return 1;
-        }
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
-            int nEmployeeId = GetEmployeeIdByEmail(Input.Email);
+            int nEmployeeId = _func.GetEmployeeIdByEmail(Input.Email);
 
             if (EmailHasAccount(Input.Email))
                 ModelState.AddModelError(string.Empty, Input.Email + " already has an associated account!");
@@ -165,8 +164,6 @@ namespace MODAMSWeb.Areas.Identity.Pages.Account
                 user.EmployeeId = nEmployeeId;
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
-
-
 
                 if (result.Succeeded)
                 {

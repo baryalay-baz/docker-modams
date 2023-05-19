@@ -8,19 +8,19 @@
 <!-- CONTAINER OPEN -->
 <div class="col col-login mx-auto text-center">
     @*<a asp-area="" asp-page="/Index" class="text-center">
-    <img src="~/assets/images/brand/pams.png" class="header-brand-img" alt="">
+    <img src="~/assets/images/brand/ams.png" class="header-brand-img" alt="">
     </a>*@
 </div>
 <div class="container-login100">
     <div class="wrap-login100 p-0">
         <div class="card-body">
-            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <span class="login100-form-title">
+                <img src="~/assets/images/brand/FGS.png" class="h-8" alt="">
+            </span>
+            
+            <div asp-validation-summary="ModelOnly" class="text-danger text-center" role="alert"></div>
 
             <form id="account" class="login100-form validate-form" method="post">
-                <span class="login100-form-title">
-                    <img src="~/assets/images/brand/pams.png" alt="">
-                </span>
-
                 <div class="wrap-input100 validate-input" data-bs-validate="Valid email is required: ex@abc.xyz">
                     <input asp-for="Input.Email" class="input100" placeholder="Email">
                     <span class="focus-input100"></span>
@@ -55,8 +55,8 @@
             </form>
         </div>
         <div class="card-footer">
-            <div class="col-md-12 col-sm-12 text-center">
-                <img src="~/assets/images/brand/unops_footer_logo.png">
+            <div class="col-md-12 col-sm-12 text-center text-darkgray">
+                <span style="font-size:12px;">Developed by&nbsp;|&nbsp;</span><img src="~/assets/images/brand/unops_footer_logo.png">&nbsp;
             </div>
         </div>
     </div>

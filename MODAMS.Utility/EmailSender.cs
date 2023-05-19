@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity.UI.Services;
 using MimeKit;
 
-namespace PAMS.Utility
+namespace MODAMS.Utility
 {
     public class EmailSender : IEmailSender
     {
