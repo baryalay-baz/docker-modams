@@ -11,6 +11,10 @@ namespace MODAMS.Utility
         public string GetEmployeeName();
         public string GetEmployeeName(int nEmloyeeId);
         public string GetEmployeeEmail();
-        public dtoRedirection GetRedirectionObject();
+        public string GetDepartmentName(int nEmployeeId);
+        public string GetRoleName(int nEmployeeId);
+        public string GetSuperpervisorName(int nEmployeeId);
+
+		public dtoRedirection GetRedirectionObject();
     }
 }

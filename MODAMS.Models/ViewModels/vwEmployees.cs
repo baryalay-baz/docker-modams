@@ -16,5 +16,6 @@ namespace MODAMS.Models.ViewModels
         public string Email { get; set; }
         public string Phone { get; set; }
         public string RoleName { get; set; }
+        public int SupervisorEmployeeId { get; set; }
     }
 }

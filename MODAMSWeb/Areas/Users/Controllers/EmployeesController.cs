@@ -48,6 +48,10 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     Email = employeeInDb.Email,
                     Phone = employeeInDb.Phone,
                     ImageUrl = employeeInDb.ImageUrl,
+                    Department = _func.GetDepartmentName(_employeeId),
+                    RoleName = _func.GetRoleName(_employeeId),
+                    SupervisorEmployeeId = employeeInDb.SupervisorEmployeeId,
+                    SupervisorName = _func.GetSuperpervisorName(_employeeId)
                 };
             }
 

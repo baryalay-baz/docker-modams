@@ -140,9 +140,32 @@ namespace MODAMS.Utility
             
             return dto;
         }
-        
-        //Private methods
-        private void Notify(int[] arrEmpIds, Notification notification)
+        public string GetDepartmentName(int nEmloyeeId) {
+            return "Department not available!";
+        }
+        public string GetRoleName(int nEmployeeId) {
+            string? rolename = _db.vwEmployees.Where(m => m.Id == nEmployeeId).Select(m => m.RoleName).FirstOrDefault();
+            if (rolename == null) {
+                rolename = "No role assigned";
+            }
+            return rolename;
+        }
+        public string GetSuperpervisorName(int nEmployeeId)
+        {
+            var employee = _db.vwEmployees.Where(m => m.Id == nEmployeeId).FirstOrDefault();
+            string? supervisorName = "Supervisor not available!";
+            if (employee != null)
+            {
+                var rec = _db.Employees.Where(m => m.Id == employee.SupervisorEmployeeId).SingleOrDefault();
+                if (rec != null)
+                {
+                    supervisorName = rec.FullName;
+                }
+            }
+            return supervisorName;
+        }
+		//Private methods
+		private void Notify(int[] arrEmpIds, Notification notification)
         {
             foreach (int id in arrEmpIds)
             {
