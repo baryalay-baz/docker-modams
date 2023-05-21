@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -10,15 +11,40 @@ namespace MODAMS.Models.ViewModels
     public class dtoProfileData
     {
         public int Id { get; set; }
-        public string FullName { get; set; }
-        public string JobTitle { get; set; }
-        public string Department { get; set; }
-        public string Email { get; set; }
-        public string Phone { get; set; }
-        public string ImageUrl { get; set; }
-        public string RoleName { get; set; }
+        
+        [Required]
+        [Display(Name ="Full Name")]
+        public string FullName { get; set; } = string.Empty;
+
+        [Required]
+        [Display(Name = "Job Title")]
+        public string JobTitle { get; set; } = String.Empty;
+
+        [ValidateNever]
+        [Display(Name = "Department")]
+        public string Department { get; set; } = String.Empty;
+
+        [Required]
+        [Display(Name = "Email Address")]
+        public string Email { get; set; } = String.Empty;
+
+        [ValidateNever]
+        [Display(Name = "Phone Number")]
+        public string Phone { get; set; } = String.Empty;
+
+        [ValidateNever]
+        [Display(Name = "Image Url")]
+        public string ImageUrl { get; set; } = String.Empty;
+
+        [ValidateNever]
+        [Display(Name = "Role Name")]
+        public string RoleName { get; set; } = String.Empty;
+        [ValidateNever]
         public int SupervisorEmployeeId { get; set; }
-        public string SupervisorName { get; set; }
+
+        [ValidateNever]
+        [Display(Name = "Supervisor Name")]
+        public string SupervisorName { get; set; } = String.Empty;
 
     }
 }

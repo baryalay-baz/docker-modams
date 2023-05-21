@@ -1,0 +1,22 @@
+﻿@if (TempData["success"] != null)
+    {
+        <script>
+        notif({
+            msg: "@TempData["success"]",
+            type: "success",
+            position: "right",
+            time: 1000
+        });
+        </script>
+    }
+    @if (TempData["error"] != null)
+    {
+        <script>
+        notif({
+            msg: "@TempData["error"]",
+            type: "error",
+            position: "right",
+            time: 1000
+        });
+        </script>
+    }

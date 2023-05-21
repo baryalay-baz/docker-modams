@@ -67,13 +67,28 @@
     <!-- SIDE-MENU JS -->
     <script src="~/assets/plugins/sidemenu/sidemenu.js"></script>
 
+    <!--Notification Scripts-->
+    <script src="~/assets/plugins/notify/js/rainbow.js"></script>
+    @*<script src="~/assets/plugins/notify/js/sample.js"></script>*@
+    <script src="~/assets/plugins/notify/js/jquery.growl.js"></script>
+    <script src="~/assets/plugins/notify/js/notifIt.js"></script>
+    <!--End Notification Scripts-->
+
+    <!-- SELECT2 JS -->
+    <script src="~/assets/plugins/select2/select2.full.min.js"></script>
+    
+    <!-- FORMVALIDATION JS -->
+    <script src="~/assets/js/form-validation.js"></script>
+    
+
     <!-- Perfect SCROLLBAR JS-->
     @*			<script src="~/assets/plugins/p-scroll/perfect-scrollbar.js"></script>
     <script src="~/assets/plugins/p-scroll/pscroll.js"></script>
     *@
     <!-- STICKY JS -->
     <script src="~/assets/js/sticky.js"></script>
-
+    <partial name="_ValidationScriptsPartial" />
+    <partial name="_Notification" />
     @* @RenderSection("Scripts",false/*required*/) *@
     @await RenderSectionAsync("Scripts", required: false)
 
@@ -82,6 +97,7 @@
 
     <!-- CUSTOM JS -->
     <script src="~/assets/js/custom.js"></script>
+
 
     <section id="dvProfileData" style="display:none;"></section>
 </body>

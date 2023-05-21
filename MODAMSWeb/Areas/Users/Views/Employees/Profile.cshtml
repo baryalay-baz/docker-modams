@@ -28,7 +28,7 @@
                                 <h4 id="lblFullName">@Model.FullName</h4>
                                 <p class="text-muted mb-2" id="lblJobTitle">@Model.JobTitle</p>
                                 <a href="#" class="btn btn-primary btn-sm"><i class="fa fa-pencil"></i> Edit Picture</a>
-                                <a href="mail-inbox.html" class="btn btn-secondary btn-sm"><i class="fa fa-key"></i> Reset Password</a>
+                                <a asp-area="Users" asp-action="ResetPassword" asp-controller="Employees" class="btn btn-secondary btn-sm"><i class="fa fa-key"></i> Reset Password</a>
                             </div>
                         </div>
                     </div>
@@ -119,42 +119,43 @@
             <div class="tab-pane" id="editProfile">
                 <div class="card">
                     <div class="card-body border-0">
-                        <form class="form-horizontal">
+                        <form class="form-horizontal" method="post" asp-action="SaveProfile">
+                            <input asp-for="Id" hidden />
                             <div class="row mb-4">
                                 <p class="mb-4 text-17">Personal Info</p>
                                 <div class="col-md-12 col-lg-12 col-xl-6">
                                     <div class="form-group">
-                                        <label asp-for="FullName" class="form-label">Full Name</label>
+                                        <label asp-for="FullName" class="form-label"></label>
                                         <input asp-for="FullName" class="form-control">
-                                        <span asp-validation-for="FullName"></span>
+                                        <span asp-validation-for="FullName" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="col-md-12 col-lg-12 col-xl-6">
                                     <div class="form-group">
-                                        <label asp-for="JobTitle" class="form-label">Job Title</label>
+                                        <label asp-for="JobTitle" class="form-label"></label>
                                         <input asp-for="JobTitle" class="form-control">
-                                        <span asp-validation-for="JobTitle"></span>
+                                        <span asp-validation-for="JobTitle" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="col-md-12 col-lg-12 col-xl-6">
                                     <div class="form-group">
-                                        <label asp-for="Email" class="form-label">Email Address</label>
+                                        <label asp-for="Email" class="form-label"></label>
                                         <input asp-for="Email" readonly class="form-control">
-                                        <span asp-validation-for="Email"></span>
+                                        <span asp-validation-for="Email" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="col-md-12 col-lg-12 col-xl-6">
                                     <div class="form-group">
-                                        <label asp-for="Phone" class="form-label" placeholder="(+000) 000 000000">Phone Number</label>
+                                        <label asp-for="Phone" class="form-label" placeholder="(+000) 000 000000"></label>
                                         <input asp-for="Phone" class="form-control">
-                                        <span asp-validation-for="Phone"></span>
+                                        <span asp-validation-for="Phone" class="text-danger"></span>
                                     </div>
                                 </div>
                                 
                                 <div class="col-md-12 col-lg-12 col-xl-6">
                                     <div class="form-group">
                                         <button id="btnSaveChanges" type="submit" class="btn btn-primary">
-                                            <i id="iconSave" class="mdi mdi-checkbox-marked-circle-outline"></i> Save Changes
+                                            <i class="mdi mdi-checkbox-marked-circle-outline"></i> Save Changes
                                         </button>
                                     </div>
                                 </div>

@@ -10,7 +10,7 @@ namespace MODAMS.Utility
         {
             var emailToSend = new MimeMessage();
             
-            emailToSend.From.Add(new MailboxAddress("UNOPS MIS Portal", "misportal.unops@gmail.com"));
+            emailToSend.From.Add(new MailboxAddress("MOD Asset Management System", "assetmanagement.mod@gmail.com"));
             emailToSend.To.Add(MailboxAddress.Parse(email));
             emailToSend.Subject = subject;
             emailToSend.Body = new TextPart(MimeKit.Text.TextFormat.Html) { Text = htmlMessage };
@@ -18,7 +18,7 @@ namespace MODAMS.Utility
             using (var emailClient = new SmtpClient())
             {
                 emailClient.Connect("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
-                emailClient.Authenticate("misportal.unops@gmail.com", "odmttktdudifpwmi");
+                emailClient.Authenticate("assetmanagement.mod@gmail.com", "tzndpilrdkxnwmxk");
                 emailClient.Send(emailToSend);
                 emailClient.Disconnect(true);
             }

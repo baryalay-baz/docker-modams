@@ -40,6 +40,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 	options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
 	options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/Identity/Account/Login");
 	options.LogoutPath = new Microsoft.AspNetCore.Http.PathString("/Identity/Account/Logout");
+	
 	// ReturnUrlParameter requires 
 	//using Microsoft.AspNetCore.Authentication.Cookies;
 	options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
