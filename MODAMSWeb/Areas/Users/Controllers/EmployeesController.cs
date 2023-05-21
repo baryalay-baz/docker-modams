@@ -116,7 +116,9 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     values: new { area = "Identity", code },
                     protocol: Request.Scheme);
 
-                string shortmessage = "Password reset instructions have been received for your account, click the button below to follow the instructions!";
+                string shortmessage = "Password reset instructions have been received for your account, " +
+                    "click the button below to follow the instructions!";
+
                 string message = _func.FormatMessage("Reset Password", shortmessage,
                     emailAddress, HtmlEncoder.Default.Encode(callbackUrl), "Reset Password");
 

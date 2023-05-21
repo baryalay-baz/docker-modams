@@ -179,8 +179,18 @@ namespace MODAMSWeb.Areas.Identity.Pages.Account
                         values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+
+                    string shortmessage = "An account has been created for you at <span style=\"MOD Asset Management System," +
+                    " click the button below to follow the instructions!";
+
+                    string message = _func.FormatMessage("Register your account", shortmessage,
+                        Input.Email, HtmlEncoder.Default.Encode(callbackUrl), "Register");
+
+                    await _emailSender.SendEmailAsync(
+                        Input.Email,
+                        "Confirm your email",
+                        message);
+
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
