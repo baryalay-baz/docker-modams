@@ -46,5 +46,8 @@ namespace MODAMS.Models.ViewModels
         [Display(Name = "Supervisor Name")]
         public string SupervisorName { get; set; } = String.Empty;
 
+        [Required]
+        [Display(Name ="ID Card Number")]
+        public string CardNumber { get; set; } = String.Empty;
     }
 }

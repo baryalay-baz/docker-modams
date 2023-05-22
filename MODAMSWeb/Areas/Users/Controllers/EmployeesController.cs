@@ -35,10 +35,16 @@ namespace MODAMSWeb.Areas.Users.Controllers
             _emailSender = emailSender;
         }
 
+        [Authorize(Roles = "User, StoreOwner, SeniorManagement, Administrator")]
         public IActionResult Index()
         {
-            
-            return View();
+            var employees = _db.vwEmployees.ToList();
+
+            if (User.IsInRole(SD.Role_StoreOwner)) {
+                employees = employees.Where(m=>m.SupervisorEmployeeId == _employeeId).ToList();
+            }
+
+            return View(employees);
         }
 
         public IActionResult Profile(int? id) {
@@ -62,7 +68,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     Department = _func.GetDepartmentName(_employeeId),
                     RoleName = _func.GetRoleName(_employeeId),
                     SupervisorEmployeeId = employeeInDb.SupervisorEmployeeId,
-                    SupervisorName = _func.GetSuperpervisorName(_employeeId)
+                    SupervisorName = _func.GetSuperpervisorName(_employeeId),
+                    CardNumber = employeeInDb.CardNumber
                 };
             }
             
@@ -70,7 +77,6 @@ namespace MODAMSWeb.Areas.Users.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SaveProfile(dtoProfileData form) {
             if (!ModelState.IsValid)
@@ -84,6 +90,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 rec.FullName = form.FullName;
                 rec.JobTitle = form.JobTitle;
                 rec.Phone = form.Phone;
+                rec.CardNumber = form.CardNumber;
                 await _db.SaveChangesAsync();
             }
             else {
@@ -94,7 +101,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
             return RedirectToAction("Profile", "Employees");
         }
 
-
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPassword()
         {
             if (ModelState.IsValid)
@@ -119,23 +127,31 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 string shortmessage = "Password reset instructions have been received for your account, " +
                     "click the button below to follow the instructions!";
 
-                string message = _func.FormatMessage("Reset Password", shortmessage,
-                    emailAddress, HtmlEncoder.Default.Encode(callbackUrl), "Reset Password");
+                string message = "";
+
+                if (callbackUrl != null)
+                {
+                    message = _func.FormatMessage("Reset Password", shortmessage,
+                        emailAddress, HtmlEncoder.Default.Encode(callbackUrl), "Reset Password");
+                }
+                else {
+                    message = _func.FormatMessage("Reset Password", shortmessage,
+                        emailAddress, HtmlEncoder.Default.Encode("./"), "Reset Password");
+                }
 
                 await _emailSender.SendEmailAsync(
                     emailAddress,
                     "Reset Password",
                     message);
 
-                TempData["success"] = "Password reset instructions has been sent to your email!";
+                TempData["success"] = "Please check  your email!";
                 return RedirectToAction("Profile", "Employees");
             }
 
             return View();
         }
 
-        public IActionResult Email() {
-            return View();
-        }
+        
+
     }
 }

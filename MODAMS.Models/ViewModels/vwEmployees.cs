@@ -17,5 +17,9 @@ namespace MODAMS.Models.ViewModels
         public string Phone { get; set; }
         public string RoleName { get; set; }
         public int SupervisorEmployeeId { get; set; }
+        public string SupervisorName { get; set; }
+        public string ImageUrl { get; set; }
+        public string CardNumber { get; set; }
+
     }
 }

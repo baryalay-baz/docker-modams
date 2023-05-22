@@ -34,6 +34,5 @@ namespace MODAMS.Models
 
         [AllowNull]
         public string ImageUrl { get; set; } = String.Empty;
-
     }
 }
