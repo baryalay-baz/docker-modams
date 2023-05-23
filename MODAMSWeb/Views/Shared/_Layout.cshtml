@@ -73,10 +73,9 @@
     <script src="~/assets/plugins/notify/js/jquery.growl.js"></script>
     <script src="~/assets/plugins/notify/js/notifIt.js"></script>
     <!--End Notification Scripts-->
-
     <!-- SELECT2 JS -->
     <script src="~/assets/plugins/select2/select2.full.min.js"></script>
-    
+
     <!--DATA TABLES-->
     <script src="~/assets/plugins/datatable/js/jquery.dataTables.min.js"></script>
     <script src="~/assets/plugins/datatable/js/dataTables.bootstrap5.js"></script>
@@ -88,7 +87,7 @@
 
     <!-- FORMVALIDATION JS -->
     <script src="~/assets/js/form-validation.js"></script>
-    
+
 
     <!-- Perfect SCROLLBAR JS-->
     @*			<script src="~/assets/plugins/p-scroll/perfect-scrollbar.js"></script>
@@ -113,9 +112,36 @@
 
 <script>
     $(document).ready(() => {
+        setMode();
         loadProfileData();
     });
 
+    const setMode = () => {
+        if(localStorage.getItem("displayMode")=="dark-mode"){
+            $('body').addClass('dark-mode');
+            $('body').removeClass('light-mode');
+            //$('body').removeClass('bg-img1');
+            //$('body').removeClass('bg-img2');
+            //$('body').removeClass('bg-img3');
+            //$('body').removeClass('bg-img4');
+
+            localStorage.setItem('darkMode', true);
+            localStorage.removeItem('lightMode');
+            localStorage.setItem('displayMode', "dark-mode")
+        }else{
+            $('body').removeClass('dark-mode');
+            $('body').addClass('light-mode');
+            //$('body').removeClass('bg-img1');
+            //$('body').removeClass('bg-img2');
+            //$('body').removeClass('bg-img3');
+            //$('body').removeClass('bg-img4');
+            
+
+            localStorage.setItem('lightMode', true);
+            localStorage.removeItem('darkMode');
+
+        }
+    }
     const loadProfileData = () => {
         var sHTML = '';
 

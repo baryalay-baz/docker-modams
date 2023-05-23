@@ -218,28 +218,25 @@
 
     // SWITCHER-TOGGLE
 
+
+
     $('.layout-setting').on("click", function (e) {
         if (document.querySelector('body').classList.contains('dark-mode')) {
             $('body').removeClass('dark-mode');
-            $('body').removeClass('bg-img1');
-            $('body').removeClass('bg-img2');
-            $('body').removeClass('bg-img3');
-            $('body').removeClass('bg-img4');
             $('body').addClass('light-mode');
 
 			localStorage.setItem('lightMode', true);
-			localStorage.removeItem('darkMode');
+            localStorage.removeItem('darkMode');
+            localStorage.setItem('displayMode',"light-mode")
+            
         }
         else {
             $('body').addClass('dark-mode');
             $('body').removeClass('light-mode');
-            $('body').removeClass('bg-img1');
-            $('body').removeClass('bg-img2');
-            $('body').removeClass('bg-img3');
-            $('body').removeClass('bg-img4');
-
+            
             localStorage.setItem('darkMode', true);
-			localStorage.removeItem('lightMode');
+            localStorage.removeItem('lightMode');
+            localStorage.setItem('displayMode', "dark-mode")
         }
     });
 
