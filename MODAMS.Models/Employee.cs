@@ -32,7 +32,15 @@ namespace MODAMS.Models
         [Display(Name ="Supervisor")]
         public int SupervisorEmployeeId { get; set; }
 
+        [Display(Name = "Is Active")]
+        public bool IsActive { get; set; } = true;
+
+        [Display(Name ="Role Name")]
+        public string InitialRole { get; set; } = String.Empty;
+
         [AllowNull]
         public string ImageUrl { get; set; } = String.Empty;
+        public string DisplayMode { get; set; } = String.Empty;
+
     }
 }

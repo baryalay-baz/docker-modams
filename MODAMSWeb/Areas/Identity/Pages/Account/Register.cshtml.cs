@@ -22,6 +22,7 @@ using Microsoft.Extensions.Logging;
 using MODAMS.DataAccess.Data;
 using MODAMS.Models;
 using MODAMS.Utility;
+using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
 namespace MODAMSWeb.Areas.Identity.Pages.Account
 {
@@ -66,47 +67,24 @@ namespace MODAMSWeb.Areas.Identity.Pages.Account
         [BindProperty]
         public InputModel Input { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
+        
         public string ReturnUrl { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public class InputModel
         {
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
             [Required]
             [EmailAddress]
             [Display(Name = "Email")]
             public string Email { get; set; }
 
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
             [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
             [DataType(DataType.Password)]
             [Display(Name = "Password")]
             public string Password { get; set; }
 
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
             [DataType(DataType.Password)]
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
@@ -114,7 +92,7 @@ namespace MODAMSWeb.Areas.Identity.Pages.Account
             public int EmployeeId { get; set; }
         }
 
-        public async Task OnGetAsync(string returnUrl = null)
+        public async Task<IActionResult> OnGetAsync(string returnUrl)
         {
             if (!_roleManager.RoleExistsAsync(SD.Role_Administrator).GetAwaiter().GetResult())
             {
@@ -124,8 +102,21 @@ namespace MODAMSWeb.Areas.Identity.Pages.Account
                 _roleManager.CreateAsync(new IdentityRole(SD.Role_Administrator)).GetAwaiter().GetResult();
             }
 
-            ReturnUrl = returnUrl;
+            Input = new InputModel();
+
+            if (returnUrl != null)
+            {
+                ReturnUrl = returnUrl;
+                Input.Email = ReturnUrl;
+            }
+            else {
+                ReturnUrl = HtmlEncoder.Default.Encode("./");
+            }
+                
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
+            return Page();
+
         }
         
         private bool EmailHasAccount(string emailAddress)
@@ -168,7 +159,8 @@ namespace MODAMSWeb.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
-                    await _userManager.AddToRoleAsync(user, SD.Role_User);
+                    string initialRole = _db.Employees.Where(m => m.Id == nEmployeeId).FirstOrDefault().InitialRole.ToString();
+                    await _userManager.AddToRoleAsync(user, initialRole);
                     
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
@@ -183,7 +175,7 @@ namespace MODAMSWeb.Areas.Identity.Pages.Account
                     string shortmessage = "An account has been created for you at <span style=\"MOD Asset Management System," +
                     " click the button below to follow the instructions!";
 
-                    string message = _func.FormatMessage("Register your account", shortmessage,
+                    string message = _func.FormatMessage("Account confirmation", shortmessage,
                         Input.Email, HtmlEncoder.Default.Encode(callbackUrl), "Register");
 
                     await _emailSender.SendEmailAsync(
@@ -199,7 +191,7 @@ namespace MODAMSWeb.Areas.Identity.Pages.Account
                     else
                     {
                         await _signInManager.SignInAsync(user, isPersistent: false);
-                        return LocalRedirect(returnUrl);
+                        return RedirectToAction("Index", "Home", new { area = "Users" });
                     }
                 }
                 foreach (var error in result.Errors)

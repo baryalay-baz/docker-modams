@@ -20,6 +20,8 @@ namespace MODAMS.Models.ViewModels
         public string SupervisorName { get; set; }
         public string ImageUrl { get; set; }
         public string CardNumber { get; set; }
+        public string DisplayMode { get; set; }
+        public bool IsActive { get; set; }
 
     }
 }

@@ -227,10 +227,10 @@
 
 			localStorage.setItem('lightMode', true);
             localStorage.removeItem('darkMode');
-            localStorage.setItem('displayMode',"light-mode")
-            
+            localStorage.setItem('displayMode', "light-mode") 
         }
-        else {
+        else
+        {
             $('body').addClass('dark-mode');
             $('body').removeClass('light-mode');
             
@@ -239,165 +239,6 @@
             localStorage.setItem('displayMode', "dark-mode")
         }
     });
-
-//######## SWITCHER STYLES ######## //
-
-// -------- Sidemenu layout Styles -------- //
-
-    // ICON OVERLAY SIDEMENU START
-        // $('body').addClass('icon-overlay');
-        // $('body').addClass('sidenav-toggled');
-        // if((document.querySelector('body').classList.contains('login-img')) ){
-        //     return;
-        // }       
-        // else if((document.querySelector('body').classList.contains('error-bg'))){
-        //     return;
-        // }
-        // else{
-        //     hovermenu();
-        // }
-    // ICON OVERLAY SIDEMENU END
-
-    // ICONTEXT SIDEMENU START
-        // $('body').addClass('icontext-menu');
-        // $('body').addClass('sidenav-toggled');
-        // if((document.querySelector('body').classList.contains('login-img')) ){
-        //     return;
-        // }       
-        // else if((document.querySelector('body').classList.contains('error-bg'))){
-        //     return;
-        // }
-        // else{
-        //     icontext();
-        // }
-    // ICONTEXT SIDEMENU END
-
-    // CLOSED SIDEMENU START
-        // $('body').addClass('closed-leftmenu');
-        // $('body').addClass('sidenav-toggled');
-    // CLOSED SIDEMENU END
-
-    // HOVER SUBMENU START
-        // $('body').addClass('hover-submenu');
-        // $('body').addClass('sidenav-toggled');
-        // if((document.querySelector('body').classList.contains('login-img')) ){
-        //     return;
-        // }       
-        // else if((document.querySelector('body').classList.contains('error-bg'))){
-        //     return;
-        // }
-        // else{
-        //     hovermenu();
-        // }
-    // HOVER SUBMENU END
-
-    // HOVER SUBMENU STYLE-1 START
-        // $('body').addClass('hover-submenu1');
-        // $('body').addClass('sidenav-toggled');
-        // if((document.querySelector('body').classList.contains('login-img')) ){
-        //     return;
-        // }       
-        // else if((document.querySelector('body').classList.contains('error-bg'))){
-        //     return;
-        // }
-        // else{
-        //     hovermenu();
-        // }
-    // HOVER SUBMENU STYLE-1 END
-
-// ----- ! Sidemenu layout Styles ------- //  
-
-
-// HEADER POSITION STYLES START
-    // $('body').addClass('scrollable-layout');
-// HEADER POSITION STYLES END
-
-// ----- Layout Styles ------- // 
-
-    // BOXED LAYOUT START
-        // $('body').addClass('layout-boxed');
-    // BOXED LAYOUT END
-
-// ----- ! Layout Styles ------- // 
-
-
-// ----- Header Styles ------- //
-
-    // LIGHT HEADER START
-        // $('body').addClass('header-light');
-    // LIGHT HEADER END
-
-    // COLOR HEADER START
-        // $('body').addClass('color-header');
-    // COLOR HEADER END
-
-    // DARK HEADER START
-        // $('body').addClass('dark-header');
-    // DARK HEADER END
-
-    // GRADIENT HEADER START
-        // $('body').addClass('gradient-header');
-    // GRADIENT HEADER END
-
-// ----- ! Header Styles ------- //  
-
-// ----- Menu Styles ------- //
-
-    // LIGHT LEFTMENU START
-        // $('body').addClass('light-menu');
-    // LIGHT LEFTMENU END
-
-    // COLOR LEFTMENU START
-        // $('body').addClass('color-menu');
-    // COLOR LEFTMENU END
-
-    // DARK LEFTMENU START
-        // $('body').addClass('dark-menu');
-    // DARK LEFTMENU END
-
-    // GRADIENT LEFTMENU START
-        // $('body').addClass('gradient-menu');
-    // GRADIENT LEFTMENU END
-
-// ----- ! Menu Styles ------- //
-
-
-// ----- Dark Theme Style ------- //
-
-    // DARK THEME START
-        // $('body').addClass('dark-mode');
-    // DARK THEME END
-
-// ----- ! Dark Theme Styles ------- //
-
-// ----- Background Image Styles ------- //
-
-    // Bg-Image1 Style Start
-        // $('body').addClass('bg-img1');
-        // $('body').addClass('dark-mode');
-    // ! Bg-Image1 Style End
-
-    // Bg-Image2 Style Start
-        // $('body').addClass('bg-img2');
-        // $('body').addClass('dark-mode');
-    // ! Bg-Image1 Style End
-
-    // Bg-Image3 Style Start
-        // $('body').addClass('bg-img3');
-        // $('body').addClass('dark-mode');
-    // ! Bg-Image2 Style End
-
-    // Bg-Image4 Style Start
-        // $('body').addClass('bg-img4');
-        // $('body').addClass('dark-mode');
-    // ! Bg-Image4 Style End
-
-// ----- ! Background Image Styles ------- //
-
-// ----- RTL Style ------- //
-
-// $('body').addClass('rtl');
-
 
 let bodyRtl = $('body').hasClass('rtl');
 if (bodyRtl) {

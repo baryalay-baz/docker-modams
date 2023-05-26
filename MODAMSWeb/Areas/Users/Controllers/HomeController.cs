@@ -42,13 +42,14 @@ namespace MODAMSWeb.Areas.Users.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+        
         public string GetProfileData() {
             string sResult = "No Records Found";
             var profileData = new List<dtoProfileData>();
             string sEmail = _func.GetEmployeeEmail();
 
             var employeeInDb = _db.Employees.Where(m => m.Email == sEmail).SingleOrDefault();
-            if(employeeInDb != null)
+            if (employeeInDb != null)
             {
                 var profile = new dtoProfileData()
                 {
@@ -62,6 +63,9 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 profileData.Add(profile);
 
                 sResult = JsonConvert.SerializeObject(profileData);
+            }
+            else {
+                TempData["error"] = "Record not found!";
             }
             return sResult;
         }

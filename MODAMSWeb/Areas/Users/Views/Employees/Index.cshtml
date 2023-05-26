@@ -44,7 +44,7 @@
         <div class="card">
             <div class="card-body project-list-table-container">
                 <div class="table-responsive">
-                    <table id="project-table" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
+                    <table id="tblEmployees" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
                         <thead class="table-head">
                             <tr>
                                 <th class="bg-transparent border-bottom-0 w-5">S.No</th>
@@ -54,6 +54,7 @@
                                 <th class="bg-transparent border-bottom-0">Phone</th>
                                 <th class="bg-transparent border-bottom-0">Role Name</th>
                                 <th class="bg-transparent border-bottom-0">Supervisor</th>
+                                <th class="bg-transparent border-bottom-0">Is Active</th>
                                 <th class="bg-transparent border-bottom-0 no-btn">Action</th>
                             </tr>
                         </thead>
@@ -72,7 +73,9 @@
                                         <td>
                                             <div class="d-flex align-items-center">
                                                 <div class="me-2">
-                                                    <span><img src="@employee.ImageUrl" alt="profile-user" class="data-image avatar avatar-md rounded-circle"></span>
+                                                    <span>
+                                                        <img style="min-width:30px;" src="@employee.ImageUrl" alt="profile-user" class="data-image avatar avatar-lg rounded-circle">
+                                                    </span>
                                                 </div>
                                                 <div>
                                                     <h6 class="mb-0">@employee.FullName</h6>
@@ -85,24 +88,75 @@
                                         <td class="text-muted fs-15 fw-semibold">@employee.Phone</td>
                                         <td class="text-muted fs-15 fw-semibold">@employee.RoleName</td>
                                         <td class="text-muted fs-15 fw-semibold">@employee.SupervisorName</td>
+                                        <td class="text-muted fs-15 fw-semibold">
+                                            @{
+                                                if (employee.IsActive)
+                                                {
+                                                    <span class="text-primary">
+                                                        <span class="mb-0 mt-1 badge rounded-pill bg-primary-transparent text-blue">Active</span>
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-secondary">
+                                                        <span class="mb-0 mt-1 badge rounded-pill bg-secondary-transparent text-danger">Locked</span>
+                                                    </span>
+                                                }
+                                            }
+                                        </td>
+
                                         <td>
                                             <div class="d-flex align-items-stretch">
-                                                <a class="btn btn-sm btn-outline-info border me-2" data-bs-toggle="tooltip" data-bs-original-title="Employee Info">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
-                                                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-                                                        <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
-                                                    </svg>
-                                                </a>
-                                                <a class="btn btn-sm btn-outline-primary border me-2" data-bs-toggle="tooltip" data-bs-original-title="Edit Employee">
+                                                <a asp-controller="Employees" asp-action="EditEmployee" asp-route-id="@employee.Id" class="btn btn-sm btn-outline-primary border me-2" data-bs-toggle="tooltip" data-bs-original-title="Edit Employee">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 20">
                                                         <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" />
                                                     </svg>
                                                 </a>
-                                                <a class="btn btn-sm btn-outline-secondary border me-2" data-bs-toggle="tooltip" data-bs-original-title="Lock Employee">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="currentColor" class="bi bi-person-lock" viewBox="0 0 16 20">
-                                                        <path d="M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm0 5.996V14H3s-1 0-1-1 1-4 6-4c.564 0 1.077.038 1.544.107a4.524 4.524 0 0 0-.803.918A10.46 10.46 0 0 0 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h5ZM9 13a1 1 0 0 1 1-1v-1a2 2 0 1 1 4 0v1a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-2Zm3-3a1 1 0 0 0-1 1v1h2v-1a1 1 0 0 0-1-1Z" />
-                                                    </svg>
-                                                </a>
+                                                @{
+                                                    if (employee.IsActive)
+                                                    {
+                                                        <a class="btn btn-sm btn-outline-secondary border me-2" data-bs-toggle="dropdown" data-bs-original-title="Lock Employee">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="currentColor" class="bi bi-lock" viewBox="0 0 16 20">
+                                                                <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2zM5 8h6a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z" />
+                                                            </svg>
+                                                        </a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <a class="btn btn-sm btn-outline-primary border me-2" data-bs-toggle="dropdown" data-bs-original-title="Lock Employee">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="currentColor" class="bi bi-unlock" viewBox="0 0 16 20">
+                                                                <path d="M11 1a2 2 0 0 0-2 2v4a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h5V3a3 3 0 0 1 6 0v4a.5.5 0 0 1-1 0V3a2 2 0 0 0-2-2zM3 8a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1H3z" />
+                                                            </svg>
+                                                        </a>
+                                                    }
+                                                }
+                                                <div class="dropdown-menu" style="">
+                                                    <div class="p-5">
+                                                        @{
+                                                            if (employee.IsActive)
+                                                            {
+                                                                <h4 class="dropdown-title"><i class="fa fa-lock"></i> Lock Account</h4>
+                                                                <br />
+                                                                <p>Are you sure you want to lock this account?</p>
+                                                                <a asp-area="Users" asp-controller="Employees" asp-action="LockAccount" asp-route-id="@employee.Id" class="btn btn-secondary btn-sm">
+                                                                    <i class="fa fa-lock"></i>
+                                                                    Lock Account
+                                                                </a>
+                                                            }
+                                                            else
+                                                            {
+                                                                <h4 class="dropdown-title"><i class="fa fa-unlock"></i>  Unlock Account</h4>
+                                                                <br />
+                                                                <p>Are you sure you want to unlock this account?</p>
+                                                                <a asp-area="Users" asp-controller="Employees" asp-action="UnlockAccount" asp-route-id="@employee.Id" class="btn btn-primary btn-sm">
+                                                                    <i class="fa fa-unlock"></i>
+                                                                    Unlock Account
+                                                                </a>
+                                                            }
+                                                        }
+
+                                                    </div>
+                                                </div>
                                             </div>
                                         </td>
                                     </tr>
@@ -119,6 +173,19 @@
 </div>
 <!--ROW CLOSED-->
 @section scripts {
+
     <!-- PROJECT-LIST JS-->
-    <script src="~/assets/js/project-list.js"></script>
+    @*<script src="~/assets/js/project-list.js"></script>*@
+    <script>
+        $(document).ready(function () {
+            $('#tblEmployees').DataTable({
+                language: {
+                    searchPlaceholder: 'Search...',
+                    sSearch: '',
+                }
+            });
+        });
+    </script>
+
+
 }

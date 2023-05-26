@@ -226,6 +226,20 @@ namespace MODAMS.Utility
 
 
         }
+
+        public bool IsUserActive(string emailAddress) {
+            var blnResult = false;
+            var employee = _db.Employees.Where(m=>m.Email==emailAddress).FirstOrDefault();
+            if (employee != null)
+            {
+                if(employee.IsActive)
+                {
+                    blnResult = true;
+                }
+            }
+            return blnResult;
+        }
+
         private string GenerateUrl(int targetSectionId, int targetRecordId)
         {
             string? callbackUrl = "";

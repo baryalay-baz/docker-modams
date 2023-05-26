@@ -12,14 +12,22 @@
     <!-- BOOTSTRAP CSS -->
     <link id="style" href="~/assets/plugins/bootstrap/css/bootstrap.min.css" asp-append-version="true" rel="stylesheet" />
 
+    <!--SELECT2-->
+    <link href="~/assets/plugins/select2/css/select2.css" rel="stylesheet" asp-append-version="true" />
+    
     <!-- STYLE CSS -->
     <link href="~/assets/css/style.css" rel="stylesheet" asp-append-version="true" />
     <link href="~/assets/css/skin-modes.css" rel="stylesheet" asp-append-version="true" />
 
     <!--- FONT-ICONS CSS -->
     <link href="~/assets/css/icons.css" rel="stylesheet" asp-append-version="true" />
+    
 
 </head>
+@{
+    
+    var mode = "";// "dark-mode";
+}
 <body class="app sidebar-mini ltr">
 
     <!-- GLOBAL-LOADER -->
@@ -73,6 +81,7 @@
     <script src="~/assets/plugins/notify/js/jquery.growl.js"></script>
     <script src="~/assets/plugins/notify/js/notifIt.js"></script>
     <!--End Notification Scripts-->
+
     <!-- SELECT2 JS -->
     <script src="~/assets/plugins/select2/select2.full.min.js"></script>
 
@@ -112,7 +121,7 @@
 
 <script>
     $(document).ready(() => {
-        setMode();
+        //setMode();
         loadProfileData();
     });
 

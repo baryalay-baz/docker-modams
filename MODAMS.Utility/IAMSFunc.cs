@@ -15,7 +15,9 @@ namespace MODAMS.Utility
         public string GetRoleName(int nEmployeeId);
         public string GetSuperpervisorName(int nEmployeeId);
 
-		public dtoRedirection GetRedirectionObject();
+        public bool IsUserActive(string emailAddress);
+
+        public dtoRedirection GetRedirectionObject();
 
         public string FormatMessage(string title, string message, string email, string returnUrl, string btntext);
     }
