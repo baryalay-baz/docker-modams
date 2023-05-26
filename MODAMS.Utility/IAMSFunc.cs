@@ -20,5 +20,6 @@ namespace MODAMS.Utility
         public dtoRedirection GetRedirectionObject();
 
         public string FormatMessage(string title, string message, string email, string returnUrl, string btntext);
+
     }
 }

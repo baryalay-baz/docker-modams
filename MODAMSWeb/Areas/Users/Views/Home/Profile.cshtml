@@ -24,22 +24,40 @@
                             <div class="profile-img-main rounded" id="profile-image">
                                 <img src="@Model.ImageUrl" alt="img" class="m-0 p-1 rounded hrem-6">
                             </div>
-                            <div class="ms-4">
+                            <div class="ms-4" id="dvInfo">
                                 <h4 id="lblFullName">@Model.FullName</h4>
                                 <p class="text-muted mb-2" id="lblJobTitle">@Model.JobTitle</p>
 
                                 <div class="main-dropdown-form-demo">
-                                    <a href="#" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#largemodal"><i class="fa fa-pencil"></i> Edit Picture</a>
-                                    <button class="btn btn-secondary btn-sm" data-bs-toggle="dropdown" aria-expanded="false"><i class="fa fa-key"></i> Reset Password <i class="icon ion-ios-arrow-down text-12"></i></button>
+                                    <button class="btn btn-primary btn-sm" data-bs-toggle="dropdown" area-expandexd="false">
+                                        <i class="fa fa-pencil"></i> Edit Picture
+                                    </button>
                                     <div class="dropdown-menu" style="">
-                                        <div class="p-5">
+                                        <div class="p-1">
+                                            <h4 class="dropdown-title">Upload Profile Picture</h4><br />
+                                            <p class="text-muted" style="font-size:10px;">Picture Size: <b>128px * 128px (height * width)</b></p>
+                                            <form method="post" asp-action="UploadPicture" enctype="multipart/form-data">
+                                                <div class="form-group">
+                                                    <input class="form-control file-input form-control-sm" type="file" name="file">
+                                                    <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                                                </div>
+                                                <div class="form-group">
+                                                    <button class="btn btn-primary btn-sm"><i class="fa fa-solid fa-upload"></i> Upload</button>
+                                                </div>                                                
+                                            </form>   
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-secondary btn-sm" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fa fa-key"></i> Reset Password <i class="icon ion-ios-arrow-down text-12"></i>
+                                    </button>
+                                    <div class="dropdown-menu" style="">
+                                        <div class="p-1">
                                             <h4 class="dropdown-title">Reset Password</h4><br />
-                                            <p>Password reset instructions will be sent to your email address!<br />Are you sure you want to reset your password?</p><br />
-                                            <a asp-area="Users" asp-action="ResetPassword" asp-controller="Employees" class="btn btn-primary btn-sm"><i class="mdi mdi-checkbox-marked-circle-outline"></i> Reset Password</a>
+                                            <p>This will initiate password reset process!<br /><br />Are you sure?</p>
+                                            <a asp-area="Users" asp-action="ResetPassword" asp-controller="Home" class="btn btn-primary btn-sm"><i class="mdi mdi-checkbox-marked-circle-outline"></i> Reset Password</a>
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                     </div>
@@ -185,30 +203,20 @@
         </div>
     </div><!-- COL-END -->
 </div>
-<!-- ROW-1 CLOSED -->
-<!--Modals-->
-@*<div class="modal fade" id="largemodal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-lg " role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Modal title</h5>
-                <button class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <p>Modal body text goes here.</p>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button class="btn btn-primary">Save changes</button>
-            </div>
-        </div>
-    </div>*@
-</div>
+
 <!--End Modals-->
 @section Scripts{
     <script>
+        $(document).ready(() => {
+            $("#btnCancel").on("click", () => {
+                $("#dvInfo").show(300);
+                $("#dvProfilePictureForm").hide(300);
+            });
+        });
 
+        const loadForm = () => {
+            $("#dvInfo").hide(300);
+            $("#dvProfilePictureForm").show(300);
+        }
     </script>
 }

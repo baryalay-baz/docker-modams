@@ -1,0 +1,109 @@
+﻿@*@model List<MODAMS.Models.ViewModels.vwDepartments>*@
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Departments</h1>
+    </div>
+    <div class="ms-auto pageheader-btn">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Departments</li>
+        </ol>
+    </div>
+
+    <link href="~/assets/plugins/google-api/googleapi.css" rel="stylesheet" />
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center justify-content-between">
+                    <h4 class="m-0">Department Structure</h4>
+                    <div class="btn-list">
+                        <a class="btn btn-primary" href="#">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="source-logo bi bi-diagram-3" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M6 3.5A1.5 1.5 0 0 1 7.5 2h1A1.5 1.5 0 0 1 10 3.5v1A1.5 1.5 0 0 1 8.5 6v1H14a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0v-1A.5.5 0 0 1 2 7h5.5V6A1.5 1.5 0 0 1 6 4.5v-1zM8.5 5a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1zM0 11.5A1.5 1.5 0 0 1 1.5 10h1A1.5 1.5 0 0 1 4 11.5v1A1.5 1.5 0 0 1 2.5 14h-1A1.5 1.5 0 0 1 0 12.5v-1zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zm4.5.5A1.5 1.5 0 0 1 7.5 10h1a1.5 1.5 0 0 1 1.5 1.5v1A1.5 1.5 0 0 1 8.5 14h-1A1.5 1.5 0 0 1 6 12.5v-1zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zm4.5.5a1.5 1.5 0 0 1 1.5-1.5h1a1.5 1.5 0 0 1 1.5 1.5v1a1.5 1.5 0 0 1-1.5 1.5h-1a1.5 1.5 0 0 1-1.5-1.5v-1zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1z" />
+                            </svg>
+                        </a>
+                        <a class="btn btn-outline-primary" asp-area="Admin" asp-controller="Departments" asp-action="Index">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-inner-icn text-white" enable-background="new 0 0 24 24" viewBox="0 0 24 24"><path d="M3.5,12C3.223877,12,3,12.223877,3,12.5S3.223877,13,3.5,13S4,12.776123,4,12.5S3.776123,12,3.5,12z M6.5,8h15C21.776123,8,22,7.776123,22,7.5S21.776123,7,21.5,7h-15C6.223877,7,6,7.223877,6,7.5S6.223877,8,6.5,8z M3.5,17C3.223877,17,3,17.223877,3,17.5S3.223877,18,3.5,18S4,17.776123,4,17.5S3.776123,17,3.5,17z M21.5,12h-15C6.223877,12,6,12.223877,6,12.5S6.223877,13,6.5,13h15c0.276123,0,0.5-0.223877,0.5-0.5S21.776123,12,21.5,12z M3.5,7C3.223877,7,3,7.223877,3,7.5S3.223877,8,3.5,8S4,7.776123,4,7.5S3.776123,7,3.5,7z M21.5,17h-15C6.223877,17,6,17.223877,6,17.5S6.223877,18,6.5,18h15c0.276123,0,0.5-0.223877,0.5-0.5S21.776123,17,21.5,17z" /></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-sm-12">
+        <div class="card">
+            <div class="card-body project-list-table-container scroll" style="overflow-x: auto; overflow-y: auto;">
+                <div id="dvChart" style="height:550px;" class="p-5"></div>
+            </div>
+        </div>
+
+    </div>
+    <section id="dvDepartmentsData" style="display:none;"></section>
+</div>
+@section scripts{
+    <script src="~/assets/plugins/googleloader/googleloader.js"></script>
+    <script>
+        $(document).ready(() => {
+            $("#hideMenu").click();
+
+            getDepartments();
+
+        });
+
+        const getDepartments = () => {
+            var postData = {};
+            $.ajax({
+                url: 'GetDepartments',
+                datatype: "json",
+                data: postData,
+                beforeSend: function () {
+                    
+                },
+                success: function (e) {
+                    $("#dvDepartmentsData").html("").html(e);
+                },
+                complete: function () {
+                    setTimeout(function () {
+                        google.charts.load('current', { packages: ["orgchart"] });
+                        google.charts.setOnLoadCallback(drawChart);
+                    }, 300);
+                }
+            });
+        }
+
+        const drawChart = () => {
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Name');
+            data.addColumn('string', 'Manager');
+            data.addColumn('string', 'ToolTip');
+
+            // For each orgchart box, provide the name, manager, and tooltip to show.
+
+            var sData = $("#dvDepartmentsData").html();
+            if (sData != "No Records Found") {
+                var Data = JSON.parse(sData);
+                var nCounter = 0;
+                var sHTML = '';
+                Data.forEach(function (e) {
+                    if (nCounter == 0) {
+                        data.addRows([
+                            [{ 'v': e.Id.toString(), 'f': '<b><div style="color:blue;">' + e.Name + '</div></b>' }, '', e.DeptType]
+                        ]);
+                    } else {
+                        data.addRows([
+                            [{ 'v': e.Id.toString(), 'f': '<div style="padding-top:10px;"><b><a onclick="return editDept(' + e.Id + ');">' + e.Name + '</a></b></div><div style="color:#61abff; width:100px;">' + e.OwnerName + '</div>' }, e.UpperLevelDeptId.toString(), e.DeptType]
+                        ]);
+                    }
+                    nCounter++;
+                });
+            }
+            var chart = new google.visualization.OrgChart(document.getElementById('dvChart'));
+            chart.draw(data, { 'allowHtml': true, 'size': 'medium' });
+        }
+
+    </script>
+}

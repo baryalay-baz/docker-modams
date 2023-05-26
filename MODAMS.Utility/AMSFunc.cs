@@ -264,6 +264,7 @@ namespace MODAMS.Utility
 
             return HtmlEncoder.Default.Encode(callbackUrl);
         }
+        
         public string FormatMessage(string title, string message, string email, string returnUrl, string btntext)
         {
             string emailMessage = "";
@@ -276,7 +277,9 @@ namespace MODAMS.Utility
                 title +
                 "</td></tr><tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\"><td class=\"content-block\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 10px 10px;\" valign=\"top\" align=\"left\"><br />" +
                 "Dear " + email + ", <br /><br />" + message +
-                "<br /><br /><span style=\"font-size: 10px;\">Note: This email is generated automatically, please do not reply<br><br></span></td></tr><tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\"><td class=\"content-block\" itemprop=\"handler\" itemscope itemtype=\"http://schema.org/HttpActionHandler\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 10px 10px;\" valign=\"top\">" +
+                "<br /><br /><span style=\"font-size: 10px;\">" +
+                "Note: This email is generated automatically, please do not reply" +                               
+                "<br><br></span></td></tr><tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\"><td class=\"content-block\" itemprop=\"handler\" itemscope itemtype=\"http://schema.org/HttpActionHandler\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 10px 10px;\" valign=\"top\">" +
                 "<a href=\"" + returnUrl + "\" class=\"btn btn-primary\" style=\"color:white; background-color:#2541f7; font-size: 14px; text-decoration: none; line-height: 2em; font-weight: bold; text-align: center; cursor: pointer; display: block; border-radius: 5px; text-transform: capitalize; border: none; padding: 10px 20px;\">" + btntext + " </a></td></tr><tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\"><td class=\"content-block\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; padding-top: 5px; vertical-align: top; margin: 0; text-align: center;\" valign=\"top\"> <br /> <div><img src=\"" + src + "/assets/images/brand/ams_small.png\" /> &nbsp;|&nbsp;Asset Management System </div></td></tr> </table></td></tr> </table><!--end table--></div><!--end content--></td><td style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0;\" valign=\"top\"></td> </tr></table><!--end table--></div><!--end col--> </div><!--end row--></div>";
 
             return emailMessage;

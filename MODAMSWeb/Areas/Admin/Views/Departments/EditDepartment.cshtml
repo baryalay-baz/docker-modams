@@ -1,0 +1,97 @@
+﻿@model MODAMS.Models.ViewModels.dtoDepartment
+
+<!-- PAGE-HEADER -->
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Edit Department</h1>
+    </div>
+    <div class="ms-auto pageheader-btn">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Departments" asp-action="Index">Department List</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Edit Department</li>
+        </ol>
+    </div>
+</div>
+<!-- PAGE-HEADER END -->
+<!--ROW OPENED-->
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+        <div class="card">
+            <div class="card-header border-bottom">
+                <h4 class="mb-0">Department Details</h4>
+            </div>
+            <div class="card-body p-0">
+                <div class="row p-5 border-bottom">
+                    <div class="col-lg-8 col-md-8">
+                        <form method="post" asp-action="EditDepartment" id="frmDepartment">
+                            <div class="card-body">
+                                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+                                <input asp-for="department.Id" hidden />
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="mb-3 form-group">
+                                            <label asp-for="department.Name"></label>
+                                            <input asp-for="department.Name" class="form-control" aria-required="true" placeholder="Department Name" />
+                                            <span asp-validation-for="department.Name" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="mb-3 form-group">
+                                            <label asp-for="department.UpperLevelDeptId"></label>
+                                            <select asp-for="department.UpperLevelDeptId" asp-items="@Model.Departments"
+                                                    class="form-control select2 form-select">
+                                                <option disabled selected>-Select Department-</option>
+                                            </select>
+                                            <span asp-validation-for="department.UpperLevelDeptId" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="mb-3 form-group">
+                                            <label asp-for="department.EmployeeId"></label>
+                                            <select asp-for="department.EmployeeId" asp-items="@Model.Employees"
+                                                    class="form-control select2 form-select">
+                                                <option disabled selected>-Select Employee-</option>
+                                            </select>
+                                            <span asp-validation-for="department.EmployeeId" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-lg-4 col-md-4">
+                        <div class="card-body">
+                            <div class="profile-img-main rounded" id="profile-image">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row p-5">
+                    <div class="btn-list">
+                        <button id="btnSubmit" class="btn btn-primary"><i class="fe fe-check-circle"></i> Save Department</button>
+                        <a asp-area="Admin" asp-controller="Departments" asp-action="Index" class="btn btn-outline-danger"> <i class="fe fe-x-circle"></i> Cancel</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--ROW CLOSED-->
+@section scripts {
+    <script>
+        $(document).ready(() => {
+            $('.select2').select2();
+
+            $("#btnSubmit").on("click", () => {
+                $("#frmDepartment").submit();
+            });
+
+
+        });
+    </script>
+}
