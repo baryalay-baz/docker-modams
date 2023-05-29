@@ -49,18 +49,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-sm-6">
-                                        <div class="mb-3 form-group">
-                                            <label asp-for="department.EmployeeId"></label>
-                                            <select asp-for="department.EmployeeId" asp-items="@Model.Employees"
-                                                    class="form-control select2 form-select">
-                                                <option disabled selected>-Select Employee-</option>
-                                            </select>
-                                            <span asp-validation-for="department.EmployeeId" class="text-danger"></span>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </form>
                     </div>

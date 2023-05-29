@@ -61,7 +61,7 @@
                 datatype: "json",
                 data: postData,
                 beforeSend: function () {
-                    
+
                 },
                 success: function (e) {
                     $("#dvDepartmentsData").html("").html(e);
@@ -91,11 +91,11 @@
                 Data.forEach(function (e) {
                     if (nCounter == 0) {
                         data.addRows([
-                            [{ 'v': e.Id.toString(), 'f': '<b><div style="color:blue;">' + e.Name + '</div></b>' }, '', e.DeptType]
+                            [{ 'v': e.Id.toString(), 'f': '<b><div style="color:black;">' + e.Name + '</div></b>' }, '', e.DeptType]
                         ]);
                     } else {
                         data.addRows([
-                            [{ 'v': e.Id.toString(), 'f': '<div style="padding-top:10px;"><b><a onclick="return editDept(' + e.Id + ');">' + e.Name + '</a></b></div><div style="color:#61abff; width:100px;">' + e.OwnerName + '</div>' }, e.UpperLevelDeptId.toString(), e.DeptType]
+                            [{ 'v': e.Id.toString(), 'f': '<div style="padding-top:10px;" class="text-blue fs-8 fw-semibold"><b><a onclick="return editDept(' + e.Id + ');">' + e.Name + '</a></b></div><div style="color:#61abff; width:100px;">' + e.OwnerName + '</div>' }, e.UpperLevelDeptId.toString(), e.DeptType]
                         ]);
                     }
                     nCounter++;
@@ -103,6 +103,10 @@
             }
             var chart = new google.visualization.OrgChart(document.getElementById('dvChart'));
             chart.draw(data, { 'allowHtml': true, 'size': 'medium' });
+        }
+
+        const editDept = (id) => {
+
         }
 
     </script>

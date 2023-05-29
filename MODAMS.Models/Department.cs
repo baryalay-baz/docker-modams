@@ -25,9 +25,7 @@ namespace MODAMS.Models
 
         [AllowNull]
         [Display(Name ="Department Owner")]
-        public int EmployeeId { get; set; }
+        public int? EmployeeId { get; set; }
 
-       
-        public int DisplayOrder { get; set; }
     }
 }

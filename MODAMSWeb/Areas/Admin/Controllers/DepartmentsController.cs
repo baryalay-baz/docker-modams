@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis.CSharp;
 using Newtonsoft.Json;
 
+
 namespace MODAMSWeb.Areas.Admin.Controllers
 {
     [Area("Admin")]
@@ -31,6 +32,11 @@ namespace MODAMSWeb.Areas.Admin.Controllers
         public IActionResult Index()
         {
             List<vwDepartments> departments = _db.vwDepartments.ToList();
+            //var employeeList = _db.Employees.ToList().Select(m => new SelectListItem
+            //{
+            //    Text = m.FullName,
+            //    Value = m.Id.ToString()
+            //});
 
             return View(departments);
         }
@@ -94,18 +100,20 @@ namespace MODAMSWeb.Areas.Admin.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Administrator")]
-        public IActionResult EditDepartment(int id) {
+        public IActionResult EditDepartment(int id)
+        {
             var departmentDto = new dtoDepartment();
 
-            if(id == 0)
+            if (id == 0)
             {
                 TempData["error"] = "Please select a department!";
                 return RedirectToAction("Index", "Departments");
             }
 
-            var department = _db.Departments.Where(m=>m.Id==id).FirstOrDefault();
+            var department = _db.Departments.Where(m => m.Id == id).FirstOrDefault();
 
-            if (department == null) {
+            if (department == null)
+            {
                 TempData["error"] = "Department not found!";
                 return RedirectToAction("Index", "Departments");
             }
@@ -132,12 +140,14 @@ namespace MODAMSWeb.Areas.Admin.Controllers
         [Authorize(Roles = "Administrator")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditDepartment(dtoDepartment form) {
-            if(!ModelState.IsValid) {
+        public async Task<IActionResult> EditDepartment(dtoDepartment form)
+        {
+            if (!ModelState.IsValid)
+            {
                 TempData["error"] = "All fields are mandatory!";
                 return View(form);
             }
-            var department = _db.Departments.Where(m=>m.Id==form.department.Id).FirstOrDefault();
+            var department = _db.Departments.Where(m => m.Id == form.department.Id).FirstOrDefault();
             if (department == null)
             {
                 TempData["error"] = "Department not found!";
@@ -145,7 +155,8 @@ namespace MODAMSWeb.Areas.Admin.Controllers
             }
             department.Name = form.department.Name;
             department.UpperLevelDeptId = form.department.UpperLevelDeptId;
-            if (form.department.EmployeeId != 0) {
+            if (form.department.EmployeeId != 0)
+            {
                 department.EmployeeId = form.department.EmployeeId;
             }
             await _db.SaveChangesAsync();
@@ -156,13 +167,13 @@ namespace MODAMSWeb.Areas.Admin.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Administrator, StoreOwner")]
-        public IActionResult OrganizationChart() {
+        public IActionResult OrganizationChart()
+        {
             return View();
         }
 
-
         [HttpGet]
-        [Authorize(Roles ="Administrator, StoreOwner")]
+        [Authorize(Roles = "Administrator, StoreOwner")]
         public string GetDepartments()
         {
             string sResult = "No Records Found";
@@ -174,7 +185,80 @@ namespace MODAMSWeb.Areas.Admin.Controllers
             return sResult;
         }
 
+        [HttpGet]
+        [Authorize(Roles = "Administrator, StoreOwner")]
+        public IActionResult DepartmentHeads(int id)
+        {
 
+            List<DepartmentHead> departmentHeads = _db.DepartmentHeads.Where(m => m.DepartmentId == id)
+                .Include(m => m.Employee).Include(m => m.Department).OrderByDescending(m=>m.StartDate).ToList();
+
+            var employeeList = _db.vwAvailableEmployees.ToList().Select(m => new SelectListItem
+            {
+                Text = m.FullName,
+                Value = m.Id.ToString()
+            });
+
+            var dto = new dtoDepartmentHeads()
+            {
+                DepartmentHeads = departmentHeads,
+                Employees = employeeList,
+                DepartmentId = id
+            };
+
+            return View(dto);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> AssignOwner(dtoDepartmentHeads dto)
+        {
+
+            int nDepartmentId = dto.DepartmentId;
+            int nEmployeeId = dto.EmployeeId;
+
+            var departmentHead = await _db.DepartmentHeads.Where(m => m.DepartmentId == nDepartmentId && m.IsActive == true)
+                .FirstOrDefaultAsync();
+
+            if (departmentHead != null)
+            {
+                departmentHead.IsActive = false;
+                departmentHead.EndDate = DateTime.Now;
+                await _db.SaveChangesAsync();
+            }
+
+            if (nEmployeeId != 0)
+            {
+                var newDepartmentHead = new DepartmentHead()
+                {
+                    DepartmentId = nDepartmentId,
+                    EmployeeId = nEmployeeId,
+                    StartDate = DateTime.Now,
+                    IsActive = true
+                };
+                await _db.DepartmentHeads.AddAsync(newDepartmentHead);
+                await _db.SaveChangesAsync();
+            }
+
+            var department = await _db.Departments.Where(m => m.Id == nDepartmentId).FirstOrDefaultAsync();
+            if (department != null)
+            {
+                if (nEmployeeId == 0)
+                {
+                    department.EmployeeId = null;
+                }
+                else
+                {
+                    department.EmployeeId = nEmployeeId;
+                }
+                await _db.SaveChangesAsync();
+            }
+            TempData["success"] = "Owner set successfuly!";
+            return RedirectToAction("Index", "Departments");
+        }
+
+
+        //private functions
         private async Task CreateStore(Department department)
         {
             var store = new Store()

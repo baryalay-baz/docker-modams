@@ -26,6 +26,7 @@ namespace MODAMS.DataAccess.Data
         //Section for Views
         public DbSet<vwEmployees> vwEmployees { get; set; }
         public DbSet<vwDepartments> vwDepartments { get; set; }
+        public DbSet<vwAvalableEmloyees> vwAvailableEmployees { get; set; }
 
     }
 }
