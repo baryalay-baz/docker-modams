@@ -21,6 +21,10 @@ namespace MODAMS.DataAccess.Data
         public DbSet<Department> Departments { get; set; }
         public DbSet<DepartmentHead> DepartmentHeads { get; set; }
         public DbSet<Store> Stores { get; set; }
+        public DbSet<Donor> Donors { get; set; }
+        public DbSet<Category>  Categories { get; set; }
+        public DbSet<SubCategory> SubCategories { get; set; }   
+
 
 
         //Section for Views

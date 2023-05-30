@@ -1,0 +1,60 @@
+﻿<div class="page-header">
+    <div>
+        <h1 class="page-title">Departments</h1>
+    </div>
+    <div class="ms-auto pageheader-btn">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Categories</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center justify-content-between">
+                    <h4 class="m-0">AMS Data Transfer</h4>
+                    <div class="btn-list">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-sm-6 mb-3">
+        <div class="btn-list">
+            <a asp-area="Admin" asp-controller="DataTransfer" asp-action="TransferCategories" class="btn btn-primary mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-right" viewBox="0 0 16 16"> <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z" /> </svg>
+                Transfer Categories
+            </a>
+        </div>
+        <div class="card">
+            
+        </div>
+    </div>
+</div>
+@section scripts {
+
+    <!-- PROJECT-LIST JS-->
+    @*<script src="~/assets/js/project-list.js"></script>*@
+    <script>
+        $(document).ready(function () {
+            $('#tblCategories').DataTable({
+                language: {
+                    searchPlaceholder: 'Search...',
+                    sSearch: '',
+                }
+            });
+
+            $('#tblSubCategories').DataTable({
+                language: {
+                    searchPlaceholder: 'Search...',
+                    sSearch: '',
+                }
+            });
+
+        });
+
+    </script>
+}

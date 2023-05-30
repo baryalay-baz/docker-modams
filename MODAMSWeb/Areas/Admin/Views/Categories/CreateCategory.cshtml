@@ -1,0 +1,72 @@
+﻿@model MODAMS.Models.Category
+
+<!-- PAGE-HEADER -->
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Create Category</h1>
+    </div>
+    <div class="ms-auto pageheader-btn">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Categories" asp-action="Index">Categories</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Create Category</li>
+        </ol>
+    </div>
+</div>
+<!-- PAGE-HEADER END -->
+<!--ROW OPENED-->
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+        <div class="card">
+            <div class="card-header border-bottom">
+                <h4 class="mb-0">Category Details</h4>
+            </div>
+            <div class="card-body p-0">
+                <div class="row p-5 border-bottom">
+                    <div class="col-lg-8 col-md-8">
+                        <form method="post" asp-action="CreateCategory" id="frmCategory">
+                            <div class="card-body">
+                                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+                                <input asp-for="Id" hidden />
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="mb-3 form-group">
+                                            <label asp-for="CategoryCode"></label>
+                                            <input asp-for="CategoryCode" class="form-control" aria-required="true" placeholder="Category Code" />
+                                            <span asp-validation-for="CategoryCode" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="mb-3 form-group">
+                                            <label asp-for="CategoryName"></label>
+                                            <input asp-for="CategoryName" class="form-control" aria-required="true" placeholder="Category Name" />
+                                            <span asp-validation-for="CategoryName" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="row p-5">
+                    <div class="btn-list">
+                        <button id="btnSubmit" class="btn btn-primary"><i class="fe fe-check-circle"></i> Save Changes</button>
+                        <a asp-area="Admin" asp-controller="Categories" asp-action="Index" class="btn btn-outline-danger"> <i class="fe fe-x-circle"></i> Cancel</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--ROW CLOSED-->
+@section scripts {
+    <script>
+        $(document).ready(() => {
+            $("#btnSubmit").on("click", () => {
+                $("#frmCategory").submit();
+            });
+        });
+    </script>
+}

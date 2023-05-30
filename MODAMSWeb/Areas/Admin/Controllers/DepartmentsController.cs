@@ -32,12 +32,6 @@ namespace MODAMSWeb.Areas.Admin.Controllers
         public IActionResult Index()
         {
             List<vwDepartments> departments = _db.vwDepartments.ToList();
-            //var employeeList = _db.Employees.ToList().Select(m => new SelectListItem
-            //{
-            //    Text = m.FullName,
-            //    Value = m.Id.ToString()
-            //});
-
             return View(departments);
         }
 

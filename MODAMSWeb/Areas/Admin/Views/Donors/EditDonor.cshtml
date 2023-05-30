@@ -1,0 +1,75 @@
+﻿@model MODAMS.Models.Donor
+
+<!-- PAGE-HEADER -->
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Edit Donor</h1>
+    </div>
+    <div class="ms-auto pageheader-btn">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Donors" asp-action="Index">Donors List</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Edit Donor</li>
+        </ol>
+    </div>
+</div>
+<!-- PAGE-HEADER END -->
+<!--ROW OPENED-->
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+        <div class="card">
+            <div class="card-header border-bottom">
+                <h4 class="mb-0">Donor Details</h4>
+            </div>
+            <div class="card-body p-0">
+                <div class="row p-5 border-bottom">
+                    <div class="col-lg-8 col-md-8">
+                        <form method="post" asp-action="EditDonor" id="frmDonor">
+                            <div class="card-body">
+                                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+                                <input asp-for="Id" hidden />
+                                @*<input asp-for="Employee.RoleName" hidden />*@
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="mb-3 form-group">
+                                            <label asp-for="Code"></label>
+                                            <input asp-for="Code" class="form-control" aria-required="true" placeholder="Donor Code" />
+                                            <span asp-validation-for="Code" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="mb-3 form-group">
+                                            <label asp-for="Name"></label>
+                                            <input asp-for="Name" class="form-control" aria-required="true" placeholder="Donor Name" />
+                                            <span asp-validation-for="Name" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="row p-5">
+                    <div class="btn-list">
+                        <button id="btnSubmit" class="btn btn-primary"><i class="fe fe-check-circle"></i> Save Changes</button>
+                        <a asp-area="Admin" asp-controller="Donors" asp-action="Index" class="btn btn-outline-danger"> <i class="fe fe-x-circle"></i> Cancel</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--ROW CLOSED-->
+@section scripts {
+    <script>
+        $(document).ready(() => {
+            $("#btnSubmit").on("click", () => {
+                $("#frmDonor").submit();
+            });
+
+
+        });
+    </script>
+}

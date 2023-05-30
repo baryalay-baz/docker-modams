@@ -19,7 +19,7 @@ public static class DbFunc
     }
     public static void OpenConn()
     {
-        objConn.ConnectionString = "Server=.;Database=MODAMS;Trusted_Connection=True;TrustServerCertificate=True;";
+        objConn.ConnectionString = "Server=.;Database=MOD-AMS;Trusted_Connection=True;TrustServerCertificate=True;";
         if (objConn.State != ConnectionState.Open)
         {
             objConn.Open();
