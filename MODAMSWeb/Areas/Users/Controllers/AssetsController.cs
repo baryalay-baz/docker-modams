@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ using MODAMS.Models.ViewModels;
 using MODAMS.Utility;
 using Newtonsoft.Json;
 using System.Data;
+using System.Globalization;
 
 namespace MODAMSWeb.Areas.Users.Controllers
 {
@@ -37,44 +39,12 @@ namespace MODAMSWeb.Areas.Users.Controllers
             return View(assets);
         }
 
-        [Authorize(Roles = "Administrator, StoreOwner, User")]
+        [Authorize(Roles = "StoreOwner, User")]
         [HttpGet]
         public IActionResult CreateAsset(int id)
         {
-            var categories = _db.Categories.ToList().Select(m => new SelectListItem
-            {
-                Text = m.CategoryName,
-                Value = m.Id.ToString()
-            });
-            var subCategories = _db.SubCategories.ToList().Select(m => new SelectListItem
-            {
-                Text = m.SubCategoryName,
-                Value = m.Id.ToString()
-            });
-            var donors = _db.Donors.ToList().Select(m => new SelectListItem
-            {
-                Text = m.Name,
-                Value = m.Id.ToString()
-            });
-            var statuses = _db.AssetStatuses.ToList().Select(m => new SelectListItem
-            {
-                Text = m.StatusName,
-                Value = m.Id.ToString()
-            });
-            var conditions = _db.Conditions.ToList().Select(m => new SelectListItem
-            {
-                Text = m.ConditionName,
-                Value = m.Id.ToString()
-            });
-
-            var dto = new dtoAsset()
-            {
-                Categories = categories,
-                SubCategories = subCategories,
-                Donors = donors,
-                Statuses = statuses,
-                Conditions = conditions
-            };
+            var dto = new dtoAsset();
+            dto = PopulateDtoAsset(dto);
 
             TempData["storeId"] = id;
             TempData["storeName"] = _func.GetStoreName(id);
@@ -85,13 +55,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
         [Authorize(Roles = "StoreOwner, User")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateAsset(dtoAsset dto) {
-          
-            if (!ModelState.IsValid) {
-                ModelState.AddModelError("error", "Form not valid!");
-                return View(dto);
-            }
-
+        public async Task<IActionResult> CreateAsset(dtoAsset dto)
+        {
             if (ModelState.IsValid)
             {
                 var asset = _db.Assets.Where(m => m.SerialNo == dto.SerialNo).FirstOrDefault();
@@ -131,18 +96,141 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 else
                 {
                     TempData["error"] = "Serial Number already in use";
-                    return RedirectToAction("CreateAsset", "Assets", new { area = "Users", id = dto.StoreId });
+
+                    TempData["storeId"] = dto.StoreId;
+                    TempData["storeName"] = _func.GetStoreName(dto.StoreId);
+                    dto = PopulateDtoAsset(dto);
+
+                    return View(dto);
+                }
+            }
+            else
+            {
+                TempData["error"] = "Please fill all the mandatory fields!";
+
+                TempData["storeId"] = dto.StoreId;
+                TempData["storeName"] = _func.GetStoreName(dto.StoreId);
+
+                dto = PopulateDtoAsset(dto);
+                return View(dto);
+                //return RedirectToAction("CreateAsset", "Assets", new { area = "Users", id = dto.StoreId });
+            }
+        }
+
+        [Authorize(Roles = "StoreOwner, User")]
+        [HttpGet]
+        public IActionResult EditAsset(int id)
+        {
+            var dto = new dtoAsset();
+            dto = PopulateDtoAsset(dto);
+
+            if (id > 0)
+            {
+                var assetInDb = _db.Assets.Where(m => m.Id == id).FirstOrDefault();
+                if(assetInDb != null)
+                {
+                    dto.Id = assetInDb.Id;
+                    dto.SubCategoryId = assetInDb.SubCategoryId;
+                    dto.Name = assetInDb.Name;
+                    
+                    dto.Make = assetInDb.Make;
+                    dto.Model = assetInDb.Model;
+                    dto.Year = assetInDb.Year;
+
+                    dto.Engine = assetInDb.Engine;
+                    dto.Chasis = assetInDb.Chasis;
+                    dto.Plate = assetInDb.Plate;
+
+                    dto.ManufacturingCountry = assetInDb.ManufacturingCountry;
+                    dto.SerialNo = assetInDb.SerialNo;
+                    dto.Barcode = assetInDb.Barcode;
+
+                    dto.Specifications = assetInDb.Specifications;
+
+                    dto.Cost = assetInDb.Cost;
+                    dto.PurchaseDate = assetInDb.PurchaseDate;
+                    dto.RecieptDate = assetInDb.RecieptDate;
+
+                    dto.PONumber = assetInDb.PONumber;
+                    dto.ProcuredBy = assetInDb.ProcuredBy;
+                    dto.DonorId = assetInDb.DonorId;
+
+                    dto.ConditionId = assetInDb.ConditionId;
+                    dto.Remarks = assetInDb.Remarks;
+                    dto.AssetStatusId = assetInDb.AssetStatusId;
+
+                    TempData["storeId"] = assetInDb.StoreId;
+                    TempData["storeName"] = _func.GetStoreName(assetInDb.StoreId);
+
+                }
+            }
+
+            return View(dto);
+        }
+        [Authorize(Roles = "StoreOwner, User")]
+        [HttpPost]
+        public async Task<IActionResult> EditAsset(dtoAsset dto) {
+            if (ModelState.IsValid)
+            {
+                var assetInDb = await _db.Assets.Where(m => m.Id == dto.Id).FirstOrDefaultAsync();
+                if (assetInDb != null)
+                {
+                    assetInDb.SubCategoryId = dto.SubCategoryId;
+                    assetInDb.Name = dto.Name;
+
+                    assetInDb.Make = dto.Make;
+                    assetInDb.Model = dto.Model;
+                    assetInDb.Year = dto.Year;
+
+                    assetInDb.Engine = dto.Engine;
+                    assetInDb.Chasis = dto.Chasis;
+                    assetInDb.Plate = dto.Plate;
+
+                    assetInDb.ManufacturingCountry = dto.ManufacturingCountry;
+                    assetInDb.SerialNo = dto.SerialNo;
+                    assetInDb.Barcode = dto.Barcode;
+
+                    assetInDb.Specifications = dto.Specifications;
+
+                    assetInDb.Cost = dto.Cost;
+                    assetInDb.PurchaseDate = dto.PurchaseDate;
+                    assetInDb.RecieptDate = dto.RecieptDate;
+
+                    assetInDb.PONumber = dto.PONumber;
+                    assetInDb.ProcuredBy = dto.ProcuredBy;
+                    assetInDb.DonorId = dto.DonorId;
+
+                    assetInDb.ConditionId = dto.ConditionId;
+                    assetInDb.Remarks = dto.Remarks;
+                    assetInDb.AssetStatusId = dto.AssetStatusId;
+
+                    await _db.SaveChangesAsync();
+                    
+                    TempData["success"] = "Changes saved succesfuly!";
+                    return RedirectToAction("EditAsset", "Assets", new { area = "Users", id = dto.Id });
+                }
+                else
+                {
+                    dto = PopulateDtoAsset(dto);
+                    TempData["error"] = "Record not found!";
+                    TempData["storeId"] = dto.StoreId;
+                    TempData["storeName"] = _func.GetStoreName(dto.StoreId);
+                    return View(dto);
                 }
             }
             else {
-                TempData["error"] = "Please fill all the mandatory fields!";
-                return RedirectToAction("CreateAsset", "Assets", new { area = "Users", id = dto.StoreId });
+                dto = PopulateDtoAsset(dto);
+                TempData["error"] = "All fields are mandatory!";
+                TempData["storeId"] = dto.StoreId;
+                TempData["storeName"] = _func.GetStoreName(dto.StoreId);
+                return View(dto);
             }
         }
 
         //API Calls
         [HttpGet]
-        public async Task<string> GetCategories() {
+        public async Task<string> GetCategories()
+        {
             string sResult = "No Records Found";
             var categories = await _db.Categories.ToListAsync();
 
@@ -159,10 +247,10 @@ namespace MODAMSWeb.Areas.Users.Controllers
         {
             string sResult = "No Records Found";
             var subCategories = await _db.SubCategories.ToListAsync();
-            
+
             if (id != null)
-                subCategories = subCategories.Where(m=>m.CategoryId==id).ToList();       
-            
+                subCategories = subCategories.Where(m => m.CategoryId == id).ToList();
+
             if (subCategories != null)
             {
                 sResult = JsonConvert.SerializeObject(subCategories);
@@ -170,5 +258,46 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             return sResult;
         }
+        //API Calls End
+
+        //Private functions
+        private dtoAsset PopulateDtoAsset(dtoAsset dto)
+        {
+            var categories = _db.Categories.ToList().Select(m => new SelectListItem
+            {
+                Text = m.CategoryName,
+                Value = m.Id.ToString()
+            });
+            var subCategories = _db.SubCategories.ToList().Select(m => new SelectListItem
+            {
+                Text = m.SubCategoryName,
+                Value = m.Id.ToString()
+            });
+            var donors = _db.Donors.ToList().Select(m => new SelectListItem
+            {
+                Text = m.Name,
+                Value = m.Id.ToString()
+            });
+            var statuses = _db.AssetStatuses.ToList().Select(m => new SelectListItem
+            {
+                Text = m.StatusName,
+                Value = m.Id.ToString()
+            });
+            var conditions = _db.Conditions.ToList().Select(m => new SelectListItem
+            {
+                Text = m.ConditionName,
+                Value = m.Id.ToString()
+            });
+
+            dto.Categories = categories;
+            dto.SubCategories = subCategories;
+            dto.Donors = donors;
+            dto.Statuses = statuses;
+            dto.Conditions = conditions;
+
+            return dto;
+
+        }
+
     }
 }

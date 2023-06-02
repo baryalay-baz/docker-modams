@@ -33,11 +33,12 @@
             <div class="card-body p-0">
                 <div class="row p-5 border-bottom">
                     <div class="col-lg-12 col-md-12">
-                        <form method="post" asp-action="CreateAsset" id="frmAsset">
+                        <form method="post" asp-action="EditAsset" id="frmAsset">
                             <div class="card-body">
                                 <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
                                 <input asp-for="Id" hidden />
-                                <input asp-for="StoreId" hidden value="@TempData["storeId"]" />
+                                <input asp-for="StoreId" hidden />
+                                <input asp-for="AssetStatusId" hidden />
 
                                 @*<input asp-for="Employee.RoleName" hidden />*@
                                 <div class="row">
@@ -46,7 +47,7 @@
                                             <label asp-for="CategoryId"></label>
                                             <select asp-for="CategoryId" asp-items="@Model.Categories"
                                                     class="form-control select2 form-select">
-                                                <option disabled selected>-Select Sub-Category-</option>
+                                                
                                             </select>
                                             <span asp-validation-for="CategoryId" class="text-danger"></span>
                                         </div>
@@ -56,7 +57,7 @@
                                             <label asp-for="SubCategoryId"></label>
                                             <select asp-for="SubCategoryId" asp-items="@Model.SubCategories"
                                                     class="form-control select2 form-select">
-                                                <option disabled selected>-Select Sub-Category-</option>
+                                                
                                             </select>
                                             <span asp-validation-for="SubCategoryId" class="text-danger"></span>
                                         </div>
@@ -138,7 +139,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="row">
                                     <div class="col-sm-12">
                                         <div class="mb-3 form-group">
@@ -268,7 +269,7 @@
                 $("#Engine").val("@Model.Engine");
                 $("#Chasis").val("@Model.Chasis");
                 $("#Plate").val("@Model.Plate");
-            }else{
+            } else {
                 $("#Engine").val("-");
                 $("#Chasis").val("-");
                 $("#Plate").val("-");
@@ -318,14 +319,34 @@
             if (sData != "No Records Found") {
                 var Data = JSON.parse(sData);
                 var sHtml = '<option selected disabled>-Select Category-</option>';
+                var categoryId = getCategoryId();
                 Data.forEach((e) => {
-                    sHtml += '<option value="' + e.Id + '">' + e.CategoryName + '</option>';
+                    if(cateoryId==e.Id){
+                        sHtml += '<option selected value="' + e.Id + '">' + e.CategoryName + '</option>';
+                    }else{
+                        sHtml += '<option value="' + e.Id + '">' + e.CategoryName + '</option>';
+                    }
+                    
                 })
 
                 $("#CategoryId").html("").html(sHtml);
             }
         }
+        const getCategoryId = ()=>{
+            var id = $("#SubCategoryId").val();
+            var sData = $("#dvSubCategoryData").html();
+            var nCategId = 0;
 
+            if (sData != "No Records Found") {
+                var Data = JSON.parse(sData);
+                Data.forEach((e)=>{
+                    if(e.Id==id){
+                        nCategId = e.CategoryId;
+                    }
+                });
+            }
+            return nCategId;
+        }
         const populateCmbSubCategory = () => {
             var id = $("#CategoryId").val();
 

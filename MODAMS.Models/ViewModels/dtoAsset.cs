@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -63,6 +64,9 @@ namespace MODAMS.Models.ViewModels
 
         [Required]
         [Display(Name = "Purchase Date")]
+        [Column(TypeName ="date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? PurchaseDate { get; set; }
 
         [Required]
@@ -71,6 +75,9 @@ namespace MODAMS.Models.ViewModels
 
         [Required]
         [Display(Name = "Reciept Date")]
+        [Column(TypeName = "date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? RecieptDate { get; set; }
 
         [Required]

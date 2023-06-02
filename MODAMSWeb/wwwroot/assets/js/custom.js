@@ -224,6 +224,7 @@
         if (document.querySelector('body').classList.contains('dark-mode')) {
             $('body').removeClass('dark-mode');
             $('body').addClass('light-mode');
+            $("#footerImgEU").html("").html('<img src="/assets/images/brand/EU_Horizontal2_small.png">');
 
 			localStorage.setItem('lightMode', true);
             localStorage.removeItem('darkMode');
@@ -233,7 +234,7 @@
         {
             $('body').addClass('dark-mode');
             $('body').removeClass('light-mode');
-            
+            $("#footerImgEU").html("").html('<img src="/assets/images/brand/EU_Horizontal3_small.png">');
             localStorage.setItem('darkMode', true);
             localStorage.removeItem('lightMode');
             localStorage.setItem('displayMode', "dark-mode")
