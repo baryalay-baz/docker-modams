@@ -71,7 +71,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     Department = _func.GetDepartmentName(_employeeId),
                     RoleName = _func.GetRoleName(_employeeId),
                     SupervisorEmployeeId = employeeInDb.SupervisorEmployeeId,
-                    SupervisorName = _func.GetSuperpervisorName(_employeeId),
+                    SupervisorName = _func.GetSupervisorName(_employeeId),
                     CardNumber = employeeInDb.CardNumber
                 };
             }

@@ -1,0 +1,315 @@
+﻿@model MODAMS.Models.ViewModels.dtoAsset
+
+<!-- PAGE-HEADER -->
+<div class="page-header">
+    <div>
+        <h1 class="page-title">New Asset</h1>
+    </div>
+    <div class="ms-auto pageheader-btn">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Stores" asp-action="Index">Stores</a></li>
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Stores" asp-action="StoreDetails" asp-route-id="@TempData["storeId"]">@TempData["storeName"]</a></li>
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Assets" asp-action="Index" asp-route-id="@TempData["storeId"]">Assets</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Create Asset</li>
+        </ol>
+    </div>
+</div>
+<!-- PAGE-HEADER END -->
+<!--ROW OPENED-->
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+        <div class="card">
+            <div class="card-header border-bottom">
+                <h4 class="mb-0">Asset Details</h4>
+            </div>
+            <div class="card-body p-0">
+                <div class="row p-5 border-bottom">
+                    <div class="col-lg-12 col-md-12">
+                        <form method="post" asp-action="CreateAsset" id="frmAsset">
+                            <div class="card-body">
+                                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+                                <input asp-for="Id" hidden />
+                                <input asp-for="StoreId" hidden value="@TempData["storeId"]" />
+
+                                @*<input asp-for="Employee.RoleName" hidden />*@
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <div class="mb-3 form-group">
+                                            <label asp-for="CategoryId"></label>
+                                            <select asp-for="CategoryId" asp-items="@Model.Categories"
+                                                    class="form-control select2 form-select">
+                                                <option disabled selected>-Select Sub-Category-</option>
+                                            </select>
+                                            <span asp-validation-for="CategoryId" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="mb-3 form-group">
+                                            <label asp-for="SubCategoryId"></label>
+                                            <select asp-for="SubCategoryId" asp-items="@Model.SubCategories"
+                                                    class="form-control select2 form-select">
+                                                <option disabled selected>-Select Sub-Category-</option>
+                                            </select>
+                                            <span asp-validation-for="SubCategoryId" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="mb-3 form-group">
+                                            <label asp-for="Name"></label>
+                                            <input asp-for="Name" class="form-control" aria-required="true" />
+                                            <span asp-validation-for="Name" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <div class="mb-3 form-group">
+                                            <label asp-for="Make"></label>
+                                            <input asp-for="Make" class="form-control" aria-required="true" />
+                                            <span asp-validation-for="Make" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="mb-3 form-group">
+                                            <label asp-for="Model"></label>
+                                            <input asp-for="Model" class="form-control" aria-required="true" />
+                                            <span asp-validation-for="Model" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="mb-3 form-group">
+                                            <label asp-for="Year"></label>
+                                            <input asp-for="Year" class="form-control" aria-required="true" />
+                                            <span asp-validation-for="Year" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <div class="mb-3 form-group">
+                                            <label asp-for="ManufacturingCountry"></label>
+                                            <input asp-for="ManufacturingCountry" class="form-control" aria-required="true" />
+                                            <span asp-validation-for="ManufacturingCountry" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="mb-3 form-group">
+                                            <label asp-for="SerialNo"></label>
+                                            <input asp-for="SerialNo" class="form-control" aria-required="true" />
+                                            <span asp-validation-for="SerialNo" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="mb-3 form-group">
+                                            <label asp-for="Barcode"></label>
+                                            <input asp-for="Barcode" class="form-control" aria-required="true" />
+                                            <span asp-validation-for="Barcode" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <div class="mb-3 form-group">
+                                            <label asp-for="Engine"></label>
+                                            <input asp-for="Engine" class="form-control" aria-required="true" />
+                                            <span asp-validation-for="Engine" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="mb-3 form-group">
+                                            <label asp-for="Chasis"></label>
+                                            <input asp-for="Chasis" class="form-control" aria-required="true" />
+                                            <span asp-validation-for="Chasis" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="mb-3 form-group">
+                                            <label asp-for="Plate"></label>
+                                            <input asp-for="Plate" class="form-control" aria-required="true" />
+                                            <span asp-validation-for="Plate" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="mb-3 form-group">
+                                            <label asp-for="Specifications"></label>
+                                            <textarea asp-for="Specifications" class="form-control mb-4" placeholder="" rows="3"></textarea>
+                                            <span asp-validation-for="Specifications" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <div class="mb-3 form-group">
+                                            <label asp-for="Cost"></label>
+                                            <input asp-for="Cost" class="form-control" aria-required="true" />
+                                            <span asp-validation-for="Cost" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="mb-3 form-group">
+                                            <label asp-for="PurchaseDate"></label>
+                                            <input asp-for="PurchaseDate" class="form-control" aria-required="true" />
+                                            <span asp-validation-for="PurchaseDate" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="mb-3 form-group">
+                                            <label asp-for="RecieptDate"></label>
+                                            <input asp-for="RecieptDate" class="form-control" aria-required="true" />
+                                            <span asp-validation-for="RecieptDate" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <div class="mb-3 form-group">
+                                            <label asp-for="PONumber"></label>
+                                            <input asp-for="PONumber" class="form-control" aria-required="true" />
+                                            <span asp-validation-for="PONumber" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="mb-3 form-group">
+                                            <label asp-for="ProcuredBy"></label>
+                                            <select asp-for="ProcuredBy" class="form-control select2 form-select" aria-required="true">
+                                                <option selected disabled>-Select Procurement Entity-</option>
+                                                <option value="UNOPS">UNOPS</option>
+                                                <option value="EU">European Union</option>
+                                                <option value="Somalia">Somalia</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                            <span asp-validation-for="ProcuredBy" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="mb-3 form-group">
+                                            <label asp-for="DonorId"></label>
+                                            <select asp-for="DonorId" asp-items="Model.Donors" class="form-control select2 form-select">
+                                                <option disabled selected>-Select Donor-</option>
+                                            </select>
+                                            <span asp-validation-for="DonorId" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <div class="mb-3 form-group">
+                                            <label asp-for="ConditionId"></label>
+                                            <select asp-for="ConditionId" asp-items="Model.Conditions" class="form-control select2 form-select">
+                                                <option disabled selected>-Select Condition-</option>
+                                            </select>
+                                            <span asp-validation-for="ConditionId" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <div class="mb-3 form-group">
+                                            <label asp-for="Remarks"></label>
+                                            <input asp-for="Remarks" class="form-control" aria-required="true" />
+                                            <span asp-validation-for="Remarks" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="row p-5">
+                    <div class="btn-list">
+                        <button id="btnSubmit" class="btn btn-primary"><i class="fe fe-check-circle"></i> Save Asset</button>
+                        <a asp-area="Users" asp-controller="Assets" asp-action="Index" asp-route-id="@TempData["storeId"]" class="btn btn-outline-danger"> <i class="fe fe-x-circle"></i> Cancel</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<section id="dvCategoryData" style="display:none;">No Records Found</section>
+<section id="dvSubCategoryData" style="display:none;">No Records Found</section>
+
+<!--ROW CLOSED-->
+@section scripts {
+    <script>
+        $(document).ready(() => {
+            $('.select2').select2();
+
+            $("#btnSubmit").on("click", () => {
+                $("#frmAsset").submit();
+            });
+            loadCategories();
+
+            $("#CategoryId").on("change", () => {
+                populateCmbSubCategory();
+            });
+        });
+
+        const loadCategories = () => {
+            var postData = {};
+            $.ajax({
+                url: '/Users/Assets/GetCategories',
+                datatype: "json",
+                data: postData,
+                beforeSend: function () {
+
+                },
+                success: function (e) {
+                    $("#dvCategoryData").html("").html(e);
+                },
+                complete: function () {
+                    loadSubCategories();
+                }
+            });
+        }
+        const loadSubCategories = (id) => {
+            var postData = {};
+            if (id != null)
+                postData = { id: id }
+
+            $.ajax({
+                url: '/Users/Assets/GetSubCategories',
+                datatype: "json",
+                data: postData,
+                beforeSend: function () {
+                },
+                success: function (e) {
+                    $("#dvSubCategoryData").html("").html(e);
+                },
+                complete: function () {
+                    populateCmbCategory();
+                }
+            });
+        }
+        const populateCmbCategory = () => {
+            var sData = $("#dvCategoryData").html();
+
+            if (sData != "No Records Found") {
+                var Data = JSON.parse(sData);
+                var sHtml = '<option selected disabled>-Select Category-</option>';
+                Data.forEach((e) => {
+                    sHtml += '<option value="' + e.Id + '">' + e.CategoryName + '</option>';
+                })
+
+                $("#CategoryId").html("").html(sHtml);
+            }
+        }
+
+        const populateCmbSubCategory = () => {
+            var id = $("#CategoryId").val();
+
+            var sData = $("#dvSubCategoryData").html();
+            if (sData != "No Records Found") {
+                var Data = JSON.parse(sData);
+                var sHtml = '<option disabled value="0">-Select Sub-Category-</option>';
+
+                Data.forEach((e) => {
+                    if (e.CategoryId == id)
+                        sHtml += '<option value="' + e.Id + '">' + e.SubCategoryName + '</option>';
+                });
+                $("#SubCategoryId").html("").html(sHtml);
+            }
+        }
+
+    </script>
+}

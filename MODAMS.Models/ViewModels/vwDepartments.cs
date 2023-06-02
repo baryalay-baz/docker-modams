@@ -14,5 +14,7 @@ namespace MODAMS.Models.ViewModels
         public string ULDeptName { get; set; }
         public int EmployeeId { get; set; }
         public string OwnerName { get; set; }
+        public string ImageUrl { get; set; }
+        public string Email { get; set; }
     }
 }

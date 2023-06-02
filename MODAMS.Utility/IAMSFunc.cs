@@ -13,11 +13,13 @@ namespace MODAMS.Utility
         public string GetEmployeeEmail();
         public string GetDepartmentName(int nEmployeeId);
         public string GetRoleName(int nEmployeeId);
-        public string GetSuperpervisorName(int nEmployeeId);
-
+        public int GetSupervisorId(int nEmployeeId);
+        public string GetSupervisorName(int nEmployeeId);
         public bool IsUserActive(string emailAddress);
-
         public dtoRedirection GetRedirectionObject();
+        public string GetStoreName(int storeId);
+
+
 
         public string FormatMessage(string title, string message, string email, string returnUrl, string btntext);
 

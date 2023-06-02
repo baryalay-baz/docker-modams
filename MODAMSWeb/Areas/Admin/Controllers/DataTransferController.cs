@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using MODAMS.DataAccess.Data;
 using MODAMS.Models;
 using MODAMS.Utility;
@@ -72,6 +74,111 @@ namespace MODAMSWeb.Areas.Admin.Controllers
                 TempData["error"] = ex.Message;
             }
             return View("Index");
+        }
+
+        public async Task<IActionResult> TransferAssets() {
+            
+            DataTable tblAssets = DbFunc.GetTable("Select * from Assets");
+            
+            if (tblAssets.Rows.Count > 0) {
+                foreach (DataRow oRow in  tblAssets.Rows)
+                {
+                    Asset asset = new Asset();
+
+                    asset.Name = oRow["AssetName"].ToString();
+                    asset.Make = oRow["Make"].ToString();
+                    asset.Model = oRow["Model"].ToString();
+                    asset.Year = oRow["Year"].ToString();
+                    asset.ManufacturingCountry = oRow["ManufacturingCountry"].ToString();
+                    asset.SerialNo = oRow["SerialNo"].ToString();
+                    asset.Barcode = oRow["ItemCode"].ToString();
+                    asset.Engine = oRow["EngineNumber"].ToString();
+                    asset.Chasis = oRow["ChasisNumber"].ToString();
+                    asset.Plate = oRow["VINNumber"].ToString();
+                    asset.Specifications = oRow["Specification"].ToString();
+                    asset.Cost = (decimal)oRow["Cost"];
+                    if ((oRow["PurchaseDate"])!= DBNull.Value)
+                        asset.PurchaseDate = (DateTime)oRow["PurchaseDate"];
+
+                    asset.PONumber = oRow["PONumber"].ToString();
+
+                    if (oRow["RecieptDate"] != DBNull.Value)
+                        asset.RecieptDate = (DateTime)oRow["RecieptDate"];
+                    
+                    asset.ProcuredBy = oRow["ProcuredBy"].ToString();
+                    asset.Remarks = oRow["Remarks"].ToString();
+                    asset.SubCategoryId = await GetAssetSubCategoryId(oRow["AssetSubCategoryId"].ToString());
+                    asset.ConditionId = await GetConditionId(oRow["AssetConditionId"].ToString());
+                    asset.StoreId = await GetStoreId(oRow["StoreId"].ToString());
+                    asset.DonorId = await GetDonorId(oRow["DonorId"].ToString());
+                        asset.AssetStatusId = await GetAssetStatusId(oRow["StatusId"].ToString());
+
+                    await _db.Assets.AddAsync(asset);
+                    await _db.SaveChangesAsync();
+
+                    //try
+                    //{
+
+                    //}
+                    //catch (Exception ex)
+                    //{
+                    //    TempData["error"] = ex.Message;
+                    //    return RedirectToAction("Index", "DataTransfer");
+                    //}
+                }
+                TempData["success"] = "Assets Transferred Successfuly!";
+                return RedirectToAction("Index", "DataTransfer");
+            }
+            TempData["error"] = "unknown error occured!";
+            return View();
+        }
+
+        private async Task<int> GetAssetSubCategoryId(string id) {
+            DataRow oRow = DbFunc.GetFirstRow("AssetSubCategory","Id=" +  id);
+            string sSubCategory = oRow["SubCategory"].ToString();
+
+            int Id = await _db.SubCategories.Where(m=>m.SubCategoryName == sSubCategory)
+                .Select(m=>m.Id).FirstOrDefaultAsync();
+
+            return Id;
+        }
+        private async Task<int> GetConditionId(string id)
+        {
+            DataRow oRow = DbFunc.GetFirstRow("AssetConditions", "Id=" + id);
+            string sCondition = oRow["Condition"].ToString();
+
+            int Id = await _db.Conditions.Where(m => m.ConditionName == sCondition)
+                .Select(m => m.Id).FirstOrDefaultAsync();
+
+            return Id;
+        }
+        private async Task<int> GetStoreId(string id)
+        {
+            DataRow oRow = DbFunc.GetFirstRow("Stores", "Id=" + id);
+            string sStore = oRow["Name"].ToString();
+            
+            int Id = await _db.Stores.Where(m => m.Name == sStore)
+                .Select(m => m.Id).FirstOrDefaultAsync();
+
+            return Id;
+        }
+        private async Task<int> GetDonorId(string id) {
+            DataRow oRow = DbFunc.GetFirstRow("Donors", "Id=" + id);
+            string sDonor = oRow["DonorName"].ToString();
+
+            int Id = await _db.Donors.Where(m => m.Name == sDonor)
+                .Select(m => m.Id).FirstOrDefaultAsync();
+
+            return Id;
+        }
+        private async Task<int> GetAssetStatusId(string id) {
+            DataRow oRow = DbFunc.GetFirstRow("AssetStatuses", "Id=" + id);
+            string sStatus = oRow["Status"].ToString();
+
+            int Id = await _db.AssetStatuses.Where(m => m.StatusName == sStatus)
+                .Select(m => m.Id).FirstOrDefaultAsync();
+
+            return Id;
         }
     }
 }

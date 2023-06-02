@@ -12,6 +12,7 @@ using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MODAMS.Models.ViewModels;
+using System.Security.Cryptography.X509Certificates;
 
 namespace MODAMS.Utility
 {
@@ -145,20 +146,35 @@ namespace MODAMS.Utility
             {
                 dto = new dtoRedirection("Driver", "Home", "Index");
             }
-            
+
             return dto;
         }
-        public string GetDepartmentName(int nEmloyeeId) {
+        public string GetDepartmentName(int nEmloyeeId)
+        {
             return "Department not available!";
         }
-        public string GetRoleName(int nEmployeeId) {
+        public string GetRoleName(int nEmployeeId)
+        {
             string? rolename = _db.vwEmployees.Where(m => m.Id == nEmployeeId).Select(m => m.RoleName).FirstOrDefault();
-            if (rolename == null) {
+            if (rolename == null)
+            {
                 rolename = "No role assigned";
             }
             return rolename;
         }
-        public string GetSuperpervisorName(int nEmployeeId)
+        public int GetSupervisorId(int nEmployeeId)
+        {
+            var employee = _db.Employees.Where(m => m.Id == nEmployeeId).FirstOrDefault();
+            if (employee == null)
+            {
+                return 0;
+            }
+            else
+            {
+                return employee.SupervisorEmployeeId;
+            }
+        }
+        public string GetSupervisorName(int nEmployeeId)
         {
             var employee = _db.vwEmployees.Where(m => m.Id == nEmployeeId).FirstOrDefault();
             string? supervisorName = "Supervisor not available!";
@@ -172,8 +188,23 @@ namespace MODAMS.Utility
             }
             return supervisorName;
         }
-		//Private methods
-		private void Notify(int[] arrEmpIds, Notification notification)
+        public string GetStoreName(int storeId)
+        {
+            string storeName = "";
+            if (storeId > 0)
+            {
+                var store = _db.Stores.Where(m => m.Id == storeId).Select(m => m.Name).FirstOrDefault();
+                if (store != null)
+                    storeName = store.ToString();
+            }
+            return storeName;
+        }
+
+
+
+
+        //Private methods
+        private void Notify(int[] arrEmpIds, Notification notification)
         {
             foreach (int id in arrEmpIds)
             {
@@ -227,12 +258,13 @@ namespace MODAMS.Utility
 
         }
 
-        public bool IsUserActive(string emailAddress) {
+        public bool IsUserActive(string emailAddress)
+        {
             var blnResult = false;
-            var employee = _db.Employees.Where(m=>m.Email==emailAddress).FirstOrDefault();
+            var employee = _db.Employees.Where(m => m.Email == emailAddress).FirstOrDefault();
             if (employee != null)
             {
-                if(employee.IsActive)
+                if (employee.IsActive)
                 {
                     blnResult = true;
                 }
@@ -264,7 +296,7 @@ namespace MODAMS.Utility
 
             return HtmlEncoder.Default.Encode(callbackUrl);
         }
-        
+
         public string FormatMessage(string title, string message, string email, string returnUrl, string btntext)
         {
             string emailMessage = "";
@@ -278,7 +310,7 @@ namespace MODAMS.Utility
                 "</td></tr><tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\"><td class=\"content-block\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 10px 10px;\" valign=\"top\" align=\"left\"><br />" +
                 "Dear " + email + ", <br /><br />" + message +
                 "<br /><br /><span style=\"font-size: 10px;\">" +
-                "Note: This email is generated automatically, please do not reply" +                               
+                "Note: This email is generated automatically, please do not reply" +
                 "<br><br></span></td></tr><tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\"><td class=\"content-block\" itemprop=\"handler\" itemscope itemtype=\"http://schema.org/HttpActionHandler\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 10px 10px;\" valign=\"top\">" +
                 "<a href=\"" + returnUrl + "\" class=\"btn btn-primary\" style=\"color:white; background-color:#2541f7; font-size: 14px; text-decoration: none; line-height: 2em; font-weight: bold; text-align: center; cursor: pointer; display: block; border-radius: 5px; text-transform: capitalize; border: none; padding: 10px 20px;\">" + btntext + " </a></td></tr><tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\"><td class=\"content-block\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; padding-top: 5px; vertical-align: top; margin: 0; text-align: center;\" valign=\"top\"> <br /> <div><img src=\"" + src + "/assets/images/brand/ams_small.png\" /> &nbsp;|&nbsp;Asset Management System </div></td></tr> </table></td></tr> </table><!--end table--></div><!--end content--></td><td style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0;\" valign=\"top\"></td> </tr></table><!--end table--></div><!--end col--> </div><!--end row--></div>";
 

@@ -24,13 +24,16 @@ namespace MODAMS.DataAccess.Data
         public DbSet<Donor> Donors { get; set; }
         public DbSet<Category>  Categories { get; set; }
         public DbSet<SubCategory> SubCategories { get; set; }   
-
+        public DbSet<AssetStatus> AssetStatuses { get; set; }
+        public DbSet<Condition> Conditions { get; set; }
+        public DbSet<Asset> Assets { get; set; }
 
 
         //Section for Views
         public DbSet<vwEmployees> vwEmployees { get; set; }
         public DbSet<vwDepartments> vwDepartments { get; set; }
         public DbSet<vwAvalableEmloyees> vwAvailableEmployees { get; set; }
+        public DbSet<vwStores> vwStores { get; set; }
 
     }
 }

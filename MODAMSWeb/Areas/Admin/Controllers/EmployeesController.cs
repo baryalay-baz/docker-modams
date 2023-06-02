@@ -10,6 +10,7 @@ using MODAMS.Utility;
 using System.Data;
 using System.Text.Encodings.Web;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace MODAMSWeb.Areas.Admin.Controllers
 {
@@ -250,6 +251,19 @@ namespace MODAMSWeb.Areas.Admin.Controllers
             }
             return RedirectToAction("Index", "Employees");
         }
+
+        [Authorize(Roles = "Administrator, SeniorManagement, StoreOwner, User")]
+        [HttpGet]
+        public async Task<string> GetFaces() {
+            var sResult = "No Records Found";
+
+            var faces = await _db.Employees.Select(m=> new {m.Id, m.ImageUrl}).ToListAsync();
+            if(faces.Count>0) {
+                sResult = JsonConvert.SerializeObject(faces);
+            }
+            return sResult;
+        }
+
 
         private async void SendRegistrationNotification(string emailAddress)
         {

@@ -71,9 +71,17 @@
                                             @{
                                                 if (department.OwnerName != "Vacant")
                                                 {
-                                                    <span class="text-primary">
-                                                        <span class="mb-0 mt-1 badge rounded-pill bg-primary-transparent text-blue">@department.OwnerName</span>
-                                                    </span>
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="me-2">
+                                                            <span>
+                                                                <img style="min-width:30px;" src="@department.ImageUrl" alt="profile-user" class="data-image avatar avatar-lg rounded-circle">
+                                                            </span>
+                                                        </div>
+                                                        <div>
+                                                            <h6 class="mb-0">@department.OwnerName</h6>
+                                                            <span class="text-muted fs-12">@department.Email</span>
+                                                        </div>
+                                                    </div>
                                                 }
                                                 else
                                                 {
