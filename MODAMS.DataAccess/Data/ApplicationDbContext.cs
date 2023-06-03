@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+
+
 using MODAMS.Models;
 using MODAMS.Models.ViewModels;
+using System.Reflection.Emit;
 
 
 //using
@@ -22,12 +25,14 @@ namespace MODAMS.DataAccess.Data
         public DbSet<DepartmentHead> DepartmentHeads { get; set; }
         public DbSet<Store> Stores { get; set; }
         public DbSet<Donor> Donors { get; set; }
-        public DbSet<Category>  Categories { get; set; }
-        public DbSet<SubCategory> SubCategories { get; set; }   
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<SubCategory> SubCategories { get; set; }
         public DbSet<AssetStatus> AssetStatuses { get; set; }
         public DbSet<Condition> Conditions { get; set; }
         public DbSet<Asset> Assets { get; set; }
-
+        public DbSet<DocumentType> DocumentTypes { get; set; }
+        public DbSet<AssetDocument> AssetDocuments { get; set; }
+        public DbSet<AssetDocumentChecklist> AssetDocumentChecklist { get; set; } 
 
         //Section for Views
         public DbSet<vwEmployees> vwEmployees { get; set; }
@@ -35,6 +40,19 @@ namespace MODAMS.DataAccess.Data
         public DbSet<vwAvalableEmloyees> vwAvailableEmployees { get; set; }
         public DbSet<vwStores> vwStores { get; set; }
 
+        //protected override void OnModelCreating(ModelBuilder modelBuilder)
+        //{
+        //    var decimalProps = modelBuilder.Model
+        //    .GetEntityTypes()
+        //    .SelectMany(t => t.GetProperties())
+        //    .Where(p => (System.Nullable.GetUnderlyingType(p.ClrType) ?? p.ClrType) == typeof(decimal));
+
+        //    foreach (var property in decimalProps)
+        //    {
+        //        property.SetPrecision(18);
+        //        property.SetScale(2);
+        //    }
+        //}
     }
 }
 

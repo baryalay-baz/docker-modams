@@ -188,6 +188,17 @@ namespace MODAMS.Utility
             }
             return supervisorName;
         }
+        public int GetStoreId(int assetId) {
+            int storeId = 0;
+            if (assetId > 0) { 
+                var asset = _db.Assets.Where(m=>m.Id==assetId).FirstOrDefault();
+                if (asset != null)
+                {
+                    storeId = asset.StoreId;
+                }
+            }
+            return storeId;
+        }
         public string GetStoreName(int storeId)
         {
             string storeName = "";

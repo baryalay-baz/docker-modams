@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using System.Data;
 using System.Globalization;
 
+
 namespace MODAMSWeb.Areas.Users.Controllers
 {
     [Area("Users")]
@@ -167,8 +168,10 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             return View(dto);
         }
+
         [Authorize(Roles = "StoreOwner, User")]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditAsset(dtoAsset dto) {
             if (ModelState.IsValid)
             {
@@ -226,6 +229,22 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 return View(dto);
             }
         }
+
+        [Authorize(Roles = "Administrator, StoreOwner, User")]
+        [HttpGet]
+        public IActionResult AssetDocuments(int id) {
+            var dto = new dtoAssetDocument();
+            
+            dto = PopulateDtoAssetDocument(dto);
+            int nStoreId = _func.GetStoreId(id);
+            string sStoreName = _func.GetStoreName(nStoreId);
+
+            TempData["storeId"] = nStoreId;
+            TempData["storeName"] = sStoreName;
+
+            return View(dto);
+        }
+
 
         //API Calls
         [HttpGet]
@@ -298,6 +317,12 @@ namespace MODAMSWeb.Areas.Users.Controllers
             return dto;
 
         }
+        private dtoAssetDocument PopulateDtoAssetDocument(dtoAssetDocument dto) {
 
+            var documentTypes = _db.DocumentTypes.ToList();
+            dto.DocumentTypes = documentTypes;
+
+            return dto;
+        }
     }
 }

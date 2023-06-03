@@ -17,6 +17,7 @@ namespace MODAMS.Utility
         public string GetSupervisorName(int nEmployeeId);
         public bool IsUserActive(string emailAddress);
         public dtoRedirection GetRedirectionObject();
+        public int GetStoreId(int assetId);
         public string GetStoreName(int storeId);
 
 

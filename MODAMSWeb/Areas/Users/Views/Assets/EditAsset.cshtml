@@ -227,8 +227,8 @@
                 </div>
                 <div class="row p-5">
                     <div class="btn-list">
-                        <button id="btnSubmit" class="btn btn-primary"><i class="fe fe-check-circle"></i> Save Asset</button>
-                        <a asp-area="Users" asp-controller="Assets" asp-action="Index" asp-route-id="@TempData["storeId"]" class="btn btn-outline-danger"> <i class="fe fe-x-circle"></i> Cancel</a>
+                        <button id="btnSubmit" class="btn btn-primary"><span class="fe fe-check-circle"></span> Save Asset</button>
+                        <a asp-action="Index" asp-controller="Assets" asp-route-id="@TempData["storeId"]" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
                     </div>
                 </div>
             </div>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +17,8 @@ namespace MODAMS.Models.ViewModels
         public int? EmployeeId { get; set; }
         public string StoreOwner { get; set; }
         public int? StoreType { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
         public decimal? TotalCost { get; set; }
         public int? TotalCount { get; set; }
     }
