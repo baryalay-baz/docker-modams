@@ -128,12 +128,12 @@ namespace MODAMSWeb.Areas.Users.Controllers
             if (id > 0)
             {
                 var assetInDb = _db.Assets.Where(m => m.Id == id).FirstOrDefault();
-                if(assetInDb != null)
+                if (assetInDb != null)
                 {
                     dto.Id = assetInDb.Id;
                     dto.SubCategoryId = assetInDb.SubCategoryId;
                     dto.Name = assetInDb.Name;
-                    
+
                     dto.Make = assetInDb.Make;
                     dto.Model = assetInDb.Model;
                     dto.Year = assetInDb.Year;
@@ -172,7 +172,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
         [Authorize(Roles = "StoreOwner, User")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditAsset(dtoAsset dto) {
+        public async Task<IActionResult> EditAsset(dtoAsset dto)
+        {
             if (ModelState.IsValid)
             {
                 var assetInDb = await _db.Assets.Where(m => m.Id == dto.Id).FirstOrDefaultAsync();
@@ -208,7 +209,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     assetInDb.AssetStatusId = dto.AssetStatusId;
 
                     await _db.SaveChangesAsync();
-                    
+
                     TempData["success"] = "Changes saved succesfuly!";
                     return RedirectToAction("EditAsset", "Assets", new { area = "Users", id = dto.Id });
                 }
@@ -221,7 +222,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     return View(dto);
                 }
             }
-            else {
+            else
+            {
                 dto = PopulateDtoAsset(dto);
                 TempData["error"] = "All fields are mandatory!";
                 TempData["storeId"] = dto.StoreId;
@@ -232,9 +234,10 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
         [Authorize(Roles = "Administrator, StoreOwner, User")]
         [HttpGet]
-        public IActionResult AssetDocuments(int id) {
+        public IActionResult AssetDocuments(int id)
+        {
             var dto = new dtoAssetDocument();
-            
+
             dto = PopulateDtoAssetDocument(dto);
             int nStoreId = _func.GetStoreId(id);
             string sStoreName = _func.GetStoreName(nStoreId);
@@ -277,6 +280,19 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             return sResult;
         }
+
+        [HttpGet]
+        public async Task<string> GetDocumentTypes()
+        {
+            string sResult = "No Records Found";
+
+            var documentTypes = await _db.DocumentTypes.ToListAsync();
+            if (documentTypes != null)
+            {
+                sResult = JsonConvert.SerializeObject(documentTypes);
+            }
+            return sResult;
+        }
         //API Calls End
 
         //Private functions
@@ -317,7 +333,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
             return dto;
 
         }
-        private dtoAssetDocument PopulateDtoAssetDocument(dtoAssetDocument dto) {
+        private dtoAssetDocument PopulateDtoAssetDocument(dtoAssetDocument dto)
+        {
 
             var documentTypes = _db.DocumentTypes.ToList();
             dto.DocumentTypes = documentTypes;

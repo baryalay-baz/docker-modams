@@ -1,5 +1,9 @@
 ﻿@model MODAMS.Models.ViewModels.dtoAssetDocument
-
+<style>
+    cardHeight {
+        min-height: 600px;
+    }
+</style>
 <div class="page-header">
     <div>
         <h1 class="page-title">Asset Documents</h1>
@@ -24,34 +28,88 @@
             <div class="card-body project-list-table-container">
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="table-responsive">
-                            <table id="tblDocuments" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
-                                <thead class="table-head">
-                                    <tr>
-                                        <th class="bg-transparent border-bottom-0 w-5">S.No</th>
-                                        <th class="bg-transparent border-bottom-0">Document Name</th>
-                                        <th class="bg-transparent border-bottom-0">Download Link</th>
-                                        <th class="bg-transparent border-bottom-0">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="table-body">
-                                    @{
-                                        int nCounter = 0;
-                                        string sCounter = "";
-                                        foreach (var dt in Model.DocumentTypes)
-                                        {
-                                            nCounter++;
-                                            sCounter = nCounter < 10 ? '0' + nCounter.ToString() : nCounter.ToString();
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table id="tblDocuments" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
+                                        <thead class="table-head">
                                             <tr>
-                                                <td class="text-muted text-center fs-15 fw-semibold">@sCounter.</td>
-                                                <td class="text-muted fs-15 fw-semibold">@dt.Name</td>
-                                                <td class="text-muted fs-15 fw-semibold">Not available...</td>
-                                                <td class="text-muted fs-15 fw-semibold"></td>
+                                                <th class="bg-transparent border-bottom-0 w-5">S.No</th>
+                                                <th class="bg-transparent border-bottom-0">Document Name</th>
+                                                <th class="bg-transparent border-bottom-0">Download Link</th>
+                                                <th class="bg-transparent border-bottom-0">Action</th>
                                             </tr>
-                                        }
-                                    }
-                                </tbody>
-                            </table>
+                                        </thead>
+                                        <tbody class="table-body">
+                                            @{
+                                                int nCounter = 0;
+                                                string sCounter = "";
+                                                foreach (var dt in Model.DocumentTypes)
+                                                {
+                                                    nCounter++;
+                                                    sCounter = nCounter < 10 ? '0' + nCounter.ToString() : nCounter.ToString();
+                                                    <tr>
+                                                        <td class="text-muted text-center fs-15 fw-semibold">@sCounter.</td>
+                                                        <td class="text-muted fs-15 fw-semibold">@dt.Name</td>
+                                                        <td class="text-muted fs-15 fw-semibold">Not available...</td>
+                                                        <td class="text-muted fs-15 fw-semibold">
+                                                            <div class="d-flex align-items-stretch">
+                                                                <a href="#" onclick="showCardUpload(@dt.Id)" class="btn btn-sm btn-outline-info border me-2">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="currentColor" class="bi bi-upload" viewBox="0 0 16 16">
+                                                                        <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
+                                                                        <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
+                                                                    </svg>
+                                                                </a>
+                                                                <a href="#" onclick="deleteDocument(@dt.Id)" 
+                                                                class="btn btn-sm btn-outline-secondary border me-2"
+                                                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                                                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                                                                        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
+                                                                    </svg>
+                                                                </a>
+                                                                <div class="dropdown-menu" style="">
+                                                                    <div class="p-5">
+                                                                        <h4 class="dropdown-title">Delete Document</h4><br />
+                                                                        <p>You will not be able to recover this document!<br /><br />Are you sure?</p>
+                                                                        <a asp-area="Users" asp-controller="Asset" asp-action="DeleteDocument" class="btn btn-primary btn-sm"><i class="mdi mdi-checkbox-marked-circle-outline"></i> Delete Document</a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card" id="cardUpload" style="display:none;">
+                            <div class="card-header">
+                                <h6>Upload Document</h6>
+                            </div>
+                            <div class="card-body">
+                                <form method="post" asp-action="UploadDocument" enctype="multipart/form-data">
+                                    <input asp-for="Id" hidden />
+                                    <input asp-for="DocumentTypeId" hidden />
+
+                                    <div class="form-group">
+                                        <label class="form-label" id="lblDocumentName"></label>
+                                        <input class="form-control file-input form-control-sm" type="file" id="document" name="document">
+                                        <span asp-validation-for="DocumentUrl" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <button class="btn btn-primary btn-sm"><i class="fa fa-solid fa-upload"></i> Upload</button>
+                                        <button class="btn btn-secondary btn-sm" id="btnCancel"><i class="fa fa-times-circle-o"></i> Cancel</button>
+                                    </div>
+                                </form>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -68,11 +126,19 @@
         </div>
     </div>
 </div>
-
+<section id="dvDocumentTypesData" style="display:none;"></section>
 @section Scripts
     {
     <script>
         $(document).ready(() => {
+            loadDocumentTypes();
+
+            $("#btnCancel").on("click", (e)=>{
+                e.preventDefault();
+                $("#document").val("");
+                $("#cardUpload").hide(400);
+            });
+
             $('#tblDocuments').DataTable({
                 language: {
                     searchPlaceholder: 'Search...',
@@ -80,5 +146,47 @@
                 }
             });
         });
+
+        const loadDocumentTypes = () => {
+            var postData = {};
+            $.ajax({
+                url: '/Users/Assets/GetDocumentTypes',
+                datatype: "json",
+                data: postData,
+                beforeSend: function () {
+
+                },
+                success: function (e) {
+                    $("#dvDocumentTypesData").html("").html(e);
+                },
+                complete: function () {
+                    
+                }
+            });
+        }
+
+        const showCardUpload = (id) => {
+            //$("#btnCancel").click();
+            $("#cardUpload").show(300);
+            getDocumentName(id);
+        }
+
+        const deleteDocument = (id) => {
+        
+        }
+
+        const getDocumentName = (id) => {
+            var sData = $("#dvDocumentTypesData").html();
+
+            if (sData != "No Records Found") {
+                var Data = JSON.parse(sData);
+                Data.forEach((e)=>{
+                    if(e.Id == id){
+                        $("#lblDocumentName").html("").html(e.Name);
+                    }
+                });
+            }
+        }
+
     </script>
     }
