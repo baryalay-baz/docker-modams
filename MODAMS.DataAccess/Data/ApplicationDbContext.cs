@@ -39,6 +39,7 @@ namespace MODAMS.DataAccess.Data
         public DbSet<vwDepartments> vwDepartments { get; set; }
         public DbSet<vwAvalableEmloyees> vwAvailableEmployees { get; set; }
         public DbSet<vwStores> vwStores { get; set; }
+        
 
         //protected override void OnModelCreating(ModelBuilder modelBuilder)
         //{

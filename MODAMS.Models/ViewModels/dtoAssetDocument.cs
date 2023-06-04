@@ -33,5 +33,9 @@ namespace MODAMS.Models.ViewModels
         [ValidateNever]
         public List<DocumentType> DocumentTypes { get; set; }
 
+        [ValidateNever]
+        public List<vwAssetDocuments> vwAssetDocuments { get; set; }
+
+
     }
 }

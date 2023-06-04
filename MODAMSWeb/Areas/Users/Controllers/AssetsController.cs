@@ -1,16 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGeneration.EntityFrameworkCore;
 using MODAMS.DataAccess.Data;
 using MODAMS.Models;
 using MODAMS.Models.ViewModels;
 using MODAMS.Utility;
 using Newtonsoft.Json;
 using System.Data;
-using System.Globalization;
 
 
 namespace MODAMSWeb.Areas.Users.Controllers
@@ -21,12 +19,14 @@ namespace MODAMSWeb.Areas.Users.Controllers
         private readonly ApplicationDbContext _db;
         private readonly IAMSFunc _func;
         private int _employeeId;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public AssetsController(ApplicationDbContext db, IAMSFunc func)
+        public AssetsController(ApplicationDbContext db, IAMSFunc func, IWebHostEnvironment webHostEnvironment)
         {
             _db = db;
             _func = func;
             _employeeId = _func.GetEmployeeId();
+            _webHostEnvironment = webHostEnvironment;
         }
 
         public IActionResult Index(int id)
@@ -238,7 +238,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
         {
             var dto = new dtoAssetDocument();
 
-            dto = PopulateDtoAssetDocument(dto);
+            dto = PopulateDtoAssetDocument(dto, id);
             int nStoreId = _func.GetStoreId(id);
             string sStoreName = _func.GetStoreName(nStoreId);
 
@@ -246,6 +246,66 @@ namespace MODAMSWeb.Areas.Users.Controllers
             TempData["storeName"] = sStoreName;
 
             return View(dto);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UploadDocument(int Id, int DocumentTypeId, IFormFile? file)
+        {
+
+            string wwwRootPath = _webHostEnvironment.WebRootPath;
+            if (file != null && Id > 0 && DocumentTypeId > 0)
+            {
+                string sFileName = "";
+                string sPath = "";
+
+                var documentType = _db.DocumentTypes.Where(m => m.Id == DocumentTypeId).FirstOrDefault();
+                if (documentType != null)
+                {
+                    sFileName = documentType.Name;
+                }
+
+                string fileName = sFileName + Path.GetExtension(file.FileName);
+                sPath = Path.Combine(wwwRootPath, @"assetdocuments");
+
+                try
+                {
+                    using (var fileStream = new FileStream(Path.Combine(sPath, fileName), FileMode.Create))
+                    {
+                        await file.CopyToAsync(fileStream);
+                    }
+
+                    var assetDocument = _db.AssetDocuments.Where(m => m.AssetId == Id && m.DocumentTypeId == DocumentTypeId).FirstOrDefault();
+                    if (assetDocument != null)
+                    {
+                        _db.AssetDocuments.Remove(assetDocument);
+                        await _db.SaveChangesAsync();
+                    }
+
+                    var newAssetDocument = new AssetDocument()
+                    {
+                        Name = sFileName,
+                        DocumentUrl = "/assetdocuments/" + fileName,
+                        DocumentTypeId = DocumentTypeId,
+                        AssetId = Id,
+                    };
+                    await _db.AssetDocuments.AddAsync(newAssetDocument);
+                    await _db.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    TempData["error"] = "Error occured! <br /> " + ex.Message;
+                    return RedirectToAction("AssetDocuments", "Assets", new { area = "Users", id = Id });
+                }
+                TempData["success"] = "File uploaded successfuly!";
+                return RedirectToAction("AssetDocuments", "Assets", new { area = "Users", id = Id });
+            }
+            else
+            {
+                TempData["error"] = "Please select a file to upload!";
+                return RedirectToAction("AssetDocuments", "Assets", new { area = "Users", id = Id });
+            }
         }
 
 
@@ -333,13 +393,37 @@ namespace MODAMSWeb.Areas.Users.Controllers
             return dto;
 
         }
-        private dtoAssetDocument PopulateDtoAssetDocument(dtoAssetDocument dto)
+        private dtoAssetDocument PopulateDtoAssetDocument(dtoAssetDocument dto, int AssetId)
         {
 
             var documentTypes = _db.DocumentTypes.ToList();
-            dto.DocumentTypes = documentTypes;
+            var vwAssetDocs = new List<vwAssetDocuments>();
+
+            foreach(var documentType in documentTypes)
+            {
+                var vwDocType = new vwAssetDocuments()
+                {
+                    DocumentTypeId = documentType.Id,
+                    Name = documentType.Name,
+                    AssetId = AssetId,
+                    DocumentUrl = GetDocumentUrl(AssetId, documentType.Id)
+                };
+                vwAssetDocs.Add(vwDocType);
+            }
+            dto.vwAssetDocuments = vwAssetDocs;
 
             return dto;
+        }
+        private string GetDocumentUrl(int assetId, int documentTypeId) {
+            var assetDocument = _db.AssetDocuments.Where(m=>m.AssetId == assetId && m.DocumentTypeId==documentTypeId).FirstOrDefault();
+            if (assetDocument != null)
+            {
+                return assetDocument.DocumentUrl;
+            }
+            else {
+                return "Document not yet uploaded!";
+            }
+
         }
     }
 }
