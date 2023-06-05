@@ -308,6 +308,61 @@ namespace MODAMSWeb.Areas.Users.Controllers
             }
         }
 
+        [HttpGet]
+        public IActionResult AssetInfo(int id)
+        {
+
+            var asset = _db.Assets.Where(m => m.Id == id)
+                .Include(m => m.SubCategory)
+                .Include(m => m.Condition)
+                .Include(m => m.SubCategory.Category)
+                .Include(m => m.AssetStatus)
+                .Include(m => m.Store).Include(m => m.Donor)
+                .FirstOrDefault();
+
+            if (asset != null)
+            {
+                TempData["storeId"] = asset.StoreId;
+                TempData["storeName"] = asset.Store.Name;
+            }
+            else
+            {
+                TempData["error"] = "Record not found!";
+            }
+            return View(asset);
+        }
+
+        [Authorize(Roles = "StoreOwner, User")]
+        public async Task<IActionResult> DeleteDocument(int id) {
+            if (id > 0) {
+                var assetDocument = await _db.AssetDocuments.Where(m => m.Id == id).FirstOrDefaultAsync();
+                if (assetDocument != null)
+                {
+                    _db.AssetDocuments.Remove(assetDocument);
+                    await _db.SaveChangesAsync();
+                    
+                    int nAssetId = assetDocument.AssetId;
+                    int nStoreId = _func.GetStoreId(nAssetId);
+                    
+
+                    TempData["storeId"] = _func.GetStoreId(nAssetId);
+                    TempData["storeName"] = _func.GetStoreName(nStoreId);
+
+                    return RedirectToAction("AssetDocuments", "Assets", new { id = nAssetId });
+
+                }
+                else
+                {
+                    TempData["error"] = "Document not found!";
+                    return View();
+                }
+            }
+            else
+            {
+                TempData["error"] = "Document not found!";
+                return View();
+            }
+        }
 
         //API Calls
         [HttpGet]
@@ -399,10 +454,11 @@ namespace MODAMSWeb.Areas.Users.Controllers
             var documentTypes = _db.DocumentTypes.ToList();
             var vwAssetDocs = new List<vwAssetDocuments>();
 
-            foreach(var documentType in documentTypes)
+            foreach (var documentType in documentTypes)
             {
                 var vwDocType = new vwAssetDocuments()
                 {
+                    Id = GetAssetDocumentId(AssetId, documentType.Id),
                     DocumentTypeId = documentType.Id,
                     Name = documentType.Name,
                     AssetId = AssetId,
@@ -414,16 +470,29 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             return dto;
         }
-        private string GetDocumentUrl(int assetId, int documentTypeId) {
-            var assetDocument = _db.AssetDocuments.Where(m=>m.AssetId == assetId && m.DocumentTypeId==documentTypeId).FirstOrDefault();
+        private string GetDocumentUrl(int assetId, int documentTypeId)
+        {
+            var assetDocument = _db.AssetDocuments.Where(m => m.AssetId == assetId && m.DocumentTypeId == documentTypeId).FirstOrDefault();
             if (assetDocument != null)
             {
                 return assetDocument.DocumentUrl;
             }
-            else {
-                return "Document not yet uploaded!";
+            else
+            {
+                return "not yet uploaded!";
             }
 
+        }
+
+        private int GetAssetDocumentId(int assetId, int documentTypeId)
+        {
+            int nResult = 0;
+            var assetDocument = _db.AssetDocuments.Where(m => m.AssetId == assetId && m.DocumentTypeId == documentTypeId).FirstOrDefault();
+            if (assetDocument != null)
+            {
+                nResult = assetDocument.Id;
+            }
+            return nResult;
         }
     }
 }

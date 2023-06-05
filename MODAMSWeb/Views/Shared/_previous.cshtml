@@ -1,0 +1,8 @@
+﻿@{
+    var sPrevUrl = "";
+    if (Context.Request.Headers["Referer"].ToString() != "")
+    {
+        sPrevUrl = Context.Request.Headers["Referer"];
+    }
+}
+<a href="@sPrevUrl" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>

@@ -19,7 +19,7 @@ namespace MODAMS.Utility
         public dtoRedirection GetRedirectionObject();
         public int GetStoreId(int assetId);
         public string GetStoreName(int storeId);
-
+        public decimal GetDepreciatedCost(int nAssetId);
 
 
         public string FormatMessage(string title, string message, string email, string returnUrl, string btntext);

@@ -160,14 +160,14 @@
                                     <div class="col-sm-4">
                                         <div class="mb-3 form-group">
                                             <label asp-for="PurchaseDate"></label>
-                                            <input asp-for="PurchaseDate" class="form-control picker" aria-required="true" type="text" />
+                                            <input asp-for="PurchaseDate" asp-format="{0:dd-MMM-yyyy}" class="form-control picker" aria-required="true" type="text" />
                                             <span asp-validation-for="PurchaseDate" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-sm-4">
                                         <div class="mb-3 form-group">
                                             <label asp-for="RecieptDate"></label>
-                                            <input asp-for="RecieptDate" class="form-control picker" aria-required="true" type="text" />
+                                            <input asp-for="RecieptDate" asp-format="{0:dd-MMM-yyyy}" class="form-control picker" aria-required="true" type="text" />
                                             <span asp-validation-for="RecieptDate" class="text-danger"></span>
                                         </div>
                                     </div>
@@ -257,9 +257,9 @@
 
             $('.picker').datepicker({
                 autoclose: true,
-                format: 'dd-mm-yyyy',
+                format: 'dd-MM-yyyy',
                 todayHighlight: true
-            }).datepicker('update', new Date());
+            });
 
         });
 
@@ -320,8 +320,9 @@
                 var Data = JSON.parse(sData);
                 var sHtml = '<option selected disabled>-Select Category-</option>';
                 var categoryId = getCategoryId();
+
                 Data.forEach((e) => {
-                    if(cateoryId==e.Id){
+                    if(categoryId==e.Id){
                         sHtml += '<option selected value="' + e.Id + '">' + e.CategoryName + '</option>';
                     }else{
                         sHtml += '<option value="' + e.Id + '">' + e.CategoryName + '</option>';
@@ -330,13 +331,14 @@
                 })
 
                 $("#CategoryId").html("").html(sHtml);
+                checkIfVehiclesSelected();
             }
         }
         const getCategoryId = ()=>{
             var id = $("#SubCategoryId").val();
             var sData = $("#dvSubCategoryData").html();
             var nCategId = 0;
-
+            
             if (sData != "No Records Found") {
                 var Data = JSON.parse(sData);
                 Data.forEach((e)=>{

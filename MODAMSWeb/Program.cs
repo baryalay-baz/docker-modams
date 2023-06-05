@@ -35,7 +35,7 @@ builder.Services.Configure<IdentityOptions>(options =>
 builder.Services.ConfigureApplicationCookie(options =>
 {
 	options.AccessDeniedPath = new Microsoft.AspNetCore.Http.PathString("/Identity/Account/AccessDenied");
-	options.Cookie.Name = "MTSCookie";
+	options.Cookie.Name = "AMSCookie";
 	options.Cookie.HttpOnly = true;
 	options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
 	options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/Identity/Account/Login");

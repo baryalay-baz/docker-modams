@@ -1,0 +1,391 @@
+﻿@using System.Globalization;
+
+@model MODAMS.Models.Asset
+@inject MODAMS.Utility.IAMSFunc _func
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Asset Information</h1>
+    </div>
+    <div class="ms-auto pageheader-btn">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Stores" asp-action="Index">Stores</a></li>
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Stores" asp-action="StoreDetails" asp-route-id="@TempData["storeId"]">@TempData["storeName"]</a></li>
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Assets" asp-action="Index" asp-route-id="@TempData["storeId"]">Assets</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Asset Information</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+
+        <div class="card overflow-hidden">
+            <div class="card-footer p-0">
+                <!-- Tabs -->
+                <div class="tabs-menu4 py-5 project-menu">
+                    <nav class="nav border-bottom px-4 d-block d-lg-flex flex-2">
+                        <a class="nav-link border py-1 mb-2 mb-lg-0 br-lg-5 mx-1 mx-md-1 active" data-bs-toggle="tab" href="#tab_1">
+                            Overview
+                        </a>
+                        <a class="nav-link border py-1 mb-2 mb-lg-0 br-lg-5 mx-1 mx-md-1" data-bs-toggle="tab" href="#tab_2">
+                            Documents
+                        </a>
+                        <a class="nav-link border py-1 mb-2 mb-lg-0 br-lg-5 mx-1 mx-md-1" data-bs-toggle="tab" href="#tab_3">
+                            Pictures
+                        </a>
+                    </nav>
+                </div>
+                <!-- /Tabs -->
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12">
+        <div class="tab-content">
+            <div class="tab-pane active" id="tab_1">
+                <!-- ROW -->
+                <div class="row">
+                    <div class="col-xl-9 col-lg-12">
+                        <div class="card">
+                            <div class="card-header border-bottom d-block">
+                                <div class="row align-items-center">
+                                    <div class="col">
+                                        <h4 class="mb-1">@Model.Make - @Model.Model - @Model.Year <a asp-action="EditAsset" asp-controller="Assets" asp-route-id="@Model.Id" class="ms-1" id="checkElement"><i class="fe fe-edit"></i></a></h4>
+                                        @*<div class="d-sm-flex d-block">
+                                        <div class="text-muted pe-2 project-date">11 Jan 21</div>
+                                        <div class="text-muted ms-3 project-status">In Progress</div>
+                                        </div>*@
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="border-top"></div>
+                                <div class="table-responsive p-5">
+                                    <table class="table row table-borderless">
+                                        <tbody class="col-lg-12 col-xl-4 p-0">
+                                            <tr>
+                                                <td><strong>Asset Category :</strong> @Model.SubCategory.SubCategoryName</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Asset Name :</strong> @Model.Name</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Manufacturing Country :</strong> @Model.ManufacturingCountry</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Serial Number :</strong> @Model.SerialNo</td>
+                                            </tr>
+                                        </tbody>
+                                        <tbody class="col-lg-12 col-xl-4 p-0 border-top-0">
+                                            <tr>
+                                                <td><strong>Make :</strong> @Model.Make</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Model :</strong> @Model.Model</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Year :</strong> @Model.Year</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Barcode :</strong> @Model.Barcode </td>
+                                            </tr>
+
+                                        </tbody>
+                                        <tbody class="col-lg-12 col-xl-4 p-0 border-top-0">
+
+                                            <tr>
+                                                <td><strong>Condition : </strong> @Model.Condition.ConditionName</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Purchase Order :</strong> @Model.PONumber</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Purchase Date :</strong> @Model.PurchaseDate?.ToString("MMMM dd, yyyy") </td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Reciept Date :</strong> @Model.RecieptDate?.ToString("MMMM dd, yyyy") </td>
+                                            </tr>
+                                        </tbody>
+
+                                        <tbody class="col-lg-12 col-xl-4 p-0 border-top-0">
+                                            <tr>
+                                                <td><strong>Procured By : </strong> @Model.ProcuredBy</td>
+                                            </tr>
+                                        </tbody>
+                                        <tbody class="col-lg-12 col-xl-4 p-0 border-top-0">
+                                            <tr>
+                                                <td><strong>Donor :</strong> @Model.Donor.Name</td>
+                                            </tr>
+                                        </tbody>
+                                        <tbody class="col-lg-12 col-xl-4 p-0 border-top-0">
+                                            <tr>
+                                                <td><strong>Remarks :</strong> @Model.Remarks </td>
+                                            </tr>
+                                        </tbody>
+                                        <tbody class="col-lg-12 col-xl-8 p-0 border-top-0">
+                                            <tr>
+                                                <td><strong>Specifications : </strong> @Model.Specifications</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row prjct-details">
+                                    <div class="col-xl-2 col-lg-12">
+                                        <div class="text-center border py-5 br-5 details">
+                                            <div>
+                                                <span class="m-0 text-muted">Initial Cost:</span>
+                                            </div>
+                                            <h5 class="mt-3 text-teritary">@Model.Cost.ToString("C2")</h5>
+                                        </div>
+                                    </div>
+                                    @{
+                                        var cost = Model.Cost;
+                                        decimal depCost = 0;
+                                        decimal difference = 0;
+                                        string usePercentage = "0";
+                                        
+                                        if (cost > 0)
+                                        {
+                                            depCost = _func.GetDepreciatedCost(Model.Id);
+                                            difference = cost - depCost;
+
+                                            usePercentage = ((difference * 100) / cost).ToString("N0");
+                                        }
+                                        
+                                    }
+                                    <div class="col-xl-8 col-lg-12">
+                                        <div class="text-center d-f-ai-c-jc-c border py-5 br-5">
+                                            <div class="wp-80">
+                                                <div class="project-percentage medium-bar medium-lg">
+                                                    <div class="percentage-title mb-4">
+                                                        <span class="text-muted">
+                                                            <i class="fe fe-clipboard"></i>
+                                                            Asset Usage
+                                                        </span>
+                                                        <span class="progress-main font-weight-semibold text-13 mb-1">@usePercentage% / 100%</span>
+                                                    </div>
+
+                                                    <div class="progress progress-md mb-3">
+                                                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-info"
+                                                        role="progressbar" 
+                                                        style="width: @usePercentage%" 
+                                                        area-valuenow="@usePercentage" 
+                                                        aria-valuemin="0" 
+                                                        aria-valuemax="100">
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-2 col-lg-12">
+                                        <div class="text-center border py-5 br-5 details">
+                                            <div>
+                                                <span class="m-0 text-muted"> Current Value:</span>
+                                            </div>
+                                            <h5 class="mt-3 text-danger">@depCost.ToString("C2")</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-lg-12">
+                        <div class="card">
+                            <div class="card-header border-bottom">
+                                <h3 class="card-title">Activity Log</h3>
+                            </div>
+                            <div class="card-body">
+                                <ul class="task-list">
+                                    <li>
+                                        <i class="task-icon bg-primary"></i>
+                                        <h6>Registered by Baryalay Baz.</h6>
+                                        <p class="text-muted fs-12">02 Feb 2020</p>
+                                    </li>
+                                    <li>
+                                        <i class="task-icon bg-secondary"></i>
+                                        <h6>Document added by Baryalay Baz.</h6>
+                                        <p class="text-muted fs-12">05 Feb 2020</p>
+                                    </li>
+                                    <li>
+                                        <i class="task-icon bg-teritary"></i>
+                                        <h6><a href="#" class="fw-semibold text-dark">Baryalay Baz</a> updated the data.</h6>
+                                        <p class="text-muted fs-12">02 Mar 2020</p>
+                                    </li>
+                                    <li>
+                                        <i class="task-icon bg-custom-yellow"></i>
+                                        <h6><a href="#" class="fw-semibold text-dark">Abdiraxman</a> added a picture.</h6>
+                                        <p class="text-muted fs-12">05 Mar 2020</p>
+                                    </li>
+                                    <li>
+                                        <i class="task-icon bg-orange"></i>
+                                        <h6><a href="#" class="fw-semibold text-dark">Baryalay Baz</a> updated the data.</h6>
+                                        <p class="text-muted fs-12">15 Mar 2020</p>
+                                    </li>
+                                    <li>
+                                        <i class="task-icon bg-primary"></i>
+                                        <h6><a href="#" class="btn btn-link"> more...</a></h6>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane" id="tab_2">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header border-bottom">
+                                <h3 class="card-title">Asset Documents</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table id="tasks-table" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-tasks-main">
+                                        <thead class="table-head">
+                                            <tr>
+                                                <th class="bg-transparent border-bottom-0 w-5">S.no</th>
+                                                <th class="bg-transparent border-bottom-0">Task</th>
+                                                <th class="bg-transparent border-bottom-0">Project</th>
+                                                <th class="bg-transparent border-bottom-0">Due Date</th>
+                                                <th class="bg-transparent border-bottom-0">Assigned To</th>
+                                                <th class="bg-transparent border-bottom-0">Status</th>
+                                                <th class="bg-transparent border-bottom-0 no-btn">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="table-body">
+                                            <tr>
+                                                <td class="text-muted fs-15 fw-semibold text-center">01.</td>
+                                                <td class="text-muted fs-15 fw-semibold"><a href="#" class="text-dark" data-bs-target="#Vertically" data-bs-toggle="modal">Sit sed takimata sanctus invidunt</a></td>
+                                                <td class="text-muted fs-15 fw-semibold">Noa Dashboard UI</td>
+                                                <td class="text-danger fs-15 fw-semibold">31 Oct 21</td>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="me-2">
+                                                            <span><img src="~/assets/images/users/8.jpg" class="data-image avatar avatar-md rounded-circle"></span>
+                                                        </div>
+                                                        <div>
+                                                            <h6 class="mb-0">Skyler Hilda</h6>
+                                                            <span class="text-muted fs-12">member@spruko.com</span>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="form-group mb-0">
+                                                        <ul>
+                                                            <li class="select-status">
+                                                                <select class="form-control select2-status-search" data-placeholder="Select Status">
+                                                                    <option value="IP" selected>In Progress</option>
+                                                                    <option value="OH">On Hold</option>
+                                                                    <option value="CP">Completed</option>
+                                                                </select>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex align-items-stretch">
+                                                        <a class="btn btn-sm btn-outline-primary border me-2" data-bs-toggle="tooltip" data-bs-original-title="Mark As Completed">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="20" width="16" viewBox="0 0 24 24"><path d="M15.8085327,8.6464844l-5.6464233,5.6464844l-2.4707031-2.4697266c-0.0023804-0.0023804-0.0047607-0.0047607-0.0072021-0.0071411c-0.1972046-0.1932373-0.5137329-0.1900635-0.7069702,0.0071411c-0.1932983,0.1972656-0.1900635,0.5137939,0.0071411,0.7070312l2.8242188,2.8232422C9.9022217,15.4474487,10.02948,15.5001831,10.1621094,15.5c0.1326294,0.0001221,0.2598267-0.0525513,0.3534546-0.1464844l6-6c0.0023804-0.0023804,0.0047607-0.0046997,0.0071411-0.0071411c0.1932373-0.1972046,0.1900635-0.5137329-0.0071411-0.7069702C16.3183594,8.446106,16.0018311,8.4493408,15.8085327,8.6464844z M12,2C6.4771729,2,2,6.4771729,2,12s4.4771729,10,10,10c5.5201416-0.0064697,9.9935303-4.4798584,10-10C22,6.4771729,17.5228271,2,12,2z M12,21c-4.9705811,0-9-4.0294189-9-9s4.0294189-9,9-9c4.9683228,0.0054321,8.9945679,4.0316772,9,9C21,16.9705811,16.9705811,21,12,21z" /></svg>
+                                                        </a>
+                                                        <a class="btn btn-sm btn-outline-secondary border me-2" data-bs-toggle="tooltip" data-bs-original-title="Delete">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 24 24" width="16"><path d="M0 0h24v24H0V0z" fill="none" /><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM8 9h8v10H8V9zm7.5-5l-1-1h-5l-1 1H5v2h14V4h-3.5z" /></svg>
+                                                        </a>
+                                                        <a href="#" class="d-flex align-items-center btn btn-sm btn-outline-secondary border me-2" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fe fe-more-vertical"></i></a>
+                                                        <div class="dropdown-menu dropdown-menu-start">
+                                                            <a class="dropdown-item" href="#"><i class="fe fe-edit-2 me-2"></i> Edit</a>
+                                                            <a class="dropdown-item" href="#"><i class="fe fe-info me-2"></i> Info</a>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane" id="tab_3">
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <div class="card">
+                            <div class="card-header border-bottom">
+                                <h3 class="card-title">Asset Pictures</h3>
+                            </div>
+                            <div class="card-body timetracking-table-container">
+                                <div class="table-responsive">
+                                    <table id="timetracking-table" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-timetracking-main">
+                                        <thead class="table-head">
+                                            <tr>
+                                                <th class="bg-transparent border-bottom-0">Team Member</th>
+                                                <th class="bg-transparent border-bottom-0">Task</th>
+                                                <th class="bg-transparent border-bottom-0">Project</th>
+                                                <th class="bg-transparent border-bottom-0">Start Date & Time</th>
+                                                <th class="bg-transparent border-bottom-0">End Date & Time</th>
+                                                <th class="bg-transparent border-bottom-0">Total Time</th>
+                                                <th class="bg-transparent border-bottom-0 no-btn">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="table-body">
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="me-2">
+                                                            <span><img src="~/assets/images/users/2.jpg" alt="profile-user" class="data-image avatar avatar-md rounded-circle"></span>
+                                                        </div>
+                                                        <div>
+                                                            <h6 class="mb-0">Skyler Hilda</h6>
+                                                            <span class="text-muted fs-12">member@spruko.com</span>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="text-muted fs-15 fw-semibold"><a href="#" class="text-dark" data-bs-target="#Vertically" data-bs-toggle="modal">Et ipsum invidunt et labore.</a></td>
+                                                <td class="fs-15 fw-semibold"><a asp-area="" asp-page="/ProjectDetails/Index" class="text-dark">Noa Dashboard UI</a></td>
+                                                <td class="text-muted fs-15 fw-semibold">31 Oct 21 & 14:56</td>
+                                                <td class="text-muted fs-15 fw-semibold">01 Nov 21 & 09:35</td>
+                                                <td class="text-dark fs-15 fw-semibold">Days: 4<br>Hours: 10<br>Minutes: 22</td>
+                                                <td>
+                                                    <div class="d-flex align-items-stretch">
+                                                        <a class="btn btn-sm btn-outline-secondary border me-2" data-bs-toggle="tooltip" data-bs-original-title="Delete">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 24 24" width="16"><path d="M0 0h24v24H0V0z" fill="none" /><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM8 9h8v10H8V9zm7.5-5l-1-1h-5l-1 1H5v2h14V4h-3.5z" /></svg>
+                                                        </a>
+                                                        <a href="#" class="d-flex align-items-center btn btn-sm btn-outline-secondary border me-2" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fe fe-more-vertical"></i></a>
+                                                        <div class="dropdown-menu dropdown-menu-start">
+                                                            <a class="dropdown-item" href="#"><i class="fe fe-edit-2 me-2"></i> Edit</a>
+                                                            <a class="dropdown-item" href="#"><i class="fe fe-info me-2"></i> Info</a>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-footer">
+                <a asp-action="Index" asp-controller="Assets" asp-route-id="@Model.StoreId" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+@section scripts {
+    <!-- PROGRESS BAR JS-->
+}

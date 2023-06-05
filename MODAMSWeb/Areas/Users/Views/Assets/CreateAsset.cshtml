@@ -159,14 +159,14 @@
                                     <div class="col-sm-4">
                                         <div class="mb-3 form-group">
                                             <label asp-for="PurchaseDate"></label>
-                                            <input asp-for="PurchaseDate" class="form-control picker" aria-required="true" type="text" />
+                                            <input asp-for="PurchaseDate" asp-format="{0:dd-MMM-yyyy}" class="form-control picker" aria-required="true" type="text" />
                                             <span asp-validation-for="PurchaseDate" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-sm-4">
                                         <div class="mb-3 form-group">
                                             <label asp-for="RecieptDate"></label>
-                                            <input asp-for="RecieptDate" class="form-control picker" aria-required="true" type="text" />
+                                            <input asp-for="RecieptDate" asp-format="{0:dd-MMM-yyyy}" class="form-control picker" aria-required="true" type="text" />
                                             <span asp-validation-for="RecieptDate" class="text-danger"></span>
                                         </div>
                                     </div>
@@ -256,9 +256,9 @@
 
             $('.picker').datepicker({
                 autoclose: true,
-                format: 'dd-mm-yyyy',
+                format: 'dd-MM-yyyy',
                 todayHighlight: true
-            }).datepicker('update', new Date());
+            });
 
         });
 

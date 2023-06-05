@@ -51,7 +51,14 @@
                                                     <tr>
                                                         <td class="text-muted text-center fs-15 fw-semibold">@sCounter.</td>
                                                         <td class="text-muted fs-15 fw-semibold">@dt.Name</td>
-                                                        <td class="text-muted fs-15 fw-semibold">@dt.DocumentUrl</td>
+                                                        <td class="text-muted fs-15 fw-semibold">
+                                                            @{
+                                                                if (dt.Id>0)
+                                                                {
+                                                                    <a href="@dt.DocumentUrl" class="btn btn-link">Download</a>
+                                                                }
+                                                            }
+                                                        </td>
                                                         <td class="text-muted fs-15 fw-semibold">
                                                             <div class="d-flex align-items-stretch">
                                                                 <a href="#" onclick="showCardUpload(@dt.DocumentTypeId)" class="btn btn-sm btn-outline-info border me-2">
@@ -60,21 +67,26 @@
                                                                         <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
                                                                     </svg>
                                                                 </a>
-                                                                <a href="#" onclick="deleteDocument(@dt.DocumentTypeId)" 
-                                                                class="btn btn-sm btn-outline-secondary border me-2"
-                                                                   data-bs-toggle="dropdown" aria-expanded="false">
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
-                                                                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
-                                                                        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
-                                                                    </svg>
-                                                                </a>
-                                                                <div class="dropdown-menu" style="">
-                                                                    <div class="p-5">
-                                                                        <h4 class="dropdown-title text-secondary">Delete Document</h4><br />
-                                                                        <p>You will not be able to recover this document again<br /><br />Are you sure?</p>
-                                                                        <a asp-area="Users" asp-controller="Asset" asp-action="DeleteDocument" class="btn btn-secondary btn-sm"><i class="mdi mdi-checkbox-marked-circle-outline"></i> Delete Document</a>
-                                                                    </div>
-                                                                </div>
+                                                                @{
+                                                                    if (dt.Id > 0)
+                                                                    {
+                                                                        <a href="#" class="btn btn-sm btn-outline-secondary border me-2"
+                                                                           data-bs-toggle="dropdown" aria-expanded="false">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                                                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                                                                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
+                                                                            </svg>
+                                                                        </a>
+                                                                        <div class="dropdown-menu" style="">
+                                                                            <div class="p-5">
+                                                                                <h4 class="dropdown-title text-secondary">Delete Document</h4><br />
+                                                                                <p>You will not be able to recover this document again<br /><br />Are you sure?</p>
+                                                                                <a asp-area="Users" asp-controller="Assets" asp-action="DeleteDocument" asp-route-id="@dt.Id" class="btn btn-secondary btn-sm"><i class="mdi mdi-checkbox-marked-circle-outline"></i> Delete Document</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    }
+                                                                }
+                                                                
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -96,7 +108,7 @@
                             <div class="card-body">
                                 <form method="post" asp-action="UploadDocument" enctype="multipart/form-data">
                                     <input asp-for="Id" hidden />
-                                    <input type="hidden" id="DocumentTypeId" name="DocumentTypeId" value="0"/>
+                                    <input type="hidden" id="DocumentTypeId" name="DocumentTypeId" value="0" />
 
                                     <div class="form-group">
                                         <label class="form-label" id="lblDocumentName"></label>
@@ -133,7 +145,7 @@
         $(document).ready(() => {
             loadDocumentTypes();
 
-            $("#btnCancel").on("click", (e)=>{
+            $("#btnCancel").on("click", (e) => {
                 e.preventDefault();
                 $("#document").val("");
                 $("#cardUpload").hide(400);
@@ -160,7 +172,7 @@
                     $("#dvDocumentTypesData").html("").html(e);
                 },
                 complete: function () {
-                    
+
                 }
             });
         }
@@ -172,7 +184,7 @@
         }
 
         const deleteDocument = (id) => {
-            
+
         }
 
         const getDocumentName = (id) => {
@@ -180,9 +192,8 @@
 
             if (sData != "No Records Found") {
                 var Data = JSON.parse(sData);
-                Data.forEach((e)=>{
-                    if(e.Id == id)
-                    {
+                Data.forEach((e) => {
+                    if (e.Id == id) {
                         $("#DocumentTypeId").val("").val(e.Id);
                         $("#lblDocumentName").html("").html(e.Name);
                     }
