@@ -1,0 +1,67 @@
+﻿@model List<MODAMS.Models.AssetPicture>
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Asset Information</h1>
+    </div>
+    <div class="ms-auto pageheader-btn">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Stores" asp-action="Index">Stores</a></li>
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Stores" asp-action="StoreDetails" asp-route-id="@TempData["storeId"]">@TempData["storeName"]</a></li>
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Assets" asp-action="Index" asp-route-id="@TempData["storeId"]">Assets</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Picture Gallery</li>
+        </ol>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-xl-12">
+        <div class="card">
+            <div class="card-body">
+                <form method="post" asp-action="UploadPicture" enctype="multipart/form-data">
+                    <input type="hidden" id="AssetId" name="AssetId" value="@TempData["assetId"]" />
+                    <div class="row">
+                        <div class="col-sm-5 col-md-5 col-xl-5">
+                            <div class="form-group">
+                                <input class="form-control file-input form-control-sm" type="file" id="file" name="file">
+                            </div>
+                        </div>
+                        <div class="col-sm-5 col-md-5 col-xl-5">
+                            <div class="form-group">
+                                <button class="btn btn-primary btn-sm"><i class="fa fa-solid fa-upload"></i> Upload</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h4>Asset Pictures</h4>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            @{
+                if (Model.Count > 0)
+                {
+                    foreach (var pic in Model)
+                    {
+                        <div class="col-md-3">
+                            <img src="@pic.ImageUrl"/>
+                            <div class="text-center"><a asp-action="DeletePicture" asp-controller="Assets" 
+                            asp-route-id="@pic.Id" asp-route-assetId="@pic.AssetId" class="text-danger"> <i class="fa fa-trash">&nbsp;</i>Delete</a></div>
+                            <div class="text-center">&nbsp</div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="col-md-12 text-center">No pictures available!</div>
+                }
+            }
+        </div>
+    </div>
+</div>
+

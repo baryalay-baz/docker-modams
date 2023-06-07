@@ -33,6 +33,8 @@ namespace MODAMS.DataAccess.Data
         public DbSet<DocumentType> DocumentTypes { get; set; }
         public DbSet<AssetDocument> AssetDocuments { get; set; }
         public DbSet<AssetDocumentChecklist> AssetDocumentChecklist { get; set; } 
+        public DbSet<AssetPicture> AssetPictures { get; set; }
+
 
         //Section for Views
         public DbSet<vwEmployees> vwEmployees { get; set; }

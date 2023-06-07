@@ -1,6 +1,5 @@
 ﻿@using System.Globalization;
-
-@model MODAMS.Models.Asset
+@model MODAMS.Models.ViewModels.dtoAssetInfo
 @inject MODAMS.Utility.IAMSFunc _func
 
 <div class="page-header">
@@ -26,13 +25,13 @@
                 <!-- Tabs -->
                 <div class="tabs-menu4 py-5 project-menu">
                     <nav class="nav border-bottom px-4 d-block d-lg-flex flex-2">
-                        <a class="nav-link border py-1 mb-2 mb-lg-0 br-lg-5 mx-1 mx-md-1 active" data-bs-toggle="tab" href="#tab_1">
+                        <a id="a_tab_1" class="nav-link border py-1 mb-2 mb-lg-0 br-lg-5 mx-1 mx-md-1 active" data-bs-toggle="tab" href="#tab_1">
                             Overview
                         </a>
-                        <a class="nav-link border py-1 mb-2 mb-lg-0 br-lg-5 mx-1 mx-md-1" data-bs-toggle="tab" href="#tab_2">
+                        <a id="a_tab_2" class="nav-link border py-1 mb-2 mb-lg-0 br-lg-5 mx-1 mx-md-1" data-bs-toggle="tab" href="#tab_2">
                             Documents
                         </a>
-                        <a class="nav-link border py-1 mb-2 mb-lg-0 br-lg-5 mx-1 mx-md-1" data-bs-toggle="tab" href="#tab_3">
+                        <a id="a_tab_3" class="nav-link border py-1 mb-2 mb-lg-0 br-lg-5 mx-1 mx-md-1" data-bs-toggle="tab" href="#tab_3">
                             Pictures
                         </a>
                     </nav>
@@ -52,7 +51,7 @@
                             <div class="card-header border-bottom d-block">
                                 <div class="row align-items-center">
                                     <div class="col">
-                                        <h4 class="mb-1">@Model.Make - @Model.Model - @Model.Year <a asp-action="EditAsset" asp-controller="Assets" asp-route-id="@Model.Id" class="ms-1" id="checkElement"><i class="fe fe-edit"></i></a></h4>
+                                        <h4 class="mb-1">@Model.Asset.Make - @Model.Asset.Model - @Model.Asset.Year <a asp-action="EditAsset" asp-controller="Assets" asp-route-id="@Model.Asset.Id" class="ms-1" id="checkElement"><i class="fe fe-edit"></i></a></h4>
                                         @*<div class="d-sm-flex d-block">
                                         <div class="text-muted pe-2 project-date">11 Jan 21</div>
                                         <div class="text-muted ms-3 project-status">In Progress</div>
@@ -65,69 +64,83 @@
                                 <div class="border-top"></div>
                                 <div class="table-responsive p-5">
                                     <table class="table row table-borderless">
+
                                         <tbody class="col-lg-12 col-xl-4 p-0">
                                             <tr>
-                                                <td><strong>Asset Category :</strong> @Model.SubCategory.SubCategoryName</td>
+                                                <td><strong>Asset Category :</strong> @Model.Asset.SubCategory.SubCategoryName</td>
                                             </tr>
                                             <tr>
-                                                <td><strong>Asset Name :</strong> @Model.Name</td>
+                                                <td><strong>Manufacturing Country :</strong> @Model.Asset.ManufacturingCountry</td>
                                             </tr>
                                             <tr>
-                                                <td><strong>Manufacturing Country :</strong> @Model.ManufacturingCountry</td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>Serial Number :</strong> @Model.SerialNo</td>
+                                                <td><strong>Condition : </strong> @Model.Asset.Condition.ConditionName</td>
                                             </tr>
                                         </tbody>
+
                                         <tbody class="col-lg-12 col-xl-4 p-0 border-top-0">
+
                                             <tr>
-                                                <td><strong>Make :</strong> @Model.Make</td>
+                                                <td><strong>Asset Name :</strong> @Model.Asset.Name</td>
                                             </tr>
                                             <tr>
-                                                <td><strong>Model :</strong> @Model.Model</td>
+                                                <td><strong>Purchase Order :</strong> @Model.Asset.PONumber</td>
                                             </tr>
                                             <tr>
-                                                <td><strong>Year :</strong> @Model.Year</td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>Barcode :</strong> @Model.Barcode </td>
+                                                <td><strong>Barcode :</strong> @Model.Asset.Barcode </td>
                                             </tr>
 
                                         </tbody>
                                         <tbody class="col-lg-12 col-xl-4 p-0 border-top-0">
-
                                             <tr>
-                                                <td><strong>Condition : </strong> @Model.Condition.ConditionName</td>
+                                                <td><strong>Serial Number :</strong> @Model.Asset.SerialNo</td>
                                             </tr>
                                             <tr>
-                                                <td><strong>Purchase Order :</strong> @Model.PONumber</td>
+                                                <td><strong>Purchase Date :</strong> @Model.Asset.PurchaseDate?.ToString("MMMM dd, yyyy") </td>
                                             </tr>
                                             <tr>
-                                                <td><strong>Purchase Date :</strong> @Model.PurchaseDate?.ToString("MMMM dd, yyyy") </td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>Reciept Date :</strong> @Model.RecieptDate?.ToString("MMMM dd, yyyy") </td>
+                                                <td><strong>Reciept Date :</strong> @Model.Asset.RecieptDate?.ToString("MMMM dd, yyyy") </td>
                                             </tr>
                                         </tbody>
 
                                         <tbody class="col-lg-12 col-xl-4 p-0 border-top-0">
                                             <tr>
-                                                <td><strong>Procured By : </strong> @Model.ProcuredBy</td>
+                                                <td><strong>Procured By : </strong> @Model.Asset.ProcuredBy</td>
                                             </tr>
                                         </tbody>
                                         <tbody class="col-lg-12 col-xl-4 p-0 border-top-0">
                                             <tr>
-                                                <td><strong>Donor :</strong> @Model.Donor.Name</td>
+                                                <td><strong>Donor :</strong> @Model.Asset.Donor.Name</td>
                                             </tr>
                                         </tbody>
                                         <tbody class="col-lg-12 col-xl-4 p-0 border-top-0">
                                             <tr>
-                                                <td><strong>Remarks :</strong> @Model.Remarks </td>
+                                                <td><strong>Remarks :</strong> @Model.Asset.Remarks </td>
                                             </tr>
                                         </tbody>
+                                        @{
+                                            if (Model.Asset.SubCategory.Category.Id == 16)
+                                            {
+                                                <tbody class="col-lg-12 col-xl-4 p-0 border-top-0">
+                                                    <tr>
+                                                        <td><strong>Engine Number : </strong> @Model.Asset.Engine</td>
+                                                    </tr>
+                                                </tbody>
+                                                <tbody class="col-lg-12 col-xl-4 p-0 border-top-0">
+                                                    <tr>
+                                                        <td><strong>Chasis Number:</strong> @Model.Asset.Chasis</td>
+                                                    </tr>
+                                                </tbody>
+                                                <tbody class="col-lg-12 col-xl-4 p-0 border-top-0">
+                                                    <tr>
+                                                        <td><strong>Plate Number :</strong> @Model.Asset.Plate </td>
+                                                    </tr>
+                                                </tbody>
+                                            }
+                                        }
+
                                         <tbody class="col-lg-12 col-xl-8 p-0 border-top-0">
                                             <tr>
-                                                <td><strong>Specifications : </strong> @Model.Specifications</td>
+                                                <td><strong>Specifications : </strong> @Model.Asset.Specifications</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -142,23 +155,23 @@
                                             <div>
                                                 <span class="m-0 text-muted">Initial Cost:</span>
                                             </div>
-                                            <h5 class="mt-3 text-teritary">@Model.Cost.ToString("C2")</h5>
+                                            <h5 class="mt-3 text-teritary">@Model.Asset.Cost.ToString("C2")</h5>
                                         </div>
                                     </div>
                                     @{
-                                        var cost = Model.Cost;
+                                        var cost = Model.Asset.Cost;
                                         decimal depCost = 0;
                                         decimal difference = 0;
                                         string usePercentage = "0";
-                                        
+
                                         if (cost > 0)
                                         {
-                                            depCost = _func.GetDepreciatedCost(Model.Id);
+                                            depCost = _func.GetDepreciatedCost(Model.Asset.Id);
                                             difference = cost - depCost;
 
                                             usePercentage = ((difference * 100) / cost).ToString("N0");
                                         }
-                                        
+
                                     }
                                     <div class="col-xl-8 col-lg-12">
                                         <div class="text-center d-f-ai-c-jc-c border py-5 br-5">
@@ -174,12 +187,11 @@
 
                                                     <div class="progress progress-md mb-3">
                                                         <div class="progress-bar progress-bar-striped progress-bar-animated bg-info"
-                                                        role="progressbar" 
-                                                        style="width: @usePercentage%" 
-                                                        area-valuenow="@usePercentage" 
-                                                        aria-valuemin="0" 
-                                                        aria-valuemax="100">
-
+                                                             role="progressbar"
+                                                             style="width: @usePercentage%"
+                                                             area-valuenow="@usePercentage"
+                                                             aria-valuemin="0"
+                                                             aria-valuemax="100">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -242,75 +254,48 @@
             </div>
             <div class="tab-pane" id="tab_2">
                 <div class="row">
-                    <div class="col-md-12">
+                    <div class="col-md-6">
                         <div class="card">
-                            <div class="card-header border-bottom">
+                            <div class="card-header">
                                 <h3 class="card-title">Asset Documents</h3>
                             </div>
                             <div class="card-body">
                                 <div class="table-responsive">
-                                    <table id="tasks-table" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-tasks-main">
+                                    <table id="tblDocuments" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
                                         <thead class="table-head">
                                             <tr>
-                                                <th class="bg-transparent border-bottom-0 w-5">S.no</th>
-                                                <th class="bg-transparent border-bottom-0">Task</th>
-                                                <th class="bg-transparent border-bottom-0">Project</th>
-                                                <th class="bg-transparent border-bottom-0">Due Date</th>
-                                                <th class="bg-transparent border-bottom-0">Assigned To</th>
-                                                <th class="bg-transparent border-bottom-0">Status</th>
-                                                <th class="bg-transparent border-bottom-0 no-btn">Action</th>
+                                                <th class="bg-transparent border-bottom-0 w-5">S.No</th>
+                                                <th class="bg-transparent border-bottom-0">Document Name</th>
+                                                <th class="bg-transparent border-bottom-0">Download Link</th>
                                             </tr>
                                         </thead>
                                         <tbody class="table-body">
-                                            <tr>
-                                                <td class="text-muted fs-15 fw-semibold text-center">01.</td>
-                                                <td class="text-muted fs-15 fw-semibold"><a href="#" class="text-dark" data-bs-target="#Vertically" data-bs-toggle="modal">Sit sed takimata sanctus invidunt</a></td>
-                                                <td class="text-muted fs-15 fw-semibold">Noa Dashboard UI</td>
-                                                <td class="text-danger fs-15 fw-semibold">31 Oct 21</td>
-                                                <td>
-                                                    <div class="d-flex align-items-center">
-                                                        <div class="me-2">
-                                                            <span><img src="~/assets/images/users/8.jpg" class="data-image avatar avatar-md rounded-circle"></span>
-                                                        </div>
-                                                        <div>
-                                                            <h6 class="mb-0">Skyler Hilda</h6>
-                                                            <span class="text-muted fs-12">member@spruko.com</span>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <div class="form-group mb-0">
-                                                        <ul>
-                                                            <li class="select-status">
-                                                                <select class="form-control select2-status-search" data-placeholder="Select Status">
-                                                                    <option value="IP" selected>In Progress</option>
-                                                                    <option value="OH">On Hold</option>
-                                                                    <option value="CP">Completed</option>
-                                                                </select>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <div class="d-flex align-items-stretch">
-                                                        <a class="btn btn-sm btn-outline-primary border me-2" data-bs-toggle="tooltip" data-bs-original-title="Mark As Completed">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="20" width="16" viewBox="0 0 24 24"><path d="M15.8085327,8.6464844l-5.6464233,5.6464844l-2.4707031-2.4697266c-0.0023804-0.0023804-0.0047607-0.0047607-0.0072021-0.0071411c-0.1972046-0.1932373-0.5137329-0.1900635-0.7069702,0.0071411c-0.1932983,0.1972656-0.1900635,0.5137939,0.0071411,0.7070312l2.8242188,2.8232422C9.9022217,15.4474487,10.02948,15.5001831,10.1621094,15.5c0.1326294,0.0001221,0.2598267-0.0525513,0.3534546-0.1464844l6-6c0.0023804-0.0023804,0.0047607-0.0046997,0.0071411-0.0071411c0.1932373-0.1972046,0.1900635-0.5137329-0.0071411-0.7069702C16.3183594,8.446106,16.0018311,8.4493408,15.8085327,8.6464844z M12,2C6.4771729,2,2,6.4771729,2,12s4.4771729,10,10,10c5.5201416-0.0064697,9.9935303-4.4798584,10-10C22,6.4771729,17.5228271,2,12,2z M12,21c-4.9705811,0-9-4.0294189-9-9s4.0294189-9,9-9c4.9683228,0.0054321,8.9945679,4.0316772,9,9C21,16.9705811,16.9705811,21,12,21z" /></svg>
-                                                        </a>
-                                                        <a class="btn btn-sm btn-outline-secondary border me-2" data-bs-toggle="tooltip" data-bs-original-title="Delete">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 24 24" width="16"><path d="M0 0h24v24H0V0z" fill="none" /><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM8 9h8v10H8V9zm7.5-5l-1-1h-5l-1 1H5v2h14V4h-3.5z" /></svg>
-                                                        </a>
-                                                        <a href="#" class="d-flex align-items-center btn btn-sm btn-outline-secondary border me-2" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fe fe-more-vertical"></i></a>
-                                                        <div class="dropdown-menu dropdown-menu-start">
-                                                            <a class="dropdown-item" href="#"><i class="fe fe-edit-2 me-2"></i> Edit</a>
-                                                            <a class="dropdown-item" href="#"><i class="fe fe-info me-2"></i> Info</a>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
+                                            @{
+                                                int nCounter = 0;
+                                                string sCounter = "";
+                                                foreach (var doc in Model.Documents)
+                                                {
+                                                    nCounter++;
+                                                    sCounter = nCounter < 10 ? '0' + nCounter.ToString() : nCounter.ToString();
+                                                    <tr>
+                                                        <td class="text-muted text-center fs-15 fw-semibold">@sCounter.</td>
+                                                        <td class="text-muted fs-15 fw-semibold">@doc.Name</td>
+                                                        <td class="text-muted fs-15 fw-semibold">
+                                                            @{
+                                                                if (doc.Id > 0)
+                                                                {
+                                                                    <a href="@doc.DocumentUrl" class="btn btn-link">Download</a>
+                                                                }
+                                                            }
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -318,74 +303,118 @@
             <div class="tab-pane" id="tab_3">
                 <div class="row">
                     <div class="col-md-12">
-
-                        <div class="card">
-                            <div class="card-header border-bottom">
-                                <h3 class="card-title">Asset Pictures</h3>
+                        <div class="demo-gallery card">
+                            <div class="card-header">
+                                <div class="card-title">Asset Picture Gallery</div>
                             </div>
-                            <div class="card-body timetracking-table-container">
-                                <div class="table-responsive">
-                                    <table id="timetracking-table" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-timetracking-main">
-                                        <thead class="table-head">
-                                            <tr>
-                                                <th class="bg-transparent border-bottom-0">Team Member</th>
-                                                <th class="bg-transparent border-bottom-0">Task</th>
-                                                <th class="bg-transparent border-bottom-0">Project</th>
-                                                <th class="bg-transparent border-bottom-0">Start Date & Time</th>
-                                                <th class="bg-transparent border-bottom-0">End Date & Time</th>
-                                                <th class="bg-transparent border-bottom-0">Total Time</th>
-                                                <th class="bg-transparent border-bottom-0 no-btn">Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="table-body">
-                                            <tr>
-                                                <td>
-                                                    <div class="d-flex align-items-center">
-                                                        <div class="me-2">
-                                                            <span><img src="~/assets/images/users/2.jpg" alt="profile-user" class="data-image avatar avatar-md rounded-circle"></span>
-                                                        </div>
-                                                        <div>
-                                                            <h6 class="mb-0">Skyler Hilda</h6>
-                                                            <span class="text-muted fs-12">member@spruko.com</span>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td class="text-muted fs-15 fw-semibold"><a href="#" class="text-dark" data-bs-target="#Vertically" data-bs-toggle="modal">Et ipsum invidunt et labore.</a></td>
-                                                <td class="fs-15 fw-semibold"><a asp-area="" asp-page="/ProjectDetails/Index" class="text-dark">Noa Dashboard UI</a></td>
-                                                <td class="text-muted fs-15 fw-semibold">31 Oct 21 & 14:56</td>
-                                                <td class="text-muted fs-15 fw-semibold">01 Nov 21 & 09:35</td>
-                                                <td class="text-dark fs-15 fw-semibold">Days: 4<br>Hours: 10<br>Minutes: 22</td>
-                                                <td>
-                                                    <div class="d-flex align-items-stretch">
-                                                        <a class="btn btn-sm btn-outline-secondary border me-2" data-bs-toggle="tooltip" data-bs-original-title="Delete">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 24 24" width="16"><path d="M0 0h24v24H0V0z" fill="none" /><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM8 9h8v10H8V9zm7.5-5l-1-1h-5l-1 1H5v2h14V4h-3.5z" /></svg>
-                                                        </a>
-                                                        <a href="#" class="d-flex align-items-center btn btn-sm btn-outline-secondary border me-2" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fe fe-more-vertical"></i></a>
-                                                        <div class="dropdown-menu dropdown-menu-start">
-                                                            <a class="dropdown-item" href="#"><i class="fe fe-edit-2 me-2"></i> Edit</a>
-                                                            <a class="dropdown-item" href="#"><i class="fe fe-info me-2"></i> Info</a>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
+                            <div class="card-body">
+                                <ul id="lightgallery" class="list-unstyled row">
+                                    @{
+                                        if (Model.dtoAssetPictures.PaginatedPictures().Count > 0)
+                                        {
+                                            nCounter = 0;
+                                            foreach (var pic in Model.dtoAssetPictures.PaginatedPictures())
+                                            {
+                                                nCounter++;
+                                                <li class="col-xs-6 col-sm-4 col-md-4 col-xl-4 mb-5 border-bottom-0" data-responsive="~/assetpictures" data-src="@pic.ImageUrl" data-sub-html="">
+                                                    <a href="javascript:void(0)">
+                                                        <img class="img-responsive br-5 wp-100" src="@pic.ImageUrl" alt="Thumb-1">
+                                                    </a>
+                                                </li>
+                                            }
+                                        }
+                                        
+                                    }
+                                </ul>
                             </div>
                         </div>
+                        <!-- GALLERY DEMO CLOSED -->
+                        <!-- PAGINATION OPEN -->
+                        <div class="row mb-5">
+                            <div class="col-md-6">
+                                <div class="float-end">
+                                    <ul class="pagination">
+                                        @*<li class="page-item page-prev disabled">
+                                        <a class="page-link" href="#" tabindex="-1">Prev</a>
+                                        </li>*@
+                                        @for (int i = 1; i <= Model.dtoAssetPictures.PageCount(); i++)
+                                        {
+                                            <li class="@(i == Model.dtoAssetPictures.CurrentPage ? "page-item active" : "page-item")">
+                                                <a class="page-link" href="@Url.Action("AssetInfo", new { id=Model.Asset.Id, page = i, tab = 3 })">@i</a>
+                                            </li>
+                                        }
+                                        @*<li class="page-item page-next">
+                                        <a class="page-link" href="#">Next</a>
+                                        </li>*@
+                                    </ul>
+                                </div>
+                            </div>
+                            <!-- COL-END -->
+                        </div>
+                        <!-- PAGINATION CLOSED -->
                     </div>
                 </div>
+
+
             </div>
         </div>
         <div class="card">
             <div class="card-footer">
-                <a asp-action="Index" asp-controller="Assets" asp-route-id="@Model.StoreId" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
+                <a asp-action="Index" asp-controller="Assets" asp-route-id="@Model.Asset.StoreId" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
             </div>
         </div>
-        
+
     </div>
 </div>
 
 @section scripts {
-    <!-- PROGRESS BAR JS-->
+    <!-- GALLERY JS -->
+    <script src="~/assets/plugins/gallery/picturefill.js"></script>
+    <script src="~/assets/plugins/gallery/lightgallery.js"></script>
+    <script src="~/assets/plugins/gallery/lightgallery-1.js"></script>
+    <script src="~/assets/plugins/gallery/lg-pager.js"></script>
+    <script src="~/assets/plugins/gallery/lg-autoplay.js"></script>
+    <script src="~/assets/plugins/gallery/lg-fullscreen.js"></script>
+    <script src="~/assets/plugins/gallery/lg-zoom.js"></script>
+    <script src="~/assets/plugins/gallery/lg-hash.js"></script>
+    <script src="~/assets/plugins/gallery/lg-share.js"></script>
+
+    <script>
+        $(document).ready(function(){
+            setTab();
+        });
+        const setTab = ()=>{
+            var tab = '@TempData["tab"]';
+
+            if (tab == "1" || tab == null) {
+                $("#tab_1").addClass("active");
+                $("#a_tab_1").addClass("active");
+
+                $("#tab_2").removeClass("active");
+                $("#a_tab_2").removeClass("active");
+
+                $("#tab_3").removeClass("active");
+                $("#a_tab_3").removeClass("active");
+            } else if (tab == "2") {
+                $("#tab_1").removeClass("active");
+                $("#a_tab_1").removeClass("active");
+
+                $("#tab_2").addClass("active");
+                $("#a_tab_2").addClass("active");
+
+                $("#tab_3").removeClass("active");
+                $("#a_tab_3").removeClass("active");
+            } else {
+                $("#tab_1").removeClass("active");
+                $("#a_tab_1").removeClass("active");
+
+                $("#tab_2").removeClass("active");
+                $("#a_tab_2").removeClass("active");
+
+                $("#tab_3").addClass("active");
+                $("#a_tab_3").addClass("active");
+            }
+        }
+
+    </script>
 }

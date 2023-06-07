@@ -238,6 +238,10 @@ namespace MODAMS.Utility
 					}
 				}
 			}
+
+			if (depreciatedCost < 0)
+				depreciatedCost = 0;
+
 			return depreciatedCost;
 		}
 

@@ -8,8 +8,10 @@ using MODAMS.Models;
 using MODAMS.Models.ViewModels;
 using MODAMS.Utility;
 using Newtonsoft.Json;
+using NuGet.ContentModel;
+using NuGet.Protocol;
 using System.Data;
-
+using System.Drawing;
 
 namespace MODAMSWeb.Areas.Users.Controllers
 {
@@ -63,7 +65,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 var asset = _db.Assets.Where(m => m.SerialNo == dto.SerialNo).FirstOrDefault();
                 if (asset == null)
                 {
-                    var newAsset = new Asset()
+                    var newAsset = new MODAMS.Models.Asset()
                     {
                         Name = dto.Name,
                         Make = dto.Make,
@@ -309,8 +311,9 @@ namespace MODAMSWeb.Areas.Users.Controllers
         }
 
         [HttpGet]
-        public IActionResult AssetInfo(int id)
+        public IActionResult AssetInfo(int id, int page = 1, int tab = 1)
         {
+            var dto = new dtoAssetInfo();
 
             var asset = _db.Assets.Where(m => m.Id == id)
                 .Include(m => m.SubCategory)
@@ -320,30 +323,55 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 .Include(m => m.Store).Include(m => m.Donor)
                 .FirstOrDefault();
 
+            var documents = _db.AssetDocuments.Where(m => m.AssetId == id).ToList();
+
+            dto.Documents = documents;
             if (asset != null)
             {
                 TempData["storeId"] = asset.StoreId;
                 TempData["storeName"] = asset.Store.Name;
+                dto.Asset = asset;
             }
             else
             {
                 TempData["error"] = "Record not found!";
             }
-            return View(asset);
+
+            var assetPictures = _db.AssetPictures.Where(m => m.AssetId == id).ToList();
+
+            var dtoAssetPictures = new dtoAssetPictures(assetPictures, 6);
+            
+            TempData["tab"] = tab.ToString();
+
+            dto.dtoAssetPictures = dtoAssetPictures;
+
+            return View(dto);
         }
 
         [Authorize(Roles = "StoreOwner, User")]
-        public async Task<IActionResult> DeleteDocument(int id) {
-            if (id > 0) {
+        public async Task<IActionResult> DeleteDocument(int id)
+        {
+            if (id > 0)
+            {
                 var assetDocument = await _db.AssetDocuments.Where(m => m.Id == id).FirstOrDefaultAsync();
                 if (assetDocument != null)
                 {
+                    
+                    var sFileName = assetDocument.DocumentUrl.ToString();
+                    sFileName = sFileName.Substring(16, sFileName.Length - 16);
+
+                    if (!DeleteFile(sFileName, "assetdocuments"))
+                    {
+                        TempData["error"] = "Error deleting file from storage";
+                        return RedirectToAction("AssetDocuments", "Assets", new { id = assetDocument.AssetId });
+                    }
+
                     _db.AssetDocuments.Remove(assetDocument);
                     await _db.SaveChangesAsync();
-                    
+
                     int nAssetId = assetDocument.AssetId;
                     int nStoreId = _func.GetStoreId(nAssetId);
-                    
+
 
                     TempData["storeId"] = _func.GetStoreId(nAssetId);
                     TempData["storeName"] = _func.GetStoreName(nStoreId);
@@ -362,6 +390,108 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 TempData["error"] = "Document not found!";
                 return View();
             }
+        }
+
+        [HttpGet]
+        public IActionResult AssetPictures(int id)
+        {
+            var assetPictures = _db.AssetPictures.Where(m => m.AssetId == id).ToList();
+
+            var storeId = _func.GetStoreId(id);
+            var storeName = _func.GetStoreName(storeId);
+
+            TempData["storeId"] = storeId;
+            TempData["storeName"] = storeName;
+            TempData["assetId"] = id;
+
+            return View(assetPictures);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "StoreOwner, User")]
+        public async Task<IActionResult> UploadPicture(int AssetId, IFormFile? file)
+        {
+            string wwwRootPath = _webHostEnvironment.WebRootPath;
+            if (file != null)
+            {
+                Guid guid = Guid.NewGuid();
+                string fileName = guid + Path.GetExtension(file.FileName);
+                string path = Path.Combine(wwwRootPath, @"assetpictures");
+
+                try
+                {
+                    using (var fileStream = new FileStream(Path.Combine(path, fileName), FileMode.Create))
+                    {
+                        await file.CopyToAsync(fileStream);
+                    }
+
+                    var assetPicture = new AssetPicture()
+                    {
+                        ImageUrl = "/assetpictures/" + fileName,
+                        AssetId = AssetId
+                    };
+                    await _db.AssetPictures.AddAsync(assetPicture);
+                    await _db.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    TempData["error"] = "Error occured! <br /> " + ex.Message;
+                    return RedirectToAction("AssetPictures", "Assets", new { area = "Users", id = AssetId });
+                }
+                finally
+                {
+                    TempData["success"] = "Picture uploaded successfuly!";
+                }
+            }
+            else
+            {
+                TempData["error"] = "Error uploading file!";
+                return RedirectToAction("AssetPictures", "Assets", new { area = "Users", id = AssetId });
+            }
+
+            return RedirectToAction("AssetPictures", "Assets", new { area = "Users", id = AssetId });
+        }
+
+        [Authorize(Roles = "StoreOwner, User")]
+        public async Task<IActionResult> DeletePicture(int id, int assetId)
+        {
+            bool blnInitialValidation = true;
+            if (id == 0)
+            {
+                TempData["error"] = "Picture not found!";
+                blnInitialValidation = false;
+            }
+
+            string sFileName = "";
+
+            var assetPicture = await _db.AssetPictures.Where(m => m.Id == id).FirstOrDefaultAsync();
+            if (assetPicture == null)
+            {
+                TempData["error"] = "Picture not found!";
+                blnInitialValidation = false;
+            }
+            else
+            {
+                sFileName = assetPicture.ImageUrl.ToString();
+                sFileName = sFileName.Substring(15, sFileName.Length - 15);
+
+                _db.AssetPictures.Remove(assetPicture);
+                await _db.SaveChangesAsync();
+            }
+
+            if (!blnInitialValidation)
+            {
+                return RedirectToAction("AssetPictures", "Assets", new { area = "Users", id = assetId });
+            }
+
+            if (!DeleteFile(sFileName, "assetpictures"))
+            {
+                TempData["error"] = "Error deleting picture from storage!";
+                return RedirectToAction("AssetPictures", "Assets", new { area = "Users", id = assetId });
+            }
+
+            TempData["success"] = "Picture deleted successfuly!";
+            return RedirectToAction("AssetPictures", "Assets", new { area = "Users", id = assetId });
         }
 
         //API Calls
@@ -409,6 +539,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
             return sResult;
         }
         //API Calls End
+
+
 
         //Private functions
         private dtoAsset PopulateDtoAsset(dtoAsset dto)
@@ -493,6 +625,24 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 nResult = assetDocument.Id;
             }
             return nResult;
+        }
+
+        private bool DeleteFile(string fileName, string folderName)
+        {
+            string wwwRootPath = _webHostEnvironment.WebRootPath;
+            string folderPath = Path.Combine(wwwRootPath, folderName);
+            string filePath = Path.Combine(folderPath, fileName);
+
+            bool blnResult = true;
+            try
+            {
+                System.IO.File.Delete(filePath);
+            }
+            catch
+            {
+                blnResult = false;
+            }
+            return blnResult;
         }
     }
 }
