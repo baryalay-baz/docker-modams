@@ -273,21 +273,31 @@
                                             @{
                                                 int nCounter = 0;
                                                 string sCounter = "";
-                                                foreach (var doc in Model.Documents)
+                                                if (Model.Documents.Count > 0)
                                                 {
-                                                    nCounter++;
-                                                    sCounter = nCounter < 10 ? '0' + nCounter.ToString() : nCounter.ToString();
-                                                    <tr>
-                                                        <td class="text-muted text-center fs-15 fw-semibold">@sCounter.</td>
-                                                        <td class="text-muted fs-15 fw-semibold">@doc.Name</td>
-                                                        <td class="text-muted fs-15 fw-semibold">
-                                                            @{
-                                                                if (doc.Id > 0)
-                                                                {
-                                                                    <a href="@doc.DocumentUrl" class="btn btn-link">Download</a>
+
+                                                    foreach (var doc in Model.Documents)
+                                                    {
+                                                        nCounter++;
+                                                        sCounter = nCounter < 10 ? '0' + nCounter.ToString() : nCounter.ToString();
+                                                        <tr>
+                                                            <td class="text-muted text-center fs-15 fw-semibold">@sCounter.</td>
+                                                            <td class="text-muted fs-15 fw-semibold">@doc.Name</td>
+                                                            <td class="text-muted fs-15 fw-semibold">
+                                                                @{
+                                                                    if (doc.Id > 0)
+                                                                    {
+                                                                        <a href="@doc.DocumentUrl" class="btn btn-link">Download</a>
+                                                                    }
                                                                 }
-                                                            }
-                                                        </td>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <tr>
+                                                        <td colspan="3"><center>Data not available!</center></td>
                                                     </tr>
                                                 }
                                             }
@@ -323,7 +333,13 @@
                                                 </li>
                                             }
                                         }
-                                        
+                                        else
+                                        {
+                                            <li class="col-xs-6 col-sm-4 col-md-4 col-xl-4 mb-5 border-bottom-0">
+                                                    <span>No pictures uploaded!</span>
+                                            </li>
+                                        }
+
                                     }
                                 </ul>
                             </div>

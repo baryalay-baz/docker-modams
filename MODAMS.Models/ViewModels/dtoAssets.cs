@@ -10,11 +10,10 @@ namespace MODAMS.Models.ViewModels
     {
         public List<Asset> assets { get; set; }
         public List<vwStoreCategoryAsset> categories { get; set; }
-
+        public int StoreOwnerId { get; set; }
         public int TotalAssets()
         {
             return assets.Count;
         }
-
     }
 }

@@ -39,12 +39,15 @@ namespace MODAMSWeb.Areas.Users.Controllers
             TempData["storeId"] = id;
             TempData["storeName"] = _func.GetStoreName(id);
 
-            var categories = _db.vwStoreCategoryAssets.Where(m => m.StoreId == id).ToList();
+            //var categories = _db.vwStoreCategoryAssets.Where(m => m.StoreId == id).ToList();
+
+            var empId = User.IsInRole("User") ? _func.GetSupervisorId(_employeeId) : _employeeId;
 
             var dto = new dtoAssets()
             {
                 assets = assets,
-                categories = categories
+                StoreOwnerId = _func.GetStoreOwnerId(id, empId)
+                //categories = categories
             };
 
             return View(dto);

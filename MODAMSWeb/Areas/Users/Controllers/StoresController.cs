@@ -37,12 +37,18 @@ namespace MODAMSWeb.Areas.Users.Controllers
             else if (User.IsInRole("StoreOwner"))
             {
                 stores = stores.Where(m => m.EmployeeId == _employeeId).ToList();
-                vwStore store = stores[0];
-                if (store != null)
+                if (stores.Count>0)
                 {
-                    int nDeptId = (int)store.DepartmentId;
-                    var storeFinder = new StoreFinder(nDeptId, allStores);
-                    stores = storeFinder.GetStores();
+                    vwStore store = stores.First();
+                    if (store != null)
+                    {
+                        int nDeptId = (int)store.DepartmentId;
+                        var storeFinder = new StoreFinder(nDeptId, allStores);
+                        stores = storeFinder.GetStores();
+                    }
+                }
+                else {
+                    stores = new List<vwStore>();
                 }
             }
 
@@ -78,10 +84,10 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 var storeCategoryAssets = _db.vwStoreCategoryAssets
                     .Where(m => m.StoreId == id).ToList();
 
-                var assets = _db.Assets.Where(m=>m.StoreId==id)
-                    .Include(m=>m.SubCategory).Include(m=>m.Condition).Include(m=>m.AssetStatus)
+                var assets = _db.Assets.Where(m => m.StoreId == id)
+                    .Include(m => m.SubCategory).Include(m => m.Condition).Include(m => m.AssetStatus)
                     .ToList();
-                
+
                 dto.storeAssets = assets;
                 dto.StoreCategoryAssets = storeCategoryAssets;
 
