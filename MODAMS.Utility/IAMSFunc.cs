@@ -20,7 +20,7 @@ namespace MODAMS.Utility
         public int GetStoreId(int assetId);
         public string GetStoreName(int storeId);
         public decimal GetDepreciatedCost(int nAssetId);
-
+        public decimal GetDepreciatedCostByStore(int storeId);
 
         public string FormatMessage(string title, string message, string email, string returnUrl, string btntext);
 

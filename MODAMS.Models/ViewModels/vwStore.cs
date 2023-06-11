@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MODAMS.Models.ViewModels
 {
-    public class vwStores
+    public class vwStore
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -20,6 +20,10 @@ namespace MODAMS.Models.ViewModels
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal? TotalCost { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal? DepCost { get; set; }
+
         public int? TotalCount { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-﻿@model List<MODAMS.Models.Asset>
+﻿@model MODAMS.Models.ViewModels.dtoAssets
 
 <div class="page-header">
     <div>
@@ -19,7 +19,21 @@
             <div class="card-body p-4">
                 <div class="d-flex align-items-center justify-content-between">
                     <h4 class="m-0">@TempData["storeName"]</h4>
-                    <div class="btn-list">
+                    <div class="d-sm-flex align-items-center">
+                        <div class="btn-list mx-4">
+                            <div class="btn-group radiobtns" role="group" aria-label="Basic radio toggle button group">
+                                <input type="radio" class="btn-check" name="btnradio" id="btnradio1" checked="">
+                                <label class="btn btn-outline-primary" for="btnradio1">All Assets</label>
+                                @{
+                                    foreach (var category in Model.categories)
+                                    {
+                                        <input type="radio" class="btn-check" name="btnradio" id="@category.SubCategoryId">
+                                        <label class="btn btn-outline-default" for="@category.SubCategoryId">@category.SubCategoryName</label>
+                                    }
+                                }
+                                
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -60,7 +74,7 @@
                             @{
                                 int nCounter = 0;
                                 string sCounter = "0";
-                                foreach (var asset in Model)
+                                foreach (var asset in Model.assets)
                                 {
                                     nCounter++;
                                     sCounter = (nCounter < 10) ? "0" + nCounter.ToString() : nCounter.ToString();

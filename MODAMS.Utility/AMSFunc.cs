@@ -360,5 +360,19 @@ namespace MODAMS.Utility
 
 			return emailMessage;
 		}
-	}
+
+        public decimal GetDepreciatedCostByStore(int storeId)
+        {
+            var assetList = _db.Assets.Where(m=>m.StoreId == storeId)
+				.Select(m => new {m.Id}).ToList();
+
+			decimal totalCost = 0;
+
+			foreach (var asset in assetList)
+			{
+				totalCost += GetDepreciatedCost(asset.Id);
+			}
+			return Math.Round(totalCost,0);
+        }
+    }
 }

@@ -1,4 +1,9 @@
-﻿<div class="page-header">
+﻿@model MODAMS.Models.ViewModels.dtoStore
+
+@*<link href="~/assets/plugins/c3/c3.min.css" rel="stylesheet" />*@
+<link href="~/assets/plugins/c3-0.7.20/c3.min.css" rel="stylesheet" />
+
+<div class="page-header">
     <div>
         <h1 class="page-title">Store Details</h1>
     </div>
@@ -16,42 +21,219 @@
             <div class="card-body p-4">
                 <div class="d-flex align-items-center justify-content-between">
                     <h4 class="m-0">@TempData["storeName"]</h4>
-                    <div class="btn-list">
+                    <div>
+                        @Html.Raw(Model.StoreOwner())
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-md-12 mb-3">
+    <div class="col-md-12 mb-0">
         <div class="card">
             <div class="card-body">
+                <div class="row">
+                    <div class="col-xl col-md-12">
+                        <div class="card divShadow">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-7">
+                                        <h6>Registered</h6>
+                                        <span class="text-bold">@Model.StoreCategoryAssets.Sum(m=>m.TotalAssets)</span>
+                                    </div>
+                                    <div class="col-5">
+                                        <div class="hpx-50 wpx-50 br-5 d-flex align-items-center justify-content-center bg-info-gradient text-white ms-auto">
+                                            <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24">
+                                                <title>book-open-outline</title>
+                                                <path d="M21,4H3A2,2 0 0,0 1,6V19A2,2 0 0,0 3,21H21A2,2 0 0,0 23,19V6A2,2 0 0,0 21,4M3,19V6H11V19H3M21,19H13V6H21V19M14,9.5H20V11H14V9.5M14,12H20V13.5H14V12M14,14.5H20V16H14V14.5Z" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl col-md-12">
+                        <div class="card divShadow">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-7">
+                                        <h6>Transferred</h6>
+                                        <span class="text-bold">0</span>
+                                    </div>
+                                    <div class="col-5">
+                                        <div class="hpx-50 wpx-50 br-5 d-flex align-items-center justify-content-center bg-primary-gradient text-white ms-auto">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 16">
+                                                <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl col-md-12">
+                        <div class="card divShadow">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-7">
+                                        <h6>Handover</h6>
+                                        <span class="text-bold">0</span>
+                                    </div>
+                                    <div class="col-5">
+                                        <div class="hpx-50 wpx-50 br-5 d-flex align-items-center justify-content-center bg-secondary-gradient text-white ms-auto">
+                                            <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24">
+                                                <path d="M16.78 21.84C15.77 22.27 14.59 21.8 14.16 20.78C13.73 19.77 14.2 18.59 15.22 18.16C16.23 17.73 17.41 18.2 17.84 19.22C18.27 20.23 17.8 21.41 16.78 21.84M7.62 6C8.73 6 9.62 5.11 9.62 4C9.62 2.9 8.73 2 7.62 2C6.5 2 5.62 2.9 5.62 4C5.62 5.11 6.5 6 7.62 6M22.05 16.34L18.2 18C18.42 18.22 18.62 18.5 18.76 18.82C18.9 19.15 18.96 19.5 19 19.82L22.83 18.18L22.05 16.34M10.16 8.78L10.9 10.59C10.66 10.5 10.44 10.38 10.26 10.26C9.66 9.87 9.22 9.38 8.93 8.8L8.19 7.23C8 6.88 7.77 6.62 7.45 6.44C7.16 6.27 6.85 6.18 6.53 6.18C6.21 6.18 5.91 6.26 5.62 6.4C4.22 7.5 3.87 9.54 3.87 9.54L3.53 11.11C3.44 11.63 3.39 12.15 3.39 12.68V17.64L1 20.87L2.5 22L5.27 18.25L5.44 15L7.12 17.34V22H8.97V15.94L7.12 13.33V12.68C7.12 12.24 7.12 11.81 7.23 11.39L7.58 10.19C7.96 10.74 8.42 11.22 8.97 11.63C9.42 11.97 10.68 12.57 11.87 12.86L14 17.8C14.22 17.58 14.5 17.38 14.83 17.24C15.15 17.1 15.5 17.04 15.82 17L12 8L10.16 8.78M15.36 12.12L17.32 16.72L22.95 14.31L21 9.72" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl col-md-12">
+                        <div class="card divShadow">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-7">
+                                        <h6>Disposed</h6>
+                                        <span class="text-bold">0</span>
+                                    </div>
+                                    <div class="col-5">
+                                        <div class="hpx-50 wpx-50 br-5 d-flex align-items-center justify-content-center bg-warning-gradient text-white ms-auto">
+                                            <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24">
+                                                <path d="M21.82,15.42L19.32,19.75C18.83,20.61 17.92,21.06 17,21H15V23L12.5,18.5L15,14V16H17.82L15.6,12.15L19.93,9.65L21.73,12.77C22.25,13.54 22.32,14.57 21.82,15.42M9.21,3.06H14.21C15.19,3.06 16.04,3.63 16.45,4.45L17.45,6.19L19.18,5.19L16.54,9.6L11.39,9.69L13.12,8.69L11.71,6.24L9.5,10.09L5.16,7.59L6.96,4.47C7.37,3.64 8.22,3.06 9.21,3.06M5.05,19.76L2.55,15.43C2.06,14.58 2.13,13.56 2.64,12.79L3.64,11.06L1.91,10.06L7.05,10.14L9.7,14.56L7.97,13.56L6.56,16H11V21H7.4C6.47,21.07 5.55,20.61 5.05,19.76Z" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl col-md-12">
+                        <div class="card divShadow">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-7">
+                                        <h6>Stock Balance</h6>
+                                        <span class="text-bold">@Model.GetBalance()</span>
+                                    </div>
+                                    <div class="col-5">
+                                        <div class="hpx-50 wpx-50 br-5 d-flex align-items-center justify-content-center bg-success-gradient text-white ms-auto">
+                                            <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24">
+                                                <path d="M21.63 16.27L17.76 20.17L16.41 18.8L15 20.22L17.75 23L23.03 17.68L21.63 16.27M14 15C14 16.1 13.1 17 12 17S10 16.1 10 15 10.9 13 12 13 14 13.9 14 15M13 20C13 19.66 13.04 19.33 13.09 19H5.5L3.31 11H20.7L19.86 14.07C20.54 14.17 21.18 14.37 21.76 14.68L22.97 10.27L23 10C23 9.45 22.55 9 22 9H17.21L12.83 2.44C12.64 2.16 12.32 2 12 2S11.36 2.16 11.17 2.45L6.79 9H2C1.45 9 1 9.45 1 10C1 10.09 1 10.18 1.04 10.27L3.58 19.54C3.81 20.38 4.58 21 5.5 21H13.09C13.04 20.67 13 20.34 13 20M12 4.8L14.8 9H9.2L12 4.8Z" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <table class="table text-nowrap mb-0 table-bordered border-top border-bottom divShadow">
+                            <thead>
+                                <tr>
+                                    <th class="bg-transparent border-bottom-0" colspan="2">Available Stock</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    if (Model.StoreCategoryAssets.Count > 0)
+                                    {
+                                        foreach (var sca in Model.StoreCategoryAssets)
+                                        {
+                                            <tr>
+                                                <td class="text-muted fs-15 fw-semibold">@sca.SubCategoryName</td>
+                                                <td class="text-muted fs-15 fw-semibold">@sca.TotalAssets</td>
+                                            </tr>
+                                        }
+                                        <tr>
+                                            <td class="text-muted fs-15 fw-semibold"><span class="text-bold float-end">Total Count:</span></td>
+                                            <td class="text-muted fs-15 fw-semibold"><span class="text-bold">@Model.TotalAssets()</span></td>
+                                        </tr>
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="2">No Assets available!</td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <div id="chart"></div>
+                    </div>
+                </div>
                 <a asp-area="Users" asp-controller="Assets" asp-action="Index" asp-route-id="@TempData["storeId"]" class="btn btn-primary trShadow">
-                    <i class="fe fe-list"></i>&nbsp;Assets
+                    <i class="fe fe-list"></i>&nbsp;Asset List
                 </a>
+
+
+
             </div>
             <div class="card-footer">
                 <a asp-area="Users" asp-controller="Stores" asp-action="Index" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
             </div>
-
-            
         </div>
     </div>
-    
 </div>
-
+<section id="dvChartData" style="display:none;">
+    
+</section>
 @section scripts {
 
-    <!-- PROJECT-LIST JS-->
-    @*<script src="~/assets/js/project-list.js"></script>*@
+    <script src="~/assets/plugins/c3-0.7.20/c3.min.js"></script>
+    <script src="~/assets/plugins/c3-0.7.20/d3-5.8.2.min.js"></script>
+
     <script>
         $(document).ready(function () {
-            //$('#tblAssets').DataTable({
-            //    language: {
-            //        searchPlaceholder: 'Search...',
-            //        sSearch: '',
-            //    }
-            //});
+            $('#tblAssets').DataTable({
+                language: {
+                    searchPlaceholder: 'Search...',
+                    sSearch: '',
+                }
+            });
+            pieChart();
+            
         });
+
+        const pieChart = ()=>{
+            var sData = '@Html.Raw(Json.Serialize(Model.StoreCategoryAssets))';
+            
+            if (sData == "No Records Found" || sData == "") {
+            } else {
+                var Data = JSON.parse(sData);
+                var data = {};
+                var labels = [];
+
+                Data.forEach(function (e) {
+                    labels.push(e.subCategoryName);
+                    data[e.subCategoryName] = e.totalAssets;
+                    //console.log(e.subCategoryName + ' -> ' + e.totalAssets);
+                });
+                chart = c3.generate({
+                    pie: {
+                        label: {
+                            show: true
+                        }
+                    },
+                    data: {
+                        json: [data],
+                        keys: {
+                            value: labels,
+                        },
+                        type: 'pie'
+                    },
+                    legend: {
+                        show: false
+                    }
+                });
+            }
+        }
     </script>
 
 

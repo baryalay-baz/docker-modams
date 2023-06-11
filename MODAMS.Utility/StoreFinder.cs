@@ -5,43 +5,44 @@ namespace MOD_AMS.Models
 {
     public class StoreFinder
     {
-        private int _nDeptId;
-        private List<vwStores> _storeList;
-        private List<vwStores> _storeResult = new List<vwStores>();
-        private List<vwStores> _storeResultTemp = new List<vwStores>();
+        private readonly int _deptId;
 
-        public StoreFinder(int nDeptId, List<vwStores> storeList)
+        private List<vwStore> _storeList;
+        private List<vwStore> _storeResultList = new List<vwStore>();
+        private List<vwStore> _storeResultTempList = new List<vwStore>();
+
+        public StoreFinder(int deptId, List<vwStore> storeList)
         {
-            _nDeptId = nDeptId;
+            _deptId = deptId;
             _storeList = storeList;
         }
-        public List<vwStores> GetStores()
+        public List<vwStore> GetStores()
         {
-            var primaryStore = _storeList.Where(m => m.DepartmentId == _nDeptId).FirstOrDefault();
+            var primaryStore = _storeList.Where(m => m.DepartmentId == _deptId).FirstOrDefault();
             if (primaryStore != null)
             {
                 primaryStore.StoreType = 1;
-                _storeResult.Add(primaryStore);
+                _storeResultList.Add(primaryStore);
             }
             
-            getSubStores(_nDeptId);
-            _storeResult.AddRange(_storeResultTemp.OrderByDescending(m=>m.TotalCost).ToList());
-            return _storeResult;
+            getSubStores(_deptId);
+            _storeResultList.AddRange(_storeResultTempList.OrderByDescending(m=>m.TotalCost).ToList());
+            return _storeResultList;
         }
 
-        private void getSubStores(int? nDeptId)
+        private void getSubStores(int? deptId)
         {
-            List<vwStores> subStores = _storeList.Where(m => m.UpperLevelDeptId == nDeptId).ToList();
+            List<vwStore> subStores = _storeList.Where(m => m.UpperLevelDeptId == deptId).ToList();
 
-            int? nTempDeptId = 0;
+            int? tempDeptId = 0;
             if (subStores.Count > 0)
             {
-                foreach (vwStores store in subStores)
+                foreach (vwStore store in subStores)
                 {
-                    nTempDeptId = store.DepartmentId;
+                    tempDeptId = store.DepartmentId;
                     store.StoreType = 2;
-                    _storeResultTemp.Add(store);
-                    getSubStores(nTempDeptId);
+                    _storeResultTempList.Add(store);
+                    getSubStores(tempDeptId);
                 }
             }
         }

@@ -16,27 +16,28 @@ namespace MODAMSWeb.Areas.Users.Controllers
         private readonly ApplicationDbContext _db;
         private readonly IAMSFunc _func;
         private int _employeeId;
-
+        private int _supervisorEmployeeId;
         public StoresController(ApplicationDbContext db, IAMSFunc func)
         {
             _db = db;
             _func = func;
             _employeeId = _func.GetEmployeeId();
+            _supervisorEmployeeId = _func.GetSupervisorId(_employeeId);
         }
 
         public IActionResult Index()
         {
-            var stores = _db.vwStores.ToList();
+            var stores = _db.vwStores.OrderByDescending(m => m.TotalCost).ToList();
             var allStores = stores;
 
-            if (User.IsInRole("User")) {
-                var nSupervisorId = _func.GetSupervisorId(_employeeId);
-                stores = stores.Where(m => m.EmployeeId == nSupervisorId).ToList();
+            if (User.IsInRole("User"))
+            {
+                stores = stores.Where(m => m.EmployeeId == _supervisorEmployeeId).ToList();
             }
             else if (User.IsInRole("StoreOwner"))
             {
                 stores = stores.Where(m => m.EmployeeId == _employeeId).ToList();
-                vwStores store = stores[0];
+                vwStore store = stores[0];
                 if (store != null)
                 {
                     int nDeptId = (int)store.DepartmentId;
@@ -44,15 +45,50 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     stores = storeFinder.GetStores();
                 }
             }
+
             return View(stores);
         }
 
         public IActionResult StoreDetails(int id)
         {
-            var store = _db.Stores.Where(m => m.Id == id).FirstOrDefault();
-            TempData["storeId"] = store.Id;
-            TempData["storeName"] = store.Name;
-            return View();
+            var vwStore = _db.vwStores.Where(m => m.Id == id).FirstOrDefault();
+
+            var dto = new dtoStore();
+
+            if (vwStore != null)
+            {
+                dto.vwStore = vwStore;
+
+                var storeOwnerId = vwStore.EmployeeId;
+                if (storeOwnerId > 0)
+                {
+                    var employees = _db.Employees.ToList();
+                    var employee = employees.Where(m => m.Id == storeOwnerId).FirstOrDefault();
+                    if (employee != null)
+                    {
+                        dto.employees.Add(employee);
+
+                        var employee_users = employees.Where(m => m.SupervisorEmployeeId == employee.Id).ToList();
+                        if (employee_users != null)
+                        {
+                            dto.employees.AddRange(employee_users);
+                        }
+                    }
+                }
+                var storeCategoryAssets = _db.vwStoreCategoryAssets
+                    .Where(m => m.StoreId == id).ToList();
+
+                var assets = _db.Assets.Where(m=>m.StoreId==id)
+                    .Include(m=>m.SubCategory).Include(m=>m.Condition).Include(m=>m.AssetStatus)
+                    .ToList();
+                
+                dto.storeAssets = assets;
+                dto.StoreCategoryAssets = storeCategoryAssets;
+
+                TempData["storeId"] = id;
+                TempData["storeName"] = vwStore.Name;
+            }
+            return View(dto);
         }
 
     }

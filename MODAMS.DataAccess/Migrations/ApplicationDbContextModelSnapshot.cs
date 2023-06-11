@@ -629,13 +629,16 @@ namespace MODAMS.DataAccess.Migrations
                     b.ToTable("vwEmployees");
                 });
 
-            modelBuilder.Entity("MODAMS.Models.ViewModels.vwStores", b =>
+            modelBuilder.Entity("MODAMS.Models.ViewModels.vwStore", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal?>("DepCost")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("DepartmentId")
                         .HasColumnType("int");
@@ -670,6 +673,24 @@ namespace MODAMS.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("vwStores");
+                });
+
+            modelBuilder.Entity("MODAMS.Models.ViewModels.vwStoreCategoryAsset", b =>
+                {
+                    b.Property<int>("StoreId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SubCategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SubCategoryName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TotalAssets")
+                        .HasColumnType("int");
+
+                    b.ToTable("vwStoreCategoryAssets");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
