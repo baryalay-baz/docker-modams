@@ -15,5 +15,6 @@ namespace MODAMS.Models.ViewModels
         {
             return assets.Count;
         }
+        public bool IsAuthorized { get; set; } = false;
     }
 }

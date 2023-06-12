@@ -163,17 +163,15 @@
                                 }
                             </tbody>
                         </table>
+                        <a asp-area="Users" asp-controller="Assets" asp-action="Index" asp-route-id="@TempData["storeId"]"
+                            class="btn btn-primary trShadow mt-3">
+                            <i class="fe fe-list"></i>&nbsp;Asset List
+                        </a>
                     </div>
                     <div class="col-md-6">
                         <div id="chart"></div>
                     </div>
                 </div>
-                <a asp-area="Users" asp-controller="Assets" asp-action="Index" asp-route-id="@TempData["storeId"]" class="btn btn-primary trShadow">
-                    <i class="fe fe-list"></i>&nbsp;Asset List
-                </a>
-
-
-
             </div>
             <div class="card-footer">
                 <a asp-area="Users" asp-controller="Stores" asp-action="Index" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
@@ -182,7 +180,6 @@
     </div>
 </div>
 <section id="dvChartData" style="display:none;">
-    
 </section>
 @section scripts {
 
@@ -198,12 +195,12 @@
                 }
             });
             pieChart();
-            
+
         });
 
-        const pieChart = ()=>{
+        const pieChart = () => {
             var sData = '@Html.Raw(Json.Serialize(Model.StoreCategoryAssets))';
-            
+
             if (sData == "No Records Found" || sData == "") {
             } else {
                 var Data = JSON.parse(sData);

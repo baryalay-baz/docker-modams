@@ -376,7 +376,7 @@ namespace MODAMS.Utility
             return Math.Round(totalCost, 0);
         }
 
-        public int GetStoreOwnerId(int storeId, int employeeId)
+        public int GetStoreOwnerId(int storeId)
         {
             int departmentId = 0;
             int storeOwnerId = 0;

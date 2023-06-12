@@ -1,4 +1,7 @@
-﻿<style>
+﻿@model MODAMS.Models.ViewModels.dtoDashboard
+<link href="~/assets/plugins/c3-0.7.20/c3.min.css" rel="stylesheet" />
+
+<style>
     .pnlHeight {
         max-height: 170px;
         min-height: 170px;
@@ -121,3 +124,107 @@
         </div>
     </div>
 </div>
+
+<div class="card">
+    
+    <div class="card-body">
+        <div class="row">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <table id="tblCategories" class="table text-nowrap mb-0 table-bordered border-top border-bottom divShadow">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Number of Assets</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                if (Model.CategoryAssets.Count > 0)
+                                {
+                                    foreach (var sca in Model.CategoryAssets)
+                                    {
+                                        <tr>
+                                            <td class="text-muted fs-15 fw-semibold">@sca.CategoryName</td>
+                                            <td class="text-muted fs-15 fw-semibold">@sca.TotalAssets</td>
+                                        </tr>
+                                    }
+                                    //<tr>
+                                    //    <td class="text-muted fs-15 fw-semibold"><span class="text-bold float-end">Total Count:</span></td>
+                                    //    <td class="text-muted fs-15 fw-semibold"><span class="text-bold">@Model.TotalAssets()</span></td>
+                                    //</tr>
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="2">No Assets available!</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-md-6 mt-5">
+                    <div id="chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer">
+
+    </div>
+</div>
+@section scripts {
+
+    <script src="~/assets/plugins/c3-0.7.20/c3.min.js"></script>
+    <script src="~/assets/plugins/c3-0.7.20/d3-5.8.2.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#tblCategories').DataTable({
+                language: {
+                    searchPlaceholder: 'Search...',
+                    sSearch: '',
+                }
+            });
+            pieChart();
+
+        });
+
+        const pieChart = () => {
+            var sData = '@Html.Raw(Json.Serialize(Model.CategoryAssets))';
+
+            if (sData == "No Records Found" || sData == "") {
+            } else {
+                var Data = JSON.parse(sData);
+                var data = {};
+                var labels = [];
+
+                Data.forEach(function (e) {
+                    labels.push(e.categoryName);
+                    data[e.categoryName] = e.totalAssets;
+                    //console.log(e.subCategoryName + ' -> ' + e.totalAssets);
+                });
+                chart = c3.generate({
+                    pie: {
+                        label: {
+                            show: true
+                        }
+                    },
+                    data: {
+                        json: [data],
+                        keys: {
+                            value: labels,
+                        },
+                        type: 'pie'
+                    },
+                    legend: {
+                        show: false
+                    }
+                });
+            }
+        }
+    </script>
+
+
+}

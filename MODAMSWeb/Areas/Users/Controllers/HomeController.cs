@@ -45,7 +45,12 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            var categoryAssets = _db.vwCategoryAssets.ToList();
+            var dto = new dtoDashboard()
+            {
+                CategoryAssets = categoryAssets
+            };
+            return View(dto);
         }
 
         [HttpGet]

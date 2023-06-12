@@ -36,8 +36,6 @@ namespace MODAMSWeb.Areas.Users.Controllers
             var assets = _db.Assets.Where(m => m.StoreId == id).Include(m => m.AssetStatus)
                 .Include(m => m.SubCategory).Include(m => m.Condition).Include(m => m.Donor)
                 .Include(m => m.Store).ToList();
-            TempData["storeId"] = id;
-            TempData["storeName"] = _func.GetStoreName(id);
 
             //var categories = _db.vwStoreCategoryAssets.Where(m => m.StoreId == id).ToList();
 
@@ -46,9 +44,16 @@ namespace MODAMSWeb.Areas.Users.Controllers
             var dto = new dtoAssets()
             {
                 assets = assets,
-                StoreOwnerId = _func.GetStoreOwnerId(id, empId)
+                StoreOwnerId = _func.GetStoreOwnerId(id)
                 //categories = categories
             };
+
+            if (empId == _func.GetStoreOwnerId(id))
+                dto.IsAuthorized = true;
+
+                TempData["storeId"] = id;
+            TempData["storeName"] = _func.GetStoreName(id);
+
 
             return View(dto);
         }
@@ -57,11 +62,19 @@ namespace MODAMSWeb.Areas.Users.Controllers
         [HttpGet]
         public IActionResult CreateAsset(int id)
         {
+            var empId = User.IsInRole("User") ? _func.GetSupervisorId(_employeeId) : _employeeId;
+            if (_func.GetStoreOwnerId(id) != empId) {
+                TempData["error"] = "You are not authorized to perform this action!";
+                return RedirectToAction("Index", "Assets", new { area = "Users", id = id });
+            }
+
             var dto = new dtoAsset();
             dto = PopulateDtoAsset(dto);
 
             TempData["storeId"] = id;
             TempData["storeName"] = _func.GetStoreName(id);
+
+
 
             return View(dto);
         }
@@ -71,6 +84,13 @@ namespace MODAMSWeb.Areas.Users.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateAsset(dtoAsset dto)
         {
+            var empId = User.IsInRole("User") ? _func.GetSupervisorId(_employeeId) : _employeeId;
+            if (_func.GetStoreOwnerId(dto.StoreId) != empId)
+            {
+                TempData["error"] = "You are not authorized to perform this action!";
+                return RedirectToAction("Index", "Assets", new { area = "Users", id = dto.StoreId });
+            }
+
             if (ModelState.IsValid)
             {
                 var asset = _db.Assets.Where(m => m.SerialNo == dto.SerialNo).FirstOrDefault();
@@ -187,6 +207,13 @@ namespace MODAMSWeb.Areas.Users.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditAsset(dtoAsset dto)
         {
+            var empId = User.IsInRole("User") ? _func.GetSupervisorId(_employeeId) : _employeeId;
+            if (_func.GetStoreOwnerId(dto.StoreId) != empId)
+            {
+                TempData["error"] = "You are not authorized to perform this action!";
+                return RedirectToAction("Index", "Assets", new { area = "Users", id = dto.StoreId });
+            }
+
             if (ModelState.IsValid)
             {
                 var assetInDb = await _db.Assets.Where(m => m.Id == dto.Id).FirstOrDefaultAsync();
