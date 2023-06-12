@@ -141,7 +141,27 @@
     $(document).ready(() => {
         setMode();
         loadProfileData();
+
+        $('.page-link').on("click", (e)=>{
+            formatTables();
+        });
+
+        formatTables();
+        
     });
+
+    const formatTables = ()=>{
+   
+        $('thead').removeClass("bg-primary-gradient ms-auto divShadow").addClass("bg-primary-gradient ms-auto divShadow");
+        $('th').addClass("text-white");
+
+        //$('.even').addClass("bg-light-transparent");
+        //$('.odd').removeClass("bg-light-transparent");
+
+        
+    }
+
+    
 
     const setMode = () => {
         if(localStorage.getItem("displayMode")=="dark-mode"){

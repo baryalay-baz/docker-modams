@@ -6,6 +6,16 @@
         max-height: 170px;
         min-height: 170px;
     }
+
+    .legend span {
+        padding-block: 3px;
+        padding-left: 5px;
+        padding-right: 5px;
+        display: inline-block;
+        text-align: center;
+        cursor: pointer;
+        color: white;
+    }
 </style>
 <div class="page-header">
     <div>
@@ -132,10 +142,10 @@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <table id="tblCategories" class="table text-nowrap mb-0 table-bordered border-top border-bottom divShadow">
-                        <thead>
+                        <thead class="bg-primary-gradient ms-auto divShadow">
                             <tr>
-                                <th>Category</th>
-                                <th>Number of Assets</th>
+                                <th class="text-white">Category</th>
+                                <th class="text-white">Number of Assets</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -164,7 +174,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="col-md-6 mt-5">
+                <div class="col-md-6 mt-5 container">
                     <div id="chart"></div>
                 </div>
             </div>
@@ -182,13 +192,16 @@
     <script>
         $(document).ready(function () {
             $('#tblCategories').DataTable({
-                language: {
-                    searchPlaceholder: 'Search...',
-                    sSearch: '',
-                }
+                "createdRow": function (row, data, dataIndex) {
+                    if (dataIndex % 2 == 1) {
+                        //$(row).addClass('bg-light-transparent');
+                    }
+                },
+                
             });
             pieChart();
-
+            $('.even').addClass("bg-light-transparent");
+            $('.odd').removeClass("bg-light-transparent");
         });
 
         const pieChart = () => {
@@ -220,9 +233,33 @@
                     },
                     legend: {
                         show: false
+                    },
+                    color: {
+                        pattern: ['#1f77b4', '#aec7e8', '#ff7f0e', '#ffbb78', '#2ca02c', '#98df8a', '#d62728', '#ff9896', '#9467bd', '#c5b0d5', '#8c564b', '#c49c94', '#e377c2', '#f7b6d2', '#7f7f7f', '#c7c7c7', '#bcbd22', '#dbdb8d', '#17becf', '#9edae5']
                     }
                 });
+                d3.select('.container').insert('div', '.chart').attr('class', 'legend w-100 text-center p-2').selectAll('span')
+                    .data(labels)
+                    .enter().append('span')
+                    .attr('data-id', function (id) { return id; })
+                    .html(function (id) { return id; })
+                    .each(function (id) {
+                        d3.select(this).style('background-color', chart.color(id));
+                    })
+                    .on('mouseover', function (id) {
+                        chart.focus(id);
+                    })
+                    .on('mouseout', function (id) {
+                        chart.revert();
+                    })
+                    .on('click', function (id) {
+                        chart.toggle(id);
+                    });
             }
+        }
+
+        function toggle(id) {
+            chart.toggle(id);
         }
     </script>
 

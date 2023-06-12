@@ -3,6 +3,18 @@
 @*<link href="~/assets/plugins/c3/c3.min.css" rel="stylesheet" />*@
 <link href="~/assets/plugins/c3-0.7.20/c3.min.css" rel="stylesheet" />
 
+<style>
+    .legend span {
+        padding-block: 3px;
+        padding-left: 5px;
+        padding-right: 5px;
+        display: inline-block;
+        text-align: center;
+        cursor: pointer;
+        color: white;
+    }
+</style>
+
 <div class="page-header">
     <div>
         <h1 class="page-title">Store Details</h1>
@@ -132,10 +144,11 @@
                 <br />
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <table class="table text-nowrap mb-0 table-bordered border-top border-bottom divShadow">
-                            <thead>
+                        <table id="tblCategories" class="table text-nowrap mb-0 table-bordered border-top border-bottom divShadow">
+                            <thead class="bg-primary-gradient ms-auto divShadow">
                                 <tr>
-                                    <th class="bg-transparent border-bottom-0" colspan="2">Available Stock</th>
+                                    <th class="text-white">Category</th>
+                                    <th class="text-white">Total Assets</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -149,16 +162,6 @@
                                                 <td class="text-muted fs-15 fw-semibold">@sca.TotalAssets</td>
                                             </tr>
                                         }
-                                        <tr>
-                                            <td class="text-muted fs-15 fw-semibold"><span class="text-bold float-end">Total Count:</span></td>
-                                            <td class="text-muted fs-15 fw-semibold"><span class="text-bold">@Model.TotalAssets()</span></td>
-                                        </tr>
-                                    }
-                                    else
-                                    {
-                                        <tr>
-                                            <td colspan="2">No Assets available!</td>
-                                        </tr>
                                     }
                                 }
                             </tbody>
@@ -168,8 +171,8 @@
                             <i class="fe fe-list"></i>&nbsp;Asset List
                         </a>
                     </div>
-                    <div class="col-md-6">
-                        <div id="chart"></div>
+                    <div class="col-md-6 container">
+                        <div id="chart" class="mt-5"></div>
                     </div>
                 </div>
             </div>
@@ -185,15 +188,20 @@
 
     <script src="~/assets/plugins/c3-0.7.20/c3.min.js"></script>
     <script src="~/assets/plugins/c3-0.7.20/d3-5.8.2.min.js"></script>
-
+    
     <script>
         $(document).ready(function () {
-            $('#tblAssets').DataTable({
-                language: {
-                    searchPlaceholder: 'Search...',
-                    sSearch: '',
-                }
+            $('#tblCategories').DataTable({
+                "createdRow": function (row, data, dataIndex) {
+                    if (dataIndex % 2 == 1) {
+                        //$(row).addClass('bg-light-transparent');
+                    }
+                },
             });
+            $('.even').addClass("bg-light-transparent");
+            $('.odd').removeClass("bg-light-transparent");
+
+
             pieChart();
 
         });
@@ -226,10 +234,36 @@
                         type: 'pie'
                     },
                     legend: {
-                        show: false
+                        show: false,
+                        position: 'center'
+
+                    },
+                    color: {
+                        pattern: ['#1f77b4', '#aec7e8', '#ff7f0e', '#ffbb78', '#2ca02c', '#98df8a', '#d62728', '#ff9896', '#9467bd', '#c5b0d5', '#8c564b', '#c49c94', '#e377c2', '#f7b6d2', '#7f7f7f', '#c7c7c7', '#bcbd22', '#dbdb8d', '#17becf', '#9edae5']
                     }
                 });
+
+                d3.select('.container').insert('div', '.chart').attr('class', 'legend w-100 text-center p-2').selectAll('span')
+                    .data(labels)
+                    .enter().append('span')
+                    .attr('data-id', function (id) { return id; })
+                    .html(function (id) { return id; })
+                    .each(function (id) {
+                        d3.select(this).style('background-color', chart.color(id));
+                    })
+                    .on('mouseover', function (id) {
+                        chart.focus(id);
+                    })
+                    .on('mouseout', function (id) {
+                        chart.revert();
+                    })
+                    .on('click', function (id) {
+                        chart.toggle(id);
+                    });
             }
+        }
+        function toggle(id) {
+            chart.toggle(id);
         }
     </script>
 

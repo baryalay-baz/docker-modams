@@ -49,17 +49,17 @@
             <div class="card-body project-list-table-container">
                 <div class="table-responsive">
                     <table id="tblAssets" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
-                        <thead class="table-head">
+                        <thead class="bg-primary-gradient ms-auto divShadow">
                             <tr>
-                                <th class="bg-transparent border-bottom-0 w-5" width="10%">S.No</th>
-                                <th class="bg-transparent border-bottom-0">Category</th>
-                                <th class="bg-transparent border-bottom-0">Make</th>
-                                <th class="bg-transparent border-bottom-0">Model</th>
-                                <th class="bg-transparent border-bottom-0">Asset Name</th>
-                                <th class="bg-transparent border-bottom-0">Plate No.</th>
-                                <th class="bg-transparent border-bottom-0">Serial No.</th>
-                                <th class="bg-transparent border-bottom-0">Status</th>
-                                <th class="bg-transparent border-bottom-0 no-btn">Action</th>
+                                <th class="text-white bg-transparent border-bottom-0 w-5" width="10%">S.No</th>
+                                <th class="text-white bg-transparent border-bottom-0">Category</th>
+                                <th class="text-white bg-transparent border-bottom-0">Make</th>
+                                <th class="text-white bg-transparent border-bottom-0">Model</th>
+                                <th class="text-white bg-transparent border-bottom-0">Asset Name</th>
+                                <th class="text-white bg-transparent border-bottom-0">Plate No.</th>
+                                <th class="text-white bg-transparent border-bottom-0">Serial No.</th>
+                                <th class="text-white bg-transparent border-bottom-0">Status</th>
+                                <th class="text-white bg-transparent border-bottom-0 no-btn">Action</th>
                             </tr>
                         </thead>
                         <tbody class="table-body">
@@ -70,6 +70,7 @@
                                 {
                                     nCounter++;
                                     sCounter = (nCounter < 10) ? "0" + nCounter.ToString() : nCounter.ToString();
+
                                     <tr>
                                         <td class="text-muted text-center fs-15 fw-semibold">@sCounter.</td>
                                         <td class="text-muted fs-15 fw-semibold">@asset.SubCategory.SubCategoryName</td>
@@ -139,11 +140,14 @@
     <script>
         $(document).ready(function () {
             $('#tblAssets').DataTable({
-                language: {
-                    searchPlaceholder: 'Search...',
-                    sSearch: '',
-                }
+                "createdRow": function (row, data, dataIndex) {
+                    if (dataIndex % 2 == 1) {
+                        $(row).addClass('bg-light-transparent');
+                    }
+                },
             });
+            $('.even').addClass("bg-light-transparent");
+            $('.odd').removeClass("bg-light-transparent");
         });
     </script>
 
