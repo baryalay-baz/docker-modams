@@ -167,36 +167,37 @@ namespace MODAMSWeb.Areas.Users.Controllers
         public async Task<IActionResult> UploadPicture(IFormFile? file)
         {
             string wwwRootPath = _webHostEnvironment.WebRootPath;
-            if (file != null)
+
+            if (file == null || file.Length == 0)
             {
-                string fileName = _employeeId.ToString() + Path.GetExtension(file.FileName);
-                string facesPath = Path.Combine(wwwRootPath, @"assets\images\faces");
-
-                try
-                {
-                    using (var fileStream = new FileStream(Path.Combine(facesPath, fileName), FileMode.Create))
-                    {
-                        await file.CopyToAsync(fileStream);
-                    }
-                    var employee = _db.Employees.Where(m => m.Id == _employeeId).FirstOrDefault();
-
-                    if (employee != null)
-                    {
-                        employee.ImageUrl = "/assets/images/faces/" + fileName;
-                        await _db.SaveChangesAsync();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    TempData["error"] = "Error occured! <br /> " + ex.Message;
-                    return RedirectToAction("Profile", "Home");
-                }
-                return RedirectToAction("Profile", "Home");
-            }
-            else {
                 TempData["error"] = "Please select a file to upload!";
                 return RedirectToAction("Profile", "Home");
             }
+
+            string fileName = _employeeId.ToString() + Path.GetExtension(file.FileName);
+            string facesPath = Path.Combine(wwwRootPath, @"assets\images\faces");
+
+            try
+            {
+                using (var fileStream = new FileStream(Path.Combine(facesPath, fileName), FileMode.Create))
+                {
+                    await file.CopyToAsync(fileStream);
+                }
+                var employee = _db.Employees.Where(m => m.Id == _employeeId).FirstOrDefault();
+
+                if (employee != null)
+                {
+                    employee.ImageUrl = "/assets/images/faces/" + fileName;
+                    await _db.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["error"] = $"An error occurred while uploading the file: {ex.Message}";
+                return RedirectToAction("Profile", "Home");
+            }
+            return RedirectToAction("Profile", "Home");
+
         }
         public string GetProfileData()
         {
