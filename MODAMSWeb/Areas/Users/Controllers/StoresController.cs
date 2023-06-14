@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MOD_AMS.Models;
 using MODAMS.DataAccess.Data;
+using MODAMS.Models;
 using MODAMS.Models.ViewModels;
 using MODAMS.Utility;
 using System.Data;
@@ -37,7 +38,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             else if (User.IsInRole("StoreOwner"))
             {
                 stores = stores.Where(m => m.EmployeeId == _employeeId).ToList();
-                if (stores.Count>0)
+                if (stores.Count > 0)
                 {
                     vwStore store = stores.First();
                     if (store != null)
@@ -47,12 +48,55 @@ namespace MODAMSWeb.Areas.Users.Controllers
                         stores = storeFinder.GetStores();
                     }
                 }
-                else {
+                else
+                {
                     stores = new List<vwStore>();
                 }
             }
 
-            return View(stores);
+            var storeEmployees = new List<vwStoreEmployee>();
+
+            foreach (var store in stores)
+            {
+                if (store != null)
+                {
+                    if (store.EmployeeId > 0)
+                    {
+                        var empl = _db.Employees.Where(m => m.Id == store.EmployeeId).FirstOrDefault();
+                        if (empl != null)
+                        {
+                            vwStoreEmployee se = new vwStoreEmployee()
+                            {
+                                Id = empl.Id,
+                                ImageUrl = empl.ImageUrl,
+                                StoreId = store.Id
+                            };
+                            storeEmployees.Add(se);
+
+                            //Add store users
+                            var storeUsers = _db.Employees.Where(m => m.SupervisorEmployeeId == empl.Id).ToList();
+                            foreach (var user in storeUsers)
+                            {
+                                vwStoreEmployee su = new vwStoreEmployee()
+                                {
+                                    Id = user.Id,
+                                    ImageUrl = user.ImageUrl,
+                                    StoreId = store.Id
+                                };
+                                storeEmployees.Add(su);
+                            }
+                        }
+                    }
+                }
+            }
+
+            var dto = new dtoStores()
+            {
+                vwStores = stores,
+                storeEmployees = storeEmployees
+            };
+
+            return View(dto);
         }
 
         public IActionResult StoreDetails(int id)

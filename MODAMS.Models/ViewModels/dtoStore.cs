@@ -16,7 +16,6 @@ namespace MODAMS.Models.ViewModels
 
         public List<Asset> storeAssets { get; set; } = new List<Asset>();
 
-
         public List<Asset> GetSubCategoryAssets(int id) {
             return storeAssets.Where(m => m.SubCategoryId == id).ToList();
         }
