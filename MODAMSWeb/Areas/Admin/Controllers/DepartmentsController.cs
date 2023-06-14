@@ -160,14 +160,14 @@ namespace MODAMSWeb.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Administrator, StoreOwner")]
+        [Authorize(Roles = "SeniorManagement, Administrator, StoreOwner")]
         public IActionResult OrganizationChart()
         {
             return View();
         }
 
         [HttpGet]
-        [Authorize(Roles = "Administrator, StoreOwner")]
+        [Authorize(Roles = "SeniorManagement, Administrator, StoreOwner")]
         public string GetDepartments()
         {
             string sResult = "No Records Found";
@@ -180,7 +180,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Administrator, StoreOwner")]
+        [Authorize(Roles = "SeniorManagement, Administrator, StoreOwner")]
         public IActionResult DepartmentHeads(int id)
         {
 

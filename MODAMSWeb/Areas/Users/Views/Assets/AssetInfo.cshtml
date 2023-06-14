@@ -40,31 +40,36 @@
             </div>
         </div>
     </div>
-
     <div class="col-md-12">
         <div class="tab-content">
             <div class="tab-pane active" id="tab_1">
                 <!-- ROW -->
                 <div class="row">
                     <div class="col-xl-9 col-lg-12">
-                        <div class="card">
-                            <div class="card-header border-bottom d-block">
+                        <div class="card ">
+                            <div class="card-header border-bottom d-block divShadow bg-primary-gradient text-white">
                                 <div class="row align-items-center">
                                     <div class="col">
-                                        <h4 class="mb-1">@Model.Asset.Make - @Model.Asset.Model - @Model.Asset.Year <a asp-action="EditAsset" asp-controller="Assets" asp-route-id="@Model.Asset.Id" class="ms-1" id="checkElement"><i class="fe fe-edit"></i></a></h4>
-                                        @*<div class="d-sm-flex d-block">
-                                        <div class="text-muted pe-2 project-date">11 Jan 21</div>
-                                        <div class="text-muted ms-3 project-status">In Progress</div>
-                                        </div>*@
-                                    </div>
+                                        <h4 class="mb-1">
+                                            @Model.Asset.Make - @Model.Asset.Model - @Model.Asset.Year
+                                            @{
+                                                var employeeId = _func.GetEmployeeId();
 
+                                                employeeId = (User.IsInRole("User")) ? _func.GetSupervisorId(employeeId) : employeeId;
+                                                if (employeeId == _func.GetStoreOwnerId(_func.GetStoreId(Model.Asset.Id)))
+                                                {
+                                                    <a asp-action="EditAsset" asp-controller="Assets" asp-route-id="@Model.Asset.Id" class="ms-1" id="checkElement"><i class="fe fe-edit"></i></a>
+                                                }
+
+                                            }
+                                        </h4>
+                                    </div>
                                 </div>
                             </div>
                             <div class="card-body p-0">
                                 <div class="border-top"></div>
                                 <div class="table-responsive p-5">
                                     <table class="table row table-borderless">
-
                                         <tbody class="col-lg-12 col-xl-4 p-0">
                                             <tr>
                                                 <td><strong>Asset Category :</strong> @Model.Asset.SubCategory.SubCategoryName</td>
@@ -76,9 +81,7 @@
                                                 <td><strong>Condition : </strong> @Model.Asset.Condition.ConditionName</td>
                                             </tr>
                                         </tbody>
-
                                         <tbody class="col-lg-12 col-xl-4 p-0 border-top-0">
-
                                             <tr>
                                                 <td><strong>Asset Name :</strong> @Model.Asset.Name</td>
                                             </tr>
@@ -137,7 +140,6 @@
                                                 </tbody>
                                             }
                                         }
-
                                         <tbody class="col-lg-12 col-xl-8 p-0 border-top-0">
                                             <tr>
                                                 <td><strong>Specifications : </strong> @Model.Asset.Specifications</td>
@@ -330,7 +332,7 @@
                                         else
                                         {
                                             <li class="col-xs-6 col-sm-4 col-md-4 col-xl-4 mb-5 border-bottom-0">
-                                                    <span>No pictures uploaded!</span>
+                                                <span>No pictures uploaded!</span>
                                             </li>
                                         }
 
@@ -390,7 +392,7 @@
     <script src="~/assets/plugins/gallery/lg-share.js"></script>
 
     <script>
-        $(document).ready(function(){
+        $(document).ready(function () {
             $('#tblDocuments').DataTable({
                 language: {
                     searchPlaceholder: 'Search...',
@@ -403,7 +405,7 @@
 
             setTab();
         });
-        const setTab = ()=>{
+        const setTab = () => {
             var tab = '@TempData["tab"]';
 
             if (tab == "1" || tab == null) {

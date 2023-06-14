@@ -193,6 +193,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     dto.Remarks = assetInDb.Remarks;
                     dto.AssetStatusId = assetInDb.AssetStatusId;
 
+                    dto.StoreId = assetInDb.StoreId;
+
                     TempData["storeId"] = assetInDb.StoreId;
                     TempData["storeName"] = _func.GetStoreName(assetInDb.StoreId);
 
@@ -277,8 +279,14 @@ namespace MODAMSWeb.Areas.Users.Controllers
         public IActionResult AssetDocuments(int id)
         {
             var dto = new dtoAssetDocument();
-
             dto = PopulateDtoAssetDocument(dto, id);
+
+            var asset = _db.Assets.Where(m=>m.Id==id).FirstOrDefault();
+            if(asset != null)
+            {
+                TempData["assetInfo"] = asset.Name + " - " + asset.Model + " - " + asset.Year;
+            }
+
             int nStoreId = _func.GetStoreId(id);
             string sStoreName = _func.GetStoreName(nStoreId);
 
@@ -437,6 +445,12 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             var storeId = _func.GetStoreId(id);
             var storeName = _func.GetStoreName(storeId);
+
+            var asset = _db.Assets.Where(m => m.Id == id).FirstOrDefault();
+            if (asset != null)
+            {
+                TempData["assetInfo"] = asset.Name + " - " + asset.Model + " - " + asset.Year;
+            }
 
             TempData["storeId"] = storeId;
             TempData["storeName"] = storeName;

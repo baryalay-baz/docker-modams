@@ -22,6 +22,19 @@
 <div class="row">
     <div class="col-md-12">
         <div class="card">
+            <div class="card-body p-4  divShadow">
+                <div class="d-flex align-items-center justify-content-between">
+                    <h4 class="m-0">@TempData["assetInfo"]</h4>
+                    <div class="d-sm-flex align-items-center">
+                        <div class="btn-list mx-4">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="card">
 
             <div class="card-body project-list-table-container">
                 <div class="row">
@@ -110,14 +123,18 @@
 
                                     <div class="form-group">
                                         <label class="form-label" id="lblDocumentName"></label>
-                                        <input class="form-control file-input form-control-sm" type="file" id="file" name="file">
-                                        <span asp-validation-for="DocumentTypeId" class="text-danger"></span>
+                                        <input class="form-control file-input form-control-sm" type="file" id="file" name="file" required>
+                                        <div class="invalid-feedback">
+                                            Please choose a file to upload.
+                                        </div>
                                     </div>
+
                                     <div class="form-group">
                                         <button class="btn btn-primary btn-sm"><i class="fa fa-solid fa-upload"></i> Upload</button>
                                         <button class="btn btn-secondary btn-sm" id="btnCancel"><i class="fa fa-times-circle-o"></i> Cancel</button>
                                     </div>
                                 </form>
+
                             </div>
 
                         </div>
