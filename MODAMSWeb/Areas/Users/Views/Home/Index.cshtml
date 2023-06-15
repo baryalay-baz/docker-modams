@@ -136,7 +136,7 @@
 </div>
 
 <div class="card">
-    
+
     <div class="card-body">
         <div class="row">
             <div class="row">
@@ -155,7 +155,11 @@
                                     foreach (var sca in Model.CategoryAssets)
                                     {
                                         <tr>
-                                            <td class="text-muted fs-15 fw-semibold">@sca.CategoryName</td>
+                                            <td class="text-muted fs-15 fw-semibold">
+                                                <a asp-action="AssetList" asp-controller="Assets" 
+                                                asp-route-id="@sca.Id"
+                                                class="text-gray-dark">@sca.CategoryName</a>
+                                            </td>
                                             <td class="text-muted fs-15 fw-semibold">@sca.TotalAssets</td>
                                         </tr>
                                     }
@@ -181,7 +185,6 @@
         </div>
     </div>
     <div class="card-footer">
-
     </div>
 </div>
 @section scripts {
@@ -197,7 +200,7 @@
                         //$(row).addClass('bg-light-transparent');
                     }
                 },
-                
+
             });
             pieChart();
             $('.even').addClass("bg-light-transparent");

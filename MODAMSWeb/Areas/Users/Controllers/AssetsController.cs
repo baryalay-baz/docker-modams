@@ -36,8 +36,9 @@ namespace MODAMSWeb.Areas.Users.Controllers
             var assets = _db.Assets.Where(m => m.StoreId == id).Include(m => m.AssetStatus)
                 .Include(m => m.SubCategory).Include(m => m.Condition).Include(m => m.Donor)
                 .Include(m => m.Store).ToList();
-            
-            if (subCategoryId > 0) {
+
+            if (subCategoryId > 0)
+            {
                 assets = assets.Where(m => m.SubCategoryId == subCategoryId).ToList();
             }
             //var categories = _db.vwStoreCategoryAssets.Where(m => m.StoreId == id).ToList();
@@ -54,11 +55,28 @@ namespace MODAMSWeb.Areas.Users.Controllers
             if (empId == _func.GetStoreOwnerId(id))
                 dto.IsAuthorized = true;
 
-                TempData["storeId"] = id;
+            TempData["storeId"] = id;
             TempData["storeName"] = _func.GetStoreName(id);
 
 
             return View(dto);
+        }
+
+        public IActionResult AssetList(int id)
+        {
+
+            var assets = _db.Assets.Include(m => m.AssetStatus)
+                .Include(m => m.SubCategory).Include(m => m.Condition).Include(m => m.Donor)
+                .Include(m => m.Store).ToList();
+
+            if (id > 0)
+            {
+                assets = assets.Where(m => m.SubCategory.CategoryId == id).ToList();
+            }
+
+            TempData["categoryName"] = _db.Categories.Where(m => m.Id == id).Select(m => m.CategoryName).FirstOrDefault();
+
+            return View(assets);
         }
 
         [Authorize(Roles = "StoreOwner, User")]
@@ -66,7 +84,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
         public IActionResult CreateAsset(int id)
         {
             var empId = User.IsInRole("User") ? _func.GetSupervisorId(_employeeId) : _employeeId;
-            if (_func.GetStoreOwnerId(id) != empId) {
+            if (_func.GetStoreOwnerId(id) != empId)
+            {
                 TempData["error"] = "You are not authorized to perform this action!";
                 return RedirectToAction("Index", "Assets", new { area = "Users", id = id });
             }
@@ -284,8 +303,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
             var dto = new dtoAssetDocument();
             dto = PopulateDtoAssetDocument(dto, id);
 
-            var asset = _db.Assets.Where(m=>m.Id==id).FirstOrDefault();
-            if(asset != null)
+            var asset = _db.Assets.Where(m => m.Id == id).FirstOrDefault();
+            if (asset != null)
             {
                 TempData["assetInfo"] = asset.Name + " - " + asset.Model + " - " + asset.Year;
             }
@@ -360,7 +379,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
         }
 
         [HttpGet]
-        public IActionResult AssetInfo(int id, int page = 1, int tab = 1)
+        public IActionResult AssetInfo(int id, int page = 1, int tab = 1, int categoryId = 0)
         {
             var dto = new dtoAssetInfo();
 
@@ -373,6 +392,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 .FirstOrDefault();
 
             var documents = _db.AssetDocuments.Where(m => m.AssetId == id).ToList();
+
+            TempData["categoryId"] = categoryId;
 
             dto.Documents = documents;
             if (asset != null)
@@ -389,7 +410,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             var assetPictures = _db.AssetPictures.Where(m => m.AssetId == id).ToList();
 
             var dtoAssetPictures = new dtoAssetPictures(assetPictures, 6);
-            
+
             TempData["tab"] = tab.ToString();
 
             dto.dtoAssetPictures = dtoAssetPictures;
@@ -405,7 +426,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 var assetDocument = await _db.AssetDocuments.Where(m => m.Id == id).FirstOrDefaultAsync();
                 if (assetDocument != null)
                 {
-                    
+
                     var sFileName = assetDocument.DocumentUrl.ToString();
                     sFileName = sFileName.Substring(16, sFileName.Length - 16);
 

@@ -9,9 +9,20 @@
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">Dashboard</a></li>
-            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Stores" asp-action="Index">Stores</a></li>
-            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Stores" asp-action="StoreDetails" asp-route-id="@TempData["storeId"]">@TempData["storeName"]</a></li>
-            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Assets" asp-action="Index" asp-route-id="@TempData["storeId"]">Assets</a></li>
+            @{
+                int categoryId = Convert.ToInt32(TempData["categoryId"]);
+
+                if (categoryId > 0)
+                {
+                    <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Assets" asp-action="AssetList" asp-route-id="@categoryId">Asset List</a></li>
+                }
+                else
+                {
+                    <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Stores" asp-action="Index">Stores</a></li>
+                    <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Stores" asp-action="StoreDetails" asp-route-id="@TempData["storeId"]">@TempData["storeName"]</a></li>
+                    <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Assets" asp-action="Index" asp-route-id="@TempData["storeId"]">Assets</a></li>
+                }
+            }            
             <li class="breadcrumb-item active" aria-current="page">Asset Information</li>
         </ol>
     </div>
@@ -372,7 +383,17 @@
         </div>
         <div class="card">
             <div class="card-footer">
-                <a asp-action="Index" asp-controller="Assets" asp-route-id="@Model.Asset.StoreId" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
+                @{
+                    if (categoryId > 0)
+                    {
+                        <a asp-action="AssetList" asp-controller="Assets" asp-route-id="@categoryId" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
+                    }
+                    else
+                    {
+                        <a asp-action="Index" asp-controller="Assets" asp-route-id="@Model.Asset.StoreId" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
+                    }
+                }
+                
             </div>
         </div>
 
