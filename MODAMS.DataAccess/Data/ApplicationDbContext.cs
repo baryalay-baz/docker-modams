@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-
-
 using MODAMS.Models;
 using MODAMS.Models.ViewModels;
 using System.Reflection.Emit;
@@ -35,6 +33,7 @@ namespace MODAMS.DataAccess.Data
         public DbSet<AssetDocument> AssetDocuments { get; set; }
         public DbSet<AssetDocumentChecklist> AssetDocumentChecklist { get; set; }
         public DbSet<AssetPicture> AssetPictures { get; set; }
+        public DbSet<Log> Log { get; set; }
 
 
         //Section for Views

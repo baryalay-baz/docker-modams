@@ -59,6 +59,7 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddSingleton<IEmailSender, EmailSender>();
 builder.Services.AddScoped<IAMSFunc, AMSFunc>();
+
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();

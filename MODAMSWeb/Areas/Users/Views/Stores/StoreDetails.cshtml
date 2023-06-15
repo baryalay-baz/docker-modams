@@ -158,8 +158,17 @@
                                         foreach (var sca in Model.StoreCategoryAssets)
                                         {
                                             <tr>
-                                                <td class="text-muted fs-15 fw-semibold">@sca.SubCategoryName</td>
-                                                <td class="text-muted fs-15 fw-semibold">@sca.TotalAssets</td>
+                                                <td class="text-muted fs-15 fw-semibold">
+                                                    <a asp-action="Index" asp-controller="Assets"
+                                                       asp-route-id="@sca.StoreId"
+                                                       asp-route-subCategoryId="@sca.SubCategoryId"
+                                                       class="text-gray-dark">
+                                                        @sca.SubCategoryName
+                                                    </a>
+                                                </td>
+                                                <td class="text-muted text-gray-dark fs-15 fw-semibold">
+                                                    @sca.TotalAssets
+                                                </td>
                                             </tr>
                                         }
                                     }
@@ -167,7 +176,7 @@
                             </tbody>
                         </table>
                         <a asp-area="Users" asp-controller="Assets" asp-action="Index" asp-route-id="@TempData["storeId"]"
-                            class="btn btn-primary-gradient trShadow mt-3">
+                           class="btn btn-primary-gradient trShadow mt-3">
                             <i class="fe fe-list"></i>&nbsp;Asset List
                         </a>
                     </div>
@@ -188,7 +197,7 @@
 
     <script src="~/assets/plugins/c3-0.7.20/c3.min.js"></script>
     <script src="~/assets/plugins/c3-0.7.20/d3-5.8.2.min.js"></script>
-    
+
     <script>
         $(document).ready(function () {
             $('#tblCategories').DataTable({

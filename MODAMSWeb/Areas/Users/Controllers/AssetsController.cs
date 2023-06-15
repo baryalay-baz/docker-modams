@@ -31,12 +31,15 @@ namespace MODAMSWeb.Areas.Users.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
-        public IActionResult Index(int id)
+        public IActionResult Index(int id, int subCategoryId = 0)
         {
             var assets = _db.Assets.Where(m => m.StoreId == id).Include(m => m.AssetStatus)
                 .Include(m => m.SubCategory).Include(m => m.Condition).Include(m => m.Donor)
                 .Include(m => m.Store).ToList();
-
+            
+            if (subCategoryId > 0) {
+                assets = assets.Where(m => m.SubCategoryId == subCategoryId).ToList();
+            }
             //var categories = _db.vwStoreCategoryAssets.Where(m => m.StoreId == id).ToList();
 
             var empId = User.IsInRole("User") ? _func.GetSupervisorId(_employeeId) : _employeeId;
