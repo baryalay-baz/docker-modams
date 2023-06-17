@@ -1,4 +1,4 @@
-﻿@model List<MODAMS.Models.Asset>
+﻿@model MODAMS.Models.ViewModels.dtoAssetList
 
 <div class="page-header">
     <div>
@@ -16,19 +16,17 @@
         <div class="card divShadow">
             <div class="card-body p-4">
                 <div class="d-flex align-items-center justify-content-between">
-                    <h4 class="m-0">@TempData["categoryName"]</h4>
-                    <div class="d-sm-flex align-items-center">
-                        <div class="btn-list mx-4">
-                        </div>
-                    </div>
+                    <h4 class="m-0">@TempData["categoryName"] (Count: @Model.TotalAssets())</h4>
+                    <select asp-for="@Model.CategoryId" asp-items="@Model.CategorySelectList"
+                            class="form-control select2 form-select">
+                        <option value="0">All Assets</option>
+                    </select>
                 </div>
             </div>
         </div>
     </div>
     <div class="col-md-12 mb-3">
-        <div class="btn-list">
-
-        </div>
+        
     </div>
     <div class="col-12 col-sm-12">
         <div class="card">
@@ -37,23 +35,23 @@
                     <table id="tblAssets" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
                         <thead class="bg-primary-gradient ms-auto divShadow">
                             <tr>
-                                <th class="text-white bg-transparent border-bottom-0 w-5" width="10%">S.No</th>
-                                <th class="text-white bg-transparent border-bottom-0">Category</th>
-                                <th class="text-white bg-transparent border-bottom-0">Make</th>
-                                <th class="text-white bg-transparent border-bottom-0">Model</th>
-                                <th class="text-white bg-transparent border-bottom-0">Asset Name</th>
-                                <th class="text-white bg-transparent border-bottom-0">Plate No.</th>
-                                <th class="text-white bg-transparent border-bottom-0">Serial No.</th>
-                                <th class="text-white bg-transparent border-bottom-0">Store Name</th>
-                                <th class="text-white bg-transparent border-bottom-0">Status</th>
-                                <th class="text-white bg-transparent border-bottom-0 no-btn">Action</th>
+                                <th class="text-white bg-transparent border-bottom-0 w-5">S.No</th>
+                                <th class="text-white bg-transparent border-bottom-0 w-10">Category</th>
+                                <th class="text-white bg-transparent border-bottom-0 w-10">Make</th>
+                                <th class="text-white bg-transparent border-bottom-0 w-10">Model</th>
+                                <th class="text-white bg-transparent border-bottom-0 w-20">Asset Name</th>
+                                <th class="text-white bg-transparent border-bottom-0 w-10">Plate No.</th>
+                                <th class="text-white bg-transparent border-bottom-0 w-10">Serial No.</th>
+                                <th class="text-white bg-transparent border-bottom-0 w-10">Store Name</th>
+                                <th class="text-white bg-transparent border-bottom-0 w-10">Status</th>
+                                <th class="text-white bg-transparent border-bottom-0 w-10 no-btn">Action</th>
                             </tr>
                         </thead>
                         <tbody class="table-body">
                             @{
                                 int nCounter = 0;
                                 string sCounter = "0";
-                                foreach (var asset in Model)
+                                foreach (var asset in Model.AssetList)
                                 {
                                     nCounter++;
                                     sCounter = (nCounter < 10) ? "0" + nCounter.ToString() : nCounter.ToString();
@@ -117,8 +115,15 @@
                     }
                 },
             });
+
             $('.even').addClass("bg-light-transparent");
             $('.odd').removeClass("bg-light-transparent");
+
+            $('.select2').select2();
+            $('#CategoryId').on("change", ()=>{
+                window.location.href = '/Users/Assets/AssetList/' + $("#CategoryId").val();
+            });
+
         });
     </script>
 

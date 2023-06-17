@@ -73,10 +73,29 @@ namespace MODAMSWeb.Areas.Users.Controllers
             {
                 assets = assets.Where(m => m.SubCategory.CategoryId == id).ToList();
             }
+            var categories = _db.Categories.ToList().Select(m => new SelectListItem
+            {
+                Text = m.CategoryName,
+                Value = m.Id.ToString(),
+                Selected = (m.Id == id)
+            });
 
-            TempData["categoryName"] = _db.Categories.Where(m => m.Id == id).Select(m => m.CategoryName).FirstOrDefault();
+            var dto = new dtoAssetList()
+            {
+                CategoryId = id,
+                AssetList = assets,
+                CategorySelectList = categories,
+            };
+            var category = _db.Categories.Where(m => m.Id == id).FirstOrDefault();
+            TempData["categoryId"] = 0;
+            TempData["categoryName"] = "All Assets";
 
-            return View(assets);
+            if (category != null) {
+                TempData["categoryId"] = category.Id;
+                TempData["categoryName"] = category.CategoryName;
+            }
+            
+            return View(dto);
         }
 
         [Authorize(Roles = "StoreOwner, User")]

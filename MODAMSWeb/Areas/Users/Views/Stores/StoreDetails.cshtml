@@ -13,6 +13,11 @@
         cursor: pointer;
         color: white;
     }
+
+    .hover-effect:hover {
+        opacity: 0.5;
+        color: limegreen;
+    }
 </style>
 
 <div class="page-header">
@@ -162,7 +167,7 @@
                                                     <a asp-action="Index" asp-controller="Assets"
                                                        asp-route-id="@sca.StoreId"
                                                        asp-route-subCategoryId="@sca.SubCategoryId"
-                                                       class="text-gray-dark">
+                                                       class="hover-effect text-gray-dark">
                                                         @sca.SubCategoryName
                                                     </a>
                                                 </td>

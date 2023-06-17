@@ -1,5 +1,18 @@
 ﻿@model MODAMS.Models.ViewModels.dtoDepartmentHeads
 
+<style>
+    .custom-row {
+        margin-right: -20px;
+        margin-left: -20px;
+    }
+
+        .custom-row [class^="col-"] {
+            padding-right: 10px;
+            padding-left: 10px;
+        }
+</style>
+
+
 <div class="page-header">
     <div>
         <h1 class="page-title">Departments</h1>
@@ -31,23 +44,25 @@
                 <form method="post" asp-action="AssignOwner" id="frmAssignOwner">
                     <input asp-for="DepartmentId" hidden />
                     <div class="row">
-                        <div class="col-md-8">
-                            <div class="form-group">
-                                <label asp-for="EmployeeId" class="form-label"></label>
-                                <ul>
-                                    <li class="select-client">
-                                        <select name="EmployeeId" id="EmployeeId" asp-items="@Model.Employees"
-                                                class="form-control select2-style1 form-select">
-                                            <option value="0">Vacant</option>
-                                        </select>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label class="form-label">&nbsp;</label>
-                                <button class="btn btn-outline-primary">Assign Owner</button>
+                        <div class="col-sm-6 col-md-6 col-xl-6">
+                            <div class="container">
+                                <div class="form-group">
+                                    <div class="row no-gutters">
+                                        <div class="col-md-6">
+                                            <div class="input-group">
+                                                <select name="EmployeeId" id="EmployeeId" asp-items="@Model.Employees"
+                                                        class="form-control select2-style1 form-select">
+                                                    <option value="0">Vacant</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="input-group">
+                                                <button class="btn btn-outline-primary mt-1"><i class="fa fa-user"></i>&nbsp;Assign Owner</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -57,10 +72,8 @@
     </div>
     <div class="col-md-12">
         <div class="card">
-            <div class="card-header">
-                List of Owners
-            </div>
             <div class="card-body project-list-table-container">
+                <div class="col-md-8">
                 <div class="table-responsive">
                     <table id="tblDepartmentHeads" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
                         <thead class="table-head">
@@ -112,77 +125,78 @@
             </div>
         </div>
     </div>
-    <section id="dvFacesData" style="display:none;"></section>
+</div>
+<section id="dvFacesData" style="display:none;"></section>
 
-    @section Scripts{
-        <script>
-            $(document).ready(() => {
-                loadFaces();
+@section Scripts{
+    <script>
+        $(document).ready(() => {
+            loadFaces();
 
-                $('#tblDepartmentHeads').DataTable({
-                    language: {
-                        searchPlaceholder: 'Search...',
-                        sSearch: '',
-                    }
-                });
-
-                //$('.select2').select2({
-                //    //dropdownParent: $("#mdlDepartmentHeads")
-                //});
-
-                
+            $('#tblDepartmentHeads').DataTable({
+                language: {
+                    searchPlaceholder: 'Search...',
+                    sSearch: '',
+                }
             });
 
-            const loadFaces = () => {
-                var postData = {};
-                $.ajax({
-                    url: '/Admin/Employees/GetFaces',
-                    datatype: "json",
-                    data: postData,
-                    beforeSend: function () {
+            //$('.select2').select2({
+            //    //dropdownParent: $("#mdlDepartmentHeads")
+            //});
 
-                    },
-                    success: function (e) {
-                        $("#dvFacesData").html("").html(e);
-                    },
-                    complete: function () {
-                        setSelect2();
+
+        });
+
+        const loadFaces = () => {
+            var postData = {};
+            $.ajax({
+                url: '/Admin/Employees/GetFaces',
+                datatype: "json",
+                data: postData,
+                beforeSend: function () {
+
+                },
+                success: function (e) {
+                    $("#dvFacesData").html("").html(e);
+                },
+                complete: function () {
+                    setSelect2();
+                }
+            });
+        }
+        const setSelect2 = () => {
+            $(".select2-style1").select2({
+                templateResult: select2Style1,
+                templateSelection: select2Style1,
+                escapeMarkup: function (m) { return m; }
+            });
+        }
+
+        function select2Style1(data) {
+            if (!data.id) { return data.text; }
+            console.log(data.text);
+            var $data = $(
+                '<span>' + getFace(data.element.value.toLowerCase()) + data.text + '</span>'
+            );
+            return $data;
+        };
+
+        const getFace = (id) => {
+            console.log("face id: " + id);
+            var sFace = '<img src="/assets/images/faces/profile_placeholder.png" class="rounded-circle avatar-sm" />';
+
+            var sData = $("#dvFacesData").html();
+            if (sData != "No Records Found") {
+                var Data = JSON.parse(sData);
+                Data.forEach((e) => {
+                    if (id == e.Id) {
+                        sFace = '<img src="' + e.ImageUrl + '" class="rounded-circle avatar-sm" />';
                     }
                 });
             }
-            const setSelect2 = ()=>{
-                $(".select2-style1").select2({
-                    templateResult: select2Style1,
-                    templateSelection: select2Style1,
-                    escapeMarkup: function (m) { return m; }
-                });
-            }
+            console.log(sFace);
+            return sFace;
+        }
 
-            function select2Style1(data) {
-                if (!data.id) { return data.text; }
-                console.log(data.text);
-                var $data = $(
-                    '<span>' + getFace(data.element.value.toLowerCase()) + data.text + '</span>'
-                );
-                return $data;
-            };
-
-            const getFace = (id) => {
-                console.log("face id: " + id);
-                var sFace = '<img src="/assets/images/faces/profile_placeholder.png" class="rounded-circle avatar-sm" />';
-
-                var sData = $("#dvFacesData").html();
-                if (sData != "No Records Found") {
-                    var Data = JSON.parse(sData);
-                    Data.forEach((e) => {
-                        if (id == e.Id) {
-                            sFace = '<img src="' + e.ImageUrl + '" class="rounded-circle avatar-sm" />';
-                        }
-                    });
-                }
-                console.log(sFace);
-                return sFace;
-            }
-
-        </script>
+    </script>
     }

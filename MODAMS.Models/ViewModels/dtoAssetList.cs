@@ -8,17 +8,18 @@ using System.Threading.Tasks;
 
 namespace MODAMS.Models.ViewModels
 {
-    public class dtoAssets
+    public class dtoAssetList
     {
-        public List<Asset> assets { get; set; }
-        public List<vwStoreCategoryAsset> categories { get; set; }
-        public int StoreOwnerId { get; set; }
+        public int CategoryId { get; set; }
+        public List<Asset> AssetList { get; set; } = new List<Asset>();
+
+        [ValidateNever]
+        public IEnumerable<SelectListItem> CategorySelectList { get; set; } = Enumerable.Empty<SelectListItem>();
+
         public int TotalAssets()
         {
-            return assets.Count;
+            return AssetList.Count;
         }
-        public bool IsAuthorized { get; set; } = false;
 
-        
     }
 }
