@@ -10,7 +10,9 @@ using MODAMS.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis.CSharp;
 using Newtonsoft.Json;
-
+using Kendo.Mvc.UI;
+using Elfie.Serialization;
+using System.Diagnostics.Metrics;
 
 namespace MODAMSWeb.Areas.Admin.Controllers
 {
@@ -163,8 +165,56 @@ namespace MODAMSWeb.Areas.Admin.Controllers
         [Authorize(Roles = "SeniorManagement, Administrator, StoreOwner")]
         public IActionResult OrganizationChart()
         {
-            return View();
+            var departments = _db.vwDepartments.ToList().OrderBy(m => m.Id);
+
+            List<dtoOrganizationChart> dto = new List<dtoOrganizationChart>();
+            int nCounter = 0;
+            foreach (var item in departments)
+            {
+                nCounter++;
+                string imageUrl = (item.ImageUrl == string.Empty) ? "/assets/images/faces/profile_placeholder.png" : item.ImageUrl;
+                int? parentId = (item.UpperLevelDeptId == 0) ? null : item.UpperLevelDeptId;
+
+                dto.Add(new dtoOrganizationChart()
+                {
+                    ID = item.Id,
+                    Name = item.Name,
+                    ParentID = parentId,
+                    Title = item.OwnerName,
+                    Avatar = imageUrl,
+                    Expanded = false
+                });
+
+            }
+            return View(dto);
         }
+
+        public JsonResult Read([DataSourceRequest] DataSourceRequest request)
+        {
+            var departments = _db.vwDepartments.ToList().OrderBy(m => m.Id);
+
+            List<dtoOrganizationChart> dto = new List<dtoOrganizationChart>();
+            int nCounter = 0;
+            foreach (var item in departments)
+            {
+                nCounter++;
+                string imageUrl = (item.ImageUrl == string.Empty) ? "/assets/images/faces/profile_placeholder.png" : item.ImageUrl;
+                int? parentId = (item.UpperLevelDeptId == 0) ? null : item.UpperLevelDeptId;
+
+                dto.Add(new dtoOrganizationChart()
+                {
+                    ID = item.Id,
+                    Name = item.Name,
+                    ParentID = parentId,
+                    Title = item.OwnerName,
+                    Avatar = imageUrl,
+                    Expanded = false
+                });
+
+            }
+            return Json(dto);
+        }
+
 
         [HttpGet]
         [Authorize(Roles = "SeniorManagement, Administrator, StoreOwner")]
@@ -185,7 +235,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
         {
 
             List<DepartmentHead> departmentHeads = _db.DepartmentHeads.Where(m => m.DepartmentId == id)
-                .Include(m => m.Employee).Include(m => m.Department).OrderByDescending(m=>m.StartDate).ToList();
+                .Include(m => m.Employee).Include(m => m.Department).OrderByDescending(m => m.StartDate).ToList();
 
             var employeeList = _db.vwAvailableEmployees.ToList().Select(m => new SelectListItem
             {

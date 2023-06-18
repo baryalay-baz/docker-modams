@@ -22,6 +22,8 @@
     <!--- FONT-ICONS CSS -->
     <link href="~/assets/css/icons.css" rel="stylesheet" asp-append-version="true" />
     
+    <!-- TELERIK THEME -->
+    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/themes/6.4.0/bootstrap/bootstrap-main.css" />
     <style>
         /* Gradient transparent - color - transparent */
 
@@ -62,6 +64,11 @@
         }
 
     </style>
+    <script src="https://kendo.cdn.telerik.com/2023.2.606/js/jquery.min.js"></script>
+    
+    @* Add the Kendo UI scripts: *@
+    <script src="https://kendo.cdn.telerik.com/2023.2.606/js/kendo.all.min.js"></script>
+    <script src="https://kendo.cdn.telerik.com/2023.2.606/js/kendo.aspnetmvc.min.js"></script>
 
 </head>
 @{
@@ -106,7 +113,7 @@
     <a href="#top" id="back-to-top"><i class="fa fa-long-arrow-up"></i></a>
 
     <!-- JQUERY JS -->
-    <script src="~/assets/js/jquery.min.js"></script>
+    @*<script src="~/assets/js/jquery.min.js"></script>*@
 
     <!-- BOOTSTRAP JS -->
     <script src="~/assets/plugins/bootstrap/js/popper.min.js"></script>
@@ -155,97 +162,99 @@
     <!-- CUSTOM JS -->
     <script src="~/assets/js/custom.js"></script>
 
+    <!-- TELERIK SCRIPTS -->
+    <script src="~/js/kendo-ui-license.js"></script>
 
     <section id="dvProfileData" style="display:none;"></section>
-</body>
 
-<script>
-    $(document).ready(() => {
-        setMode();
-        loadProfileData();
+    <script>
+        $(document).ready(() => {
+            setMode();
+            loadProfileData();
 
-        //$('.page-link').on("click", (e)=>{
-        //    formatTables();
-        //});
+            //$('.page-link').on("click", (e)=>{
+            //    formatTables();
+            //});
 
-        formatTables();
-        
-    });
+            formatTables();
 
-    const formatTables = ()=>{
-   
-        $('thead').removeClass("bg-primary-gradient ms-auto divShadow").addClass("bg-primary-gradient ms-auto divShadow");
-        $('th').addClass("text-white");
+        });
 
-        //$('.even').addClass("bg-light-transparent");
-        //$('.odd').removeClass("bg-light-transparent");
+        const formatTables = () => {
 
-        
-    }
+            $('thead').removeClass("bg-primary-gradient ms-auto divShadow").addClass("bg-primary-gradient ms-auto divShadow");
+            $('th').addClass("text-white");
 
-    
+            //$('.even').addClass("bg-light-transparent");
+            //$('.odd').removeClass("bg-light-transparent");
 
-    const setMode = () => {
-        if(localStorage.getItem("displayMode")=="dark-mode"){
-            $('body').addClass('dark-mode');
-            $('body').removeClass('light-mode');
-            //$('body').removeClass('bg-img1');
-            //$('body').removeClass('bg-img2');
-            //$('body').removeClass('bg-img3');
-            //$('body').removeClass('bg-img4');
-            $("#footerImgEU").html("").html('<img src="/assets/images/brand/EU_Horizontal3_small.png">');
-
-
-            localStorage.setItem('darkMode', true);
-            localStorage.removeItem('lightMode');
-            localStorage.setItem('displayMode', "dark-mode")
-        }else{
-            $('body').removeClass('dark-mode');
-            $('body').addClass('light-mode');
-            //$('body').removeClass('bg-img1');
-            //$('body').removeClass('bg-img2');
-            //$('body').removeClass('bg-img3');
-            //$('body').removeClass('bg-img4');
-            $("#footerImgEU").html("").html('<img src="/assets/images/brand/EU_Horizontal2_small.png">');
-
-            localStorage.setItem('lightMode', true);
-            localStorage.removeItem('darkMode');
 
         }
-    }
-    const loadProfileData = () => {
-        var sHTML = '';
 
-        var postData = {};
-        $.ajax({
-            url: '/Users/Home/GetProfileData',
-            datatype: "json",
-            data: postData,
-            beforeSend: function () {
-            },
-            success: function (e) {
-                $("#dvProfileData").html("").html(e);
-            },
-            complete: function () {
-                loadProfile();
+        const setMode = () => {
+            if (localStorage.getItem("displayMode") == "dark-mode") {
+                $('body').addClass('dark-mode');
+                $('body').removeClass('light-mode');
+                //$('body').removeClass('bg-img1');
+                //$('body').removeClass('bg-img2');
+                //$('body').removeClass('bg-img3');
+                //$('body').removeClass('bg-img4');
+                $("#footerImgEU").html("").html('<img src="/assets/images/brand/EU_Horizontal3_small.png">');
+
+
+                localStorage.setItem('darkMode', true);
+                localStorage.removeItem('lightMode');
+                localStorage.setItem('displayMode', "dark-mode")
+            } else {
+                $('body').removeClass('dark-mode');
+                $('body').addClass('light-mode');
+                //$('body').removeClass('bg-img1');
+                //$('body').removeClass('bg-img2');
+                //$('body').removeClass('bg-img3');
+                //$('body').removeClass('bg-img4');
+                $("#footerImgEU").html("").html('<img src="/assets/images/brand/EU_Horizontal2_small.png">');
+
+                localStorage.setItem('lightMode', true);
+                localStorage.removeItem('darkMode');
+
             }
-        });
-    }
+        }
+        const loadProfileData = () => {
+            var sHTML = '';
 
-    const loadProfile = () => {
-        var sData = $("#dvProfileData").html();
-        if (sData != "No Records Found") {
-            var Data = JSON.parse(sData);
-            var sHtml = '';
-
-            Data.forEach(function (e) {
-                sHtml = '<img src="' + e.ImageUrl + '" alt="profile-user" class="avatar profile-user brround cover-image">';
-                $("#profileImage").html("").html(sHtml);
-
-                sHtml = e.FullName + '<i class="user-angle ms-1 fa fa-angle-down "></i>'
-                $("#profile-heading").html("").html(sHtml);
+            var postData = {};
+            $.ajax({
+                url: '/Users/Home/GetProfileData',
+                datatype: "json",
+                data: postData,
+                beforeSend: function () {
+                },
+                success: function (e) {
+                    $("#dvProfileData").html("").html(e);
+                },
+                complete: function () {
+                    loadProfile();
+                }
             });
         }
-    }
-</script>
+
+        const loadProfile = () => {
+            var sData = $("#dvProfileData").html();
+            if (sData != "No Records Found") {
+                var Data = JSON.parse(sData);
+                var sHtml = '';
+
+                Data.forEach(function (e) {
+                    sHtml = '<img src="' + e.ImageUrl + '" alt="profile-user" class="avatar profile-user brround cover-image">';
+                    $("#profileImage").html("").html(sHtml);
+
+                    sHtml = e.FullName + '<i class="user-angle ms-1 fa fa-angle-down "></i>'
+                    $("#profile-heading").html("").html(sHtml);
+                });
+            }
+        }
+    </script>
+</body>
+
+
 </html>

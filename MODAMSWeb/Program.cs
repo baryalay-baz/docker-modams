@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddKendo();
+
 // Add services to the container.
 builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddDefaultTokenProviders()
 	.AddEntityFrameworkStores<ApplicationDbContext>();

@@ -1,5 +1,4 @@
-﻿@model List<MODAMS.Models.ViewModels.dtoOrganizationChart>
-
+﻿@*@model List<MODAMS.Models.ViewModels.vwDepartments>*@
 <div class="page-header">
     <div>
         <h1 class="page-title">Departments</h1>
@@ -10,7 +9,7 @@
             <li class="breadcrumb-item active" aria-current="page">Departments</li>
         </ol>
     </div>
-    
+
     <link href="~/assets/plugins/google-api/googleapi.css" rel="stylesheet" />
 </div>
 
@@ -34,36 +33,11 @@
             </div>
         </div>
     </div>
+
     <div class="col-12 col-sm-12">
         <div class="card">
             <div class="card-body project-list-table-container scroll" style="overflow-x: auto; overflow-y: auto;">
-                <div id="orgchart"></div>
-                @*<div id="dvChart" style="height:550px;" class="p-5"></div>*@
-                @*<div id="dvKendoChart">
-                <kendo-orgchart name="orgchart">
-                <orgchart-datasource type="DataSourceTagHelperType.Ajax">
-                <transport>
-                <read url="@Url.Action("Read","Departments")" />
-                </transport>
-                <schema>
-                <orgchart-model id="Id"
-                parent-id="ParentId"
-                expanded="true"
-                name="Name"
-                title="Title"
-                avatar="Avatar">
-                <fields>
-                <field name="ParentId" nullable="true"></field>
-                <field name="Id" type="number"></field>
-                <field name="Name" type="string"></field>
-                <field name="Title" type="string"></field>
-                <field name="Avatar" type="string"></field>
-                </fields>
-                </orgchart-model>
-                </schema>
-                </orgchart-datasource>
-                </kendo-orgchart>
-                </div>*@
+                <div id="dvChart" style="height:550px;" class="p-5"></div>
             </div>
             <div class="card-footer">
                 <a asp-area="Admin" asp-controller="Departments" asp-action="Index" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
@@ -74,60 +48,14 @@
     <section id="dvDepartmentsData" style="display:none;"></section>
 </div>
 @section scripts{
-    @*<script src="~/assets/plugins/googleloader/googleloader.js"></script>*@
-
+    <script src="~/assets/plugins/googleloader/googleloader.js"></script>
     <script>
         $(document).ready(() => {
             $("#hideMenu").click();
-            //getDepartments();
-            generateKendoChart();
+
+            getDepartments();
+
         });
-
-        const generateKendoChart = () => {
-            var sData = '@Json.Serialize(Model)';
-            var Data = JSON.parse(sData);
-            const data = [];
-            var counter = 0;
-
-            Data.forEach((e) => {
-                counter++;
-                var expand = (counter < 2) ? true : false;
-
-                data.push({
-                    Id: e.id,
-                    Name: e.name,
-                    Title: e.title,
-                    ParentId: e.parentID,
-                    Expanded: expand,
-                    Avatar: e.avatar
-                });
-            });
-            //console.log(data);
-
-            var orgChartDataSource = new kendo.data.OrgChartDataSource({
-                data: data,
-                schema: {
-                    model: {
-                        Id: "id",
-                        parentId: "parentId",
-                        fields: {
-                            id: { field: "Id", type: "number", nullable: false },
-                            parentId: { field: "ParentId", nullable: true },
-                            title: { field: "Title", nullable: true },
-                            name: { field: "Name" },
-                            avatar: { field: "Avatar" },
-                            expanded: { field: "Expanded" }
-                        }
-                    }
-                }
-            });
-
-            $("#orgchart").kendoOrgChart({
-                dataSource: orgChartDataSource
-            });
-
-            $("#orgchart").css("background-color", "transparent");            
-        }
 
         const getDepartments = () => {
             var postData = {};
@@ -149,6 +77,7 @@
                 }
             });
         }
+
         const drawChart = () => {
             var data = new google.visualization.DataTable();
             data.addColumn('string', 'Name');
@@ -178,7 +107,9 @@
             var chart = new google.visualization.OrgChart(document.getElementById('dvChart'));
             chart.draw(data, { 'allowHtml': true, 'size': 'medium' });
         }
+
         const editDept = (id) => {
+
         }
 
     </script>
