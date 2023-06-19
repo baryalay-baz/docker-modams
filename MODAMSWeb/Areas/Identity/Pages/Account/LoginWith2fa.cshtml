@@ -1,38 +1,57 @@
 ﻿@page
 @model LoginWith2faModel
 @{
-    ViewData["Title"] = "Two-factor authentication";
+    Layout = "_Layout1";
 }
 
-<h1>@ViewData["Title"]</h1>
-<hr />
-<p>Your login is protected with an authenticator app. Enter your authenticator code below.</p>
-<div class="row">
-    <div class="col-md-4">
-        <form method="post" asp-route-returnUrl="@Model.ReturnUrl">
-            <input asp-for="RememberMe" type="hidden" />
-            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.TwoFactorCode" class="form-control" autocomplete="off" />
-                <label asp-for="Input.TwoFactorCode" class="form-label"></label>
-                <span asp-validation-for="Input.TwoFactorCode" class="text-danger"></span>
+<div class="col col-login mx-auto text-center">
+    @*<a asp-area="" asp-page="/Index" class="text-center">
+    <img src="~/assets/images/brand/ams.png" class="header-brand-img" alt="">
+    </a>*@
+</div>
+<div class="container-login100">
+    <div class="wrap-login100 p-0">
+        <div class="card-body">
+            <span class="login100-form-title">
+                <img src="~/assets/images/brand/FGS.png" class="h-8" alt="">
+            </span>
+            <p class="text-center">Your login is protected with an authenticator app.<br /> Enter your authenticator code below.</p>
+            <div class="row">
+                <div class="col-md-12">
+                    <form method="post" asp-route-returnUrl="@Model.ReturnUrl">
+                        <input asp-for="RememberMe" type="hidden" />
+                        <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+                        <div class="form-floating mb-3">
+                            <input asp-for="Input.TwoFactorCode" class="form-control" autocomplete="off" />
+                            <label asp-for="Input.TwoFactorCode" class="form-label"></label>
+                            <span asp-validation-for="Input.TwoFactorCode" class="text-danger"></span>
+                        </div>
+                        <div class="checkbox mb-3">
+                            <label asp-for="Input.RememberMachine" class="form-label">
+                                <input asp-for="Input.RememberMachine" />
+                                @Html.DisplayNameFor(m => m.Input.RememberMachine)
+                            </label>
+                        </div>
+                        <div>
+                            <button type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="checkbox mb-3">
-                <label asp-for="Input.RememberMachine" class="form-label">
-                    <input asp-for="Input.RememberMachine" />
-                    @Html.DisplayNameFor(m => m.Input.RememberMachine)
-                </label>
+            <br />
+            <p class="text-center">
+                Don't have access to your authenticator device? <br />You can
+                <a id="recovery-code-login" asp-page="./LoginWithRecoveryCode" asp-route-returnUrl="@Model.ReturnUrl">log in with a recovery code</a>.
+            </p>
+
+        </div>
+        <div class="card-footer">
+            <div class="col-md-12 col-sm-12 text-center text-darkgray">
+                <span style="font-size:12px;">Developed by&nbsp;|&nbsp;</span><img src="~/assets/images/brand/unops_footer_logo.png">&nbsp;
             </div>
-            <div>
-                <button type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
-<p>
-    Don't have access to your authenticator device? You can
-    <a id="recovery-code-login" asp-page="./LoginWithRecoveryCode" asp-route-returnUrl="@Model.ReturnUrl">log in with a recovery code</a>.
-</p>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

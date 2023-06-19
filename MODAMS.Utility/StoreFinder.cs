@@ -42,6 +42,7 @@ namespace MOD_AMS.Models
                     tempDeptId = store.DepartmentId;
                     store.StoreType = 2;
                     _storeResultTempList.Add(store);
+                    //recursion
                     getSubStores(tempDeptId);
                 }
             }

@@ -111,7 +111,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             return RedirectToAction("Profile", "Home");
         }
 
-        public async Task<IActionResult> ResetPassword()
+        public async Task<IActionResult> ResetPassword(int id=0)
         {
             string emailAddress = _func.GetEmployeeEmail();
             var user = await _userManager.FindByEmailAsync(emailAddress);
@@ -153,7 +153,16 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 message);
 
             TempData["success"] = "Password reset instructions sent!";
-            return RedirectToAction("Profile", "Home");
+
+            if (id > 0)
+            {
+                return RedirectToAction("Settings", "Home");
+            }
+            else {
+                return RedirectToAction("Profile", "Home");
+            }
+
+            
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -226,6 +235,10 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 TempData["error"] = "Record not found!";
             }
             return sResult;
+        }
+
+        public IActionResult Settings() {
+            return View();
         }
     }
 }
