@@ -1,4 +1,4 @@
-﻿@model MODAMS.Models.ViewModels.dtoAssetList
+﻿@model MODAMS.Models.ViewModels.Dto.dtoAssetList
 
 <div class="page-header">
     <div>
@@ -108,6 +108,8 @@
     @*<script src="~/assets/js/project-list.js"></script>*@
     <script>
         $(document).ready(function () {
+            $("#hideMenu").click();
+
             $('#tblAssets').DataTable({
                 "createdRow": function (row, data, dataIndex) {
                     if (dataIndex % 2 == 1) {
@@ -123,7 +125,7 @@
             $('#CategoryId').on("change", ()=>{
                 window.location.href = '/Users/Assets/AssetList/' + $("#CategoryId").val();
             });
-
+            
         });
     </script>
 

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MODAMS.Models.ViewModels
+namespace MODAMS.Models.ViewModels.Dto
 {
     public class dtoDepartment
     {

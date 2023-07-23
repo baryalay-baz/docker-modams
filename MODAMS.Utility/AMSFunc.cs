@@ -11,9 +11,9 @@ using System;
 using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MODAMS.Models.ViewModels;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Hosting;
+using MODAMS.Models.ViewModels.Dto;
 
 namespace MODAMS.Utility
 {

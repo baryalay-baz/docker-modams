@@ -5,7 +5,7 @@ using Microsoft.Build.Framework;
 using Microsoft.EntityFrameworkCore;
 using MODAMS.DataAccess.Data;
 using MODAMS.Models;
-using MODAMS.Models.ViewModels;
+using MODAMS.Models.ViewModels.Dto;
 using MODAMS.Utility;
 using Newtonsoft.Json;
 using System.Data;

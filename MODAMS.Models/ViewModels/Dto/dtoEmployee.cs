@@ -8,21 +8,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MODAMS.Models.ViewModels
+namespace MODAMS.Models.ViewModels.Dto
 {
     public class dtoEmployee
     {
         public Employee Employee { get; set; }
 
 
-        [Display(Name ="Employee Role")]
+        [Display(Name = "Employee Role")]
         [ValidateNever]
         public string roleId { get; set; }
 
         [ValidateNever]
-        public IEnumerable<SelectListItem> Employees { get; set;}
+        public IEnumerable<SelectListItem> Employees { get; set; }
 
         [ValidateNever]
-        public IEnumerable<SelectListItem> RoleList { get; set;}
+        public IEnumerable<SelectListItem> RoleList { get; set; }
     }
 }

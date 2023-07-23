@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using MODAMS.Models;
-using MODAMS.Models.ViewModels;
+using MODAMS.Models.ViewModels.Dto;
 
 namespace MODAMS.Utility
 {

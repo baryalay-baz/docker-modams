@@ -1,4 +1,4 @@
-﻿@model MODAMS.Models.ViewModels.dtoStore
+﻿@model MODAMS.Models.ViewModels.Dto.dtoStore
 
 @*<link href="~/assets/plugins/c3/c3.min.css" rel="stylesheet" />*@
 <link href="~/assets/plugins/c3-0.7.20/c3.min.css" rel="stylesheet" />
@@ -14,10 +14,16 @@
         color: white;
     }
 
-    .hover-effect:hover {
-        opacity: 0.5;
-        color: limegreen;
+    .hover-effect {
+        position: relative;
+        left: 0;
+        transition: left 0.3s ease-in-out;
     }
+
+        .hover-effect:hover {
+            left: 10px;
+        }
+    
 </style>
 
 <div class="page-header">
@@ -167,7 +173,7 @@
                                                     <a asp-action="Index" asp-controller="Assets"
                                                        asp-route-id="@sca.StoreId"
                                                        asp-route-subCategoryId="@sca.SubCategoryId"
-                                                       class="hover-effect text-gray-dark">
+                                                       class="text-muted hover-effect">
                                                         @sca.SubCategoryName
                                                     </a>
                                                 </td>

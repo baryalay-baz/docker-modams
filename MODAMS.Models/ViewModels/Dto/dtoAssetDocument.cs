@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MODAMS.Models.ViewModels
+namespace MODAMS.Models.ViewModels.Dto
 {
     public class dtoAssetDocument
     {
@@ -16,18 +16,18 @@ namespace MODAMS.Models.ViewModels
 
         [Required]
         [Display(Name = "Document Name")]
-        public string Name { get; set; } = String.Empty;
+        public string Name { get; set; } = string.Empty;
 
         [Required]
         [Display(Name = "Document Url")]
-        public string DocumentUrl { get; set; } = String.Empty;
+        public string DocumentUrl { get; set; } = string.Empty;
 
         [Required]
-        [Display(Name="Asset")]
+        [Display(Name = "Asset")]
         public int AssetId { get; set; }
 
         [Required]
-        [Display(Name ="Document Type")]
+        [Display(Name = "Document Type")]
         public int DocumentTypeId { get; set; }
 
         [ValidateNever]

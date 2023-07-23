@@ -7,16 +7,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MODAMS.Models.ViewModels
+namespace MODAMS.Models.ViewModels.Dto
 {
-    public class dtoDepartmentHeads
+    public class dtoDepartmentIndex
     {
-        [Display(Name ="Select Employee to Assign as Owner")]
-        public int EmployeeId { get; set; }
+        public List<vwDepartments> DepartmentList { get; set; }
+
+        [Display(Name = "Department")]
         public int DepartmentId { get; set; }
 
-        public List<DepartmentHead> DepartmentHeads { get; set; }
-        
+        [Display(Name = "Employee")]
+        public int EmployeeId { get; set; }
+
         [ValidateNever]
         public IEnumerable<SelectListItem> Employees { get; set; }
 

@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using MODAMS.DataAccess.Data;
 using MODAMS.Models;
-using MODAMS.Models.ViewModels;
 using MODAMS.Utility;
 using Newtonsoft.Json;
 using System.Diagnostics;
@@ -13,6 +12,7 @@ using System.Drawing.Printing;
 using System.Text.Encodings.Web;
 using System.Text;
 using Microsoft.VisualBasic;
+using MODAMS.Models.ViewModels.Dto;
 
 namespace MODAMSWeb.Areas.Users.Controllers
 {

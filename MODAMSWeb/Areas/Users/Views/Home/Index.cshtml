@@ -1,14 +1,20 @@
-﻿@model MODAMS.Models.ViewModels.dtoDashboard
+﻿@model MODAMS.Models.ViewModels.Dto.dtoDashboard
 <link href="~/assets/plugins/c3-0.7.20/c3.min.css" rel="stylesheet" />
 
 <style>
+        .hover-effect {
+        position: relative;
+        left: 0;
+        transition: left 0.3s ease-in-out;
+    }
+
+        .hover-effect:hover {
+            left: 10px;
+        }
+
     .pnlHeight {
         max-height: 170px;
         min-height: 170px;
-    }
-
-    .hover-effect:hover {
-        opacity: 0.5;
     }
 
     .legend span {
@@ -161,7 +167,7 @@
                                             <td class="text-muted fs-15 fw-semibold">
                                                 <a asp-action="AssetList" asp-controller="Assets"
                                                    asp-route-id="@sca.Id"
-                                                   class="text-gray-dark hover-effect">@sca.CategoryName</a>
+                                                   class="text-muted hover-effect">@sca.CategoryName</a>
                                             </td>
                                             <td class="text-muted fs-15 fw-semibold">@sca.TotalAssets</td>
                                         </tr>

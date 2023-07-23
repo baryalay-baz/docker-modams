@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace MODAMS.Models.ViewModels
+namespace MODAMS.Models.ViewModels.Dto
 {
     public class dtoAsset
     {
@@ -18,45 +18,45 @@ namespace MODAMS.Models.ViewModels
 
         [Required]
         [Display(Name = "Asset Name")]
-        public string Name { get; set; } = String.Empty;
+        public string Name { get; set; } = string.Empty;
 
         [Required]
         [Display(Name = "Make")]
-        public string Make { get; set; } = String.Empty;
+        public string Make { get; set; } = string.Empty;
 
         [Required]
         [Display(Name = "Model")]
-        public string Model { get; set; } = String.Empty;
+        public string Model { get; set; } = string.Empty;
 
         [Required]
         [Display(Name = "Year")]
-        public string Year { get; set; } = String.Empty;
+        public string Year { get; set; } = string.Empty;
 
         [Display(Name = "Manufacturing Country")]
         public string? ManufacturingCountry { get; set; }
 
         [Required]
         [Display(Name = "Serial Number")]
-        public string SerialNo { get; set; } = String.Empty;
+        public string SerialNo { get; set; } = string.Empty;
 
         [Display(Name = "Barcode")]
         public string? Barcode { get; set; }
 
         [Required]
         [Display(Name = "Engine Number")]
-        public string Engine { get; set; } = String.Empty;
+        public string Engine { get; set; } = string.Empty;
 
         [Required]
         [Display(Name = "Chasis Number")]
-        public string Chasis { get; set; } = String.Empty;
+        public string Chasis { get; set; } = string.Empty;
 
         [Required]
         [Display(Name = "License Plate Number")]
-        public string Plate { get; set; } = String.Empty;
+        public string Plate { get; set; } = string.Empty;
 
         [Required]
         [Display(Name = "Specifications")]
-        public string Specifications { get; set; } = String.Empty;
+        public string Specifications { get; set; } = string.Empty;
 
         [Required]
         [Display(Name = "Initial Cost")]
@@ -64,7 +64,7 @@ namespace MODAMS.Models.ViewModels
 
         [Required]
         [Display(Name = "Purchase Date")]
-        [Column(TypeName ="date")]
+        [Column(TypeName = "date")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? PurchaseDate { get; set; }
@@ -85,10 +85,10 @@ namespace MODAMS.Models.ViewModels
         public string? ProcuredBy { get; set; }
 
         [Display(Name = "Remarks")]
-        public string? Remarks { get; set; } = String.Empty;
+        public string? Remarks { get; set; } = string.Empty;
 
         [Required]
-        [Display(Name="Category")]
+        [Display(Name = "Category")]
         public int CategoryId { get; set; }
 
         [Required]
@@ -125,6 +125,6 @@ namespace MODAMS.Models.ViewModels
 
         [ValidateNever]
         public IEnumerable<SelectListItem> Conditions { get; set; }
-        
+
     }
 }

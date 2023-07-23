@@ -5,6 +5,7 @@ using MOD_AMS.Models;
 using MODAMS.DataAccess.Data;
 using MODAMS.Models;
 using MODAMS.Models.ViewModels;
+using MODAMS.Models.ViewModels.Dto;
 using MODAMS.Utility;
 using System.Data;
 
