@@ -180,7 +180,7 @@
             $("#btnGlobalSearch").on("click",()=>{
                 window.location.href = "/Users/Home/GlobalSearch/?barcode=" + $("#txtGlobalSearch").val();
             });
-
+            //getAlertCount();
         });
 
         const formatTables = () => {
@@ -240,7 +240,22 @@
                 }
             });
         }
-
+        const getAlertCount = ()=>{
+            var postData = {};
+            $.ajax({
+                url: '/Users/Alerts/GetAlertCount',
+                datatype: "json",
+                data: postData,
+                beforeSend: function () {
+                },
+                success: function (e) {
+                    //$("#alertCount").html('<span class="text-sm">' + e + '</span>');
+                },
+                complete: function () {
+                    //loadProfile();
+                }
+            });
+        }
         const loadProfile = () => {
             var sData = $("#dvProfileData").html();
             if (sData != "No Records Found") {

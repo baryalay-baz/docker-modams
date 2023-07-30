@@ -14,5 +14,6 @@ namespace MODAMS.Models
         public string Model { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
         public string Alert { get; set; }= string.Empty;
+        public int? EmployeeId { get; set; }
     }
 }

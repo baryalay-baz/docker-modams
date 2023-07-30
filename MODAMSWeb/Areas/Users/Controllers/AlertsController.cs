@@ -25,21 +25,46 @@ namespace MODAMSWeb.Areas.Users.Controllers
             _employeeId = _func.GetEmployeeId();
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var vwAssetDocs = new List<vwAssetDocuments>();
-            var assets = _db.Assets.Include(m=>m.SubCategory)
-                .Select(m => new { m.Id, m.SubCategoryId, m.Make, m.Model, m.Name, m.SubCategory }).ToList();
+            List<vwAlert> Alerts = await GetAlerts();
+            return View(Alerts);
+        }
+        public string GetAlertCount() {
+            List<vwAlert> Alerts = GetAlerts().GetAwaiter().GetResult();
+            return Alerts.Count().ToString();
+        }
+        private async Task<List<vwAlert>> GetAlerts()
+        {
+            var assets = await _db.Assets.Include(m => m.SubCategory)
+                .Include(m => m.Store.Department)
+                .Select(m => new
+                {
+                    m.Id,
+                    m.SubCategoryId,
+                    m.Make,
+                    m.Model,
+                    m.Name,
+                    m.SubCategory,
+                    m.Store,
+                    m.Store.Department
+                }).ToListAsync();
+
+            var assetDocs = await _db.AssetDocuments.ToListAsync();
+            var documentTypes = await _db.DocumentTypes.ToListAsync();
 
             List<vwAlert> Alerts = new List<vwAlert>();
 
             foreach (var asset in assets)
             {
                 var blnCheck = false;
-                vwAssetDocs = GetAssetDocuments(asset.Id);
-                foreach (var assetDoc in vwAssetDocs)
+                foreach (var documentType in documentTypes)
                 {
-                    if (assetDoc.Id == 0)
+                    var docs = assetDocs
+                        .Where(m => m.DocumentTypeId == documentType.Id && m.AssetId == asset.Id)
+                        .ToList();
+
+                    if (!docs.Any())
                     {
                         blnCheck = true; break;
                     }
@@ -53,56 +78,24 @@ namespace MODAMSWeb.Areas.Users.Controllers
                         Make = asset.Make,
                         Model = asset.Model,
                         Name = asset.Name,
-                        Alert = "Missing Document"
+                        Alert = "Missing Documents",
+                        EmployeeId = asset.Store.Department.EmployeeId
                     };
                     Alerts.Add(alert);
                 }
             }
 
-            return View(Alerts);
-        }
-
-        private List<vwAssetDocuments> GetAssetDocuments(int AssetId)
-        {
-            var documentTypes = _db.DocumentTypes.ToList();
-            var vwAssetDocs = new List<vwAssetDocuments>();
-
-            foreach (var documentType in documentTypes)
+            if (User.IsInRole("User"))
             {
-                var vwDocType = new vwAssetDocuments()
-                {
-                    Id = GetAssetDocumentId(AssetId, documentType.Id),
-                    DocumentTypeId = documentType.Id,
-                    Name = documentType.Name,
-                    AssetId = AssetId,
-                    DocumentUrl = GetDocumentUrl(AssetId, documentType.Id)
-                };
-                vwAssetDocs.Add(vwDocType);
-            }
-            return vwAssetDocs;
-        }
-        private string GetDocumentUrl(int assetId, int documentTypeId)
-        {
-            var assetDocument = _db.AssetDocuments.Where(m => m.AssetId == assetId && m.DocumentTypeId == documentTypeId).FirstOrDefault();
-            if (assetDocument != null)
-            {
-                return assetDocument.DocumentUrl;
-            }
-            else
-            {
-                return "not yet uploaded!";
+                _employeeId = _func.GetSupervisorId(_employeeId);
             }
 
-        }
-        private int GetAssetDocumentId(int assetId, int documentTypeId)
-        {
-            int nResult = 0;
-            var assetDocument = _db.AssetDocuments.Where(m => m.AssetId == assetId && m.DocumentTypeId == documentTypeId).FirstOrDefault();
-            if (assetDocument != null)
+            if (User.IsInRole("StoreOwner") || User.IsInRole("User"))
             {
-                nResult = assetDocument.Id;
+                Alerts = Alerts.Where(m => m.EmployeeId == _employeeId).ToList();
             }
-            return nResult;
+
+            return Alerts;
         }
     }
 }
