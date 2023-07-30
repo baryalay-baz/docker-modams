@@ -1,0 +1,73 @@
+﻿@model List<MODAMS.Models.vwAlert>
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Assets</h1>
+    </div>
+    <div class="ms-auto pageheader-btn">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Alerts</li>
+        </ol>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body project-list-table-container">
+                <div class="table-responsive">
+                    <table id="tblAlerts" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
+                        <thead class="bg-primary-gradient ms-auto divShadow">
+                            <tr>
+                                <th class="text-white bg-transparent border-bottom-0 w-5" width="10%">S.No</th>
+                                <th class="text-white bg-transparent border-bottom-0">Category</th>
+                                <th class="text-white bg-transparent border-bottom-0">Make</th>
+                                <th class="text-white bg-transparent border-bottom-0">Model</th>
+                                <th class="text-white bg-transparent border-bottom-0">Asset Name</th>
+                                <th class="text-white bg-transparent border-bottom-0">Alert Message</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-body">
+                            @{
+                                int nCounter = 0;
+                                string sCounter = "0";
+
+                                foreach (var alert in Model)
+                                {
+                                    nCounter++;
+                                    sCounter = (nCounter < 10) ? "0" + nCounter.ToString() : nCounter.ToString();
+                                    <tr>
+                                        <td class="text-muted text-center fs-15 fw-semibold">@sCounter.</td>
+                                        <td class="text-muted fs-15 fw-semibold">@alert.SubCategory</td>
+                                        <td class="text-muted fs-15 fw-semibold">@alert.Make</td>
+                                        <td class="text-muted fs-15 fw-semibold">@alert.Model</td>
+                                        <td class="text-muted fs-15 fw-semibold">@alert.Name</td>
+                                        <td class="text-muted fs-15 fw-semibold">@alert.Alert</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            //$("#hideMenu").click();
+            $('#tblAlerts').DataTable({
+                "createdRow": function (row, data, dataIndex) {
+                    if (dataIndex % 2 == 1) {
+                        $(row).addClass('bg-light-transparent');
+                    }
+                },
+            });
+            $('.even').addClass("bg-light-transparent");
+            $('.odd').removeClass("bg-light-transparent");
+
+            //$('.select2').select2();
+        });
+    </script>
+    }

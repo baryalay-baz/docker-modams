@@ -1,0 +1,98 @@
+﻿@model MODAMS.Models.ViewModels.Dto.dtoGlobalSearch
+
+<style>
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    td {
+        padding: 10px;
+        vertical-align: top;
+    }
+
+    /* Set the height for the Pictures column */
+    .picture-cell {
+        height: 200px;
+        width: 300px;
+        vertical-align: top; /* To align the content to the top of the cell */
+    }
+
+        /* Ensure images fit within the fixed height without stretching */
+        .picture-cell img {
+            max-height: 100%;
+            max-width: 100%;
+            display: block; /* Ensures the image is treated as a block element */
+            margin: 0 auto; /* Centers the image horizontally within the cell */
+        }
+</style>
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Search Assets</h1>
+    </div>
+    <div class="ms-auto pageheader-btn">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Global Search</li>
+        </ol>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card divShadow">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center justify-content-between">
+                    <h4 class="m-0">Asset from all stores</h4>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <table>
+                    <tbody>
+                        <tr>
+                            <td class="picture-cell" width="300px">
+                                @{
+                                    string sImageUrl;
+                                    if (Model.AssetPicture.ImageUrl != null)
+                                    {
+                                        sImageUrl = Model.AssetPicture.ImageUrl;
+                                    }
+                                    else
+                                    {
+                                        sImageUrl = "/assets/images/placeholders/pictureplaceholder.png";
+                                    }
+                                }
+                                @Html.Raw("<img style=\"height:200px;\" class=\"img-responsive br-5\" src=\"" + sImageUrl + "\" alt=\"Asset Picture\">")
+                            </td>
+                            <td width="70%">
+                                @{
+                                    if (Model.Asset.Name != "")
+                                    {
+                                        <h5>@Model.Asset.SubCategory.Category.CategoryName - @Model.Asset.SubCategory.SubCategoryName</h5>
+                                        <p class="h5">@Model.Asset.Make - @Model.Asset.Model - @Model.Asset.Year</p>
+                                        <h3>@Model.Asset.Name</h3>
+                                        <p class="h5">@Model.Asset.Specifications</p>
+                                        <a class="btn btn-primary-gradient trShadow " href="/Users/Assets/AssetInfo/@Model.Asset.Id">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
+                                                <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"></path>
+                                            </svg>
+                                            Asset Details
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <h3>Asset not found!</h3>
+                                    }
+                                }
+                                
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -171,12 +171,15 @@
         $(document).ready(() => {
             setMode();
             loadProfileData();
-
-            //$('.page-link').on("click", (e)=>{
-            //    formatTables();
-            //});
-
             formatTables();
+
+            $("#txtGlobalSearch").on("change",()=>{
+                window.location.href = "/Users/Home/GlobalSearch/?barcode=" + $("#txtGlobalSearch").val();
+            });
+
+            $("#btnGlobalSearch").on("click",()=>{
+                window.location.href = "/Users/Home/GlobalSearch/?barcode=" + $("#txtGlobalSearch").val();
+            });
 
         });
 

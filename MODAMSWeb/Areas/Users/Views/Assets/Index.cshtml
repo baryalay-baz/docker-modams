@@ -18,12 +18,12 @@
         <div class="card divShadow">
             <div class="card-body p-4">
                 <div class="d-flex align-items-center justify-content-between">
-                    <h4 class="m-0">@TempData["storeName"]</h4>
-                    <div class="d-sm-flex align-items-center">
-                        <div class="btn-list mx-4">
-
-                        </div>
-                    </div>
+                    @*<h4 class="m-0">@TempData["storeName"]</h4>*@
+                    <h4 class="m-0">@TempData["SubCategoryName"] (Count: @Model.TotalAssets())</h4>
+                    <select asp-for="@Model.SubCategoryId" asp-items="@Model.CategorySelectList"
+                            class="form-control select2 form-select">
+                        <option value="0">All Assets</option>
+                    </select>
                 </div>
             </div>
         </div>
@@ -151,6 +151,12 @@
             });
             $('.even').addClass("bg-light-transparent");
             $('.odd').removeClass("bg-light-transparent");
+
+            $('.select2').select2();
+            var sStoreId = '@TempData["storeId"]';
+            $('#SubCategoryId').on("change", () => {
+                window.location.href = '/Users/Assets/Index/' + sStoreId + '?subCategoryId=' + $("#SubCategoryId").val();
+            });
         });
     </script>
 

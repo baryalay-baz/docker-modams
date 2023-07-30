@@ -42,19 +42,34 @@ namespace MODAMSWeb.Areas.Users.Controllers
             {
                 assets = assets.Where(m => m.SubCategoryId == subCategoryId).ToList();
             }
-            //var categories = _db.vwStoreCategoryAssets.Where(m => m.StoreId == id).ToList();
+            var categories = _db.vwStoreCategoryAssets.Where(m => m.StoreId == id).ToList().Select(m=> new SelectListItem {
+                Text = m.SubCategoryName,
+                Value = m.SubCategoryId.ToString(),
+                Selected = (m.SubCategoryId == subCategoryId)
+            });
 
             var empId = User.IsInRole("User") ? _func.GetSupervisorId(_employeeId) : _employeeId;
 
             var dto = new dtoAssets()
             {
                 assets = assets,
-                StoreOwnerId = _func.GetStoreOwnerId(id)
-                //categories = categories
+                StoreOwnerId = _func.GetStoreOwnerId(id),
+                 CategorySelectList = categories
             };
 
             if (empId == _func.GetStoreOwnerId(id))
                 dto.IsAuthorized = true;
+
+            var subCategory = _db.SubCategories.Where(m => m.Id == subCategoryId).FirstOrDefault();
+
+            TempData["SubCategoryId"] = 0;
+            TempData["SubCategoryName"] = "All Assets";
+
+            if (subCategory != null)
+            {
+                TempData["SubCategoryId"] = subCategory.Id;
+                TempData["SubCategoryName"] = subCategory.SubCategoryName;
+            }
 
             TempData["storeId"] = id;
             TempData["storeName"] = _func.GetStoreName(id);

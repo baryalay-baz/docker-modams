@@ -13,6 +13,7 @@ using System.Text.Encodings.Web;
 using System.Text;
 using Microsoft.VisualBasic;
 using MODAMS.Models.ViewModels.Dto;
+using Microsoft.EntityFrameworkCore;
 
 namespace MODAMSWeb.Areas.Users.Controllers
 {
@@ -239,6 +240,22 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
         public IActionResult Settings() {
             return View();
+        }
+
+        public IActionResult GlobalSearch(string barcode) {
+            var asset = _db.Assets.Where(m=>m.Barcode== barcode)
+                .Include(m=>m.SubCategory).Include(m=>m.SubCategory.Category)
+                .FirstOrDefault();
+            dtoGlobalSearch dto = new dtoGlobalSearch();
+            if (asset != null)
+            {
+                var assetPicture = _db.AssetPictures.Where(m=>m.AssetId == asset.Id).FirstOrDefault();
+                dto.Asset = asset;
+                if (assetPicture != null) {
+                    dto.AssetPicture = assetPicture;
+                }
+            }
+            return View(dto);
         }
     }
 }

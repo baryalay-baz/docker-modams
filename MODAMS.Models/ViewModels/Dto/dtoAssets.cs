@@ -12,6 +12,13 @@ namespace MODAMS.Models.ViewModels.Dto
     {
         public List<Asset> assets { get; set; }
         public List<vwStoreCategoryAsset> categories { get; set; }
+
+        [ValidateNever]
+        public int SubCategoryId { get; set; }
+
+        [ValidateNever]
+        public IEnumerable<SelectListItem> CategorySelectList { get; set; } = Enumerable.Empty<SelectListItem>();
+
         public int StoreOwnerId { get; set; }
         public int TotalAssets()
         {
