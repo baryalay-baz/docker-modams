@@ -8,13 +8,12 @@ using MODAMS.Models;
 using MODAMS.Utility;
 using Newtonsoft.Json;
 using System.Diagnostics;
-using System.Drawing.Printing;
 using System.Text.Encodings.Web;
 using System.Text;
-using Microsoft.VisualBasic;
 using MODAMS.Models.ViewModels.Dto;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+using MODAMS.Models.ViewModels;
 
 namespace MODAMSWeb.Areas.Users.Controllers
 {
@@ -48,6 +47,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
         public IActionResult Index()
         {
             var categoryAssets = _db.vwCategoryAssets.ToList();
+
             var dto = new dtoDashboard()
             {
                 CategoryAssets = categoryAssets
@@ -263,7 +263,12 @@ namespace MODAMSWeb.Areas.Users.Controllers
             return View(dto);
         }
 
-        public decimal GetCurrentValue()
+        public IActionResult UnderConstruction()
+        {
+            return View();
+        }
+
+        private decimal GetCurrentValue()
         {
             var assets = _db.Assets.Select(m => new { m.Id }).ToList();
             decimal currentValue = 0;
