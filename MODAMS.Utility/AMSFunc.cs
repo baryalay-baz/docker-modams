@@ -62,7 +62,11 @@ namespace MODAMS.Utility
         }
         public string GetEmployeeName(int employeeId)
         {
-            return _db.Employees.Where(m => m.Id == employeeId).Select(m => m.FullName).FirstOrDefault();
+            var employeeName = _db.Employees.Where(m => m.Id == employeeId).Select(m => m.FullName).FirstOrDefault();
+            if (employeeName != null) {
+                return employeeName;
+            }
+            return "";
         }
         public string GetEmployeeEmail()
         {
@@ -149,6 +153,15 @@ namespace MODAMS.Utility
             }
 
             return dto;
+        }
+        public int GetDepartmentId(int nEmployeeId) {
+            int departmentId = 0;
+            var department = _db.Departments.Where(m=>m.EmployeeId == nEmployeeId).FirstOrDefault();
+            if (department != null)
+            {
+                departmentId = department.Id;
+            }
+            return departmentId;
         }
         public string GetDepartmentName(int nEmloyeeId)
         {

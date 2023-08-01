@@ -1,4 +1,4 @@
-﻿@model List<MODAMS.Models.vwAlert>
+﻿@model MODAMS.Models.ViewModels.Dto.dtoAlerts
 
 <div class="page-header">
     <div>
@@ -13,8 +13,21 @@
 </div>
 <div class="row">
     <div class="col-md-12">
-        <div class="card">
-            <div class="card-body project-list-table-container">
+        <div class="card divShadow">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center justify-content-between">
+                    <h4 class="m-0">Missing Documents Alerts</h4>
+                    <select asp-for="@Model.DepartmentId" asp-items="@Model.DepartmentList"
+                            class="form-control select2 form-select">
+                        <option value="0">All Departments</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body project-list-table-container">
+            <div class="col-md-12">
                 <div class="table-responsive">
                     <table id="tblAlerts" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
                         <thead class="bg-primary-gradient ms-auto divShadow">
@@ -22,9 +35,8 @@
                                 <th class="text-white bg-transparent border-bottom-0 w-5" width="10%">S.No</th>
                                 <th class="text-white bg-transparent border-bottom-0">Category</th>
                                 <th class="text-white bg-transparent border-bottom-0">Make</th>
-                                <th class="text-white bg-transparent border-bottom-0">Model</th>
                                 <th class="text-white bg-transparent border-bottom-0">Asset Name</th>
-                                <th class="text-white bg-transparent border-bottom-0">Alert Message</th>
+                                <th class="text-white bg-transparent border-bottom-0">Department</th>
                             </tr>
                         </thead>
                         <tbody class="table-body">
@@ -32,7 +44,7 @@
                                 int nCounter = 0;
                                 string sCounter = "0";
 
-                                foreach (var alert in Model)
+                                foreach (var alert in Model.Alerts)
                                 {
                                     nCounter++;
                                     sCounter = (nCounter < 10) ? "0" + nCounter.ToString() : nCounter.ToString();
@@ -40,9 +52,8 @@
                                         <td class="text-muted text-center fs-15 fw-semibold">@sCounter.</td>
                                         <td class="text-muted fs-15 fw-semibold">@alert.SubCategory</td>
                                         <td class="text-muted fs-15 fw-semibold">@alert.Make</td>
-                                        <td class="text-muted fs-15 fw-semibold">@alert.Model</td>
-                                        <td class="text-muted fs-15 fw-semibold">@alert.Name</td>
-                                        <td class="text-muted fs-15 fw-semibold">@alert.Alert</td>
+                                        <td class="text-muted fs-15 fw-semibold"><a asp-action="AssetInfo" asp-controller="Assets" asp-area="Users" asp-route-id="@alert.AssetId">@alert.Name</a></td>
+                                        <td class="text-muted fs-15 fw-semibold">@alert.Department</td>
                                     </tr>
                                 }
                             }
@@ -50,6 +61,9 @@
                     </table>
                 </div>
             </div>
+            @*<div class="col-md-4">
+
+            </div>*@
         </div>
     </div>
 </div>
@@ -67,7 +81,10 @@
             $('.even').addClass("bg-light-transparent");
             $('.odd').removeClass("bg-light-transparent");
 
-            //$('.select2').select2();
+            $('.select2').select2();
+            $('#DepartmentId').on("change", () => {
+                window.location.href = '/Users/Alerts/Index?departmentId=' + $("#DepartmentId").val();
+            });
         });
     </script>
     }

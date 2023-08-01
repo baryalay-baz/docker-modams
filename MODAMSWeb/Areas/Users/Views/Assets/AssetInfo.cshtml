@@ -23,7 +23,7 @@
                     <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Stores" asp-action="StoreDetails" asp-route-id="@TempData["storeId"]">@TempData["storeName"]</a></li>
                     <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Assets" asp-action="Index" asp-route-id="@TempData["storeId"]">Assets</a></li>
                 }
-            }            
+            }
             <li class="breadcrumb-item active" aria-current="page">Asset Information</li>
         </ol>
     </div>
@@ -270,8 +270,18 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">Asset Documents</h3>
+                            <div class="p-3 divShadow">
+                                <div class="float-start">
+                                    <h5>Asset Documents</h5>
+                                </div>
+                                <div class="float-end">
+                                    @{
+                                        if (employeeId == _func.GetStoreOwnerId(_func.GetStoreId(Model.Asset.Id)))
+                                        {
+                                            <a class="btn btn-outline-primary btn-sm" asp-action="AssetDocuments" asp-controller="Assets" asp-route-id="@Model.Asset.Id" id="checkElement"><i class="fa fa-edit"></i>&nbsp;Edit Documents</a>
+                                        }
+                                    }
+                                </div>
                             </div>
                             <div class="card-body">
                                 <div class="table-responsive">
@@ -322,8 +332,18 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="demo-gallery card">
-                            <div class="card-header">
-                                <div class="card-title">Asset Picture Gallery</div>
+                            <div class="p-3 divShadow" >
+                                <div class="float-start">
+                                    <h5>Asset Picture Gallery</h5>
+                                </div>
+                                <div class="float-end">
+                                    @{
+                                        if (employeeId == _func.GetStoreOwnerId(_func.GetStoreId(Model.Asset.Id)))
+                                        {
+                                            <a class="btn btn-outline-primary btn-sm" asp-action="AssetPictures" asp-controller="Assets" asp-route-id="@Model.Asset.Id" id="checkElement"><i class="fa fa-edit"></i>&nbsp;Edit Pictures</a>
+                                        }
+                                    }
+                                </div>
                             </div>
                             <div class="card-body">
                                 <ul id="lightgallery" class="list-unstyled row">
@@ -344,7 +364,7 @@
                                         else
                                         {
                                             <li class="col-xs-6 col-sm-4 col-md-4 col-xl-4 mb-5 border-bottom-0">
-                                                <span>No pictures uploaded!</span>
+                                                <span class="text-center">No pictures uploaded!</span>
                                             </li>
                                         }
 
@@ -394,7 +414,7 @@
                         <a asp-action="Index" asp-controller="Assets" asp-route-id="@Model.Asset.StoreId" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
                     }
                 }
-                
+
             </div>
         </div>
 

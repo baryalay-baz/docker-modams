@@ -14,6 +14,7 @@ using System.Text;
 using Microsoft.VisualBasic;
 using MODAMS.Models.ViewModels.Dto;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 
 namespace MODAMSWeb.Areas.Users.Controllers
 {
@@ -51,6 +52,10 @@ namespace MODAMSWeb.Areas.Users.Controllers
             {
                 CategoryAssets = categoryAssets
             };
+
+            dto.StoreCount = _db.Stores.Count();
+            dto.UserCount = _db.Users.Count();
+            dto.CurrentValue = GetCurrentValue();
             return View(dto);
         }
 
@@ -256,6 +261,20 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 }
             }
             return View(dto);
+        }
+
+        public decimal GetCurrentValue()
+        {
+            var assets = _db.Assets.Select(m => new { m.Id }).ToList();
+            decimal currentValue = 0;
+            if (assets != null)
+            {
+                foreach (var asset in assets)
+                {
+                    currentValue += _func.GetDepreciatedCost(asset.Id);
+                }
+            }
+            return currentValue;
         }
     }
 }

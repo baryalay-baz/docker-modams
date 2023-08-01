@@ -7,6 +7,8 @@ using MODAMS.Utility;
 using NuGet.ContentModel;
 using MODAMS.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using MOD_AMS.Models;
 
 namespace MODAMSWeb.Areas.Users.Controllers
 {
@@ -25,15 +27,35 @@ namespace MODAMSWeb.Areas.Users.Controllers
             _employeeId = _func.GetEmployeeId();
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? departmentId = 0)
         {
             List<vwAlert> Alerts = await GetAlerts();
-            return View(Alerts);
+            var dto = new dtoAlerts();
+
+            var departments = Alerts.Select(m => new { m.DepartmentId, m.Department }).Distinct();
+
+            if (departmentId > 0) {
+                Alerts = Alerts.Where(m=>m.DepartmentId == departmentId).ToList();
+            }
+            dto.Alerts = Alerts;
+            
+            var departmentList = departments.Select(m => new SelectListItem
+            {
+                Text = m.Department,
+                Value = m.DepartmentId.ToString(),
+                Selected = (m.DepartmentId == departmentId)
+            });
+
+            dto.DepartmentList = departmentList;
+
+            return View(dto);
         }
         public string GetAlertCount() {
             List<vwAlert> Alerts = GetAlerts().GetAwaiter().GetResult();
-            return Alerts.Count().ToString();
+            return Alerts.Count.ToString();
         }
+
+        //Alerts Retrieval
         private async Task<List<vwAlert>> GetAlerts()
         {
             var assets = await _db.Assets.Include(m => m.SubCategory)
@@ -76,26 +98,40 @@ namespace MODAMSWeb.Areas.Users.Controllers
                         AssetId = asset.Id,
                         SubCategory = asset.SubCategory.SubCategoryName,
                         Make = asset.Make,
-                        Model = asset.Model,
+                        DepartmentId = asset.Store.Department.Id,
+                        Department = asset.Store.Department.Name,
                         Name = asset.Name,
-                        Alert = "Missing Documents",
+                        AlertType = "Missing Documents",
                         EmployeeId = asset.Store.Department.EmployeeId
                     };
                     Alerts.Add(alert);
                 }
             }
 
+            var alertList = new List<vwAlert>();
+
             if (User.IsInRole("User"))
             {
                 _employeeId = _func.GetSupervisorId(_employeeId);
             }
 
+
             if (User.IsInRole("StoreOwner") || User.IsInRole("User"))
             {
-                Alerts = Alerts.Where(m => m.EmployeeId == _employeeId).ToList();
-            }
+                var allStores = _db.vwStores.ToList();
+                int DepartmentId = _func.GetDepartmentId(_employeeId);
+                var storeFinder = new StoreFinder(DepartmentId, allStores);
 
-            return Alerts;
+                var stores = storeFinder.GetStores();
+                foreach (var store in stores)
+                {
+                    alertList.AddRange(Alerts.Where(m => m.DepartmentId == store.DepartmentId));
+                }
+            }
+            else {
+                alertList = Alerts;
+            }
+            return alertList;
         }
     }
 }
