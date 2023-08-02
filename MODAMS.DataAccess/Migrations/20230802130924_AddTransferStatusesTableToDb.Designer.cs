@@ -4,6 +4,7 @@ using MODAMS.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MODAMS.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230802130924_AddTransferStatusesTableToDb")]
+    partial class AddTransferStatusesTableToDb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -553,74 +556,6 @@ namespace MODAMS.DataAccess.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("SubCategories");
-                });
-
-            modelBuilder.Entity("MODAMS.Models.Transfer", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("AcknowledgementDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Remarks")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("StoreId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("SubmissionForAcknowledgementDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("TransferDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("TransferStatusId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("StoreId");
-
-                    b.HasIndex("TransferStatusId");
-
-                    b.ToTable("Transfers");
-                });
-
-            modelBuilder.Entity("MODAMS.Models.TransferDetail", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AssetId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PrevStoreId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("TransferDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("TransferId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AssetId");
-
-                    b.HasIndex("TransferId");
-
-                    b.ToTable("TransferDetails");
                 });
 
             modelBuilder.Entity("MODAMS.Models.TransferStatus", b =>
@@ -1179,44 +1114,6 @@ namespace MODAMS.DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("Category");
-                });
-
-            modelBuilder.Entity("MODAMS.Models.Transfer", b =>
-                {
-                    b.HasOne("MODAMS.Models.Store", "Store")
-                        .WithMany()
-                        .HasForeignKey("StoreId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MODAMS.Models.TransferStatus", "TransferStatus")
-                        .WithMany()
-                        .HasForeignKey("TransferStatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Store");
-
-                    b.Navigation("TransferStatus");
-                });
-
-            modelBuilder.Entity("MODAMS.Models.TransferDetail", b =>
-                {
-                    b.HasOne("MODAMS.Models.Asset", "Asset")
-                        .WithMany()
-                        .HasForeignKey("AssetId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MODAMS.Models.Transfer", "Transfer")
-                        .WithMany()
-                        .HasForeignKey("TransferId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Asset");
-
-                    b.Navigation("Transfer");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

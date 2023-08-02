@@ -34,6 +34,9 @@ namespace MODAMS.DataAccess.Data
         public DbSet<AssetDocumentChecklist> AssetDocumentChecklist { get; set; }
         public DbSet<AssetPicture> AssetPictures { get; set; }
         public DbSet<Log> Log { get; set; }
+        public DbSet<TransferStatus> TransferStatuses { get; set; }
+        public DbSet<Transfer> Transfers { get; set; }
+        public DbSet<TransferDetail> TransferDetails { get; set; }
 
 
         //Section for Views
