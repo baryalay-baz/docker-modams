@@ -49,7 +49,7 @@
     <div class="col-12 col-sm-12">
         <div class="card">
             <div class="card-body project-list-table-container">
-                <div class="table-responsive">
+                <div class="table-responsive export-table">
                     <table id="tblAssets" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
                         <thead class="bg-primary-gradient ms-auto divShadow">
                             <tr>
@@ -142,15 +142,8 @@
     <script>
         $(document).ready(function () {
             $("#hideMenu").click();
-            $('#tblAssets').DataTable({
-                "createdRow": function (row, data, dataIndex) {
-                    if (dataIndex % 2 == 1) {
-                        $(row).addClass('bg-light-transparent');
-                    }
-                },
-            });
-            $('.even').addClass("bg-light-transparent");
-            $('.odd').removeClass("bg-light-transparent");
+            makeDataTable("#tblAssets","2");
+            
 
             $('.select2').select2();
             var sStoreId = '@TempData["storeId"]';

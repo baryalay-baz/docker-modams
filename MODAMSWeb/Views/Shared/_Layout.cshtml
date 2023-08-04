@@ -14,14 +14,14 @@
 
     <!--SELECT2-->
     <link href="~/assets/plugins/select2/css/select2.css" rel="stylesheet" asp-append-version="true" />
-    
+
     <!-- STYLE CSS -->
     <link href="~/assets/css/style.css" rel="stylesheet" asp-append-version="true" />
     <link href="~/assets/css/skin-modes.css" rel="stylesheet" asp-append-version="true" />
 
     <!--- FONT-ICONS CSS -->
     <link href="~/assets/css/icons.css" rel="stylesheet" asp-append-version="true" />
-    
+
     <!-- TELERIK THEME -->
     <link rel="stylesheet" href="https://kendo.cdn.telerik.com/themes/6.4.0/bootstrap/bootstrap-main.css" />
     <style>
@@ -32,6 +32,7 @@
             height: 1px;
             background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));
         }
+
         .trShadow {
             border: 1px solid lightblue;
             box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2), 0px 6px 20px 0px rgba(0,0,0,0.19);
@@ -65,7 +66,7 @@
 
     </style>
     <script src="https://kendo.cdn.telerik.com/2023.2.606/js/jquery.min.js"></script>
-    
+
     @* Add the Kendo UI scripts: *@
     <script src="https://kendo.cdn.telerik.com/2023.2.606/js/kendo.all.min.js"></script>
     <script src="https://kendo.cdn.telerik.com/2023.2.606/js/kendo.aspnetmvc.min.js"></script>
@@ -75,7 +76,7 @@
 
 </head>
 @{
-    
+
     //var mode = "";// "dark-mode";
 }
 <body class="app sidebar-mini ltr">
@@ -131,7 +132,6 @@
     <script src="~/assets/plugins/notify/js/jquery.growl.js"></script>
     <script src="~/assets/plugins/notify/js/notifIt.js"></script>
     <!--End Notification Scripts-->
-
     <!-- SELECT2 JS -->
     <script src="~/assets/plugins/select2/select2.full.min.js"></script>
 
@@ -185,11 +185,11 @@
             loadProfileData();
             formatTables();
 
-            $("#txtGlobalSearch").on("change",()=>{
+            $("#txtGlobalSearch").on("change", () => {
                 window.location.href = "/Users/Home/GlobalSearch/?barcode=" + $("#txtGlobalSearch").val();
             });
 
-            $("#btnGlobalSearch").on("click",()=>{
+            $("#btnGlobalSearch").on("click", () => {
                 window.location.href = "/Users/Home/GlobalSearch/?barcode=" + $("#txtGlobalSearch").val();
             });
             //getAlertCount();
@@ -252,7 +252,7 @@
                 }
             });
         }
-        const getAlertCount = ()=>{
+        const getAlertCount = () => {
             var postData = {};
             $.ajax({
                 url: '/Users/Alerts/GetAlertCount',
@@ -283,6 +283,25 @@
                 });
             }
         }
+
+        const makeDataTable = (tableName, type) => {
+            var table = $(tableName).DataTable({
+                buttons: ['copy', 'excel', 'pdf', 'colvis'],
+                responsive: false,
+                language: {
+                    searchPlaceholder: 'Search...',
+                    sSearch: '',
+                }
+            });
+            if(type=="2"){
+                table.buttons().container()
+                    .appendTo(tableName + '_wrapper .col-md-6:eq(0)');
+            }
+            
+            $('.even').addClass("bg-light-transparent");
+            $('.odd').removeClass("bg-light-transparent");
+        }
+
     </script>
 </body>
 

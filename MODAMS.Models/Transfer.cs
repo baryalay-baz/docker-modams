@@ -30,6 +30,10 @@ namespace MODAMS.Models
         [Display(Name ="Transfer By")]
         public int EmployeeId { get; set; }
 
+        [Required]
+        [Display(Name ="Transfer Number")]
+        public string TransferNumber { get; set; } = string.Empty;
+
         [AllowNull]
         [Display(Name ="Submission for Acknowledgement")]
         public DateTime SubmissionForAcknowledgementDate { get; set;}
