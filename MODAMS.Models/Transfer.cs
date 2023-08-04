@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
@@ -14,9 +15,12 @@ namespace MODAMS.Models
         [Key]
         public int Id { get; set; }
 
+        [Display(Name = "Transfer Date")]
+        [Column(TypeName = "date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         [Required]
-        [Display(Name ="Transfer Date")]
-        public DateTime TransferDate { get; set; }
+        public DateTime? TransferDate { get; set; }
 
         [Required]
         [Display(Name ="Transfer to Store")]
@@ -37,8 +41,8 @@ namespace MODAMS.Models
         [Display(Name = "Transfer Status")]
         public int TransferStatusId { get; set; }
 
-        [Display(Name ="Remarks")]
-        public string Remarks { get; set; } = string.Empty;
+        [Display(Name ="Notes")]
+        public string Notes { get; set; } = string.Empty;
 
         [ValidateNever]
         public TransferStatus TransferStatus { get; set; }

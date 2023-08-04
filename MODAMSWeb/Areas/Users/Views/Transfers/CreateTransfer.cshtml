@@ -1,0 +1,264 @@
+﻿@model MODAMS.Models.ViewModels.Dto.dtoTransfer
+<style>
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        display: none;
+    }
+
+    .center-align {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .bordered-div {
+        border-left: 1px solid lightgray;
+        border-top: 1px solid lightgray;
+        border-right: 1px solid lightgray;
+        border-bottom: 1px solid lightgray;
+    }
+
+    .bordered-div-top {
+        border-top: 1px solid lightgray;
+    }
+
+    .bordered-div-left {
+        border-left: 1px solid lightgray;
+    }
+
+    .bordered-div-right {
+        border-right: 1px solid lightgray;
+    }
+
+    .bordered-div-bottom {
+        border-bottom: 1px solid lightgray;
+    }
+
+    .text-xsmall {
+        font-size: 10px;
+    }
+
+</style>
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Asset Transfers</h1>
+    </div>
+    <div class="ms-auto pageheader-btn">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Transfers</li>
+        </ol>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card divShadow">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center justify-content-between">
+                    <h4 class="m-0">Create new Transfer</h4>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <form method="post" asp-action="CreateTransfer" id="frmTransfer">
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <div class="card">
+                                <div class="card-status bg-primary br-tr-7 br-tl-7"></div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="mb-3 form-group">
+                                                <label asp-for="Transfer.TransferDate"></label>
+                                                <input asp-for="Transfer.TransferDate" asp-format="{0:dd-MMM-yyyy}" class="form-control picker" aria-required="true" type="text" />
+                                                <span asp-validation-for="Transfer.TransferDate" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="mb-3 form-group">
+                                                <label asp-for="Transfer.StoreId"></label>
+                                                <select asp-for="Transfer.StoreId" asp-items="@Model.StoreList"
+                                                        class="form-control select2 form-select">
+                                                    <option disabled selected>-Select Store-</option>
+                                                </select>
+                                                <span asp-validation-for="Transfer.StoreId" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div class="table-responsive">
+                                                <table id="tblTransfers" class="table text-nowrap mb-0 table-bordered key-buttons border-top border-bottom project-list-main">
+                                                    <thead class="bg-primary-gradient ms-auto divShadow">
+                                                        <tr>
+                                                            <th class="text-white bg-transparent border-bottom-0 w-2"></th>
+                                                            <th class="text-white bg-transparent border-bottom-0 w-10">Category</th>
+                                                            <th class="text-white bg-transparent border-bottom-0 w-20">Make</th>
+                                                            <th class="text-white bg-transparent border-bottom-0 w-20">Model</th>
+                                                            <th class="text-white bg-transparent border-bottom-0 w-20">Asset Name</th>
+                                                            <th class="text-white bg-transparent border-bottom-0 w-20">Serial No</th>
+                                                            <th class="text-white bg-transparent border-bottom-0 w-20">Barcode</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @{
+                                                            for (var i = 0; i < Model.Assets.Count(); i++)
+                                                            {
+                                                                <tr>
+
+                                                                    <td>
+                                                                        <div class="col-auto">
+                                                                            <label class="ckbox" asp-for="@Model.Assets[i].IsSelected">
+                                                                                <input onclick="return selectAsset(@Model.Assets[i].AssetId,this);"
+                                                                                       type="checkbox" asp-for="@Model.Assets[i].IsSelected">
+                                                                                <span></span>
+                                                                            </label>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>@Model.Assets[i].Category</td>
+                                                                    <td>@Model.Assets[i].Make</td>
+                                                                    <td>@Model.Assets[i].Model</td>
+                                                                    <td>@Model.Assets[i].AssetName</td>
+                                                                    <td>@Model.Assets[i].SerialNumber</td>
+                                                                    <td>@Model.Assets[i].Barcode</td>
+                                                                </tr>
+                                                            }
+                                                        }
+
+                                                    </tbody>
+                                                </table>
+                                                <button type="button" class="btn btn-primary" id="btnSubmit">Submit for Acknowledgement</button>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="card">
+                                <div class="card-status bg-info br-tr-7 br-tl-7"></div>
+                                <div class="card-header">
+                                    <div class="card-title">Your selection</div>
+                                    <hr />
+                                </div>
+                                <div class="card-body">
+                                    <div id="dvSelection"></div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    
+
+    <script>
+        let sData = '';
+        let Data = null;
+        let selection = [];
+
+        $(document).ready(function () {
+
+            sData = '@Html.Raw(Json.Serialize(Model.Assets))';
+            Data = JSON.parse(sData);
+
+            $('.select2').select2();
+
+            $('.picker').datepicker({
+                autoclose: true,
+                format: 'dd-MM-yyyy',
+                todayHighlight: true
+            });
+
+            $('#tblTransfers').DataTable({
+                "createdRow": function (row, data, dataIndex) {
+                    if (dataIndex % 2 == 1) {
+                        $(row).addClass('bg-light-transparent');
+                    }
+                },
+            });
+
+            //var table = $('#tblTransfers').DataTable({
+            //    buttons: ['copy', 'excel', 'pdf', 'colvis'],
+            //    responsive: true,
+            //    language: {
+            //        searchPlaceholder: 'Search...',
+            //        sSearch: '',
+            //    }
+            //});
+            //table.buttons().container()
+            //    .appendTo('#tblTransfers_wrapper .col-md-6:eq(0)');
+
+
+            $('.even').addClass("bg-light-transparent");
+            $('.odd').removeClass("bg-light-transparent");
+
+            $("#btnSubmit").on("click", (e) => {
+                e.preventDefault();
+                if (checkSelection()) {
+                    $("#frmTransfer").submit();
+                } else {
+                    notif({
+                        type: "warning",
+                        msg: "<b>Warning: </b>No assets selected",
+                        position: "center",
+                        width: 500,
+                        height: 60,
+                        autohide: false
+                    });
+                }
+            });
+        });
+
+        const selectAsset = (id, obj) => {
+
+            var obj = $("#" + obj.id);
+            var isChecked = obj.prop("checked");
+            console.log(Data);
+            Data.forEach(function (e) {
+                if (e.assetId == id) {
+                    if (isChecked) {
+                        e.isSelected = true;
+                        selection.push(e.make + " - " + e.assetName + " - " + e.serialNumber);
+                    } else {
+                        e.isSelected = false;
+                        let index = selection.indexOf(e.make + " - " + e.assetName + " - " + e.serialNumber);
+                        if (index !== -1) {
+                            selection.splice(index, 1);
+                        }
+                    }
+                }
+            });
+            var sHtml = '<Table class="table table-bordered"><tbody>';
+            if (selection.length > 0) {
+                for (let i = 0; i < selection.length; i++) {
+                    sHtml += '<tr><td>' + (i+1) + '. ' + selection[i] + '</td></tr>';
+                }
+                sHtml += '</tbody></table>';
+
+                
+            }else{
+                sHtml+='No Assets selected!';
+            }
+            $("#dvSelection").html(sHtml);
+        }
+
+        const checkSelection = () => {
+            var blnResult = false;
+
+            Data.forEach(function (e) {
+                if (e.isSelected)
+                    blnResult = true;
+            });
+            return blnResult;
+        }
+
+    </script>
+}

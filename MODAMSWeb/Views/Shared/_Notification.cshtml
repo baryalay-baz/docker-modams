@@ -1,11 +1,19 @@
 ﻿@if (TempData["success"] != null)
     {
         <script>
-        notif({
+        @*notif({
             msg: "@TempData["success"]",
             type: "success",
             position: "right",
             time: 1000
+        });*@
+        notif({
+            type: "primary",
+            msg: "<b>Success: </b>@TempData["success"]",
+            position: "center",
+            width: 500,
+            height: 60,
+            autohide: false
         });
         </script>
     }
@@ -13,10 +21,18 @@
     {
         <script>
         notif({
+            type: "error",
+            msg: "<b>Error: </b>@TempData["error"]",
+            position: "center",
+            width: 500,
+            height: 60,
+            autohide: false
+        });
+        @*notif({
             msg: "@TempData["error"]",
             type: "error",
             position: "right",
             time: 1000
-        });
+        });*@
         </script>
     }
