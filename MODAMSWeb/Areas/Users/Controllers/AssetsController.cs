@@ -72,7 +72,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             }
 
             TempData["storeId"] = id;
-            TempData["storeName"] = _func.GetStoreName(id);
+            TempData["storeName"] = _func.GetStoreNameByStoreId(id);
 
 
             return View(dto);
@@ -129,7 +129,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             dto = PopulateDtoAsset(dto);
 
             TempData["storeId"] = id;
-            TempData["storeName"] = _func.GetStoreName(id);
+            TempData["storeName"] = _func.GetStoreNameByStoreId(id);
 
 
 
@@ -189,7 +189,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     TempData["error"] = "Serial Number already in use";
 
                     TempData["storeId"] = dto.StoreId;
-                    TempData["storeName"] = _func.GetStoreName(dto.StoreId);
+                    TempData["storeName"] = _func.GetStoreNameByStoreId(dto.StoreId);
                     dto = PopulateDtoAsset(dto);
 
                     return View(dto);
@@ -200,7 +200,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 TempData["error"] = "Please fill all the mandatory fields!";
 
                 TempData["storeId"] = dto.StoreId;
-                TempData["storeName"] = _func.GetStoreName(dto.StoreId);
+                TempData["storeName"] = _func.GetStoreNameByStoreId(dto.StoreId);
 
                 dto = PopulateDtoAsset(dto);
                 return View(dto);
@@ -253,7 +253,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     dto.StoreId = assetInDb.StoreId;
 
                     TempData["storeId"] = assetInDb.StoreId;
-                    TempData["storeName"] = _func.GetStoreName(assetInDb.StoreId);
+                    TempData["storeName"] = _func.GetStoreNameByStoreId(assetInDb.StoreId);
 
                 }
             }
@@ -317,7 +317,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     dto = PopulateDtoAsset(dto);
                     TempData["error"] = "Record not found!";
                     TempData["storeId"] = dto.StoreId;
-                    TempData["storeName"] = _func.GetStoreName(dto.StoreId);
+                    TempData["storeName"] = _func.GetStoreNameByStoreId(dto.StoreId);
                     return View(dto);
                 }
             }
@@ -326,7 +326,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 dto = PopulateDtoAsset(dto);
                 TempData["error"] = "All fields are mandatory!";
                 TempData["storeId"] = dto.StoreId;
-                TempData["storeName"] = _func.GetStoreName(dto.StoreId);
+                TempData["storeName"] = _func.GetStoreNameByStoreId(dto.StoreId);
                 return View(dto);
             }
         }
@@ -344,8 +344,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 TempData["assetInfo"] = asset.Name + " - " + asset.Model + " - " + asset.Year;
             }
 
-            int nStoreId = _func.GetStoreId(id);
-            string sStoreName = _func.GetStoreName(nStoreId);
+            int nStoreId = _func.GetStoreIdByAssetId(id);
+            string sStoreName = _func.GetStoreNameByStoreId(nStoreId);
 
             TempData["storeId"] = nStoreId;
             TempData["storeName"] = sStoreName;
@@ -475,11 +475,11 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     await _db.SaveChangesAsync();
 
                     int nAssetId = assetDocument.AssetId;
-                    int nStoreId = _func.GetStoreId(nAssetId);
+                    int nStoreId = _func.GetStoreIdByAssetId(nAssetId);
 
 
-                    TempData["storeId"] = _func.GetStoreId(nAssetId);
-                    TempData["storeName"] = _func.GetStoreName(nStoreId);
+                    TempData["storeId"] = _func.GetStoreIdByAssetId(nAssetId);
+                    TempData["storeName"] = _func.GetStoreNameByStoreId(nStoreId);
 
                     return RedirectToAction("AssetDocuments", "Assets", new { id = nAssetId });
 
@@ -502,8 +502,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
         {
             var assetPictures = _db.AssetPictures.Where(m => m.AssetId == id).ToList();
 
-            var storeId = _func.GetStoreId(id);
-            var storeName = _func.GetStoreName(storeId);
+            var storeId = _func.GetStoreIdByAssetId(id);
+            var storeName = _func.GetStoreNameByStoreId(storeId);
 
             var asset = _db.Assets.Where(m => m.Id == id).FirstOrDefault();
             if (asset != null)

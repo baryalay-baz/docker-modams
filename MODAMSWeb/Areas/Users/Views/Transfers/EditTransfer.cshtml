@@ -1,4 +1,4 @@
-﻿@model MODAMS.Models.ViewModels.Dto.dtoCreateTransfer
+﻿@model MODAMS.Models.ViewModels.Dto.dtoEditTransfer
 <style>
     input[type="date"]::-webkit-calendar-picker-indicator {
         display: none;
@@ -46,7 +46,7 @@
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">Dashboard</a></li>
             <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Transfers" asp-action="Index">Transfers</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Create Transfer</li>
+            <li class="breadcrumb-item active" aria-current="page">Edit Transfer</li>
         </ol>
     </div>
 </div>
@@ -55,13 +55,14 @@
         <div class="card divShadow">
             <div class="card-body p-4">
                 <div class="d-flex align-items-center justify-content-between">
-                    <h4 class="m-0">Create new Transfer</h4>
+                    <h4 class="m-0">Edit Transfer</h4>
                 </div>
             </div>
         </div>
         <div class="card">
             <div class="card-body">
-                <form method="post" asp-action="CreateTransfer" id="frmTransfer">
+                <form method="post" asp-action="EditTransfer" id="frmTransfer">
+                    <input asp-for="Transfer.Id" hidden />
                     <div class="row">
                         <div class="col-sm-8">
                             <div class="card">
@@ -172,6 +173,7 @@
                                     </div>
                                     <div class="flex">
                                         <button type="button" class="btn btn-primary " id="btnSubmit"><i class="fa fa-check-circle"></i>&nbsp;Save Transfer</button>
+                                        <button type="button" class="btn btn-primary " id="btnPreview"><i class="fa fa-check-circle"></i>&nbsp;Preview Transfer</button>
                                     </div>
 
                                 </div>
@@ -196,7 +198,13 @@
         </div>
     </div>
 </div>
-
+<style>
+    .fancy-shadow {
+        background-color: #f0f0f0;
+        border-radius: 10px;
+        box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.3), -10px -10px 20px rgba(255, 255, 255, 0.5);
+    }
+</style>
 @section Scripts{
 
     <script>
@@ -217,6 +225,7 @@
                 todayHighlight: true
             });
             makeDataTable("#tblTransfers", "1");
+            loadSelection();
 
 
             $("#btnSubmit").on("click", (e) => {
@@ -235,11 +244,31 @@
                 }
             });
         });
+        const loadSelection = () => {
+            Data.forEach(function(e){
+                if(e.isSelected==true){
+                    selection.push(e.make + " - " + e.assetName + " - " + e.serialNumber);
+                }
+            });
+
+            var sHtml = '<Table class="table table-bordered fancy-shadow"><tbody>';
+            if (selection.length > 0) {
+                for (let i = 0; i < selection.length; i++) {
+                    sHtml += '<tr><td>' + (i + 1) + '. ' + selection[i] + '</td></tr>';
+                }
+                sHtml += '</tbody></table>';
+            } else {
+                sHtml += 'No Assets selected!';
+            }
+            $("#dvSelection").html(sHtml);
+            $("#spnSelection").html("(" + selection.length + " selected)");
+        }
+
         const selectAsset = (id, obj) => {
 
             var obj = $("#" + obj.id);
             var isChecked = obj.prop("checked");
-            console.log(Data);
+
             Data.forEach(function (e) {
                 if (e.assetId == id) {
                     if (isChecked) {
@@ -254,7 +283,7 @@
                     }
                 }
             });
-            var sHtml = '<Table class="table table-bordered"><tbody>';
+            var sHtml = '<Table class="table table-bordered fancy-shadow"><tbody>';
             if (selection.length > 0) {
                 for (let i = 0; i < selection.length; i++) {
                     sHtml += '<tr><td>' + (i + 1) + '. ' + selection[i] + '</td></tr>';

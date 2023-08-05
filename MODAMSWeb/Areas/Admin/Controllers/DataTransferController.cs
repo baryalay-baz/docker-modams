@@ -109,7 +109,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
                     asset.Remarks = oRow["Remarks"].ToString();
                     asset.SubCategoryId = await GetAssetSubCategoryId(oRow["AssetSubCategoryId"].ToString());
                     asset.ConditionId = await GetConditionId(oRow["AssetConditionId"].ToString());
-                    asset.StoreId = await GetStoreId(oRow["StoreId"].ToString());
+                    asset.StoreId = await GetStoreIdByAssetId(oRow["StoreId"].ToString());
                     asset.DonorId = await GetDonorId(oRow["DonorId"].ToString());
                         asset.AssetStatusId = await GetAssetStatusId(oRow["StatusId"].ToString());
 
@@ -152,7 +152,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
 
             return Id;
         }
-        private async Task<int> GetStoreId(string id)
+        private async Task<int> GetStoreIdByAssetId(string id)
         {
             DataRow oRow = DbFunc.GetFirstRow("Stores", "Id=" + id);
             string sStore = oRow["Name"].ToString();

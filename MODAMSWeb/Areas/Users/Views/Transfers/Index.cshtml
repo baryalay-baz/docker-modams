@@ -1,4 +1,6 @@
-﻿<div class="page-header">
+﻿@model MODAMS.Models.ViewModels.Dto.dtoTransfer
+
+<div class="page-header">
     <div>
         <h1 class="page-title">Asset Transfers</h1>
     </div>
@@ -9,10 +11,27 @@
         </ol>
     </div>
 </div>
+
 <div class="row">
     <div class="col-12 col-sm-12">
         <div class="card">
             <div class="card-body">
+                @{
+                    bool readOnly = (User.IsInRole("User") || User.IsInRole("StoreOwner")) ? true : false;
+
+                    if (readOnly)
+                    {
+                        <select asp-for="StoreId" asp-items="@Model.StoreList"
+                                class="form-control select2 form-select" disabled>
+                        </select>
+                    }
+                    else
+                    {
+                        <select asp-for="StoreId" asp-items="@Model.StoreList"
+                                class="form-control select2 form-select">
+                        </select>
+                    }
+                }
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="card">
@@ -103,12 +122,43 @@
                                                     <tr>
                                                         <th class="text-white bg-transparent border-bottom-0 w-5">S.No</th>
                                                         <th class="text-white bg-transparent border-bottom-0 w-10">Date</th>
-                                                        <th class="text-white bg-transparent border-bottom-0 w-20">Transfer To</th>
-                                                        <th class="text-white bg-transparent border-bottom-0 w-20">Store Owner</th>
+                                                        <th class="text-white bg-transparent border-bottom-0 w-20">Store From</th>
+                                                        <th class="text-white bg-transparent border-bottom-0 w-20">Store To</th>
                                                         <th class="text-white bg-transparent border-bottom-0 w-5">Number of Assets</th>
+                                                        <th class="text-white bg-transparent border-bottom-0 w-20">Status</th>
                                                         <th class="text-white bg-transparent border-bottom-0 w-20 no-btn">Action</th>
                                                     </tr>
                                                 </thead>
+                                                <tbody>
+                                                    @{
+                                                        int nCounter = 0;
+
+                                                        string sDisabled = "disabled";
+                                                        if (Model.IsAuthorized)
+                                                            sDisabled = "";
+
+
+                                                        foreach (var transfer in Model.vwTransfers)
+                                                        {
+                                                            nCounter++;
+                                                            <tr>
+                                                                <td>@nCounter</td>
+                                                                <td>@transfer.TransferDate?.ToString("dd-MMM-yyyy")</td>
+                                                                <td>@transfer.StoreFrom</td>
+                                                                <td>@transfer.StoreTo</td>
+                                                                <td>@transfer.NumberOfAssets</td>
+                                                                <td>@transfer.Status</td>
+                                                                <td>
+                                                                    <a asp-controller="Transfers" asp-action="EditTransfer" asp-route-id="@transfer.Id" class="btn btn-sm btn-outline-primary border me-2 @sDisabled" data-bs-toggle="tooltip" data-bs-original-title="Edit Asset">
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                                                                            <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" />
+                                                                        </svg>
+                                                                    </a>
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                </tbody>
                                             </table>
                                         </div>
                                     </div>
@@ -156,9 +206,11 @@
             $('.even').addClass("bg-light-transparent");
             $('.odd').removeClass("bg-light-transparent");
 
-            //$('.select2').select2();
-            
+            $('.select2').select2();
 
+            $('#StoreId').on("change", () => {
+                window.location.href = '/Users/Transfers/Index/' + $("#StoreId").val();
+            });
         });
     </script>
 

@@ -18,11 +18,12 @@ namespace MODAMS.Utility
         public string GetSupervisorName(int nEmployeeId);
         public bool IsUserActive(string emailAddress);
         public dtoRedirection GetRedirectionObject();
-        public int GetStoreId(int assetId);
-        public string GetStoreName(int storeId);
+        public int GetStoreIdByAssetId(int assetId);
+        public int GetStoreIdByEmployeeId(int employeeId);
+        public string GetStoreNameByStoreId(int storeId);
         public int GetStoreOwnerId(int storeId);
         public decimal GetDepreciatedCost(int nAssetId);
-        public decimal GetDepreciatedCostByStore(int storeId);
+        public decimal GetDepreciatedCostByStoreId(int storeId);
 
         public string FormatMessage(string title, string message, string email, string returnUrl, string btntext);
 

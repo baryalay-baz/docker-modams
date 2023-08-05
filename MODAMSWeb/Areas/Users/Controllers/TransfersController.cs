@@ -4,40 +4,102 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MODAMS.DataAccess.Data;
 using MODAMS.Models;
+using MODAMS.Models.ViewModels;
 using MODAMS.Models.ViewModels.Dto;
 using MODAMS.Utility;
-using System.Security.Policy;
-using Telerik.SvgIcons;
+using Org.BouncyCastle.Ocsp;
+using System;
 
 namespace MODAMSWeb.Areas.Users.Controllers
 {
     [Area("Users")]
-    [Authorize(Roles = "StoreOwner, SeniorManagement, Administrator")]
+    [Authorize]
     public class TransfersController : Controller
     {
         private readonly ApplicationDbContext _db;
         private readonly IAMSFunc _func;
         private int _employeeId;
-
+        private int _storeId;
         public TransfersController(ApplicationDbContext db, IAMSFunc func)
         {
             _db = db;
             _func = func;
             _employeeId = _func.GetEmployeeId();
         }
-        public IActionResult Index()
+        public IActionResult Index(int id = 0)
         {
-            return View();
+            _employeeId = (User.IsInRole("User")) ? _func.GetSupervisorId(_employeeId) : _employeeId;
+
+            var stores = _db.Stores.ToList();
+            var dto = new dtoTransfer();
+
+            if (id == 0)
+            {
+                if (User.IsInRole("User") || User.IsInRole("StoreOwner"))
+                {
+                    _storeId = _func.GetStoreIdByEmployeeId(_employeeId);
+                    var storeList = _db.Stores.ToList().Select(m => new SelectListItem
+                    {
+                        Text = m.Name,
+                        Value = m.Id.ToString(),
+                        Selected = (m.Id == _storeId)
+                    });
+                    dto.StoreList = storeList;
+                }
+                else
+                {
+                    var sl = _db.vwTransfers.Select(m => new { m.StoreFromId, m.StoreFrom }).Distinct().ToList();
+                    int firstStoreId = sl.Select(m => m.StoreFromId).First();
+
+                    var storeList = sl.Select(m => new SelectListItem
+                    {
+                        Text = m.StoreFrom,
+                        Value = m.StoreFromId.ToString(),
+                        Selected = (m.StoreFromId == firstStoreId)
+                    });
+                    dto.StoreList = storeList;
+                    _storeId = firstStoreId;
+                }
+            }
+            else
+            {
+                _storeId = id;
+                var sl = _db.vwTransfers.Select(m => new { m.StoreFromId, m.StoreFrom }).Distinct().ToList();
+                int firstStoreId = sl.Select(m => m.StoreFromId).First();
+
+                var storeList = sl.Select(m => new SelectListItem
+                {
+                    Text = m.StoreFrom,
+                    Value = m.StoreFromId.ToString(),
+                    Selected = (m.StoreFromId == firstStoreId)
+                });
+                dto.StoreList = storeList;
+            }
+            if (_employeeId == _func.GetStoreOwnerId(_storeId))
+                dto.IsAuthorized = true;
+
+            var transfers = _db.vwTransfers.Where(m => m.StoreFromId == _storeId).ToList();
+
+            dto.StoreId = _storeId;
+            dto.vwTransfers = transfers;
+
+
+            return View(dto);
+        }
+
+        private string GetEmployeeStore(int employeeId)
+        {
+            return _func.GetDepartmentName(employeeId);
         }
 
         [Authorize(Roles = "StoreOwner, User")]
         [HttpGet]
         public IActionResult CreateTransfer()
         {
-            var dto = new dtoTransfer();
+            var dto = new dtoCreateTransfer();
             List<Asset> assets = GetAssets().GetAwaiter().GetResult();
             List<dtoTransferAsset> transferAssets = new List<dtoTransferAsset>();
-
+            TempData["storeFrom"] = _func.GetDepartmentName(_employeeId);
             dto.Transfer.TransferNumber = GetTransferNumber();
 
             if (assets != null)
@@ -63,7 +125,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             {
                 dto.Assets = transferAssets;
             }
-            int currentStoreId = GetCurrentStoreId();
+            int currentStoreId = GetCurrentStoreId().GetAwaiter().GetResult();
 
             var storeList = _db.Stores.Where(m => m.Id != currentStoreId).ToList().Select(m => new SelectListItem
             {
@@ -76,10 +138,16 @@ namespace MODAMSWeb.Areas.Users.Controllers
             return View(dto);
         }
 
+        [Authorize(Roles = "StoreOwner, User")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult CreateTransfer(dtoTransfer transferDTO)
+        public IActionResult CreateTransfer(dtoCreateTransfer transferDTO)
         {
+            _employeeId = (User.IsInRole("User")) ? _func.GetSupervisorId(_employeeId) : _employeeId;
+            var storeId = _func.GetStoreIdByEmployeeId(_employeeId);
+
+
+
             if (!ModelState.IsValid)
             {
                 TempData["error"] = "Please fill all the mandatory fields";
@@ -89,6 +157,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             {
                 TransferDate = transferDTO.Transfer.TransferDate,
                 EmployeeId = _employeeId,
+                StoreFromId = storeId,
                 StoreId = transferDTO.Transfer.StoreId,
                 TransferNumber = transferDTO.Transfer.TransferNumber,
                 TransferStatusId = 1,
@@ -96,10 +165,12 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 SubmissionForAcknowledgementDate = DateTime.Now
             };
 
-            try {
+            try
+            {
                 _db.Transfers.Add(transfer);
                 _db.SaveChanges();
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 TempData["error"] = ex.Message;
                 return RedirectToAction("CreateTransfer", "Transfers");
@@ -111,7 +182,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 var transferDetail = new TransferDetail()
                 {
                     AssetId = asset.AssetId,
-                    PrevStoreId = GetCurrentStoreId(),
+                    PrevStoreId = GetCurrentStoreId().GetAwaiter().GetResult(),
                     TransferId = transfer.Id
                 };
                 _db.TransferDetails.Add(transferDetail);
@@ -120,24 +191,160 @@ namespace MODAMSWeb.Areas.Users.Controllers
             {
                 _db.SaveChanges();
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 TempData["error"] = ex.Message;
                 return RedirectToAction("CreateTransfer", "Transfers");
             }
 
             TempData["success"] = "Transfer saved and submitted for acknowledgement";
-            return RedirectToAction("CreateTransfer", "Transfers");
+            return RedirectToAction("Index", "Transfers");
         }
+
+        [Authorize(Roles = "StoreOwner, User")]
+        public IActionResult EditTransfer(int id)
+        {
+            _employeeId = (User.IsInRole("User")) ? _func.GetSupervisorId(_employeeId) : _employeeId;
+            TempData["storeFrom"] = _func.GetDepartmentName(_employeeId);
+
+            var transfer = _db.Transfers.Where(m => m.Id == id).FirstOrDefault();
+            if (transfer == null)
+            {
+                TempData["error"] = "Transfer not found!";
+                return RedirectToAction("Index", "Transfers");
+            }
+            var dto = new dtoEditTransfer();
+
+            List<Asset> assets = GetAssets().GetAwaiter().GetResult();
+            List<dtoTransferAsset> transferAssets = new List<dtoTransferAsset>();
+
+            dto.Transfer = transfer;
+            var transferDetails = _db.TransferDetails.Where(m => m.TransferId == transfer.Id).ToList();
+
+            if (assets != null)
+            {
+                foreach (var asset in assets)
+                {
+                    var transferAsset = new dtoTransferAsset()
+                    {
+                        AssetId = asset.Id,
+                        AssetName = asset.Name,
+                        Category = asset.SubCategory.Category.CategoryName,
+                        SubCategory = asset.SubCategory.SubCategoryName,
+                        Make = asset.Make,
+                        Model = asset.Model,
+                        Barcode = asset.Barcode.ToString(),
+                        SerialNumber = asset.SerialNo,
+                        IsSelected = IsAssetSelected(asset.Id, transferDetails)
+                    };
+                    transferAssets.Add(transferAsset);
+                }
+            }
+            if (transferAssets.Count > 0)
+            {
+                dto.Assets = transferAssets.OrderByDescending(m => m.IsSelected).ToList();
+            }
+            int currentStoreId = GetCurrentStoreId().GetAwaiter().GetResult();
+
+            var storeList = _db.Stores.Where(m => m.Id != currentStoreId).ToList().Select(m => new SelectListItem
+            {
+                Text = m.Name,
+                Value = m.Id.ToString(),
+            });
+
+            dto.StoreList = storeList;
+
+            return View(dto);
+        }
+
+        [Authorize(Roles = "StoreOwner, User")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditTransfer(dtoEditTransfer transferDTO)
+        {
+            _employeeId = (User.IsInRole("User")) ? _func.GetSupervisorId(_employeeId) : _employeeId;
+            var storeId = _func.GetStoreIdByEmployeeId(_employeeId);
+
+            if (!ModelState.IsValid)
+            {
+                TempData["error"] = "Please fill all the mandatory fields";
+                return RedirectToAction("EditTransfer", "Transfers", new { id = transferDTO.Transfer.Id });
+            }
+
+            var transfer = _db.Transfers.Where(m => m.Id == transferDTO.Transfer.Id).FirstOrDefault();
+            if (transfer == null)
+            {
+                TempData["error"] = "Record not found!";
+                return RedirectToAction("EditTransfer", "Transfers", new { id = transferDTO.Transfer.Id });
+            }
+            transfer.TransferDate = transferDTO.Transfer.TransferDate;
+            transfer.EmployeeId = _employeeId;
+            transfer.StoreFromId = storeId;
+            transfer.StoreId = transferDTO.Transfer.StoreId;
+            transfer.TransferNumber = transferDTO.Transfer.TransferNumber;
+            transfer.TransferStatusId = 1;
+            transfer.Notes = transferDTO.Transfer.Notes;
+
+            try
+            {
+                _db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                TempData["error"] = ex.Message;
+                return RedirectToAction("EditTransfer", "Transfers", new { id = transferDTO.Transfer.Id });
+            }
+            var transferDetails = _db.TransferDetails.Where(m => m.Id == transferDTO.Transfer.Id).ToList();
+            _db.RemoveRange(transferDetails);
+            _db.SaveChanges();
+
+            var assets = transferDTO.Assets.Where(m => m.IsSelected == true).ToList();
+            foreach (var asset in assets)
+            {
+                var transferDetail = new TransferDetail()
+                {
+                    AssetId = asset.AssetId,
+                    PrevStoreId = GetCurrentStoreId().GetAwaiter().GetResult(),
+                    TransferId = transfer.Id
+                };
+                _db.TransferDetails.Add(transferDetail);
+            }
+            try
+            {
+                _db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                TempData["error"] = ex.Message;
+                return RedirectToAction("EditTransfer", "Transfers", new { id = transferDTO.Transfer.Id });
+            }
+
+            TempData["success"] = "Transfer saved and submitted for acknowledgement";
+            return RedirectToAction("EditTransfer", "Transfers", new { id = transferDTO.Transfer.Id });
+        }
+
+        private bool IsAssetSelected(int assetId, List<TransferDetail> transferDetails)
+        {
+            bool blnResult = false;
+            var td = transferDetails.Where(m => m.AssetId == assetId).FirstOrDefault();
+            if (td != null)
+            {
+                blnResult = true;
+            }
+            return blnResult;
+        }
+
         private string GetTransferNumber()
         {
             string sResult = "";
-            int nEmployeeId = _employeeId;
+
+            _employeeId = (User.IsInRole("User")) ? _func.GetSupervisorId(_employeeId) : _employeeId;
+
             if (User.IsInRole("User"))
-            {
-                nEmployeeId = _func.GetSupervisorId(_employeeId);
-            }
-            TempData["storeFrom"] = _func.GetDepartmentName(nEmployeeId);
-            var transfers = _db.Transfers.Where(m => m.EmployeeId == nEmployeeId).ToList();
+                _employeeId = _func.GetSupervisorId(_employeeId);
+
+
+            var transfers = _db.Transfers.Where(m => m.EmployeeId == _employeeId).ToList();
             var maxIdTransfer = transfers.OrderByDescending(m => m.Id).FirstOrDefault();
 
             int maxId = 0;
@@ -176,27 +383,21 @@ namespace MODAMSWeb.Areas.Users.Controllers
         }
         private async Task<List<Asset>> GetAssets()
         {
-            int nEmployeeId = _employeeId;
-            if (User.IsInRole("User"))
-            {
-                nEmployeeId = _func.GetSupervisorId(_employeeId);
-            }
+            _employeeId = (User.IsInRole("User")) ? _func.GetSupervisorId(_employeeId) : _employeeId;
+
             var assets = await _db.Assets.Include(m => m.Store.Department)
                 .Include(m => m.SubCategory).Include(m => m.SubCategory.Category)
                 .Where(m => m.AssetStatusId == 1).ToListAsync();
-            assets = assets.Where(m => m.Store.Department.EmployeeId == nEmployeeId).ToList();
+            assets = assets.Where(m => m.Store.Department.EmployeeId == _employeeId).ToList();
             return assets;
         }
 
-        private int GetCurrentStoreId()
+        private async Task<int> GetCurrentStoreId()
         {
-            int nEmployeeId = _employeeId;
-            if (User.IsInRole("Users"))
-            {
-                nEmployeeId = _func.GetSupervisorId(_employeeId);
-            }
-            int currentStoreId = _db.Stores.Where(m => m.DepartmentId == _func.GetDepartmentId(_employeeId))
-                .Select(m => m.Id).FirstOrDefault();
+            _employeeId = (User.IsInRole("User")) ? _func.GetSupervisorId(_employeeId) : _employeeId;
+
+            int currentStoreId = await _db.Stores.Where(m => m.DepartmentId == _func.GetDepartmentId(_employeeId))
+                .Select(m => m.Id).FirstOrDefaultAsync();
 
             return currentStoreId;
         }

@@ -23,6 +23,10 @@ namespace MODAMS.Models
         public DateTime? TransferDate { get; set; }
 
         [Required]
+        [Display(Name ="Transfer from Store")]
+        public int StoreFromId { get; set; }
+
+        [Required]
         [Display(Name ="Transfer to Store")]
         public int StoreId { get; set; }
 

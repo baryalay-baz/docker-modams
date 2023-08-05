@@ -68,7 +68,7 @@
                                                 var employeeId = _func.GetEmployeeId();
 
                                                 employeeId = (User.IsInRole("User")) ? _func.GetSupervisorId(employeeId) : employeeId;
-                                                if (employeeId == _func.GetStoreOwnerId(_func.GetStoreId(Model.Asset.Id)))
+                                                if (employeeId == _func.GetStoreOwnerId(_func.GetStoreIdByAssetId(Model.Asset.Id)))
                                                 {
                                                     <a asp-action="EditAsset" asp-controller="Assets" asp-route-id="@Model.Asset.Id" class="ms-1" id="checkElement"><i class="fe fe-edit"></i></a>
                                                 }
@@ -276,7 +276,7 @@
                                 </div>
                                 <div class="float-end">
                                     @{
-                                        if (employeeId == _func.GetStoreOwnerId(_func.GetStoreId(Model.Asset.Id)))
+                                        if (employeeId == _func.GetStoreOwnerId(_func.GetStoreIdByAssetId(Model.Asset.Id)))
                                         {
                                             <a class="btn btn-outline-primary btn-sm" asp-action="AssetDocuments" asp-controller="Assets" asp-route-id="@Model.Asset.Id" id="checkElement"><i class="fa fa-edit"></i>&nbsp;Edit Documents</a>
                                         }
@@ -338,7 +338,7 @@
                                 </div>
                                 <div class="float-end">
                                     @{
-                                        if (employeeId == _func.GetStoreOwnerId(_func.GetStoreId(Model.Asset.Id)))
+                                        if (employeeId == _func.GetStoreOwnerId(_func.GetStoreIdByAssetId(Model.Asset.Id)))
                                         {
                                             <a class="btn btn-outline-primary btn-sm" asp-action="AssetPictures" asp-controller="Assets" asp-route-id="@Model.Asset.Id" id="checkElement"><i class="fa fa-edit"></i>&nbsp;Edit Pictures</a>
                                         }

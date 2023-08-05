@@ -209,7 +209,7 @@ namespace MODAMS.Utility
             }
             return supervisorName;
         }
-        public int GetStoreId(int assetId)
+        public int GetStoreIdByAssetId(int assetId)
         {
             int storeId = 0;
             if (assetId > 0)
@@ -222,7 +222,7 @@ namespace MODAMS.Utility
             }
             return storeId;
         }
-        public string GetStoreName(int storeId)
+        public string GetStoreNameByStoreId(int storeId)
         {
             string storeName = "";
             if (storeId > 0)
@@ -382,7 +382,7 @@ namespace MODAMS.Utility
             return emailMessage;
         }
 
-        public decimal GetDepreciatedCostByStore(int storeId)
+        public decimal GetDepreciatedCostByStoreId(int storeId)
         {
             var assetList = _db.Assets.Where(m => m.StoreId == storeId)
                 .Select(m => new { m.Id }).ToList();
@@ -413,6 +413,21 @@ namespace MODAMS.Utility
                 }
             }
             return storeOwnerId;
+        }
+
+        public int GetStoreIdByEmployeeId(int employeeId)
+        {
+            int storeId = 0;
+            var department = _db.Departments.Where(m=>m.EmployeeId== employeeId).FirstOrDefault();
+            if (department != null)
+            {
+                var store = _db.Stores.Where(m => m.DepartmentId == department.Id).FirstOrDefault();
+                if(store != null)
+                {
+                    storeId = store.Id; 
+                }
+            }
+            return storeId;
         }
     }
 }
