@@ -1,0 +1,121 @@
+﻿@model MODAMS.Models.ViewModels.Dto.dtoTransferPreview
+<style>
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        display: none;
+    }
+
+    .center-align {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .bordered-div {
+        border-left: 1px solid lightgray;
+        border-top: 1px solid lightgray;
+        border-right: 1px solid lightgray;
+        border-bottom: 1px solid lightgray;
+    }
+
+    .bordered-div-top {
+        border-top: 1px solid lightgray;
+    }
+
+    .bordered-div-left {
+        border-left: 1px solid lightgray;
+    }
+
+    .bordered-div-right {
+        border-right: 1px solid lightgray;
+    }
+
+    .bordered-div-bottom {
+        border-bottom: 1px solid lightgray;
+    }
+
+    .text-xsmall {
+        font-size: 10px;
+    }
+
+</style>
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Asset Transfers</h1>
+    </div>
+    <div class="ms-auto pageheader-btn">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Transfers" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Preview Transfer</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12 col-sm-12">
+        <div class="card">
+            <div class="card-body">
+                <h3>Preview Transfer</h3>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="center-align bordered-div">
+                            <table class="w-100">
+                                <tr>
+                                    <td class="center-align pt-2"><img src="~/assets/images/brand/FGS_Small4.png" /></td>
+                                </tr>
+                                <tr>
+                                    <td class="center-align">
+                                        <h4><b>Asset Management System</b></h4>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="center-align">
+                                        <h5>Transfer Voucher</h5>
+                                    </td>
+                                </tr>
+                                <tr><td class="align-center w-100"><hr class="customHR w-100" /></td></tr>
+                                <tr>
+                                    <td>
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <table class="w-100">
+                                                    <tr>
+                                                        <td>Transfer Number: <b>@Model.vwTransfer.TransferNumber</b></td>
+                                                        <td><span class="text-bold"></span></td>
+                                                        <td style="text-align: right;">Transfer Date: <b>@Model.vwTransfer.TransferDate?.ToString("dd-MMM-yyyy")</b></td>
+                                                    </tr>
+                                                </table>
+                                                <br />
+                                                <table class="w-75 table-bordered" >
+                                                    <tr>
+                                                        <td>Store From:&nbsp;<b>@Model.vwTransfer.StoreFrom</b></td>
+                                                        <td>Store To:&nbsp;<b>@Model.vwTransfer.StoreTo</b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Assets:&nbsp;<b>@Model.vwTransfer.NumberOfAssets</b></td>
+                                                        <td>Status:&nbsp;<b>@Model.vwTransfer.Status</b></td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

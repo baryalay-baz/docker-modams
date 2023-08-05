@@ -7,6 +7,7 @@ using MODAMS.Models;
 using MODAMS.Models.ViewModels;
 using MODAMS.Models.ViewModels.Dto;
 using MODAMS.Utility;
+using NuGet.ContentModel;
 using Org.BouncyCastle.Ocsp;
 using System;
 
@@ -97,7 +98,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
         public IActionResult CreateTransfer()
         {
             var dto = new dtoCreateTransfer();
-            List<Asset> assets = GetAssets().GetAwaiter().GetResult();
+            List<MODAMS.Models.Asset> assets = GetAssets().GetAwaiter().GetResult();
             List<dtoTransferAsset> transferAssets = new List<dtoTransferAsset>();
             TempData["storeFrom"] = _func.GetDepartmentName(_employeeId);
             dto.Transfer.TransferNumber = GetTransferNumber();
@@ -198,7 +199,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             }
 
             TempData["success"] = "Transfer saved and submitted for acknowledgement";
-            return RedirectToAction("Index", "Transfers");
+            return RedirectToAction("EditTransfer", "Transfers", new {id=transfer.Id});
         }
 
         [Authorize(Roles = "StoreOwner, User")]
@@ -215,7 +216,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             }
             var dto = new dtoEditTransfer();
 
-            List<Asset> assets = GetAssets().GetAwaiter().GetResult();
+            List<MODAMS.Models.Asset> assets = GetAssets().GetAwaiter().GetResult();
             List<dtoTransferAsset> transferAssets = new List<dtoTransferAsset>();
 
             dto.Transfer = transfer;
@@ -277,16 +278,16 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 TempData["error"] = "Record not found!";
                 return RedirectToAction("EditTransfer", "Transfers", new { id = transferDTO.Transfer.Id });
             }
-            transfer.TransferDate = transferDTO.Transfer.TransferDate;
-            transfer.EmployeeId = _employeeId;
-            transfer.StoreFromId = storeId;
-            transfer.StoreId = transferDTO.Transfer.StoreId;
-            transfer.TransferNumber = transferDTO.Transfer.TransferNumber;
-            transfer.TransferStatusId = 1;
-            transfer.Notes = transferDTO.Transfer.Notes;
-
+            
             try
             {
+                transfer.TransferDate = transferDTO.Transfer.TransferDate;
+                transfer.EmployeeId = _employeeId;
+                transfer.StoreFromId = storeId;
+                transfer.StoreId = transferDTO.Transfer.StoreId;
+                transfer.TransferNumber = transferDTO.Transfer.TransferNumber;
+                transfer.TransferStatusId = 1;
+                transfer.Notes = transferDTO.Transfer.Notes;
                 _db.SaveChanges();
             }
             catch (Exception ex)
@@ -294,7 +295,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 TempData["error"] = ex.Message;
                 return RedirectToAction("EditTransfer", "Transfers", new { id = transferDTO.Transfer.Id });
             }
-            var transferDetails = _db.TransferDetails.Where(m => m.Id == transferDTO.Transfer.Id).ToList();
+            var transferDetails = _db.TransferDetails.Where(m => m.TransferId == transferDTO.Transfer.Id).ToList();
             _db.RemoveRange(transferDetails);
             _db.SaveChanges();
 
@@ -321,6 +322,55 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             TempData["success"] = "Transfer saved and submitted for acknowledgement";
             return RedirectToAction("EditTransfer", "Transfers", new { id = transferDTO.Transfer.Id });
+        }
+
+        [Authorize(Roles = "StoreOwner, User")]
+        [HttpGet]
+        public IActionResult PreviewTransfer(int id) {
+            var transfer = _db.vwTransfers.Where(m=>m.Id == id).FirstOrDefault();
+            if (transfer == null)
+                transfer = new vwTransfer();
+
+            var dto = new dtoTransferPreview();
+            dto.vwTransfer = transfer;
+
+            var transferDetails = _db.TransferDetails.Where(m=>m.TransferId==transfer.Id).ToList();
+            var assets = _db.Assets.Include(m => m.SubCategory.Category).Select(m => new {
+                m.Id,
+                m.Name,
+                m.SubCategory.Category.CategoryName,
+                m.SubCategory.SubCategoryName,
+                m.Make,
+                m.Model,
+                m.Barcode,
+                m.SerialNo
+            }).ToList();
+
+            var transferAssets = new List<dtoTransferAsset>();
+
+            foreach (var transferDetail in transferDetails)
+            {
+                var asset = assets.Where(m => m.Id == transferDetail.AssetId).FirstOrDefault();
+                if (asset == null) {
+                    break;
+                }
+                var transferAsset = new dtoTransferAsset()
+                {
+                    AssetId = asset.Id,
+                    AssetName = asset.Name,
+                    Category = asset.CategoryName,
+                    SubCategory = asset.SubCategoryName,
+                    Make = asset.Make,
+                    Model = asset.Model,
+                    Barcode = asset.Barcode.ToString(),
+                    SerialNumber = asset.SerialNo,
+                    IsSelected = true
+                };
+                transferAssets.Add(transferAsset);
+            }
+            dto.transferAssets = transferAssets;
+
+            return View(dto);
         }
 
         private bool IsAssetSelected(int assetId, List<TransferDetail> transferDetails)
@@ -381,7 +431,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             return sResult;
         }
-        private async Task<List<Asset>> GetAssets()
+        private async Task<List<MODAMS.Models.Asset>> GetAssets()
         {
             _employeeId = (User.IsInRole("User")) ? _func.GetSupervisorId(_employeeId) : _employeeId;
 
