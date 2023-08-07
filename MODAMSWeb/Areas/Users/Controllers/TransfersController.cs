@@ -25,10 +25,10 @@ namespace MODAMSWeb.Areas.Users.Controllers
             _func = func;
             _employeeId = _func.GetEmployeeId();
         }
-        public IActionResult Index(int id = 0)
+        public IActionResult Index(int id = 0, int transferStatusId = 0)
         {
             _employeeId = (User.IsInRole("User")) ? _func.GetSupervisorId(_employeeId) : _employeeId;
-
+            transferStatusId = 0;
             var stores = _db.Stores.ToList();
             var dto = new dtoTransfer();
 
@@ -78,6 +78,11 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 dto.IsAuthorized = true;
 
             var transfers = _db.vwTransfers.Where(m => m.StoreFromId == _storeId).ToList();
+
+            if (transferStatusId > 0)
+                transfers = transfers.Where(m => m.TransferStatusId==transferStatusId).ToList();
+
+            TempData["transferStatus"] = transferStatusId;
 
             dto.StoreId = _storeId;
             dto.vwTransfers = transfers;

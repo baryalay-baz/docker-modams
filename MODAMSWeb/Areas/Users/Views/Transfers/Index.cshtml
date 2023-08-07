@@ -97,7 +97,7 @@
                                                 <div class="row">
                                                     <div class="col-8">
                                                         <h6>Requires Attention</h6>
-                                                        <span> Count: </span><span class="text-bold"> 4</span><br />
+                                                        <span> Count: </span><span class="text-bold"> 2</span><br />
                                                         <span> Value: </span><span class="text-bold"> $92,225.00</span>
                                                     </div>
                                                     <div class="col-4">
@@ -116,7 +116,17 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-8 col-sm-8">
-                                        <div class="table-responsive">
+                                        <div class="mb-4">
+                                            <div class="input-group">
+                                                <label class="rdiobox" for="rd-0"><input onclick="return radioCall(0);" class="mr-5" name="rd-status" type="radio" id="rd-0" checked><span style="font-size:medium;">All Transfers</span></label>&nbsp;&nbsp;
+                                                <label class="rdiobox" for="rd-1"><input onclick="return radioCall(1);" class="mr-5" name="rd-status" type="radio" id="rd-1"><span style="font-size:medium;">Pending</span></label>&nbsp;&nbsp;
+                                                <label class="rdiobox" for="rd-2"><input onclick="return radioCall(2);" class="mr-5" name="rd-status" type="radio" id="rd-2"><span style="font-size:medium;">Awaiting Acknowledgement</span></label>&nbsp;&nbsp;
+                                                <label class="rdiobox" for="rd-3"><input onclick="return radioCall(3);" class="mr-5" name="rd-status" type="radio" id="rd-3"><span style="font-size:medium;">Completed</span></label>&nbsp;&nbsp;
+                                                <label class="rdiobox" for="rd-4"><input onclick="return radioCall(4);" class="mr-5" name="rd-status" type="radio" id="rd-4"><span style="font-size:medium;">Rejected</span></label>&nbsp;&nbsp;
+                                            </div>
+                                        </div>
+
+                                        <div class="table-responsive" id="dvTable-Responsive">
                                             <table id="tblTransfers" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
                                                 <thead class="bg-primary-gradient ms-auto divShadow">
                                                     <tr>
@@ -149,10 +159,11 @@
                                                                 <td>@transfer.NumberOfAssets</td>
                                                                 <td>@transfer.Status</td>
                                                                 <td>
-                                                                    <a asp-controller="Transfers" asp-action="EditTransfer" asp-route-id="@transfer.Id" class="btn btn-sm btn-outline-primary border me-2 @sDisabled" data-bs-toggle="tooltip" data-bs-original-title="Edit Asset">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
-                                                                            <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" />
-                                                                        </svg>
+                                                                    <a asp-controller="Transfers" asp-action="PreviewTransfer" asp-route-id="@transfer.Id" class="btn btn-sm btn-outline-primary border me-2 @sDisabled" data-bs-toggle="tooltip" data-bs-original-title="Preview Transfer">
+                                                                        <i class="fe fe-eye"></i>
+                                                                    </a>
+                                                                    <a asp-controller="Transfers" asp-action="EditTransfer" asp-route-id="@transfer.Id" class="btn btn-sm btn-outline-primary border me-2 @sDisabled" data-bs-toggle="tooltip" data-bs-original-title="Edit Transfer">
+                                                                        <i class="fe fe-edit"></i>
                                                                     </a>
                                                                 </td>
                                                             </tr>
@@ -211,8 +222,86 @@
             $('#StoreId').on("change", () => {
                 window.location.href = '/Users/Transfers/Index/' + $("#StoreId").val();
             });
+            //setRadioButtons();
+
         });
+
+        const generateTable = (id) => {
+            var sData = '@Json.Serialize(Model.vwTransfers)';
+            var Data = JSON.parse(sData);
+            var sHtml = `<table id="tblTransfers" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
+                            <thead class="bg-primary-gradient ms-auto divShadow">
+                                <tr>
+                                    <th class="text-white bg-transparent border-bottom-0 w-5">S.No</th>
+                                    <th class="text-white bg-transparent border-bottom-0 w-10">Date</th>
+                                    <th class="text-white bg-transparent border-bottom-0 w-20">Store From</th>
+                                    <th class="text-white bg-transparent border-bottom-0 w-20">Store To</th>
+                                    <th class="text-white bg-transparent border-bottom-0 w-5">Number of Assets</th>
+                                    <th class="text-white bg-transparent border-bottom-0 w-20">Status</th>
+                                    <th class="text-white bg-transparent border-bottom-0 w-20 no-btn">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+            var nCounter = 0;
+            Data.forEach(function (e) {
+                nCounter++;
+                if (id > 0) {
+                    if (e.transferStatusId == id) {
+                        sHtml += `<tr>
+                                    <td>`+ nCounter + `</td>
+                                    <td>`+ formattedDate(e.transferDate) + `</td>
+                                    <td>`+ e.storeFrom + `</td>
+                                    <td>`+ e.storeTo + `</td>
+                                    <td>`+ e.numberOfAssets + `</td>
+                                    <td>`+ e.status + `</td>
+                                    <td>
+                                        <a href="/Users/Transfers/PreviewTransfer/` + e.id + `" class="btn btn-sm btn-outline-primary border me-2 data-bs-toggle="tooltip" data-bs-original-title="Preview Transfer">
+                                            <i class="fe fe-eye"></i>
+                                        </a>
+                                        <a href="/Users/Transfers/EditTransfer/` + e.id + `" class="btn btn-sm btn-outline-primary border me-2 data-bs-toggle="tooltip" data-bs-original-title="Edit Transfer">
+                                            <i class="fe fe-edit"></i>
+                                        </a>
+                                    </td>
+                                </tr>`;
+                    }
+                }else{
+                    sHtml += `<tr>
+                                <td>`+ nCounter + `</td>
+                                <td>`+ formattedDate(e.transferDate) + `</td>
+                                <td>`+ e.storeFrom + `</td>
+                                <td>`+ e.storeTo + `</td>
+                                <td>`+ e.numberOfAssets + `</td>
+                                <td>`+ e.status + `</td>
+                                <td>
+                                    <a href="/Users/Transfers/PreviewTransfer/` + e.id + `" class="btn btn-sm btn-outline-primary border me-2 data-bs-toggle="tooltip" data-bs-original-title="Preview Transfer">
+                                        <!--?xml version="1.0" encoding="UTF-8"?-->
+                                        <i class="fe fe-eye"></i>
+                                    </a>
+                                    <a href="/Users/Transfers/EditTransfer/` + e.id + `" class="btn btn-sm btn-outline-primary border me-2 data-bs-toggle="tooltip" data-bs-original-title="Edit Transfer">
+                                        <i class="fe fe-edit"></i>
+                                    </a>
+                                </td>
+                            </tr>`;
+                }
+            });
+
+            sHtml += '</tbody></table>';
+            $("#dvTable-Responsive").html("").html(sHtml);
+            makeDataTable('#tblTransfers', 1);
+            setRadioButtons(id);
+        }
+
+        const radioCall = (id) => {
+            generateTable(id);
+            //window.location.href = "/Users/Transfers/Index/" + $("#StoreId").val() + "?transferStatusId=" + id;
+        }
+
+        const setRadioButtons = (id) => {
+            //let transferStatusId = '@TempData["transferStatus"]';
+            $("#rd-" + id).prop("checked", true);
+        }
+
+        
+
     </script>
-
-
 }

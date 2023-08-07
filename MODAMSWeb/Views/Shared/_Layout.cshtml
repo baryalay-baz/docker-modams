@@ -178,7 +178,7 @@
     <script src="~/js/kendo-ui-license.js"></script>
 
     <section id="dvProfileData" style="display:none;"></section>
-
+    <script src="~/assets/plugins/moment/moment.js"></script>
     <script>
         $(document).ready(() => {
             setMode();
@@ -301,7 +301,13 @@
             $('.even').addClass("bg-light-transparent");
             $('.odd').removeClass("bg-light-transparent");
         }
+        const formattedDate = (date) => {
+            var dateObject = moment(date);
 
+            // Format the date to dd-MMMM-yyyy
+            var formattedDate = dateObject.format('DD-MMM-YYYY');
+            return formattedDate;
+        }
     </script>
 </body>
 
