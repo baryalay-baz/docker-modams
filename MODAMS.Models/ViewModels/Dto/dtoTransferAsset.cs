@@ -16,6 +16,7 @@ namespace MODAMS.Models.ViewModels.Dto
         public string AssetName { get; set; } = string.Empty;
         public string Barcode { get; set; } = string.Empty;
         public string SerialNumber { get; set; } = string.Empty;
+        public string Condition { get; set; } = string.Empty;
         public bool IsSelected { get; set; } = false;
     }
 }

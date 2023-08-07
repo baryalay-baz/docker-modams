@@ -22,6 +22,7 @@ namespace MODAMS.Utility
         public int GetStoreIdByEmployeeId(int employeeId);
         public string GetStoreNameByStoreId(int storeId);
         public int GetStoreOwnerId(int storeId);
+        public string GetEmployeeNameById(int employeeId);
         public decimal GetDepreciatedCost(int nAssetId);
         public decimal GetDepreciatedCostByStoreId(int storeId);
 

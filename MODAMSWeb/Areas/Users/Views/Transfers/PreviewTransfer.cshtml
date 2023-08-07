@@ -1,4 +1,6 @@
 ﻿@model MODAMS.Models.ViewModels.Dto.dtoTransferPreview
+@using MODAMS.Utility
+
 <style>
     input[type="date"]::-webkit-calendar-picker-indicator {
         display: none;
@@ -8,6 +10,16 @@
         display: flex;
         justify-content: center;
         align-items: center;
+    }
+
+    .left-align {
+        display: flex;
+        justify-content: left;
+    }
+
+    .right-align {
+        display: flex;
+        justify-content: right;
     }
 
     .bordered-div {
@@ -38,6 +50,12 @@
     }
 
 </style>
+<style type="text/css">
+    .barcode {
+        width: 200px;
+        height: 50px;
+    }
+</style>
 <div class="page-header">
     <div>
         <h1 class="page-title">Asset Transfers</h1>
@@ -45,21 +63,12 @@
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">Dashboard</a></li>
-            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Transfers" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Transfers" asp-action="Index">Transfers</a></li>
             <li class="breadcrumb-item active" aria-current="page">Preview Transfer</li>
         </ol>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-12 col-sm-12">
-        <div class="card">
-            <div class="card-body">
-                <h3>Preview Transfer</h3>
-            </div>
-        </div>
-    </div>
-</div>
 <div class="row">
     <div class="col-md-12">
         <div class="card">
@@ -93,8 +102,8 @@
                                                         <td style="text-align: right;">Transfer Date: <b>@Model.vwTransfer.TransferDate?.ToString("dd-MMM-yyyy")</b></td>
                                                     </tr>
                                                 </table>
-                                                <br />
-                                                <table class="w-75 table-bordered" >
+                                                <br /><br /><br /><br /><br />
+                                                <table class="w-75 table-bordered">
                                                     <tr>
                                                         <td>Store From:&nbsp;<b>@Model.vwTransfer.StoreFrom</b></td>
                                                         <td>Store To:&nbsp;<b>@Model.vwTransfer.StoreTo</b></td>
@@ -104,6 +113,74 @@
                                                         <td>Status:&nbsp;<b>@Model.vwTransfer.Status</b></td>
                                                     </tr>
                                                 </table>
+                                                <table class="table table-bordered w-100">
+                                                    <thead>
+                                                        <tr>
+                                                            <td>S.No</td>
+                                                            <td>Category</td>
+                                                            <td>Make</td>
+                                                            <td>Model</td>
+                                                            <td>Asset Name</td>
+                                                            <td>Serial No.</td>
+                                                            <td>Condition</td>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @{
+                                                            int nCounter = 0;
+                                                            string sCounter = "0";
+
+                                                            foreach (var asset in Model.transferAssets)
+                                                            {
+                                                                nCounter++;
+                                                                sCounter = (nCounter < 10) ? "0" + nCounter.ToString() + "." : nCounter.ToString() + ".";
+                                                                <tr>
+                                                                    <td>@sCounter</td>
+                                                                    <td>@asset.SubCategory</td>
+                                                                    <td>@asset.Make</td>
+                                                                    <td>@asset.Model</td>
+                                                                    <td>@asset.AssetName</td>
+                                                                    <td>@asset.SerialNumber</td>
+                                                                    <td>@asset.Condition</td>
+                                                                </tr>
+                                                            }
+                                                        }
+
+                                                    </tbody>
+                                                </table>
+                                                <br /><br /><br /><br /><br /><br /><br /><br /><br />
+                                                <div class="flex w-75 center-align" style="margin-left:100px;">
+                                                    <div class="flex w-100">
+                                                        <div class="float-start left-align">Transfer By</div>
+                                                        <div class="float-end right-align">Received By</div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="flex w-100 center-align" style="margin-left:50px;">
+                                                    <div class="flex w-100">
+                                                        <div class="float-start left-align">
+                                                            @{
+                                                                if (Model.vwTransfer.TransferStatusId > SD.Transfer_Pending)
+                                                                {
+                                                                    <kendo-barcode name="barcode0" class="barcode" value="@Model.TransferBy" type="BarcodeSymbology.Code128">
+                                                                    </kendo-barcode>
+                                                                }
+                                                            }
+
+                                                        </div>
+                                                        <div class="float-end left-align" style="margin-right:150px;">
+                                                            @{
+                                                                if (Model.vwTransfer.TransferStatusId > SD.Transfer_SubmittedForAcknowledgement)
+                                                                {
+                                                                    <kendo-barcode name="barcode1" class="barcode" value="@Model.ReceivedBy" type="BarcodeSymbology.Code128">
+                                                                    </kendo-barcode>
+                                                                }
+                                                            }
+
+                                                        </div>
+                                                        <br /><br />
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -113,9 +190,78 @@
                         </div>
                     </div>
                     <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body divShadow center-align">
+                                @{
+                                    if (Model.vwTransfer.TransferStatusId == SD.Transfer_Pending)
+                                    {
+                                        if (Model.IsSender)
+                                        {
+                                            <form method="post" asp-action="SubmitForAcknowledgement" id="frmSubmitForAcknowledgement">
+                                                <input type="hidden" name="id" value="@Model.vwTransfer.Id"/>
+                                                <button type="submit" class="btn btn-primary " id="btnSubmit">
+                                                    <i class="fa fa-check-circle"></i>&nbsp;Submit for Acknowledgement
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            Html.Raw("No action required!");
+                                        }
+                                    }
+                                    else if (Model.vwTransfer.TransferStatusId == SD.Transfer_SubmittedForAcknowledgement)
+                                    {
+                                        if (Model.IsReceiver)
+                                        {
+                                            <form method="post" asp-action="AcknowledgeTransfer" id="frmAcknowledgeTransfer">
+                                                <input type="hidden" name="id" value="@Model.vwTransfer.Id" />
+                                                <button type="submit" class="btn btn-primary " id="btnSubmit">
+                                                    <i class="fa fa-check-circle"></i>&nbsp;Acknowledge Transfer
+                                                </button>
+                                            </form>
+                                            @Html.Raw("&nbsp;&nbsp;")
+                                            <form method="post" asp-action="RejectTransfer" id="frmRejectTransfer">
+                                                <input type="hidden" name="id" value="@Model.vwTransfer.Id" />
+                                                <button type="submit" class="btn btn-secondary">
+                                                    <i class="fa fa-close"></i>&nbsp;Reject Transfer
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            @Html.Raw("No action required!");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Html.Raw("No action required!");
+                                    }
+                                }
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+@section scripts{
+    <script>
+        $(document).ready(function () {
+
+        });
+
+        const submitForAcknowledgement = (id) => {
+            alert("To Submit: " + id);
+        };
+
+        const acknowledgeTransfer = (id) => {
+            alert("To Acknowledge: " + id);
+        };
+
+        const rejectTransfer = (id) => {
+            alert("To Reject: " + id);
+        };
+
+    </script>
+}

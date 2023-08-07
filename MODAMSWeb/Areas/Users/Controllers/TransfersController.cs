@@ -7,9 +7,7 @@ using MODAMS.Models;
 using MODAMS.Models.ViewModels;
 using MODAMS.Models.ViewModels.Dto;
 using MODAMS.Utility;
-using NuGet.ContentModel;
-using Org.BouncyCastle.Ocsp;
-using System;
+
 
 namespace MODAMSWeb.Areas.Users.Controllers
 {
@@ -199,7 +197,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             }
 
             TempData["success"] = "Transfer saved and submitted for acknowledgement";
-            return RedirectToAction("EditTransfer", "Transfers", new {id=transfer.Id});
+            return RedirectToAction("EditTransfer", "Transfers", new { id = transfer.Id });
         }
 
         [Authorize(Roles = "StoreOwner, User")]
@@ -278,7 +276,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 TempData["error"] = "Record not found!";
                 return RedirectToAction("EditTransfer", "Transfers", new { id = transferDTO.Transfer.Id });
             }
-            
+
             try
             {
                 transfer.TransferDate = transferDTO.Transfer.TransferDate;
@@ -326,16 +324,20 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
         [Authorize(Roles = "StoreOwner, User")]
         [HttpGet]
-        public IActionResult PreviewTransfer(int id) {
-            var transfer = _db.vwTransfers.Where(m=>m.Id == id).FirstOrDefault();
+        public IActionResult PreviewTransfer(int id)
+        {
+            _employeeId = (User.IsInRole("User")) ? _func.GetSupervisorId(_employeeId) : _employeeId;
+
+            var transfer = _db.vwTransfers.Where(m => m.Id == id).FirstOrDefault();
             if (transfer == null)
                 transfer = new vwTransfer();
 
             var dto = new dtoTransferPreview();
             dto.vwTransfer = transfer;
 
-            var transferDetails = _db.TransferDetails.Where(m=>m.TransferId==transfer.Id).ToList();
-            var assets = _db.Assets.Include(m => m.SubCategory.Category).Select(m => new {
+            var transferDetails = _db.TransferDetails.Where(m => m.TransferId == transfer.Id).ToList();
+            var assets = _db.Assets.Include(m => m.SubCategory.Category).Include(m => m.Condition).Select(m => new
+            {
                 m.Id,
                 m.Name,
                 m.SubCategory.Category.CategoryName,
@@ -343,7 +345,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 m.Make,
                 m.Model,
                 m.Barcode,
-                m.SerialNo
+                m.SerialNo,
+                m.Condition.ConditionName
             }).ToList();
 
             var transferAssets = new List<dtoTransferAsset>();
@@ -351,7 +354,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
             foreach (var transferDetail in transferDetails)
             {
                 var asset = assets.Where(m => m.Id == transferDetail.AssetId).FirstOrDefault();
-                if (asset == null) {
+                if (asset == null)
+                {
                     break;
                 }
                 var transferAsset = new dtoTransferAsset()
@@ -364,15 +368,88 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     Model = asset.Model,
                     Barcode = asset.Barcode.ToString(),
                     SerialNumber = asset.SerialNo,
+                    Condition = asset.ConditionName,
                     IsSelected = true
                 };
                 transferAssets.Add(transferAsset);
             }
             dto.transferAssets = transferAssets;
 
+            int senderId = _func.GetStoreOwnerId(transfer.StoreFromId);
+            int receiverId = _func.GetStoreOwnerId(transfer.StoreId);
+
+            dto.IsSender = (senderId == _employeeId) ? true : false;
+            dto.IsReceiver = (receiverId == _employeeId) ? true : false;
+
+            dto.TransferBy = _func.GetEmployeeNameById(senderId);
+            dto.ReceivedBy = _func.GetEmployeeNameById(receiverId);
+
+            ViewBag.FromSignature = Barcode.GenerateBarCode(dto.TransferBy);
+            ViewBag.ToSignature = Barcode.GenerateBarCode(dto.ReceivedBy);
+
+
+
             return View(dto);
         }
 
+        [Authorize(Roles = "StoreOwner, User")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult SubmitForAcknowledgement(int id)
+        {
+            var transfer = _db.Transfers.Where(m => m.Id == id).FirstOrDefault();
+            if (transfer != null)
+            {
+                transfer.TransferStatusId = SD.Transfer_SubmittedForAcknowledgement;
+                _db.SaveChanges();
+                TempData["success"] = "Transfer Submitted for Acknowledgement";
+                return RedirectToAction("PreviewTransfer", "Transfers", new { id = id });
+            }
+            else
+            {
+                TempData["error"] = "Record not found!";
+                return RedirectToAction("PreviewTransfer", "Transfers", new { id = id });
+            }
+        }
+
+        [Authorize(Roles = "StoreOwner, User")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AcknowledgeTransfer(int id)
+        {
+            var transfer = _db.Transfers.Where(m => m.Id == id).FirstOrDefault();
+            if (transfer != null)
+            {
+                transfer.TransferStatusId = SD.Transfer_Completed;
+                _db.SaveChanges();
+                TempData["success"] = "Transfer Acknowledged";
+                return RedirectToAction("PreviewTransfer", "Transfers", new { id = id });
+            }
+            else
+            {
+                TempData["error"] = "Record not found!";
+                return RedirectToAction("PreviewTransfer", "Transfers", new { id = id });
+            }
+        }
+        [Authorize(Roles = "StoreOwner, User")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult RejectTransfer(int id)
+        {
+            var transfer = _db.Transfers.Where(m => m.Id == id).FirstOrDefault();
+            if (transfer != null)
+            {
+                transfer.TransferStatusId = SD.Transfer_Rejected;
+                _db.SaveChanges();
+                TempData["success"] = "Transfer Rejected";
+                return RedirectToAction("PreviewTransfer", "Transfers", new { id = id });
+            }
+            else
+            {
+                TempData["error"] = "Record not found!";
+                return RedirectToAction("PreviewTransfer", "Transfers", new { id = id });
+            }
+        }
         private bool IsAssetSelected(int assetId, List<TransferDetail> transferDetails)
         {
             bool blnResult = false;
@@ -383,7 +460,6 @@ namespace MODAMSWeb.Areas.Users.Controllers
             }
             return blnResult;
         }
-
         private string GetTransferNumber()
         {
             string sResult = "";
@@ -441,7 +517,6 @@ namespace MODAMSWeb.Areas.Users.Controllers
             assets = assets.Where(m => m.Store.Department.EmployeeId == _employeeId).ToList();
             return assets;
         }
-
         private async Task<int> GetCurrentStoreId()
         {
             _employeeId = (User.IsInRole("User")) ? _func.GetSupervisorId(_employeeId) : _employeeId;

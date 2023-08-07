@@ -20,6 +20,7 @@
     <PackageReference Include="Telerik.Reporting" Version="17.1.23.606" />
     <PackageReference Include="Telerik.Reporting.Services.AspNetCore" Version="17.1.23.606" />
     <PackageReference Include="Telerik.UI.for.AspNet.Core" Version="2023.2.606" />
+    <PackageReference Include="ZXing.Net" Version="0.16.9" />
   </ItemGroup>
 
   <ItemGroup>

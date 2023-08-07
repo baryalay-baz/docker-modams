@@ -429,5 +429,16 @@ namespace MODAMS.Utility
             }
             return storeId;
         }
+
+        public string GetEmployeeNameById(int employeeId)
+        {
+            string EmployeeName = "Not found!";
+            var employee = _db.Employees.Where(m=>m.Id== employeeId).FirstOrDefault();
+            if (employee != null)
+            {
+                EmployeeName = employee.FullName;
+            }
+            return EmployeeName;
+        }
     }
 }
