@@ -121,7 +121,7 @@
                                                             <td>Make</td>
                                                             <td>Model</td>
                                                             <td>Asset Name</td>
-                                                            <td>Serial No.</td>
+                                                            <td>Identification</td>
                                                             <td>Condition</td>
                                                         </tr>
                                                     </thead>
@@ -152,7 +152,19 @@
                                                 <div class="flex w-75 center-align" style="margin-left:100px;">
                                                     <div class="flex w-100">
                                                         <div class="float-start left-align">Transfer By</div>
-                                                        <div class="float-end right-align">Received By</div>
+                                                        <div class="float-end left-align">
+                                                            @{
+                                                                if (Model.vwTransfer.TransferStatusId == 4)
+                                                                {
+                                                                    @Html.Raw("<span class=\"text-danger\">Rejected By</span>");
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Html.Raw("<span class=\"text-success\">Received By</span>");
+                                                                }
+                                                            }
+                                                            
+                                                        </div>
                                                     </div>
                                                 </div>
 
@@ -168,7 +180,7 @@
                                                             }
 
                                                         </div>
-                                                        <div class="float-end left-align" style="margin-right:150px;">
+                                                        <div class="float-end left-align" style="margin-right:160px;">
                                                             @{
                                                                 if (Model.vwTransfer.TransferStatusId > SD.Transfer_SubmittedForAcknowledgement)
                                                                 {
@@ -191,7 +203,7 @@
                     </div>
                     <div class="col-md-4">
                         <div class="card">
-                            <div class="card-body divShadow center-align">
+                            <div class="card-body divShadow center-align" id="dvAction">
                                 @{
                                     if (Model.vwTransfer.TransferStatusId == SD.Transfer_Pending)
                                     {
@@ -206,7 +218,7 @@
                                         }
                                         else
                                         {
-                                            Html.Raw("No action required!");
+                                            @Html.Raw("<span>No action required</span>");
                                         }
                                     }
                                     else if (Model.vwTransfer.TransferStatusId == SD.Transfer_SubmittedForAcknowledgement)
@@ -229,12 +241,12 @@
                                         }
                                         else
                                         {
-                                            @Html.Raw("No action required!");
+                                            @Html.Raw("<span>No action required</span>");
                                         }
                                     }
                                     else
                                     {
-                                        Html.Raw("No action required!");
+                                        @Html.Raw("<span>No action required</span>");
                                     }
                                 }
                             </div>
@@ -248,7 +260,9 @@
 @section scripts{
     <script>
         $(document).ready(function () {
+            hideMenu();
 
+            console.log($("#dvAction").html());
         });
 
         const submitForAcknowledgement = (id) => {

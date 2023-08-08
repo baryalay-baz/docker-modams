@@ -114,73 +114,149 @@
                         </div>
                         <div class="card">
                             <div class="card-body">
-                                <div class="row">
-                                    <div class="col-8 col-sm-8">
-                                        <div class="mb-4">
-                                            <div class="input-group">
-                                                <label class="rdiobox" for="rd-0"><input onclick="return radioCall(0);" class="mr-5" name="rd-status" type="radio" id="rd-0" checked><span style="font-size:medium;">All Transfers</span></label>&nbsp;&nbsp;
-                                                <label class="rdiobox" for="rd-1"><input onclick="return radioCall(1);" class="mr-5" name="rd-status" type="radio" id="rd-1"><span style="font-size:medium;">Pending</span></label>&nbsp;&nbsp;
-                                                <label class="rdiobox" for="rd-2"><input onclick="return radioCall(2);" class="mr-5" name="rd-status" type="radio" id="rd-2"><span style="font-size:medium;">Awaiting Acknowledgement</span></label>&nbsp;&nbsp;
-                                                <label class="rdiobox" for="rd-3"><input onclick="return radioCall(3);" class="mr-5" name="rd-status" type="radio" id="rd-3"><span style="font-size:medium;">Completed</span></label>&nbsp;&nbsp;
-                                                <label class="rdiobox" for="rd-4"><input onclick="return radioCall(4);" class="mr-5" name="rd-status" type="radio" id="rd-4"><span style="font-size:medium;">Rejected</span></label>&nbsp;&nbsp;
+                                <div class="panel panel-primary tab-style-underline">
+                                    <div class=" tab-menu-heading border-bottom-0">
+                                        <div class="tabs-menu1 ">
+                                            <!-- Tabs -->
+                                            <ul class="nav panel-tabs">
+                                                <li><a href="#tabOutgoing" class="active me-1 text-default my-1" data-bs-toggle="tab">Outgoing Transfers</a></li>
+                                                <li><a href="#tabIncoming" data-bs-toggle="tab" class="me-1 text-default my-1">Incoming Transfers</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="panel-body tabs-menu-body">
+                                        <div class="tab-content">
+                                            <div class="tab-pane active " id="tabOutgoing">
+                                                <div class="row">
+                                                    <div class="col-8 col-sm-8">
+                                                        <div class="mb-4">
+                                                            <div class="input-group">
+                                                                <label class="rdiobox" for="rd-0"><input onclick="return radioCall(0);" class="mr-5" name="rd-status" type="radio" id="rd-0" checked><span style="font-size:medium;">All Transfers</span></label>&nbsp;&nbsp;
+                                                                <label class="rdiobox" for="rd-1"><input onclick="return radioCall(1);" class="mr-5" name="rd-status" type="radio" id="rd-1"><span style="font-size:medium;">Pending</span></label>&nbsp;&nbsp;
+                                                                <label class="rdiobox" for="rd-2"><input onclick="return radioCall(2);" class="mr-5" name="rd-status" type="radio" id="rd-2"><span style="font-size:medium;">Awaiting Acknowledgement</span></label>&nbsp;&nbsp;
+                                                                <label class="rdiobox" for="rd-3"><input onclick="return radioCall(3);" class="mr-5" name="rd-status" type="radio" id="rd-3"><span style="font-size:medium;">Completed</span></label>&nbsp;&nbsp;
+                                                                <label class="rdiobox" for="rd-4"><input onclick="return radioCall(4);" class="mr-5" name="rd-status" type="radio" id="rd-4"><span style="font-size:medium;">Rejected</span></label>&nbsp;&nbsp;
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="table-responsive" id="dvTable-Responsive">
+                                                            <table id="tblTransfers" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
+                                                                <thead class="bg-primary-gradient ms-auto divShadow">
+                                                                    <tr>
+                                                                        <th class="text-white bg-transparent border-bottom-0 w-5">S.No</th>
+                                                                        <th class="text-white bg-transparent border-bottom-0 w-10">Date</th>
+                                                                        <th class="text-white bg-transparent border-bottom-0 w-20">Store From</th>
+                                                                        <th class="text-white bg-transparent border-bottom-0 w-20">Store To</th>
+                                                                        <th class="text-white bg-transparent border-bottom-0 w-5">Number of Assets</th>
+                                                                        <th class="text-white bg-transparent border-bottom-0 w-20">Status</th>
+                                                                        <th class="text-white bg-transparent border-bottom-0 w-20 no-btn">Action</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @{
+                                                                        int nCounter = 0;
+
+                                                                        string sInitialDisable = "disabled";
+                                                                        string sDisabled = "disabled";
+
+                                                                        if (Model.IsAuthorized)
+                                                                            sInitialDisable = "";
+
+                                                                        foreach (var transfer in Model.OutgoingTransfers)
+                                                                        {
+                                                                            sDisabled = sInitialDisable;
+                                                                            if (transfer.TransferStatusId != 1)
+                                                                            {
+                                                                                sDisabled = "disabled";
+                                                                            }
+
+                                                                            nCounter++;
+                                                                            <tr>
+                                                                                <td>@nCounter</td>
+                                                                                <td>@transfer.TransferDate?.ToString("dd-MMM-yyyy")</td>
+                                                                                <td>@transfer.StoreFrom</td>
+                                                                                <td>@transfer.StoreTo</td>
+                                                                                <td>@transfer.NumberOfAssets</td>
+                                                                                <td>@transfer.Status</td>
+                                                                                <td>
+                                                                                    <a asp-controller="Transfers" asp-action="EditTransfer" asp-route-id="@transfer.Id" class="btn btn-sm btn-outline-primary border me-2 @sDisabled" data-bs-toggle="tooltip" data-bs-original-title="Edit Transfer">
+                                                                                        <i class="fe fe-edit"></i>
+                                                                                    </a>
+                                                                                    <a asp-controller="Transfers" asp-action="PreviewTransfer" asp-route-id="@transfer.Id" class="btn btn-sm btn-outline-primary border me-2" data-bs-toggle="tooltip" data-bs-original-title="Preview Transfer">
+                                                                                        <i class="fe fe-eye"></i>
+                                                                                    </a>
+                                                                                </td>
+                                                                            </tr>
+                                                                        }
+                                                                    }
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-4 col-sm-4">
+                                                        chart goes here...
+                                                    </div>
+                                                </div>
+                                                <a asp-action="CreateTransfer" asp-controller="Transfers" id="btnCreate" class="btn btn-outline-primary pt-1"><i class="fe fe-plus-circle"></i>&nbsp;New Transfer</a>
+                                            </div>
+                                            <div class="tab-pane " id="tabIncoming">
+                                                <div class="row">
+                                                    <div class="col-8 col-sm-8">
+                                                        <div class="mb-4">
+                                                            <div class="input-group">
+                                                                <label class="rdiobox" for="rd-incoming-0"><input onclick="return radioCallIncoming(0);" class="mr-5" name="rd-status-incoming" type="radio" id="rd-incoming-0" checked><span style="font-size:medium;">All Transfers</span></label>&nbsp;&nbsp;
+                                                                <label class="rdiobox" for="rd-incoming-2"><input onclick="return radioCallIncoming(2);" class="mr-5" name="rd-status-incoming" type="radio" id="rd-incoming-2"><span style="font-size:medium;">Awaiting Acknowledgement</span></label>&nbsp;&nbsp;
+                                                                <label class="rdiobox" for="rd-incoming-3"><input onclick="return radioCallIncoming(3);" class="mr-5" name="rd-status-incoming" type="radio" id="rd-incoming-3"><span style="font-size:medium;">Completed</span></label>&nbsp;&nbsp;
+                                                                <label class="rdiobox" for="rd-incoming-4"><input onclick="return radioCallIncoming(4);" class="mr-5" name="rd-status-incoming" type="radio" id="rd-incoming-4"><span style="font-size:medium;">Rejected</span></label>&nbsp;&nbsp;
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="table-responsive" id="dvTable-Responsive-Incoming">
+                                                            <table id="tblTransfersIncoming" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
+                                                                <thead class="bg-primary-gradient ms-auto divShadow">
+                                                                    <tr>
+                                                                        <th class="text-white bg-transparent border-bottom-0 w-5">S.No</th>
+                                                                        <th class="text-white bg-transparent border-bottom-0 w-10">Date</th>
+                                                                        <th class="text-white bg-transparent border-bottom-0 w-20">Store From</th>
+                                                                        <th class="text-white bg-transparent border-bottom-0 w-20">Store To</th>
+                                                                        <th class="text-white bg-transparent border-bottom-0 w-5">Number of Assets</th>
+                                                                        <th class="text-white bg-transparent border-bottom-0 w-20">Status</th>
+                                                                        <th class="text-white bg-transparent border-bottom-0 w-20 no-btn">Action</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @{
+                                                                        int nCounterIncoming = 0;
+
+                                                                        foreach (var transfer in Model.IncomingTransfers)
+                                                                        {
+                                                                            nCounterIncoming++;
+                                                                            <tr>
+                                                                                <td>@nCounterIncoming</td>
+                                                                                <td>@transfer.TransferDate?.ToString("dd-MMM-yyyy")</td>
+                                                                                <td>@transfer.StoreFrom</td>
+                                                                                <td>@transfer.StoreTo</td>
+                                                                                <td>@transfer.NumberOfAssets</td>
+                                                                                <td>@transfer.Status</td>
+                                                                                <td>
+                                                                                    <a asp-controller="Transfers" asp-action="PreviewTransfer" asp-route-id="@transfer.Id" class="btn btn-sm btn-outline-primary border me-2" data-bs-toggle="tooltip" data-bs-original-title="Preview Transfer">
+                                                                                        <i class="fe fe-eye"></i>
+                                                                                    </a>
+                                                                                </td>
+                                                                            </tr>
+                                                                        }
+                                                                    }
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-4 col-sm-4">
+                                                        chart goes here...
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-
-                                        <div class="table-responsive" id="dvTable-Responsive">
-                                            <table id="tblTransfers" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
-                                                <thead class="bg-primary-gradient ms-auto divShadow">
-                                                    <tr>
-                                                        <th class="text-white bg-transparent border-bottom-0 w-5">S.No</th>
-                                                        <th class="text-white bg-transparent border-bottom-0 w-10">Date</th>
-                                                        <th class="text-white bg-transparent border-bottom-0 w-20">Store From</th>
-                                                        <th class="text-white bg-transparent border-bottom-0 w-20">Store To</th>
-                                                        <th class="text-white bg-transparent border-bottom-0 w-5">Number of Assets</th>
-                                                        <th class="text-white bg-transparent border-bottom-0 w-20">Status</th>
-                                                        <th class="text-white bg-transparent border-bottom-0 w-20 no-btn">Action</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @{
-                                                        int nCounter = 0;
-
-                                                        string sDisabled = "disabled";
-                                                        if (Model.IsAuthorized)
-                                                            sDisabled = "";
-
-
-                                                        foreach (var transfer in Model.vwTransfers)
-                                                        {
-                                                            nCounter++;
-                                                            <tr>
-                                                                <td>@nCounter</td>
-                                                                <td>@transfer.TransferDate?.ToString("dd-MMM-yyyy")</td>
-                                                                <td>@transfer.StoreFrom</td>
-                                                                <td>@transfer.StoreTo</td>
-                                                                <td>@transfer.NumberOfAssets</td>
-                                                                <td>@transfer.Status</td>
-                                                                <td>
-                                                                    <a asp-controller="Transfers" asp-action="PreviewTransfer" asp-route-id="@transfer.Id" class="btn btn-sm btn-outline-primary border me-2 @sDisabled" data-bs-toggle="tooltip" data-bs-original-title="Preview Transfer">
-                                                                        <i class="fe fe-eye"></i>
-                                                                    </a>
-                                                                    <a asp-controller="Transfers" asp-action="EditTransfer" asp-route-id="@transfer.Id" class="btn btn-sm btn-outline-primary border me-2 @sDisabled" data-bs-toggle="tooltip" data-bs-original-title="Edit Transfer">
-                                                                        <i class="fe fe-edit"></i>
-                                                                    </a>
-                                                                </td>
-                                                            </tr>
-                                                        }
-                                                    }
-                                                </tbody>
-                                            </table>
-                                        </div>
                                     </div>
-                                    <div class="col-4 col-sm-4">
-                                        chart goes here...
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-footer">
-                                <div class="col-sm-12">
-                                    <a asp-action="CreateTransfer" asp-controller="Transfers" id="btnCreate" class="btn btn-outline-primary pt-1"><i class="fe fe-plus-circle"></i>&nbsp;New Transfer</a>
                                 </div>
                             </div>
                         </div>
@@ -206,16 +282,8 @@
         $(document).ready(function () {
             //$("#hideMenu").click();
 
-            $('#tblTransfers').DataTable({
-                "createdRow": function (row, data, dataIndex) {
-                    if (dataIndex % 2 == 1) {
-                        $(row).addClass('bg-light-transparent');
-                    }
-                },
-            });
-
-            $('.even').addClass("bg-light-transparent");
-            $('.odd').removeClass("bg-light-transparent");
+            makeDataTable('#tblTransfers', 1)
+            makeDataTable('#tblTransfersIncoming', 1)
 
             $('.select2').select2();
 
@@ -226,25 +294,50 @@
 
         });
 
-        const generateTable = (id) => {
-            var sData = '@Json.Serialize(Model.vwTransfers)';
+        const radioCall = (id) => {
+            generateTableOutoing(id);
+        }
+
+        const radioCallIncoming = (id) => {
+            generateTableIncoming(id);
+        }
+
+        const setRadioButtons = (id) => {
+            //let transferStatusId = '@TempData["transferStatus"]';
+            $("#rd-" + id).prop("checked", true);
+        }
+
+        const generateTableOutoing = (id) => {
+
+            var sInitialDisabled = "";
+            var sDisabled = "";
+            if ('@Model.IsAuthorized' == "False")
+                sInitialDisabled = "disabled"
+
+            var sData = '@Json.Serialize(Model.OutgoingTransfers)';
             var Data = JSON.parse(sData);
             var sHtml = `<table id="tblTransfers" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
-                            <thead class="bg-primary-gradient ms-auto divShadow">
-                                <tr>
-                                    <th class="text-white bg-transparent border-bottom-0 w-5">S.No</th>
-                                    <th class="text-white bg-transparent border-bottom-0 w-10">Date</th>
-                                    <th class="text-white bg-transparent border-bottom-0 w-20">Store From</th>
-                                    <th class="text-white bg-transparent border-bottom-0 w-20">Store To</th>
-                                    <th class="text-white bg-transparent border-bottom-0 w-5">Number of Assets</th>
-                                    <th class="text-white bg-transparent border-bottom-0 w-20">Status</th>
-                                    <th class="text-white bg-transparent border-bottom-0 w-20 no-btn">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>`;
+                                    <thead class="bg-primary-gradient ms-auto divShadow">
+                                        <tr>
+                                            <th class="text-white bg-transparent border-bottom-0 w-5">S.No</th>
+                                            <th class="text-white bg-transparent border-bottom-0 w-10">Date</th>
+                                            <th class="text-white bg-transparent border-bottom-0 w-20">Store From</th>
+                                            <th class="text-white bg-transparent border-bottom-0 w-20">Store To</th>
+                                            <th class="text-white bg-transparent border-bottom-0 w-5">Number of Assets</th>
+                                            <th class="text-white bg-transparent border-bottom-0 w-20">Status</th>
+                                            <th class="text-white bg-transparent border-bottom-0 w-20 no-btn">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>`;
             var nCounter = 0;
             Data.forEach(function (e) {
                 nCounter++;
+
+                sDisabled = sInitialDisabled;
+                if(e.transferStatusId!=1){
+                    sDisabled = "disabled";
+                }
+
                 if (id > 0) {
                     if (e.transferStatusId == id) {
                         sHtml += `<tr>
@@ -255,33 +348,32 @@
                                     <td>`+ e.numberOfAssets + `</td>
                                     <td>`+ e.status + `</td>
                                     <td>
-                                        <a href="/Users/Transfers/PreviewTransfer/` + e.id + `" class="btn btn-sm btn-outline-primary border me-2 data-bs-toggle="tooltip" data-bs-original-title="Preview Transfer">
-                                            <i class="fe fe-eye"></i>
-                                        </a>
-                                        <a href="/Users/Transfers/EditTransfer/` + e.id + `" class="btn btn-sm btn-outline-primary border me-2 data-bs-toggle="tooltip" data-bs-original-title="Edit Transfer">
+                                        <a href="/Users/Transfers/EditTransfer/` + e.id + `" class="btn btn-sm btn-outline-primary border me-2 ` + sDisabled + ` " data-bs-toggle="tooltip" data-bs-original-title="Edit Transfer">
                                             <i class="fe fe-edit"></i>
+                                        </a>
+                                                <a href="/Users/Transfers/PreviewTransfer/` + e.id + `" class="btn btn-sm btn-outline-primary border me-2" data-bs-toggle="tooltip" data-bs-original-title="Preview Transfer">
+                                            <i class="fe fe-eye"></i>
                                         </a>
                                     </td>
                                 </tr>`;
                     }
-                }else{
+                } else {
                     sHtml += `<tr>
-                                <td>`+ nCounter + `</td>
-                                <td>`+ formattedDate(e.transferDate) + `</td>
-                                <td>`+ e.storeFrom + `</td>
-                                <td>`+ e.storeTo + `</td>
-                                <td>`+ e.numberOfAssets + `</td>
-                                <td>`+ e.status + `</td>
-                                <td>
-                                    <a href="/Users/Transfers/PreviewTransfer/` + e.id + `" class="btn btn-sm btn-outline-primary border me-2 data-bs-toggle="tooltip" data-bs-original-title="Preview Transfer">
-                                        <!--?xml version="1.0" encoding="UTF-8"?-->
-                                        <i class="fe fe-eye"></i>
-                                    </a>
-                                    <a href="/Users/Transfers/EditTransfer/` + e.id + `" class="btn btn-sm btn-outline-primary border me-2 data-bs-toggle="tooltip" data-bs-original-title="Edit Transfer">
-                                        <i class="fe fe-edit"></i>
-                                    </a>
-                                </td>
-                            </tr>`;
+                                        <td>`+ nCounter + `</td>
+                                        <td>`+ formattedDate(e.transferDate) + `</td>
+                                        <td>`+ e.storeFrom + `</td>
+                                        <td>`+ e.storeTo + `</td>
+                                        <td>`+ e.numberOfAssets + `</td>
+                                        <td>`+ e.status + `</td>
+                                        <td>
+                                            <a ` + sDisabled + ` href="/Users/Transfers/EditTransfer/` + e.id + `" class="btn btn-sm btn-outline-primary border me-2 ` + sDisabled + `" data-bs-toggle="tooltip" data-bs-original-title="Edit Transfer">
+                                                <i class="fe fe-edit"></i>
+                                            </a>
+                                            <a href="/Users/Transfers/PreviewTransfer/` + e.id + `" class="btn btn-sm btn-outline-primary border me-2" data-bs-toggle="tooltip" data-bs-original-title="Preview Transfer">
+                                                <i class="fe fe-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>`;
                 }
             });
 
@@ -290,18 +382,66 @@
             makeDataTable('#tblTransfers', 1);
             setRadioButtons(id);
         }
+        const generateTableIncoming = (id) => {
 
-        const radioCall = (id) => {
-            generateTable(id);
-            //window.location.href = "/Users/Transfers/Index/" + $("#StoreId").val() + "?transferStatusId=" + id;
+            var sDisabled = "";
+
+            var sData = '@Json.Serialize(Model.IncomingTransfers)';
+            var Data = JSON.parse(sData);
+            var sHtml = `<table id="tblTransfersIncoming" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
+                                    <thead class="bg-primary-gradient ms-auto divShadow">
+                                        <tr>
+                                            <th class="text-white bg-transparent border-bottom-0 w-5">S.No</th>
+                                            <th class="text-white bg-transparent border-bottom-0 w-10">Date</th>
+                                            <th class="text-white bg-transparent border-bottom-0 w-20">Store From</th>
+                                            <th class="text-white bg-transparent border-bottom-0 w-20">Store To</th>
+                                            <th class="text-white bg-transparent border-bottom-0 w-5">Number of Assets</th>
+                                            <th class="text-white bg-transparent border-bottom-0 w-20">Status</th>
+                                            <th class="text-white bg-transparent border-bottom-0 w-20 no-btn">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>`;
+            var nCounter = 0;
+            Data.forEach(function (e) {
+                nCounter++;
+                if (id > 0) {
+                    if (e.transferStatusId == id) {
+                        sHtml += `<tr>
+                                            <td>`+ nCounter + `</td>
+                                            <td>`+ formattedDate(e.transferDate) + `</td>
+                                            <td>`+ e.storeFrom + `</td>
+                                            <td>`+ e.storeTo + `</td>
+                                            <td>`+ e.numberOfAssets + `</td>
+                                            <td>`+ e.status + `</td>
+                                            <td>
+                                                <a href="/Users/Transfers/PreviewTransfer/` + e.id + `" class="btn btn-sm btn-outline-primary border me-2 ` + sDisabled + `" data-bs-toggle="tooltip" data-bs-original-title="Preview Transfer">
+                                                    <i class="fe fe-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>`;
+                    }
+                } else {
+                    sHtml += `<tr>
+                                        <td>`+ nCounter + `</td>
+                                        <td>`+ formattedDate(e.transferDate) + `</td>
+                                        <td>`+ e.storeFrom + `</td>
+                                        <td>`+ e.storeTo + `</td>
+                                        <td>`+ e.numberOfAssets + `</td>
+                                        <td>`+ e.status + `</td>
+                                        <td>
+                                            <a href="/Users/Transfers/PreviewTransfer/` + e.id + `" class="btn btn-sm btn-outline-primary border me-2 ` + sDisabled + `" data-bs-toggle="tooltip" data-bs-original-title="Preview Transfer">
+                                                <i class="fe fe-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>`;
+                }
+            });
+
+            sHtml += '</tbody></table>';
+            $("#dvTable-Responsive-Incoming").html("").html(sHtml);
+            makeDataTable('#tblTransfersIncoming', 1);
+            setRadioButtons(id);
         }
-
-        const setRadioButtons = (id) => {
-            //let transferStatusId = '@TempData["transferStatus"]';
-            $("#rd-" + id).prop("checked", true);
-        }
-
-        
 
     </script>
 }

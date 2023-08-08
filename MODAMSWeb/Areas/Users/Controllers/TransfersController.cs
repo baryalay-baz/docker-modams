@@ -80,13 +80,15 @@ namespace MODAMSWeb.Areas.Users.Controllers
             var transfers = _db.vwTransfers.Where(m => m.StoreFromId == _storeId).ToList();
 
             if (transferStatusId > 0)
-                transfers = transfers.Where(m => m.TransferStatusId==transferStatusId).ToList();
+                transfers = transfers.Where(m => m.TransferStatusId == transferStatusId).ToList();
 
             TempData["transferStatus"] = transferStatusId;
 
             dto.StoreId = _storeId;
-            dto.vwTransfers = transfers;
+            dto.OutgoingTransfers = transfers;
 
+            transfers = _db.vwTransfers.Where(m => m.StoreId == _storeId && m.TransferStatusId != SD.Transfer_Pending).ToList();
+            dto.IncomingTransfers = transfers;
 
             return View(dto);
         }
@@ -201,7 +203,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 return RedirectToAction("CreateTransfer", "Transfers");
             }
 
-            TempData["success"] = "Transfer saved and submitted for acknowledgement";
+            TempData["success"] = "Transfer saved successfuly!";
             return RedirectToAction("EditTransfer", "Transfers", new { id = transfer.Id });
         }
 
@@ -323,7 +325,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 return RedirectToAction("EditTransfer", "Transfers", new { id = transferDTO.Transfer.Id });
             }
 
-            TempData["success"] = "Transfer saved and submitted for acknowledgement";
+            TempData["success"] = "Transfer saved successfully!";
             return RedirectToAction("EditTransfer", "Transfers", new { id = transferDTO.Transfer.Id });
         }
 
@@ -351,7 +353,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 m.Model,
                 m.Barcode,
                 m.SerialNo,
-                m.Condition.ConditionName
+                m.Condition.ConditionName,
+                m.Plate
             }).ToList();
 
             var transferAssets = new List<dtoTransferAsset>();
@@ -363,6 +366,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 {
                     break;
                 }
+                var sIdentification = (asset.CategoryName == "Vehicles") ? "Plate No: " + asset.Plate.ToString() : "SN: " + asset.SerialNo.ToString();
+
                 var transferAsset = new dtoTransferAsset()
                 {
                     AssetId = asset.Id,
@@ -372,7 +377,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     Make = asset.Make,
                     Model = asset.Model,
                     Barcode = asset.Barcode.ToString(),
-                    SerialNumber = asset.SerialNo,
+                    SerialNumber = sIdentification,
                     Condition = asset.ConditionName,
                     IsSelected = true
                 };
