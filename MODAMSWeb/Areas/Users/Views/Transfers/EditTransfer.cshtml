@@ -129,27 +129,30 @@
                                                                     </thead>
                                                                     <tbody>
                                                                         @{
-                                                                            for (var i = 0; i < Model.Assets.Count(); i++)
+                                                                            if (Model.Assets != null)
                                                                             {
-                                                                                <tr>
+                                                                                for (var i = 0; i < Model.Assets.Count(); i++)
+                                                                                {
+                                                                                    <tr>
 
-                                                                                    <td>
-                                                                                        <input asp-for="@Model.Assets[i].AssetId" hidden />
-                                                                                        <div class="col-auto">
-                                                                                            <label class="ckbox" asp-for="@Model.Assets[i].IsSelected">
-                                                                                                <input onclick="return selectAsset(@Model.Assets[i].AssetId,this);"
-                                                                                                       type="checkbox" asp-for="@Model.Assets[i].IsSelected">
-                                                                                                <span></span>
-                                                                                            </label>
-                                                                                        </div>
-                                                                                    </td>
-                                                                                    <td>@Model.Assets[i].Category</td>
-                                                                                    <td>@Model.Assets[i].Make</td>
-                                                                                    <td>@Model.Assets[i].Model</td>
-                                                                                    <td>@Model.Assets[i].AssetName</td>
-                                                                                    <td>@Model.Assets[i].SerialNumber</td>
-                                                                                    <td>@Model.Assets[i].Barcode</td>
-                                                                                </tr>
+                                                                                        <td>
+                                                                                            <input asp-for="@Model.Assets[i].AssetId" hidden />
+                                                                                            <div class="col-auto">
+                                                                                                <label class="ckbox" asp-for="@Model.Assets[i].IsSelected">
+                                                                                                    <input onclick="return selectAsset(@Model.Assets[i].AssetId,this);"
+                                                                                                           type="checkbox" asp-for="@Model.Assets[i].IsSelected">
+                                                                                                    <span></span>
+                                                                                                </label>
+                                                                                            </div>
+                                                                                        </td>
+                                                                                        <td>@Model.Assets[i].Category</td>
+                                                                                        <td>@Model.Assets[i].Make</td>
+                                                                                        <td>@Model.Assets[i].Model</td>
+                                                                                        <td>@Model.Assets[i].AssetName</td>
+                                                                                        <td>@Model.Assets[i].SerialNumber</td>
+                                                                                        <td>@Model.Assets[i].Barcode</td>
+                                                                                    </tr>
+                                                                                }
                                                                             }
                                                                         }
 
@@ -172,7 +175,13 @@
                                         </div>
                                     </div>
                                     <div class="flex">
-                                        <button type="button" class="btn btn-primary " id="btnSubmit"><i class="fa fa-check-circle"></i>&nbsp;Save Transfer</button>
+                                        @{
+                                            if (Model.Transfer.TransferStatusId == 1)
+                                            {
+                                                <button type="button" class="btn btn-primary " id="btnSubmit"><i class="fa fa-check-circle"></i>&nbsp;Save Transfer</button>
+                                            }
+                                        }
+
                                         <a asp-area="Users" asp-controller="Transfers" asp-action="PreviewTransfer" asp-route-id="@Model.Transfer.Id" class="btn btn-primary">
                                             <i class="fe fe-eye"></i>&nbsp;Preview Transfer
                                         </a>

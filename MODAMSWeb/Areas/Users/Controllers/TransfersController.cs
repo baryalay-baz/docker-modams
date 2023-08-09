@@ -1,13 +1,19 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Kendo.Mvc.UI;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.CodeAnalysis.Simplification;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using MODAMS.DataAccess.Data;
 using MODAMS.Models;
 using MODAMS.Models.ViewModels;
 using MODAMS.Models.ViewModels.Dto;
 using MODAMS.Utility;
-
+using System.IO;
+using System.Security.Cryptography.X509Certificates;
+using Telerik.SvgIcons;
+using Barcode = MODAMS.Utility.Barcode;
 
 namespace MODAMSWeb.Areas.Users.Controllers
 {
@@ -108,7 +114,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             TempData["storeFrom"] = _func.GetDepartmentName(_employeeId);
             dto.Transfer.TransferNumber = GetTransferNumber();
 
-            if (assets != null)
+            if (assets.Count > 0)
             {
                 foreach (var asset in assets)
                 {
@@ -394,8 +400,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
             dto.TransferBy = _func.GetEmployeeNameById(senderId);
             dto.ReceivedBy = _func.GetEmployeeNameById(receiverId);
 
-            ViewBag.FromSignature = Barcode.GenerateBarCode(dto.TransferBy);
-            ViewBag.ToSignature = Barcode.GenerateBarCode(dto.ReceivedBy);
+            ViewBag.FromSignature = MODAMS.Utility.Barcode.GenerateBarCode(dto.TransferBy);
+            ViewBag.ToSignature = MODAMS.Utility.Barcode.GenerateBarCode(dto.ReceivedBy);
 
 
 
@@ -427,20 +433,57 @@ namespace MODAMSWeb.Areas.Users.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult AcknowledgeTransfer(int id)
         {
-            var transfer = _db.Transfers.Where(m => m.Id == id).FirstOrDefault();
-            if (transfer != null)
-            {
-                transfer.TransferStatusId = SD.Transfer_Completed;
-                _db.SaveChanges();
-                TempData["success"] = "Transfer Acknowledged";
-                return RedirectToAction("PreviewTransfer", "Transfers", new { id = id });
-            }
-            else
+            var transfer = _db.Transfers.FirstOrDefault(m => m.Id == id);
+
+            if (transfer == null)
             {
                 TempData["error"] = "Record not found!";
                 return RedirectToAction("PreviewTransfer", "Transfers", new { id = id });
             }
+
+            var transferDetails = _db.TransferDetails
+                .Where(m => m.TransferId == id)
+                .ToList();
+
+            foreach (var item in transferDetails)
+            {
+                var asset = _db.Assets.FirstOrDefault(m => m.Id == item.AssetId);
+
+                if (asset != null)
+                {
+                    try
+                    {
+                        var fromStoreName = _func.GetStoreNameByStoreId(item.Transfer.StoreFromId);
+                        var toStoreName = _func.GetStoreNameByStoreId(item.Transfer.StoreId);
+
+                        var assetHistory = new AssetHistory()
+                        {
+                            AssetId = item.AssetId,
+                            Description = $"Asset Transferred from {fromStoreName} to {toStoreName}",
+                            TimeStamp = DateTime.Now,
+                            TransactionRecordId = item.TransferId,
+                            TransactionTypeId = SD.Transaction_Transfer
+                        };
+
+                        _db.AssetHistory.Add(assetHistory);
+                        asset.StoreId = item.Transfer.StoreId;
+                        _db.SaveChanges();
+                    }
+                    catch (Exception ex)
+                    {
+                        TempData["error"] = ex.Message;
+                        return RedirectToAction("PreviewTransfer", "Transfers", new { id = id });
+                    }
+                }
+            }
+
+            transfer.TransferStatusId = SD.Transfer_Completed;
+            _db.SaveChanges();
+
+            TempData["success"] = "Transfer Acknowledged";
+            return RedirectToAction("PreviewTransfer", "Transfers", new { id = id });
         }
+
         [Authorize(Roles = "StoreOwner, User")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -521,10 +564,32 @@ namespace MODAMSWeb.Areas.Users.Controllers
         {
             _employeeId = (User.IsInRole("User")) ? _func.GetSupervisorId(_employeeId) : _employeeId;
 
-            var assets = await _db.Assets.Include(m => m.Store.Department)
-                .Include(m => m.SubCategory).Include(m => m.SubCategory.Category)
-                .Where(m => m.AssetStatusId == 1).ToListAsync();
-            assets = assets.Where(m => m.Store.Department.EmployeeId == _employeeId).ToList();
+            //var assets = await _db.Assets.Include(m => m.Store.Department)
+            //    .Include(m => m.SubCategory).Include(m => m.SubCategory.Category)
+            //    .Where(m => m.AssetStatusId == 1).ToListAsync();
+            //assets = assets.Where(m => m.Store.Department.EmployeeId == _employeeId).ToList();
+
+            //var transferDetails = _db.TransferDetails.Include(m => m.Transfer).ToList();
+
+            //transferDetails = transferDetails.Where(m => m.Transfer.TransferStatusId != SD.Transfer_Rejected).ToList();
+
+            //assets = assets.Where(m => !transferDetails.Any(detail => detail.AssetId == m.Id)).ToList();
+
+            var assets = await _db.Assets
+                .Include(m => m.Store.Department)
+                .Include(m => m.SubCategory.Category)
+                .Where(m => m.AssetStatusId == 1 && m.Store.Department.EmployeeId == _employeeId)
+                .ToListAsync();
+
+            var transferDetails = await _db.TransferDetails
+                .Include(m => m.Transfer)
+                .Where(m => m.Transfer.TransferStatusId != SD.Transfer_Rejected)
+                .ToListAsync();
+
+            assets = assets
+                .Where(asset => !transferDetails.Any(detail => detail.AssetId == asset.Id))
+                .ToList();
+
             return assets;
         }
         private async Task<int> GetCurrentStoreId()

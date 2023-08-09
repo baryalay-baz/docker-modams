@@ -13,5 +13,12 @@ namespace MODAMS.Utility
         public const int Transfer_SubmittedForAcknowledgement = 2;
         public const int Transfer_Completed = 3;
         public const int Transfer_Rejected = 4;
-	}
+
+        public const int Transaction_Registration = 1;
+        public const int Transaction_Transfer = 2;
+        public const int Transaction_Handover = 3;
+        public const int Transaction_Disposal = 4;
+        public const int Transaction_Verification = 5;
+
+    }
 }
