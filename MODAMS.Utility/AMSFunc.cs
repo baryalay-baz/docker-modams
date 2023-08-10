@@ -105,6 +105,35 @@ namespace MODAMS.Utility
             }
             return sResult;
         }
+        public int GetDepartmentHead(int departmentId) {
+            int employeeId = 0;
+            var departmentHead = _db.DepartmentHeads
+                .Where(m => m.DepartmentId == departmentId && m.IsActive)
+                .FirstOrDefault();
+
+            if (departmentHead != null)
+            {
+                employeeId = departmentHead.EmployeeId;
+            }
+            return employeeId;
+        }
+        public List<Employee> GetDepartmentMembers(int departmentId) {
+            int employeeId = GetDepartmentHead(departmentId);
+            List<Employee> employees = _db.Employees.Where(m=>m.SupervisorEmployeeId==employeeId).ToList();
+
+            var employee = _db.Employees.Where(m => m.Id == employeeId).FirstOrDefault();
+            if(employee!=null)
+                employees.Add(employee);
+
+            return employees;
+        }
+        public void NotifyDepartment(int departmentId, Notification notification)
+        {
+            var employees = GetDepartmentMembers(departmentId);
+            var ids = employees.Select(m => m.Id).ToList();
+            int[] empArray = ids.ToArray();
+            Notify(empArray, notification);
+        }
         public void NotifyUser(Notification notification)
         {
             int[] empArray = { notification.EmployeeTo };
@@ -222,6 +251,15 @@ namespace MODAMS.Utility
             }
             return storeId;
         }
+        public int GetStoreIdByDepartmentId(int departmentId) {
+            int storeId = 0;
+            var store = _db.Stores.Where(m=>m.DepartmentId == departmentId).FirstOrDefault();
+            if (store != null)
+            {
+                storeId = store.Id;
+            }
+            return storeId;
+        }
         public string GetStoreNameByStoreId(int storeId)
         {
             string storeName = "";
@@ -233,7 +271,6 @@ namespace MODAMS.Utility
             }
             return storeName;
         }
-
         public decimal GetDepreciatedCost(int nAssetId)
         {
             //(Cost / LifeSpan_months) * (LifeSpan_months - Age)
@@ -265,8 +302,6 @@ namespace MODAMS.Utility
 
             return depreciatedCost;
         }
-
-
 
         //Private methods
         private void Notify(int[] arrEmpIds, Notification notification)
@@ -306,7 +341,7 @@ namespace MODAMS.Utility
             }
 
             var returnUrl = GenerateUrl(sectionId, recordId);
-            string sEmailMessage = "-";//FormatMessage(subject, message, sFullName, returnUrl);
+            string sEmailMessage = FormatMessage(subject, message, sFullName, returnUrl,"click here");
 
             try
             {
@@ -366,9 +401,8 @@ namespace MODAMS.Utility
         {
             string emailMessage = "";
             string initials = email.Substring(0, 1).ToUpper();
-            string src = "https://localhost:44398";
-            //emailMessage = "<style>\r\n    #profileImage {\r\n        width: 30px;\r\n        height: 30px;\r\n        border-radius: 50%;\r\n        background: #7dadfa;\r\n        font-size: 13px;\r\n        font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\r\n        color: black;\r\n        text-align: center;\r\n        line-height: 30px;\r\n        margin: 00px 0;\r\n    }\r\n\r\n    /* CSS */\r\n    .button-22 {\r\n        align-items: center;\r\n        appearance: button;\r\n        background-color: #0276FF;\r\n        border-radius: 8px;\r\n        border-style: none;\r\n        box-shadow: rgba(255, 255, 255, 0.26) 0 1px 2px inset;\r\n        box-sizing: border-box;\r\n        color: #fff;\r\n        cursor: pointer;\r\n        display: flex;\r\n        flex-direction: row;\r\n        flex-shrink: 0;\r\n        font-family: \"RM Neue\",sans-serif;\r\n        font-size: 100%;\r\n        line-height: 1.15;\r\n        margin: 0;\r\n        padding: 10px 21px;\r\n        text-align: center;\r\n        text-transform: none;\r\n        transition: color .13s ease-in-out,background .13s ease-in-out,opacity .13s ease-in-out,box-shadow .13s ease-in-out;\r\n        user-select: none;\r\n        -webkit-user-select: none;\r\n        touch-action: manipulation;\r\n    }\r\n\r\n        .button-22:active {\r\n            background-color: #006AE8;\r\n        }\r\n\r\n        .button-22:hover {\r\n            background-color: #1C84FF;\r\n        }\r\n</style>\r\n<div class=\"row\">\r\n    <div class=\"col-md-4\">\r\n        <div align=\"center\">\r\n            <img src=\"" + src + "/assets/images/brand/FGS_Small.png\" style=\"margin-bottom:5px;\">\r\n            <div>\r\n                <br />\r\n                <div>\r\n                    <span style=\"font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;font-size:20px;\">" + title + "</span>\r\n                </div>\r\n                <br />\r\n                <table align=\"center\" style=\"margin-top:8px\">\r\n                    <tbody>\r\n                        <tr style=\"line-height:normal\">\r\n                            <td align=\"right\" style=\"padding-right:8px\">\r\n                                <div id=\"profileImage\"><b>" + initials + "</b></div>\r\n                            </td>\r\n                            <td>\r\n                                <span>" + email + "</span>\r\n                            </td>\r\n                        </tr>\r\n                    </tbody>\r\n                </table>\r\n            </div>\r\n            <div style=\"font-family:Calibri;font-size:16px;color:rgba(0,0,0,0.87);line-height:20px;padding-top:20px;text-align:center\">\r\n                <p>" + message + "<span style=\"font-weight:bold;\">Asset Management System (MOD)</span><br /> Please click the button below to follow the instructions</p>\r\n                <div style=\"padding-top:32px;text-align:center\">\r\n                    <!-- HTML !-->\r\n                    <center><a href=\"" + returnUrl + "\" class=\"button-22\" style=\"width:100px;\" role=\"button\">" + btntext + "</a></center>\r\n                </div>\r\n            </div><br />\r\n            <div style=\"text-align:center;\">\r\n                <img src=\"" + src + "/ams_small.png\" />\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <div class=\"col-md-4\">&nbsp;</div>\r\n    <div class=\"col-md-4\">&nbsp;</div>\r\n</div>\r\n";
-
+            string src = SD.WebAddress;
+            
             emailMessage = "<div class=\"container\"> <div class=\"row\"><div class=\"col-md-12\"><br><br /></div> </div> <div class=\"row\"><div class=\"col-lg-12\"><table class=\"body-wrap\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; width: 100%; background-color: transparent; margin: 0;\" bgcolor=\"transparent\"> <tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\"><td style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0;\" valign=\"top\"></td><td class=\"container\" width=\"600\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; display: block !important; max-width: 600px !important; clear: both !important; margin: 0 auto;\" valign=\"top\"><div class=\"content\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; max-width: 600px; display: block; margin: 0 auto; padding: 20px;\"> <table class=\"main\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" itemprop=\"action\" itemscope itemtype=\"http://schema.org/ConfirmAction\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; border-radius: 3px; background-color: transparent; margin: 0; border: 1px dashed #4d79f6;\" bgcolor=\"#fff\"><tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\"><td class=\"content-wrap\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 20px;\" valign=\"top\"> <meta itemprop=\"name\" content=\"Confirm Email\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\" /> <table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\">" +
                  "<tr><img src=\"" + src + "/assets/images/brand/FGS_Small.png\" alt=\"\" style=\"margin-left: auto; margin-right: auto; display:block; margin-bottom: 10px; height: 100px;\"></td></tr><tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\"><td class=\"content-block\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; color: #4e5e69; font-size: 24px; font-weight: 700; text-align: center; vertical-align: top; margin: 0; padding: 0 0 10px;\" valign=\"top\"> <hr style=\"border-color: #2541f7; border-style:dashed; border-width:0.5px;\" /></td></tr><tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\"><td class=\"content-block\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; color: #3f5db3; font-size: 18px; vertical-align: top; margin: 0; padding: 10px 10px;\" valign=\"top\" align=\"center\">" +
                 title +
@@ -440,5 +474,7 @@ namespace MODAMS.Utility
             }
             return EmployeeName;
         }
+
+        
     }
 }

@@ -212,7 +212,7 @@
                                             <form method="post" asp-action="SubmitForAcknowledgement" id="frmSubmitForAcknowledgement">
                                                 <input type="hidden" name="id" value="@Model.vwTransfer.Id"/>
                                                 <button type="submit" class="btn btn-primary " id="btnSubmit">
-                                                    <i class="fa fa-check-circle"></i>&nbsp;Submit for Acknowledgement
+                                                    <i class="fa fa-check-circle"></i><span class="loading">&nbsp;Submit for Acknowledgement</span>
                                                 </button>
                                             </form>
                                         }
@@ -263,19 +263,13 @@
             hideMenu();
 
             console.log($("#dvAction").html());
+            $("#btnSubmit").on("click",(e)=>{
+                //e.preventDefault();
+                
+                $("#btnSubmit").addClass("btn-loading btn-icon");
+            });
         });
 
-        const submitForAcknowledgement = (id) => {
-            alert("To Submit: " + id);
-        };
-
-        const acknowledgeTransfer = (id) => {
-            alert("To Acknowledge: " + id);
-        };
-
-        const rejectTransfer = (id) => {
-            alert("To Reject: " + id);
-        };
 
     </script>
 }

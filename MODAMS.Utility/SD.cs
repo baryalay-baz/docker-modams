@@ -20,5 +20,12 @@ namespace MODAMS.Utility
         public const int Transaction_Disposal = 4;
         public const int Transaction_Verification = 5;
 
+        public const string WebAddress = "https://localhost:44398";
+
+        public const int NS_NewRegistration = 1;
+        public const int NS_ForgotPassword = 2;
+        public const int NS_Transfer = 3;
+
+
     }
 }

@@ -10,10 +10,12 @@ using MODAMS.Models;
 using MODAMS.Models.ViewModels;
 using MODAMS.Models.ViewModels.Dto;
 using MODAMS.Utility;
+using System.ComponentModel;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using Telerik.SvgIcons;
 using Barcode = MODAMS.Utility.Barcode;
+using Notification = MODAMS.Models.Notification;
 
 namespace MODAMSWeb.Areas.Users.Controllers
 {
@@ -418,8 +420,27 @@ namespace MODAMSWeb.Areas.Users.Controllers
             {
                 transfer.TransferStatusId = SD.Transfer_SubmittedForAcknowledgement;
                 _db.SaveChanges();
+
+                Notification notification = new Notification()
+                {
+                    EmployeeFrom = _employeeId,
+                    EmployeeTo = _func.GetStoreOwnerId(transfer.StoreId),
+                    Subject = "Transfer awaiting acknowledgement",
+                    Message = "A new transfer has been submitted by "
+                       + _func.GetEmployeeNameById(_employeeId) + 
+                       " for your acknowledgement, please click the following link and follow the instructions",
+                    DateTime = DateTime.Now,
+                    IsViewed = false,
+                    TargetRecordId = transfer.Id,
+                    TargetSectionId = SD.NS_Transfer
+                };
+                int departmentId = _func.GetDepartmentId(notification.EmployeeTo);
+                
+                _func.NotifyDepartment(departmentId, notification);
+
                 TempData["success"] = "Transfer Submitted for Acknowledgement";
                 return RedirectToAction("PreviewTransfer", "Transfers", new { id = id });
+
             }
             else
             {
@@ -563,17 +584,6 @@ namespace MODAMSWeb.Areas.Users.Controllers
         private async Task<List<MODAMS.Models.Asset>> GetAssets()
         {
             _employeeId = (User.IsInRole("User")) ? _func.GetSupervisorId(_employeeId) : _employeeId;
-
-            //var assets = await _db.Assets.Include(m => m.Store.Department)
-            //    .Include(m => m.SubCategory).Include(m => m.SubCategory.Category)
-            //    .Where(m => m.AssetStatusId == 1).ToListAsync();
-            //assets = assets.Where(m => m.Store.Department.EmployeeId == _employeeId).ToList();
-
-            //var transferDetails = _db.TransferDetails.Include(m => m.Transfer).ToList();
-
-            //transferDetails = transferDetails.Where(m => m.Transfer.TransferStatusId != SD.Transfer_Rejected).ToList();
-
-            //assets = assets.Where(m => !transferDetails.Any(detail => detail.AssetId == m.Id)).ToList();
 
             var assets = await _db.Assets
                 .Include(m => m.Store.Department)

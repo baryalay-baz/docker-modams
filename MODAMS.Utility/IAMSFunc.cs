@@ -12,6 +12,8 @@ namespace MODAMS.Utility
         public string GetEmployeeName(int nEmloyeeId);
         public string GetEmployeeEmail();
         public int GetDepartmentId(int nEmployeeId);
+        public int GetDepartmentHead(int nDepartmentId);
+        public List<Employee> GetDepartmentMembers(int nDepartmentId);
         public string GetDepartmentName(int nEmployeeId);
         public string GetRoleName(int nEmployeeId);
         public int GetSupervisorId(int nEmployeeId);
@@ -20,13 +22,14 @@ namespace MODAMS.Utility
         public dtoRedirection GetRedirectionObject();
         public int GetStoreIdByAssetId(int assetId);
         public int GetStoreIdByEmployeeId(int employeeId);
+        public int GetStoreIdByDepartmentId(int departmentId);
         public string GetStoreNameByStoreId(int storeId);
         public int GetStoreOwnerId(int storeId);
         public string GetEmployeeNameById(int employeeId);
         public decimal GetDepreciatedCost(int nAssetId);
         public decimal GetDepreciatedCostByStoreId(int storeId);
-
         public string FormatMessage(string title, string message, string email, string returnUrl, string btntext);
+        public void NotifyDepartment(int departmentId, Notification notification);
 
     }
 }
