@@ -15,5 +15,6 @@ namespace MODAMS.Models
         public string area { get; set; }
         public string controller { get; set; }
         public string action { get; set; }
+        
     }
 }

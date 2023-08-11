@@ -112,7 +112,7 @@
         <partial name="layouts/-selector-model.cshtml" />
         <partial name="layouts/_footer.cshtml" />
     </div>
-
+    <section id="dvNotificationsData" style="display:none;"></section>
     <!-- BACK-TO-TOP -->
     <a href="#top" id="back-to-top"><i class="fa fa-long-arrow-up"></i></a>
 
@@ -192,7 +192,7 @@
             $("#btnGlobalSearch").on("click", () => {
                 window.location.href = "/Users/Home/GlobalSearch/?barcode=" + $("#txtGlobalSearch").val();
             });
-            //getAlertCount();
+            loadNotificationsData();
         });
 
         const formatTables = () => {
@@ -284,6 +284,49 @@
             }
         }
 
+        const loadNotificationsData = () => {
+            var postData = {};
+            $.ajax({
+                url: '/Users/Home/GetNotifications',
+                datatype: "json",
+                data: postData,
+                beforeSend: function () {
+                },
+                success: function (e) {
+                    $("#dvNotificationsData").html("").html(e);
+                },
+                complete: function () {
+                    loadNotifications();
+                }
+            });
+        };
+        
+        const loadNotifications = ()=>{
+        
+            var sData = $("#dvNotificationsData").html();
+            if(sData!= "No Records Found"){
+                var Data = JSON.parse(sData);
+
+                var sHtml = '';
+
+                Data.forEach((e)=>{
+                    sHtml += `<a class="dropdown-item" href="/` + e.Area + `/` + e.Controller + `/` + e.Action + `/` + e.TargetRecordId + `">
+                                    <div class="notification-each d-flex">
+                                        <div class="me-3 notifyimg `+ e.Background +` brround">
+                                            <img src="` + e.ImageUrl + `" alt="profile-user" class="avatar profile-user brround cover-image">
+                                        </div>
+                                        <div>
+                                            <span class="notification-label mb-1">` + shortenMessage(e.Message) + `</span>
+                                            <span class="notification-subtext text-muted">` + formattedDate(e.DateTime) +`</span>
+                                        </div>
+                                    </div>
+                                </a>`;
+                });
+                $("#dvNotifications").html(sHtml);
+            }
+        }
+
+
         const makeDataTable = (tableName, type) => {
             var table = $(tableName).DataTable({
                 buttons: ['copy', 'excel', 'pdf', 'colvis'],
@@ -313,6 +356,13 @@
             $("#hideMenu").click();
         }
 
+        const shortenMessage = (message) => { 
+            const index = message.indexOf(',');
+            if (index !== -1) { 
+                message = message.substring(0, index);
+            }
+            return message;
+        }
     </script>
 </body>
 

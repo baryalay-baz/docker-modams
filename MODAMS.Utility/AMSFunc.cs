@@ -63,7 +63,8 @@ namespace MODAMS.Utility
         public string GetEmployeeName(int employeeId)
         {
             var employeeName = _db.Employees.Where(m => m.Id == employeeId).Select(m => m.FullName).FirstOrDefault();
-            if (employeeName != null) {
+            if (employeeName != null)
+            {
                 return employeeName;
             }
             return "";
@@ -105,7 +106,8 @@ namespace MODAMS.Utility
             }
             return sResult;
         }
-        public int GetDepartmentHead(int departmentId) {
+        public int GetDepartmentHead(int departmentId)
+        {
             int employeeId = 0;
             var departmentHead = _db.DepartmentHeads
                 .Where(m => m.DepartmentId == departmentId && m.IsActive)
@@ -117,12 +119,13 @@ namespace MODAMS.Utility
             }
             return employeeId;
         }
-        public List<Employee> GetDepartmentMembers(int departmentId) {
+        public List<Employee> GetDepartmentMembers(int departmentId)
+        {
             int employeeId = GetDepartmentHead(departmentId);
-            List<Employee> employees = _db.Employees.Where(m=>m.SupervisorEmployeeId==employeeId).ToList();
+            List<Employee> employees = _db.Employees.Where(m => m.SupervisorEmployeeId == employeeId).ToList();
 
             var employee = _db.Employees.Where(m => m.Id == employeeId).FirstOrDefault();
-            if(employee!=null)
+            if (employee != null)
                 employees.Add(employee);
 
             return employees;
@@ -183,9 +186,10 @@ namespace MODAMS.Utility
 
             return dto;
         }
-        public int GetDepartmentId(int nEmployeeId) {
+        public int GetDepartmentId(int nEmployeeId)
+        {
             int departmentId = 0;
-            var department = _db.Departments.Where(m=>m.EmployeeId == nEmployeeId).FirstOrDefault();
+            var department = _db.Departments.Where(m => m.EmployeeId == nEmployeeId).FirstOrDefault();
             if (department != null)
             {
                 departmentId = department.Id;
@@ -196,8 +200,8 @@ namespace MODAMS.Utility
         {
             string sResult = "Department not available!";
             int nDepartmentId = GetDepartmentId(nEmployeeId);
-            var department = _db.Departments.Where(m=>m.EmployeeId==nEmployeeId).FirstOrDefault();
-            if(department != null)
+            var department = _db.Departments.Where(m => m.EmployeeId == nEmployeeId).FirstOrDefault();
+            if (department != null)
             {
                 sResult = department.Name;
             }
@@ -251,9 +255,10 @@ namespace MODAMS.Utility
             }
             return storeId;
         }
-        public int GetStoreIdByDepartmentId(int departmentId) {
+        public int GetStoreIdByDepartmentId(int departmentId)
+        {
             int storeId = 0;
-            var store = _db.Stores.Where(m=>m.DepartmentId == departmentId).FirstOrDefault();
+            var store = _db.Stores.Where(m => m.DepartmentId == departmentId).FirstOrDefault();
             if (store != null)
             {
                 storeId = store.Id;
@@ -303,6 +308,13 @@ namespace MODAMS.Utility
             return depreciatedCost;
         }
 
+        public string GetProfileImage(int employeeId)
+        {
+            var employee = _db.Employees.FirstOrDefault(m => m.Id == employeeId);
+            return employee?.ImageUrl ?? "";
+        }
+
+
         //Private methods
         private void Notify(int[] arrEmpIds, Notification notification)
         {
@@ -317,13 +329,13 @@ namespace MODAMS.Utility
                     Message = notification.Message,
                     Subject = notification.Subject,
                     TargetRecordId = notification.TargetRecordId,
-                    TargetSectionId = notification.TargetSectionId
+                    NotificationSectionId = notification.NotificationSectionId
                 };
                 newNotification.EmployeeTo = id;
                 _db.Notifications.Add(newNotification);
                 _db.SaveChanges();
 
-                SendEmail(id, notification.Subject, notification.Message, notification.TargetRecordId, notification.TargetSectionId);
+                SendEmail(id, notification.Subject, notification.Message, notification.TargetRecordId, notification.NotificationSectionId);
             }
         }
         private async void SendEmail(int empId, string subject, string message, int recordId, int sectionId)
@@ -341,7 +353,7 @@ namespace MODAMS.Utility
             }
 
             var returnUrl = GenerateUrl(sectionId, recordId);
-            string sEmailMessage = FormatMessage(subject, message, sFullName, returnUrl,"click here");
+            string sEmailMessage = FormatMessage(subject, message, sFullName, returnUrl, "click here");
 
             try
             {
@@ -372,11 +384,11 @@ namespace MODAMS.Utility
             return blnResult;
         }
 
-        private string GenerateUrl(int targetSectionId, int targetRecordId)
+        private string GenerateUrl(int notificationSectionId, int targetRecordId)
         {
             string? callbackUrl = "";
 
-            var section = _db.NotificationSections.Where(m => m.Id == targetSectionId).FirstOrDefault();
+            var section = _db.NotificationSections.Where(m => m.Id == notificationSectionId).FirstOrDefault();
 
             if (section != null)
             {
@@ -402,7 +414,7 @@ namespace MODAMS.Utility
             string emailMessage = "";
             string initials = email.Substring(0, 1).ToUpper();
             string src = SD.WebAddress;
-            
+
             emailMessage = "<div class=\"container\"> <div class=\"row\"><div class=\"col-md-12\"><br><br /></div> </div> <div class=\"row\"><div class=\"col-lg-12\"><table class=\"body-wrap\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; width: 100%; background-color: transparent; margin: 0;\" bgcolor=\"transparent\"> <tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\"><td style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0;\" valign=\"top\"></td><td class=\"container\" width=\"600\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; display: block !important; max-width: 600px !important; clear: both !important; margin: 0 auto;\" valign=\"top\"><div class=\"content\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; max-width: 600px; display: block; margin: 0 auto; padding: 20px;\"> <table class=\"main\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" itemprop=\"action\" itemscope itemtype=\"http://schema.org/ConfirmAction\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; border-radius: 3px; background-color: transparent; margin: 0; border: 1px dashed #4d79f6;\" bgcolor=\"#fff\"><tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\"><td class=\"content-wrap\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 20px;\" valign=\"top\"> <meta itemprop=\"name\" content=\"Confirm Email\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\" /> <table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\">" +
                  "<tr><img src=\"" + src + "/assets/images/brand/FGS_Small.png\" alt=\"\" style=\"margin-left: auto; margin-right: auto; display:block; margin-bottom: 10px; height: 100px;\"></td></tr><tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\"><td class=\"content-block\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; color: #4e5e69; font-size: 24px; font-weight: 700; text-align: center; vertical-align: top; margin: 0; padding: 0 0 10px;\" valign=\"top\"> <hr style=\"border-color: #2541f7; border-style:dashed; border-width:0.5px;\" /></td></tr><tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\"><td class=\"content-block\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; color: #3f5db3; font-size: 18px; vertical-align: top; margin: 0; padding: 10px 10px;\" valign=\"top\" align=\"center\">" +
                 title +
@@ -411,7 +423,7 @@ namespace MODAMS.Utility
                 "<br /><br /><span style=\"font-size: 10px;\">" +
                 "Note: This email is generated automatically, please do not reply" +
                 "<br><br></span></td></tr><tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\"><td class=\"content-block\" itemprop=\"handler\" itemscope itemtype=\"http://schema.org/HttpActionHandler\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 10px 10px;\" valign=\"top\">" +
-                "<a href=\"" + returnUrl + "\" class=\"btn btn-primary\" style=\"color:white; background-color:#2541f7; font-size: 14px; text-decoration: none; line-height: 2em; font-weight: bold; text-align: center; cursor: pointer; display: block; border-radius: 5px; text-transform: capitalize; border: none; padding: 10px 20px;\">" + btntext + " </a></td></tr><tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\"><td class=\"content-block\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; padding-top: 5px; vertical-align: top; margin: 0; text-align: center;\" valign=\"top\"> <br /> <div><img src=\"" + src + "/assets/images/brand/ams_small.png\" /> &nbsp;|&nbsp;Asset Management System </div></td></tr> </table></td></tr> </table><!--end table--></div><!--end content--></td><td style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0;\" valign=\"top\"></td> </tr></table><!--end table--></div><!--end col--> </div><!--end row--></div>";
+                "<a href=\"" + returnUrl + "\" class=\"btn btn-primary\" style=\"color:white; background-color:#2541f7; font-size: 14px; text-decoration: none; line-height: 2em; font-weight: bold; text-align: center; cursor: pointer; display: block; border-radius: 5px; text-transform: capitalize; border: none; padding: 10px 20px;\">" + btntext + " </a></td></tr><tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\"><td class=\"content-block\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; padding-top: 5px; vertical-align: top; margin: 0; text-align: center;\" valign=\"top\"> <br /> <div><img src=\"" + src + "/assets/images/brand/ams_small.png\" /></div></td></tr> </table></td></tr> </table><!--end table--></div><!--end content--></td><td style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0;\" valign=\"top\"></td> </tr></table><!--end table--></div><!--end col--> </div><!--end row--></div>";
 
             return emailMessage;
         }
@@ -452,13 +464,13 @@ namespace MODAMS.Utility
         public int GetStoreIdByEmployeeId(int employeeId)
         {
             int storeId = 0;
-            var department = _db.Departments.Where(m=>m.EmployeeId== employeeId).FirstOrDefault();
+            var department = _db.Departments.Where(m => m.EmployeeId == employeeId).FirstOrDefault();
             if (department != null)
             {
                 var store = _db.Stores.Where(m => m.DepartmentId == department.Id).FirstOrDefault();
-                if(store != null)
+                if (store != null)
                 {
-                    storeId = store.Id; 
+                    storeId = store.Id;
                 }
             }
             return storeId;
@@ -467,7 +479,7 @@ namespace MODAMS.Utility
         public string GetEmployeeNameById(int employeeId)
         {
             string EmployeeName = "Not found!";
-            var employee = _db.Employees.Where(m=>m.Id== employeeId).FirstOrDefault();
+            var employee = _db.Employees.Where(m => m.Id == employeeId).FirstOrDefault();
             if (employee != null)
             {
                 EmployeeName = employee.FullName;
@@ -475,6 +487,6 @@ namespace MODAMS.Utility
             return EmployeeName;
         }
 
-        
+
     }
 }

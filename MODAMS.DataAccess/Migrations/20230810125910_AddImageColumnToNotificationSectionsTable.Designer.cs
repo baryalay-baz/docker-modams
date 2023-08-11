@@ -4,6 +4,7 @@ using MODAMS.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MODAMS.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230810125910_AddImageColumnToNotificationSectionsTable")]
+    partial class AddImageColumnToNotificationSectionsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -488,18 +491,16 @@ namespace MODAMS.DataAccess.Migrations
                     b.Property<string>("Message")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("NotificationSectionId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Subject")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("TargetRecordId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.Property<int>("TargetSectionId")
+                        .HasColumnType("int");
 
-                    b.HasIndex("NotificationSectionId");
+                    b.HasKey("Id");
 
                     b.ToTable("Notifications");
                 });
@@ -524,7 +525,15 @@ namespace MODAMS.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("background")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("controller")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("image")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -620,6 +629,7 @@ namespace MODAMS.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Notes")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("StoreFromId")
@@ -1282,17 +1292,6 @@ namespace MODAMS.DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("Employee");
-                });
-
-            modelBuilder.Entity("MODAMS.Models.Notification", b =>
-                {
-                    b.HasOne("MODAMS.Models.NotificationSection", "NotificationSection")
-                        .WithMany()
-                        .HasForeignKey("NotificationSectionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("NotificationSection");
                 });
 
             modelBuilder.Entity("MODAMS.Models.Store", b =>

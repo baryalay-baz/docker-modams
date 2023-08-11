@@ -1,20 +1,12 @@
-﻿using Kendo.Mvc.UI;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.CodeAnalysis.Simplification;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using MODAMS.DataAccess.Data;
 using MODAMS.Models;
 using MODAMS.Models.ViewModels;
 using MODAMS.Models.ViewModels.Dto;
 using MODAMS.Utility;
-using System.ComponentModel;
-using System.IO;
-using System.Security.Cryptography.X509Certificates;
-using Telerik.SvgIcons;
-using Barcode = MODAMS.Utility.Barcode;
 using Notification = MODAMS.Models.Notification;
 
 namespace MODAMSWeb.Areas.Users.Controllers
@@ -175,7 +167,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 StoreId = transferDTO.Transfer.StoreId,
                 TransferNumber = transferDTO.Transfer.TransferNumber,
                 TransferStatusId = 1,
-                Notes = transferDTO.Transfer.Notes,
+                Notes = transferDTO.Transfer.Notes == null ? "-" : transferDTO.Transfer.Notes,
                 SubmissionForAcknowledgementDate = DateTime.Now
             };
 
@@ -212,7 +204,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             }
 
             TempData["success"] = "Transfer saved successfuly!";
-            return RedirectToAction("EditTransfer", "Transfers", new { id = transfer.Id });
+            return RedirectToAction("PreviewTransfer", "Transfers", new { id = transfer.Id });
         }
 
         [Authorize(Roles = "StoreOwner, User")]
@@ -415,6 +407,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult SubmitForAcknowledgement(int id)
         {
+            _employeeId = (User.IsInRole("User")) ? _func.GetSupervisorId(_employeeId) : _employeeId;
+
             var transfer = _db.Transfers.Where(m => m.Id == id).FirstOrDefault();
             if (transfer != null)
             {
@@ -427,15 +421,15 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     EmployeeTo = _func.GetStoreOwnerId(transfer.StoreId),
                     Subject = "Transfer awaiting acknowledgement",
                     Message = "A new transfer has been submitted by "
-                       + _func.GetEmployeeNameById(_employeeId) + 
+                       + _func.GetEmployeeNameById(_employeeId) +
                        " for your acknowledgement, please click the following link and follow the instructions",
                     DateTime = DateTime.Now,
                     IsViewed = false,
                     TargetRecordId = transfer.Id,
-                    TargetSectionId = SD.NS_Transfer
+                    NotificationSectionId = SD.NS_Transfer
                 };
                 int departmentId = _func.GetDepartmentId(notification.EmployeeTo);
-                
+
                 _func.NotifyDepartment(departmentId, notification);
 
                 TempData["success"] = "Transfer Submitted for Acknowledgement";
@@ -454,6 +448,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult AcknowledgeTransfer(int id)
         {
+            _employeeId = (User.IsInRole("User")) ? _func.GetSupervisorId(_employeeId) : _employeeId;
+
             var transfer = _db.Transfers.FirstOrDefault(m => m.Id == id);
 
             if (transfer == null)
@@ -470,60 +466,100 @@ namespace MODAMSWeb.Areas.Users.Controllers
             {
                 var asset = _db.Assets.FirstOrDefault(m => m.Id == item.AssetId);
 
-                if (asset != null)
+                if (asset == null)
+                    continue;
+                try
                 {
-                    try
-                    {
-                        var fromStoreName = _func.GetStoreNameByStoreId(item.Transfer.StoreFromId);
-                        var toStoreName = _func.GetStoreNameByStoreId(item.Transfer.StoreId);
+                    var fromStoreName = _func.GetStoreNameByStoreId(item.Transfer.StoreFromId);
+                    var toStoreName = _func.GetStoreNameByStoreId(item.Transfer.StoreId);
 
-                        var assetHistory = new AssetHistory()
-                        {
-                            AssetId = item.AssetId,
-                            Description = $"Asset Transferred from {fromStoreName} to {toStoreName}",
-                            TimeStamp = DateTime.Now,
-                            TransactionRecordId = item.TransferId,
-                            TransactionTypeId = SD.Transaction_Transfer
-                        };
-
-                        _db.AssetHistory.Add(assetHistory);
-                        asset.StoreId = item.Transfer.StoreId;
-                        _db.SaveChanges();
-                    }
-                    catch (Exception ex)
+                    var assetHistory = new AssetHistory()
                     {
-                        TempData["error"] = ex.Message;
-                        return RedirectToAction("PreviewTransfer", "Transfers", new { id = id });
-                    }
+                        AssetId = item.AssetId,
+                        Description = $"Asset Transferred from {fromStoreName} to {toStoreName}",
+                        TimeStamp = DateTime.Now,
+                        TransactionRecordId = item.TransferId,
+                        TransactionTypeId = SD.Transaction_Transfer
+                    };
+
+                    _db.AssetHistory.Add(assetHistory);
+                    asset.StoreId = item.Transfer.StoreId;
+                    _db.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    TempData["error"] = ex.Message;
+                    return RedirectToAction("PreviewTransfer", "Transfers", new { id = id });
                 }
             }
 
             transfer.TransferStatusId = SD.Transfer_Completed;
             _db.SaveChanges();
 
+            var ownerId = _func.GetStoreOwnerId(transfer.StoreFromId);
+            var employeeName = _func.GetEmployeeNameById(ownerId);
+
+            var notification = new Notification()
+            {
+                EmployeeFrom = _employeeId,
+                EmployeeTo = ownerId,
+                Subject = "Transfer acknowledged",
+                Message = $"Transfer Number: <b>{transfer.TransferNumber}</b> been acknowledged by {employeeName}, please click the following link for details",
+                DateTime = DateTime.Now,
+                IsViewed = false,
+                TargetRecordId = transfer.Id,
+                NotificationSectionId = SD.NS_Transfer
+            };
+
+            var departmentId = _func.GetDepartmentId(notification.EmployeeTo);
+            _func.NotifyDepartment(departmentId, notification);
+
             TempData["success"] = "Transfer Acknowledged";
             return RedirectToAction("PreviewTransfer", "Transfers", new { id = id });
         }
+
 
         [Authorize(Roles = "StoreOwner, User")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult RejectTransfer(int id)
         {
-            var transfer = _db.Transfers.Where(m => m.Id == id).FirstOrDefault();
-            if (transfer != null)
+            _employeeId = (User.IsInRole("User")) ? _func.GetSupervisorId(_employeeId) : _employeeId;
+            var transfer = _db.Transfers.FirstOrDefault(m => m.Id == id);
+
+            if (transfer == null)
             {
-                transfer.TransferStatusId = SD.Transfer_Rejected;
-                _db.SaveChanges();
-                TempData["success"] = "Transfer Rejected";
-                return RedirectToAction("PreviewTransfer", "Transfers", new { id = id });
+                TempData["error"] = "Record not found!";
             }
             else
             {
-                TempData["error"] = "Record not found!";
-                return RedirectToAction("PreviewTransfer", "Transfers", new { id = id });
+                transfer.TransferStatusId = SD.Transfer_Rejected;
+                _db.SaveChanges();
+
+                var ownerId = _func.GetStoreOwnerId(transfer.StoreFromId);
+                var employeeName = _func.GetEmployeeNameById(_employeeId);
+
+                var notification = new Notification
+                {
+                    EmployeeFrom = _employeeId,
+                    EmployeeTo = ownerId,
+                    Subject = "Transfer rejected",
+                    Message = $"Transfer Number: <b>{transfer.TransferNumber}</b> has been rejected by {employeeName}, please click the following link for details",
+                    DateTime = DateTime.Now,
+                    IsViewed = false,
+                    TargetRecordId = transfer.Id,
+                    NotificationSectionId = SD.NS_Transfer
+                };
+
+                var departmentId = _func.GetDepartmentId(notification.EmployeeTo);
+                _func.NotifyDepartment(departmentId, notification);
+
+                TempData["success"] = "Transfer Rejected";
             }
+
+            return RedirectToAction("PreviewTransfer", "Transfers", new { id = id });
         }
+
         private bool IsAssetSelected(int assetId, List<TransferDetail> transferDetails)
         {
             bool blnResult = false;

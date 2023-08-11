@@ -30,6 +30,6 @@ namespace MODAMS.Utility
         public decimal GetDepreciatedCostByStoreId(int storeId);
         public string FormatMessage(string title, string message, string email, string returnUrl, string btntext);
         public void NotifyDepartment(int departmentId, Notification notification);
-
+        public string GetProfileImage(int employeeId);
     }
 }

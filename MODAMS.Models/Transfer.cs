@@ -50,7 +50,7 @@ namespace MODAMS.Models
         public int TransferStatusId { get; set; }
 
         [Display(Name ="Notes")]
-        public string Notes { get; set; } = string.Empty;
+        public string? Notes { get; set; }
 
         [ValidateNever]
         public TransferStatus TransferStatus { get; set; }

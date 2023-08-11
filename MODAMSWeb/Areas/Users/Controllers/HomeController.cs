@@ -243,6 +243,39 @@ namespace MODAMSWeb.Areas.Users.Controllers
             return sResult;
         }
 
+        public string GetNotifications() {
+            string sResult = "No Records Found";
+            var notifications = _db.Notifications.Where(m=>m.EmployeeTo==_employeeId)
+                .Include(m=>m.NotificationSection).ToList();
+
+            var dto = new List<dtoNotification>();
+
+            if(notifications.Count > 0)
+            {
+                foreach (var notification in notifications) {
+                    var notif = new dtoNotification()
+                    {
+                        Id = notification.Id,
+                        DateTime = notification.DateTime,
+                        EmployeeFrom = notification.EmployeeFrom,
+                        EmployeeTo = notification.EmployeeTo,
+                        Subject = notification.Subject,
+                        Message = notification.Message,
+                        TargetRecordId = notification.TargetRecordId,
+                        IsViewed = notification.IsViewed,
+                        NotificationSectionId = notification.NotificationSectionId,
+                        Area = notification.NotificationSection.area,
+                        Controller = notification.NotificationSection.controller,
+                        Action = notification.NotificationSection.action,
+                        ImageUrl = _func.GetProfileImage(notification.EmployeeFrom)
+                    };
+                    dto.Add(notif);
+                }
+                sResult = JsonConvert.SerializeObject(dto);
+            }
+            return sResult;
+        }
+
         public IActionResult Settings() {
             return View();
         }
@@ -267,7 +300,6 @@ namespace MODAMSWeb.Areas.Users.Controllers
         {
             return View();
         }
-
         private decimal GetCurrentValue()
         {
             var assets = _db.Assets.Select(m => new { m.Id }).ToList();
