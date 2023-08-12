@@ -306,13 +306,14 @@
             var sData = $("#dvNotificationsData").html();
             if(sData!= "No Records Found"){
                 var Data = JSON.parse(sData);
-
-                var sHtml = '';
+                var nCounter = 0;
+                var sHtml = ``;
 
                 Data.forEach((e)=>{
+                    nCounter++;
                     sHtml += `<a class="dropdown-item" href="/` + e.Area + `/` + e.Controller + `/` + e.Action + `/` + e.TargetRecordId + `">
                                     <div class="notification-each d-flex">
-                                        <div class="me-3 notifyimg `+ e.Background +` brround">
+                                        <div class="me-3 notifyimg brround">
                                             <img src="` + e.ImageUrl + `" alt="profile-user" class="avatar profile-user brround cover-image">
                                         </div>
                                         <div>
@@ -323,6 +324,22 @@
                                 </a>`;
                 });
                 $("#dvNotifications").html(sHtml);
+            }
+            if (nCounter > 0) {
+                $("#notification-pulse").show();
+            } else {
+                $("#notification-pulse").hide();
+                sHtml = `<a class="dropdown-item" href="#">
+                            <div class="notification-each d-flex">
+                                <div class="me-3 notifyimg brround">
+                                </div>
+                                <div>
+                                    <span class="notification-label mb-1">No notification available</span>
+                                </div>
+                            </div>
+                        </a>`
+                $("#dvNotifications").html(sHtml);
+                console.log(nCounter);
             }
         }
 

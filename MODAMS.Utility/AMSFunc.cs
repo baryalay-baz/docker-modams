@@ -487,6 +487,29 @@ namespace MODAMS.Utility
             return EmployeeName;
         }
 
+        public string GetBGColor(int counter)
+        {
+            string sResult = "";
+            switch (counter)
+            {
+                case 1:
+                    sResult = "bg-primary";
+                    break;
+                case 2:
+                    sResult = "bg-secondary";
+                    break;
+                case 3:
+                    sResult = "bg-warning";
+                    break;
+                case 4:
+                    sResult = "bg-info";
+                    break;
+                case 5:
+                    sResult = "bg-danger";
+                    break;
+            }
+            return sResult;
+        }
 
     }
 }

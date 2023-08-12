@@ -7,6 +7,7 @@ using MODAMS.Models;
 using MODAMS.Models.ViewModels;
 using MODAMS.Models.ViewModels.Dto;
 using MODAMS.Utility;
+using System.Runtime.CompilerServices;
 using Notification = MODAMS.Models.Notification;
 
 namespace MODAMSWeb.Areas.Users.Controllers
@@ -207,7 +208,9 @@ namespace MODAMSWeb.Areas.Users.Controllers
             return RedirectToAction("PreviewTransfer", "Transfers", new { id = transfer.Id });
         }
 
+        
         [Authorize(Roles = "StoreOwner, User")]
+        [HttpGet]
         public IActionResult EditTransfer(int id)
         {
             _employeeId = (User.IsInRole("User")) ? _func.GetSupervisorId(_employeeId) : _employeeId;
@@ -518,7 +521,6 @@ namespace MODAMSWeb.Areas.Users.Controllers
             return RedirectToAction("PreviewTransfer", "Transfers", new { id = id });
         }
 
-
         [Authorize(Roles = "StoreOwner, User")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -559,12 +561,11 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             return RedirectToAction("PreviewTransfer", "Transfers", new { id = id });
         }
-
         private bool IsAssetSelected(int assetId, List<TransferDetail> transferDetails)
         {
             bool blnResult = false;
             var td = transferDetails.Where(m => m.AssetId == assetId).FirstOrDefault();
-            if (td != null)
+            if (td!=null)
             {
                 blnResult = true;
             }
@@ -617,7 +618,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             return sResult;
         }
-        private async Task<List<MODAMS.Models.Asset>> GetAssets()
+        private async Task<List<MODAMS.Models.Asset>> GetAssets([CallerMemberName] string caller = "")
         {
             _employeeId = (User.IsInRole("User")) ? _func.GetSupervisorId(_employeeId) : _employeeId;
 
@@ -628,13 +629,15 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 .ToListAsync();
 
             var transferDetails = await _db.TransferDetails
-                .Include(m => m.Transfer)
-                .Where(m => m.Transfer.TransferStatusId != SD.Transfer_Rejected)
+                .Include(m => m.Transfer).Where(m => m.Transfer.TransferStatusId == SD.Transfer_Pending ||
+                m.Transfer.TransferStatusId == SD.Transfer_SubmittedForAcknowledgement)
                 .ToListAsync();
-
-            assets = assets
-                .Where(asset => !transferDetails.Any(detail => detail.AssetId == asset.Id))
+            if (caller == "CreateTransfer") {
+                assets = assets
+                .Where(m => !transferDetails.Any(detail => detail.AssetId == m.Id))
                 .ToList();
+            }
+            
 
             return assets;
         }

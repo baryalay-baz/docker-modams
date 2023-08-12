@@ -221,7 +221,7 @@
 
             sData = '@Html.Raw(Json.Serialize(Model.Assets))';
             Data = JSON.parse(sData);
-
+            console.log(sData);
             $('.select2').select2();
 
             $('.picker').datepicker({

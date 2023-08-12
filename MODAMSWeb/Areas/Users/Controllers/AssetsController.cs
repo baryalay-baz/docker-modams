@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Kendo.Mvc.UI;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -42,7 +43,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
             {
                 assets = assets.Where(m => m.SubCategoryId == subCategoryId).ToList();
             }
-            var categories = _db.vwStoreCategoryAssets.Where(m => m.StoreId == id).ToList().Select(m=> new SelectListItem {
+            var categories = _db.vwStoreCategoryAssets.Where(m => m.StoreId == id).ToList().Select(m => new SelectListItem
+            {
                 Text = m.SubCategoryName,
                 Value = m.SubCategoryId.ToString(),
                 Selected = (m.SubCategoryId == subCategoryId)
@@ -54,7 +56,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             {
                 assets = assets,
                 StoreOwnerId = _func.GetStoreOwnerId(id),
-                 CategorySelectList = categories
+                CategorySelectList = categories
             };
 
             if (empId == _func.GetStoreOwnerId(id))
@@ -106,11 +108,12 @@ namespace MODAMSWeb.Areas.Users.Controllers
             TempData["categoryId"] = 0;
             TempData["categoryName"] = "All Assets";
 
-            if (category != null) {
+            if (category != null)
+            {
                 TempData["categoryId"] = category.Id;
                 TempData["categoryName"] = category.CategoryName;
             }
-            
+
             return View(dto);
         }
 
@@ -428,6 +431,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             var documents = _db.AssetDocuments.Where(m => m.AssetId == id).ToList();
 
+
             TempData["categoryId"] = categoryId;
 
             dto.Documents = documents;
@@ -448,7 +452,10 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             TempData["tab"] = tab.ToString();
 
+            var assetHistory = _db.AssetHistory.Where(m => m.AssetId == id).OrderBy(m=>m.TimeStamp).ToList();
+
             dto.dtoAssetPictures = dtoAssetPictures;
+            dto.AssetHistory = assetHistory;
 
             return View(dto);
         }
@@ -649,6 +656,9 @@ namespace MODAMSWeb.Areas.Users.Controllers
             }
             return sResult;
         }
+
+        
+
         //API Calls End
 
 

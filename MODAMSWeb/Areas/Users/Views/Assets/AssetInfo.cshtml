@@ -78,7 +78,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="card-body p-0">
+                            <div class="card-body p-0" style="height:300px;">
                                 <div class="border-top"></div>
                                 <div class="table-responsive p-5">
                                     <table class="table row table-borderless">
@@ -162,7 +162,7 @@
                             </div>
                         </div>
                         <div class="card">
-                            <div class="card-body">
+                            <div class="card-body" style="height:170px;">
                                 <div class="row prjct-details">
                                     <div class="col-xl-2 col-lg-12">
                                         <div class="text-center border py-5 br-5 details">
@@ -227,39 +227,34 @@
                     <div class="col-xl-3 col-lg-12">
                         <div class="card">
                             <div class="card-header border-bottom">
-                                <h3 class="card-title">Activity Log</h3>
+                                <h3 class="card-title">Asset History</h3>
                             </div>
-                            <div class="card-body">
+                            <div class="card-body" style="height:500px;">
                                 <ul class="task-list">
-                                    <li>
-                                        <i class="task-icon bg-primary"></i>
-                                        <h6>Registered by Baryalay Baz.</h6>
-                                        <p class="text-muted fs-12">02 Feb 2020</p>
-                                    </li>
-                                    <li>
-                                        <i class="task-icon bg-secondary"></i>
-                                        <h6>Document added by Baryalay Baz.</h6>
-                                        <p class="text-muted fs-12">05 Feb 2020</p>
-                                    </li>
-                                    <li>
-                                        <i class="task-icon bg-teritary"></i>
-                                        <h6><a href="#" class="fw-semibold text-dark">Baryalay Baz</a> updated the data.</h6>
-                                        <p class="text-muted fs-12">02 Mar 2020</p>
-                                    </li>
-                                    <li>
-                                        <i class="task-icon bg-custom-yellow"></i>
-                                        <h6><a href="#" class="fw-semibold text-dark">Abdiraxman</a> added a picture.</h6>
-                                        <p class="text-muted fs-12">05 Mar 2020</p>
-                                    </li>
-                                    <li>
-                                        <i class="task-icon bg-orange"></i>
-                                        <h6><a href="#" class="fw-semibold text-dark">Baryalay Baz</a> updated the data.</h6>
-                                        <p class="text-muted fs-12">15 Mar 2020</p>
-                                    </li>
-                                    <li>
-                                        <i class="task-icon bg-primary"></i>
-                                        <h6><a href="#" class="btn btn-link"> more...</a></h6>
-                                    </li>
+                                    @{
+                                        int historyCount = Model.AssetHistory.Count;
+                                        int nHistoryCounter = 1;
+                                        foreach (var history in Model.AssetHistory)
+                                        {
+                                            string formattedDate = history.TimeStamp.ToString("dd-MMM-yyyy");
+
+                                            <li>
+                                                <i class="task-icon @_func.GetBGColor(nHistoryCounter)"></i>
+                                                <h6>@history.Description</h6>
+                                                <p class="text-muted fs-12">@formattedDate</p>
+                                            </li>
+                                            if (nHistoryCounter == 5 && historyCount>5)
+                                            {
+                                                <li>
+                                                    <i class="task-icon bg-primary"></i>
+                                                    <h6><a href="#" class="btn btn-link"> more...</a></h6>
+                                                </li>
+
+                                                break;
+                                            }
+                                            nHistoryCounter++;
+                                        }
+                                    }
                                 </ul>
                             </div>
                         </div>

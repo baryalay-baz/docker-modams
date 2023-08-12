@@ -11,5 +11,6 @@ namespace MODAMS.Models.ViewModels.Dto
         public Asset Asset { get; set; }
         public List<AssetDocument> Documents { get; set; }
         public dtoAssetPictures dtoAssetPictures { get; set; }
+        public List<AssetHistory> AssetHistory { get; set; }
     }
 }

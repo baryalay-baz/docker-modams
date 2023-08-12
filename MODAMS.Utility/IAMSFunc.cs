@@ -31,5 +31,6 @@ namespace MODAMS.Utility
         public string FormatMessage(string title, string message, string email, string returnUrl, string btntext);
         public void NotifyDepartment(int departmentId, Notification notification);
         public string GetProfileImage(int employeeId);
+        public string GetBGColor(int counter);
     }
 }
