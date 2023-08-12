@@ -78,7 +78,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
             if (_employeeId == _func.GetStoreOwnerId(_storeId))
                 dto.IsAuthorized = true;
 
-            var transfers = _db.vwTransfers.Where(m => m.StoreFromId == _storeId).ToList();
+            var transfers = _db.vwTransfers.Where(m => m.StoreFromId == _storeId)
+                .OrderBy(m=>m.TransferStatusId).ToList();
 
             if (transferStatusId > 0)
                 transfers = transfers.Where(m => m.TransferStatusId == transferStatusId).ToList();
@@ -88,7 +89,10 @@ namespace MODAMSWeb.Areas.Users.Controllers
             dto.StoreId = _storeId;
             dto.OutgoingTransfers = transfers;
 
-            transfers = _db.vwTransfers.Where(m => m.StoreId == _storeId && m.TransferStatusId != SD.Transfer_Pending).ToList();
+            transfers = _db.vwTransfers
+                .Where(m => m.StoreId == _storeId && m.TransferStatusId != SD.Transfer_Pending)
+                .OrderBy(m=>m.TransferStatusId)
+                .ToList();
             dto.IncomingTransfers = transfers;
 
             return View(dto);
@@ -403,6 +407,31 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
 
             return View(dto);
+        }
+
+        [Authorize(Roles = "StoreOwner, User")]
+        public IActionResult DeleteTransfer(int id)
+        {
+            var transferToDelete = _db.Transfers.FirstOrDefault(m => m.Id == id);
+
+            if (transferToDelete == null)
+            {
+                return RedirectToAction("Index", "Transfers");
+            }
+
+            try
+            {
+                _db.Transfers.Remove(transferToDelete);
+                _db.SaveChanges();
+                TempData["success"] = $"Transfer: {transferToDelete.TransferNumber} deleted successfully!";
+            }
+            catch (Exception ex)
+            {
+                TempData["error"] = ex.Message;
+                return RedirectToAction("EditTransfer", "Transfers", new { id });
+            }
+
+            return RedirectToAction("Index", "Transfers");
         }
 
         [Authorize(Roles = "StoreOwner, User")]

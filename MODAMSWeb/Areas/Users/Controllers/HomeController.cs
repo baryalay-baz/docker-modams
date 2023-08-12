@@ -117,7 +117,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             return RedirectToAction("Profile", "Home");
         }
 
-        public async Task<IActionResult> ResetPassword(int id=0)
+        public async Task<IActionResult> ResetPassword(int id = 0)
         {
             string emailAddress = _func.GetEmployeeEmail();
             var user = await _userManager.FindByEmailAsync(emailAddress);
@@ -164,11 +164,12 @@ namespace MODAMSWeb.Areas.Users.Controllers
             {
                 return RedirectToAction("Settings", "Home");
             }
-            else {
+            else
+            {
                 return RedirectToAction("Profile", "Home");
             }
 
-            
+
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -243,16 +244,18 @@ namespace MODAMSWeb.Areas.Users.Controllers
             return sResult;
         }
 
-        public string GetNotifications() {
+        public string GetNotifications()
+        {
             string sResult = "No Records Found";
-            var notifications = _db.Notifications.Where(m=>m.EmployeeTo==_employeeId)
-                .Include(m=>m.NotificationSection).ToList();
+            var notifications = _db.Notifications.Where(m => m.EmployeeTo == _employeeId)
+                .Include(m => m.NotificationSection).OrderByDescending(m => m.DateTime).ToList();
 
             var dto = new List<dtoNotification>();
 
-            if(notifications.Count > 0)
+            if (notifications.Count > 0)
             {
-                foreach (var notification in notifications) {
+                foreach (var notification in notifications)
+                {
                     var notif = new dtoNotification()
                     {
                         Id = notification.Id,
@@ -276,20 +279,23 @@ namespace MODAMSWeb.Areas.Users.Controllers
             return sResult;
         }
 
-        public IActionResult Settings() {
+        public IActionResult Settings()
+        {
             return View();
         }
 
-        public IActionResult GlobalSearch(string barcode) {
-            var asset = _db.Assets.Where(m=>m.Barcode== barcode)
-                .Include(m=>m.SubCategory).Include(m=>m.SubCategory.Category)
+        public IActionResult GlobalSearch(string barcode)
+        {
+            var asset = _db.Assets.Where(m => m.Barcode == barcode)
+                .Include(m => m.SubCategory).Include(m => m.SubCategory.Category)
                 .FirstOrDefault();
             dtoGlobalSearch dto = new dtoGlobalSearch();
             if (asset != null)
             {
-                var assetPicture = _db.AssetPictures.Where(m=>m.AssetId == asset.Id).FirstOrDefault();
+                var assetPicture = _db.AssetPictures.Where(m => m.AssetId == asset.Id).FirstOrDefault();
                 dto.Asset = asset;
-                if (assetPicture != null) {
+                if (assetPicture != null)
+                {
                     dto.AssetPicture = assetPicture;
                 }
             }
@@ -299,6 +305,66 @@ namespace MODAMSWeb.Areas.Users.Controllers
         public IActionResult UnderConstruction()
         {
             return View();
+        }
+
+        public IActionResult NotificationDirector(int id)
+        {
+            var notification = _db.Notifications.Where(m => m.Id == id)
+                .Include(m=>m.NotificationSection)
+                .FirstOrDefault();
+
+            if (notification == null)
+            {
+                return View();
+            }
+            notification.IsViewed = true;
+            _db.SaveChanges();
+            return RedirectToAction(notification.NotificationSection.action,
+                notification.NotificationSection.controller,
+                new {area=notification.NotificationSection.area, id=notification.Id});
+        
+        }
+
+        [HttpGet]
+        public IActionResult AllNotifications(int id)
+        {
+            var notifications = _db.Notifications.Where(m => m.EmployeeTo == _employeeId)
+                .Include(m => m.NotificationSection).OrderByDescending(m => m.DateTime).ToList();
+
+            var dto = new List<dtoNotification>();
+
+            if (notifications.Count > 0)
+            {
+                foreach (var notification in notifications)
+                {
+                    var notif = new dtoNotification()
+                    {
+                        Id = notification.Id,
+                        DateTime = notification.DateTime,
+                        EmployeeFrom = notification.EmployeeFrom,
+                        EmployeeTo = notification.EmployeeTo,
+                        Subject = notification.Subject,
+                        Message = notification.Message,
+                        TargetRecordId = notification.TargetRecordId,
+                        IsViewed = notification.IsViewed,
+                        NotificationSectionId = notification.NotificationSectionId,
+                        Area = notification.NotificationSection.area,
+                        Controller = notification.NotificationSection.controller,
+                        Action = notification.NotificationSection.action,
+                        ImageUrl = _func.GetProfileImage(notification.EmployeeFrom)
+                    };
+                    dto.Add(notif);
+                }
+            }
+            return View(dto);
+        }
+        public IActionResult ClearNotifications() {
+            
+            var notifications = _db.Notifications.Where(m => m.EmployeeTo == _employeeId).ToList();
+            _db.Notifications.RemoveRange(notifications);
+            _db.SaveChanges();
+
+            return RedirectToAction("Index","Home");
         }
         private decimal GetCurrentValue()
         {

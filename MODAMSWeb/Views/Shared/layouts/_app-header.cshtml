@@ -195,7 +195,7 @@
                                         <div class="d-flex">
                                             <h6 class="mt-1 mb-0 fs-15 text-dark">Notifications</h6>
                                             <div class="ms-auto">
-                                                <span class="xm-title badge bg-secondary text-white fw-normal fs-11 badge-pill"> <a href="javascript:void(0);" class="showall-text text-white">Clear</a> </span>
+                                                <span class="xm-title badge bg-secondary text-white fw-normal fs-11 badge-pill"> <a href="javascript:clearNotifications();" class="showall-text text-white">Clear</a> </span>
                                             </div>
                                         </div>
                                     </div>
@@ -204,7 +204,7 @@
                                     </div>
                                     <div class="dropdown-divider m-0"></div>
                                     <div class="text-center p-3">
-                                        <a class="btn btn-primary">View All Notifications</a>
+                                        <a asp-area="Users" asp-controller="Home" asp-action="AllNotifications" class="btn btn-primary">View All Notifications</a>
                                     </div>
                                 </div>
                             </div>

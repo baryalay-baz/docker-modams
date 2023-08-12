@@ -301,35 +301,59 @@
             });
         };
         
-        const loadNotifications = ()=>{
-        
-            var sData = $("#dvNotificationsData").html();
-            if(sData!= "No Records Found"){
-                var Data = JSON.parse(sData);
-                var nCounter = 0;
-                var sHtml = ``;
+        const loadNotifications = () => {
+            const sData = $("#dvNotificationsData").html();
+            if (sData !== "No Records Found") {
+                const Data = JSON.parse(sData);
+                let isNewNotification = false;
+                let nCounter = 0;
+                let sHtml = "";
+                let sbgClass = "";
 
-                Data.forEach((e)=>{
+                for (const e of Data) {
                     nCounter++;
-                    sHtml += `<a class="dropdown-item" href="/` + e.Area + `/` + e.Controller + `/` + e.Action + `/` + e.TargetRecordId + `">
-                                    <div class="notification-each d-flex">
-                                        <div class="me-3 notifyimg brround">
-                                            <img src="` + e.ImageUrl + `" alt="profile-user" class="avatar profile-user brround cover-image">
-                                        </div>
-                                        <div>
-                                            <span class="notification-label mb-1">` + shortenMessage(e.Message) + `</span>
-                                            <span class="notification-subtext text-muted">` + formattedDate(e.DateTime) +`</span>
-                                        </div>
-                                    </div>
-                                </a>`;
-                });
+                    const sPulse = e.IsViewed ? '' : '<span class="pulse rounded-pill bg-success"></span>';
+                    if (!e.IsViewed) {
+                        sbgClass = "bg-light-transparent"
+                        isNewNotification = true;
+                    } else {
+                        sbgClass = "";
+                    }
+
+                    if (nCounter > 4) {
+                        break; // Exit the loop once nCounter exceeds 4
+                    }
+
+                    
+
+                    sHtml += `
+                                <a class="dropdown-item ${sbgClass}" href="/Users/Home/NotificationDirector/${e.Id}">
+                            <div class="notification-each d-flex ">
+                                <div class="avatar-container avatar-md me-2">
+                                    <img alt="avatar" class="rounded-circle" src="${e.ImageUrl}">
+                                </div>
+                                <div>
+                                    <span class="notification-label mb-1">${shortenMessage(e.Message)}</span>
+                                            ${sPulse}
+                                    <span class="notification-subtext text-muted">${formattedDate(e.DateTime)}</span>
+                                </div>
+                            </div>
+                        </a>`;
+                }
+
                 $("#dvNotifications").html(sHtml);
-            }
-            if (nCounter > 0) {
-                $("#notification-pulse").show();
-            } else {
-                $("#notification-pulse").hide();
-                sHtml = `<a class="dropdown-item" href="#">
+
+                const notificationPulse = $("#notification-pulse");
+                if (nCounter > 0) {
+                    if (isNewNotification) {
+                        notificationPulse.show();
+                    } else {
+                        notificationPulse.hide();
+                    }
+                } else {
+                    notificationPulse.hide();
+                    sHtml = `
+                        <a class="dropdown-item" href="#">
                             <div class="notification-each d-flex">
                                 <div class="me-3 notifyimg brround">
                                 </div>
@@ -337,12 +361,28 @@
                                     <span class="notification-label mb-1">No notification available</span>
                                 </div>
                             </div>
-                        </a>`
-                $("#dvNotifications").html(sHtml);
-                console.log(nCounter);
+                        </a>`;
+                    $("#dvNotifications").html(sHtml);
+                }
             }
-        }
+        };
 
+        const clearNotifications = () => { 
+            var postData = {};
+            $.ajax({
+                url: '/Users/Home/ClearNotifications',
+                datatype: "json",
+                data: postData,
+                beforeSend: function () {
+                },
+                success: function (e) {
+                    
+                },
+                complete: function () {
+                    loadNotificationsData();
+                }
+            });
+        }
 
         const makeDataTable = (tableName, type) => {
             var table = $(tableName).DataTable({

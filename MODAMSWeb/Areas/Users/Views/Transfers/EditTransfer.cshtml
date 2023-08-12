@@ -178,11 +178,26 @@
                                         @{
                                             if (Model.Transfer.TransferStatusId == 1)
                                             {
-                                                <button type="button" class="btn btn-primary " id="btnSubmit"><i class="fa fa-check-circle"></i>&nbsp;Save Transfer</button>
+                                                <button type="submit" class="btn btn-primary " id="btnSubmit"><i class="fa fa-check-circle"></i>&nbsp;Save Transfer</button>
+
+                                                <button class="btn btn-secondary btn-secondary" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <i class="fe fe-trash"></i> Delete Transfer<i class="icon ion-ios-arrow-down text-12"></i>
+                                                </button>
+
+                                                <div class="dropdown-menu" style="">
+                                                    <div class="p-2">
+                                                        <h4 class="dropdown-title">Delete Transfer</h4><br />
+                                                        <p>
+                                                            You will not be able to recover this transfer!<br /><br />Are you sure?
+                                                        </p>
+                                                            <a asp-area="Users" asp-action="DeleteTransfer" asp-controller="Transfers" asp-route-id="@Model.Transfer.Id" class="btn btn-default btn-sm"><i class="fe fe-trash"></i> Delete Transfer</a>
+                                                        
+                                                    </div>
+                                                </div>
                                             }
                                         }
 
-                                        <a asp-area="Users" asp-controller="Transfers" asp-action="PreviewTransfer" asp-route-id="@Model.Transfer.Id" class="btn btn-primary">
+                                        <a asp-area="Users" asp-controller="Transfers" asp-action="PreviewTransfer" asp-route-id="@Model.Transfer.Id" class="btn btn-info">
                                             <i class="fe fe-eye"></i>&nbsp;Preview Transfer
                                         </a>
                                     </div>
