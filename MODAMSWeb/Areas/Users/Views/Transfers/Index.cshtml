@@ -1,5 +1,6 @@
 ﻿@model MODAMS.Models.ViewModels.Dto.dtoTransfer
 
+
 <div class="page-header">
     <div>
         <h1 class="page-title">Asset Transfers</h1>
@@ -130,7 +131,7 @@
                                         <div class="tab-content">
                                             <div class="tab-pane active " id="tabOutgoing">
                                                 <div class="row">
-                                                    <div class="col-8 col-sm-8">
+                                                    <div class="col-7 col-sm-7">
                                                         <div class="mb-4">
                                                             <div class="input-group">
                                                                 <label class="rdiobox" for="rd-0"><input onclick="return radioCall(0);" class="mr-5" name="rd-status" type="radio" id="rd-0" checked><span style="font-size:medium;">All Transfers</span></label>&nbsp;&nbsp;
@@ -149,7 +150,7 @@
                                                                         <th class="text-white bg-transparent border-bottom-0 w-10">Date</th>
                                                                         <th class="text-white bg-transparent border-bottom-0 w-20">Store From</th>
                                                                         <th class="text-white bg-transparent border-bottom-0 w-20">Store To</th>
-                                                                        <th class="text-white bg-transparent border-bottom-0 w-5">Number of Assets</th>
+                                                                        <th class="text-white bg-transparent border-bottom-0 w-5">Assets</th>
                                                                         <th class="text-white bg-transparent border-bottom-0 w-20">Status</th>
                                                                         <th class="text-white bg-transparent border-bottom-0 w-20 no-btn">Action</th>
                                                                     </tr>
@@ -195,15 +196,26 @@
                                                             </table>
                                                         </div>
                                                     </div>
-                                                    <div class="col-4 col-sm-4">
-                                                        <div id="chartOutgoing"></div>
+                                                    <div class="col-5 col-sm-5">
+                                                        <div class="card">
+                                                            <div class="card-header">
+                                                                <h4>Outgoing Transfers by Category</h4>
+                                                            </div>
+                                                            <div class="card-body container">
+                                                                @* <div id="chartOutgoing"></div> *@
+                                                                <div style="width: 70%; margin: auto;">
+                                                                    <canvas id="pieChartOutgoing"></canvas>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        
                                                     </div>
                                                 </div>
                                                 <a asp-action="CreateTransfer" asp-controller="Transfers" id="btnCreate" class="btn btn-outline-primary pt-1"><i class="fe fe-plus-circle"></i>&nbsp;New Transfer</a>
                                             </div>
                                             <div class="tab-pane " id="tabIncoming">
                                                 <div class="row">
-                                                    <div class="col-8 col-sm-8">
+                                                    <div class="col-7 col-sm-7">
                                                         <div class="mb-4">
                                                             <div class="input-group">
                                                                 <label class="rdiobox" for="rd-incoming-0"><input onclick="return radioCallIncoming(0);" class="mr-5" name="rd-status-incoming" type="radio" id="rd-incoming-0" checked><span style="font-size:medium;">All Transfers</span></label>&nbsp;&nbsp;
@@ -221,7 +233,7 @@
                                                                         <th class="text-white bg-transparent border-bottom-0 w-10">Date</th>
                                                                         <th class="text-white bg-transparent border-bottom-0 w-20">Store From</th>
                                                                         <th class="text-white bg-transparent border-bottom-0 w-20">Store To</th>
-                                                                        <th class="text-white bg-transparent border-bottom-0 w-5">Number of Assets</th>
+                                                                        <th class="text-white bg-transparent border-bottom-0 w-5">Assets</th>
                                                                         <th class="text-white bg-transparent border-bottom-0 w-20">Status</th>
                                                                         <th class="text-white bg-transparent border-bottom-0 w-20 no-btn">Action</th>
                                                                     </tr>
@@ -252,8 +264,18 @@
                                                             </table>
                                                         </div>
                                                     </div>
-                                                    <div class="col-4 col-sm-4">
-                                                        <div id="chartIncoming"></div>
+                                                    <div class="col-5 col-sm-5">
+                                                        <div class="card">
+                                                            <div class="card-header">
+                                                                <h4>Incoming Transfers By Category</h4>
+                                                            </div>
+                                                            <div class="card-body container">
+                                                                <div style="width: 70%; margin: auto;">
+                                                                    <canvas id="pieChartIncoming"></canvas>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        
                                                     </div>
                                                 </div>
                                             </div>
@@ -276,8 +298,14 @@
         </div>
     </div>
 </div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/c3@0.7.20/c3.min.css">
 @section scripts {
 
+    @* <script src="~/assets/plugins/c3-0.7.20/c3.min.js"></script>
+    <script src="~/assets/plugins/c3-0.7.20/d3-5.8.2.min.js"></script>
+ *@
+    
+    
     <!-- PROJECT-LIST JS-->
     @*<script src="~/assets/js/project-list.js"></script>*@
     <script>
@@ -293,62 +321,92 @@
                 window.location.href = '/Users/Transfers/Index/' + $("#StoreId").val();
             });
             //setRadioButtons();
-            //pieChart();
+            
+            
+            pieChartOutgoing();
+            pieChartIncoming();
         });
 
-        const pieChart = () => {
-            var sData = "";
+        const pieChartOutgoing = () => {
+            var data = '@Html.Raw(Json.Serialize(Model.OutgoingChartData))';
+            var ctx = document.getElementById('pieChartOutgoing').getContext('2d');
 
-            if (sData == "No Records Found" || sData == "") {
-            } else {
-                var Data = JSON.parse(sData);
-                var data = {};
-                var labels = [];
+            var labels = @Html.Raw(Json.Serialize(Model.OutgoingChartData.Select(item => item.SubCategoryName)));
+            var values = @Html.Raw(Json.Serialize(Model.OutgoingChartData.Select(item => item.TotalAssets)));
 
-                Data.forEach(function (e) {
-                    labels.push(e.categoryName);
-                    data[e.categoryName] = e.totalAssets;
-                    //console.log(e.subCategoryName + ' -> ' + e.totalAssets);
-                });
-                chart = c3.generate({
-                    pie: {
-                        label: {
-                            show: true
+            var pieChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: [
+                            'rgba(20, 99, 132, 0.7)',
+                            'rgba(200, 19, 12, 0.7)',
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(255, 206, 86, 0.7)',
+                            'rgba(200, 106, 76, 0.7)',
+                            'rgba(115, 211, 56, 0.7)',
+                            'rgba(155, 51, 97, 0.7)',
+                            // Add more colors as needed
+                        ],
+                    }],
+                },
+                options: {
+                    plugins: {
+                        datalabels: {
+                            color: 'white',
+                            formatter: (value, context) => {
+                                return context.chart.data.labels[context.dataIndex] + ': ' + value;
+                            }
                         }
-                    },
-                    data: {
-                        json: [data],
-                        keys: {
-                            value: labels,
-                        },
-                        type: 'pie'
-                    },
-                    legend: {
-                        show: false
-                    },
-                    color: {
-                        pattern: ['#1f77b4', '#aec7e8', '#ff7f0e', '#ffbb78', '#2ca02c', '#98df8a', '#d62728', '#ff9896', '#9467bd', '#c5b0d5', '#8c564b', '#c49c94', '#e377c2', '#f7b6d2', '#7f7f7f', '#c7c7c7', '#bcbd22', '#dbdb8d', '#17becf', '#9edae5']
                     }
-                });
-                d3.select('.container').insert('div', '.chart').attr('class', 'legend w-100 text-center p-2').selectAll('span')
-                    .data(labels)
-                    .enter().append('span')
-                    .attr('data-id', function (id) { return id; })
-                    .html(function (id) { return id; })
-                    .each(function (id) {
-                        d3.select(this).style('background-color', chart.color(id));
-                    })
-                    .on('mouseover', function (id) {
-                        chart.focus(id);
-                    })
-                    .on('mouseout', function (id) {
-                        chart.revert();
-                    })
-                    .on('click', function (id) {
-                        chart.toggle(id);
-                    });
-            }
+                }
+            });
         }
+
+        const pieChartIncoming = () => {
+            var data = '@Html.Raw(Json.Serialize(Model.IncomingChartData))';
+            var ctx = document.getElementById('pieChartIncoming').getContext('2d');
+
+            var labels = @Html.Raw(Json.Serialize(Model.IncomingChartData.Select(item => item.SubCategoryName)));
+            var values = @Html.Raw(Json.Serialize(Model.IncomingChartData.Select(item => item.TotalAssets)));
+
+            var pieChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: [
+                            'rgba(20, 99, 132, 0.7)',
+                            'rgba(200, 19, 12, 0.7)',
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(255, 206, 86, 0.7)',
+                            'rgba(200, 106, 76, 0.7)',
+                            'rgba(115, 211, 56, 0.7)',
+                            'rgba(155, 51, 97, 0.7)',
+                            // Add more colors as needed
+                        ],
+                    }],
+                },
+                options: {
+                    plugins: {
+                        datalabels: {
+                            color: 'white',
+                            formatter: (value, context) => {
+                                return context.chart.data.labels[context.dataIndex] + ': ' + value;
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // function toggle(id) {
+        //     chart.toggle(id);
+        // }
+
         const radioCall = (id) => {
             generateTableOutoing(id);
         }

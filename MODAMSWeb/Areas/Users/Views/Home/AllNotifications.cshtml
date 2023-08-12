@@ -8,7 +8,7 @@
 
 <div class="page-header">
     <div>
-        <h1 class="page-title">All Notifications</h1>
+        <h1 class="page-title">Notifications</h1>
     </div>
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
@@ -21,16 +21,14 @@
 <div class="row">
     <div class="col-md-12">
         <div class="card">
+            <div class="card-header">
+                <a class="btn btn-secondary" asp-action="ClearNotifications" asp-controller="Home" asp-area="Users">
+                    <i class="fe fe-trash"></i>&nbsp; Delete All Notifications
+                </a>
+            </div>
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="row mb-2">
-                            <div class="col-md-7">
-                                <a class="btn btn-secondary" asp-action="ClearNotifications" asp-controller="Home" asp-area="Users">
-                                    <i class="fe fe-trash"></i>&nbsp; Delete All Notifications
-                                </a>
-                            </div>
-                        </div>
                         @{
                             string bgClass = "";
                             foreach (var item in Model)
@@ -38,7 +36,7 @@
                                 var sMessage = item.Message.Substring(0, item.Message.IndexOf(','));
                                 bgClass = item.IsViewed ? "" : "bg-light-transparent";
                                 <a href="/Users/Home/NotificationDirector/@item.Id">
-                                    <div class="row @bgClass mb-3 divShadow p-3">
+                                    <div class="row @bgClass mb-3 p-3 table-bordered">
                                         <div class="col-md-1 text-center">
 
                                             <div class="avatar-container avatar-lg me-4">
@@ -65,6 +63,14 @@
                     </div>
                 </div>
             </div>
+            <div class="card-footer">
+                <div class="row">
+                    @*<hr class="customHR" />*@
+                    <div class="col-sm-12">
+                        <a asp-action="Index" asp-controller="Home" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
+                    </div>
+
+                </div>
         </div>
     </div>
 </div>

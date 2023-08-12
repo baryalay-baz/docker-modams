@@ -26,12 +26,16 @@ namespace MODAMSWeb.Areas.Users.Controllers
             _func = func;
             _employeeId = _func.GetEmployeeId();
         }
+
+
+
         public IActionResult Index(int id = 0, int transferStatusId = 0)
         {
             _employeeId = (User.IsInRole("User")) ? _func.GetSupervisorId(_employeeId) : _employeeId;
             transferStatusId = 0;
             var stores = _db.Stores.ToList();
             var dto = new dtoTransfer();
+
 
             if (id == 0)
             {
@@ -79,7 +83,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 dto.IsAuthorized = true;
 
             var transfers = _db.vwTransfers.Where(m => m.StoreFromId == _storeId)
-                .OrderBy(m=>m.TransferStatusId).ToList();
+                .OrderBy(m => m.TransferStatusId).ToList();
 
             if (transferStatusId > 0)
                 transfers = transfers.Where(m => m.TransferStatusId == transferStatusId).ToList();
@@ -91,9 +95,15 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             transfers = _db.vwTransfers
                 .Where(m => m.StoreId == _storeId && m.TransferStatusId != SD.Transfer_Pending)
-                .OrderBy(m=>m.TransferStatusId)
+                .OrderBy(m => m.TransferStatusId)
                 .ToList();
             dto.IncomingTransfers = transfers;
+
+            List<dtoTransferChart> incomingChartData = GetChartData(2).GetAwaiter().GetResult();
+            List<dtoTransferChart> outgoingChartData = GetChartData(1).GetAwaiter().GetResult();
+
+            dto.IncomingChartData = incomingChartData;
+            dto.OutgoingChartData = outgoingChartData;
 
             return View(dto);
         }
@@ -212,7 +222,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             return RedirectToAction("PreviewTransfer", "Transfers", new { id = transfer.Id });
         }
 
-        
+
         [Authorize(Roles = "StoreOwner, User")]
         [HttpGet]
         public IActionResult EditTransfer(int id)
@@ -536,7 +546,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 EmployeeFrom = _employeeId,
                 EmployeeTo = ownerId,
                 Subject = "Transfer acknowledged",
-                Message = $"Transfer Number: <b>{transfer.TransferNumber}</b> been acknowledged by {employeeName}, please click the following link for details",
+                Message = $"Transfer Number: <b>{transfer.TransferNumber}</b> has been acknowledged by {employeeName}, please click the following link for details",
                 DateTime = DateTime.Now,
                 IsViewed = false,
                 TargetRecordId = transfer.Id,
@@ -590,11 +600,64 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             return RedirectToAction("PreviewTransfer", "Transfers", new { id = id });
         }
+
+        public async Task<List<dtoTransferChart>> GetChartData(int type)
+        {
+            List<dtoTransferChart> dtoTransferCharts = new List<dtoTransferChart>();
+
+            var result = await _db.SubCategories
+            .Join(_db.Assets, subCategory => subCategory.Id, asset => asset.SubCategoryId, (subCategory, asset) => new { subCategory, asset })
+            .Join(_db.TransferDetails, combined => combined.asset.Id, transferDetail => transferDetail.AssetId, (combined, transferDetail) => new { combined.subCategory, combined.asset, transferDetail })
+            .Join(_db.Transfers, combined => combined.transferDetail.TransferId, transfer => transfer.Id, (combined, transfer) => new { combined.subCategory, combined.asset, combined.transferDetail, transfer })
+            .Where(combined => combined.transfer.TransferStatusId == 3)
+            .GroupBy(combined => new
+            {
+                combined.subCategory.Id,
+                combined.subCategory.SubCategoryName,
+                combined.transfer.StoreFromId,
+                combined.transfer.StoreId
+            })
+            .Select(grouped => new
+            {
+                Id = grouped.Key.Id,
+                SubCategoryName = grouped.Key.SubCategoryName,
+                TotalAssets = grouped.Count(),
+                StoreFromId = grouped.Key.StoreFromId,
+                StoreToId = grouped.Key.StoreId
+            })
+            .ToListAsync();
+
+            foreach (var item in result) {
+                dtoTransferChart dto = new dtoTransferChart()
+                {
+                    Id = item.Id,
+                    SubCategoryName = item.SubCategoryName,
+                    TotalAssets = item.TotalAssets,
+                    StoreFromId = item.StoreFromId,
+                    StoreToId = item.StoreToId
+                };
+                dtoTransferCharts.Add(dto);
+            }
+            
+            if (type == 1)
+            {
+                dtoTransferCharts = dtoTransferCharts.Where(m => m.StoreFromId == _storeId).ToList();
+            }
+            else
+            {
+                dtoTransferCharts = dtoTransferCharts.Where(m => m.StoreToId == _storeId).ToList();
+            }
+
+            return dtoTransferCharts;
+        }
+
+
+        //Private functions
         private bool IsAssetSelected(int assetId, List<TransferDetail> transferDetails)
         {
             bool blnResult = false;
             var td = transferDetails.Where(m => m.AssetId == assetId).FirstOrDefault();
-            if (td!=null)
+            if (td != null)
             {
                 blnResult = true;
             }
@@ -661,12 +724,13 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 .Include(m => m.Transfer).Where(m => m.Transfer.TransferStatusId == SD.Transfer_Pending ||
                 m.Transfer.TransferStatusId == SD.Transfer_SubmittedForAcknowledgement)
                 .ToListAsync();
-            if (caller == "CreateTransfer") {
+            if (caller == "CreateTransfer")
+            {
                 assets = assets
                 .Where(m => !transferDetails.Any(detail => detail.AssetId == m.Id))
                 .ToList();
             }
-            
+
 
             return assets;
         }

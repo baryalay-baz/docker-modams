@@ -10,6 +10,9 @@ namespace MODAMS.Models.ViewModels.Dto
 
         public List<vwTransfer> OutgoingTransfers = new List<vwTransfer>();
         public List<vwTransfer> IncomingTransfers = new List<vwTransfer>();
+        
+        public List<dtoTransferChart> IncomingChartData = new List<dtoTransferChart>();
+        public List<dtoTransferChart> OutgoingChartData = new List<dtoTransferChart>();
 
         [ValidateNever]
         public IEnumerable<SelectListItem> StoreList { get; set; }

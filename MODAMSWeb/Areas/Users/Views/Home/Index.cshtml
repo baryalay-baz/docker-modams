@@ -284,17 +284,8 @@
 
     <script>
         $(document).ready(function () {
-            $('#tblCategories').DataTable({
-                "createdRow": function (row, data, dataIndex) {
-                    if (dataIndex % 2 == 1) {
-                        //$(row).addClass('bg-light-transparent');
-                    }
-                },
-
-            });
+            makeDataTable('#tblCategories');
             pieChart();
-            $('.even').addClass("bg-light-transparent");
-            $('.odd').removeClass("bg-light-transparent");
         });
 
         const pieChart = () => {
