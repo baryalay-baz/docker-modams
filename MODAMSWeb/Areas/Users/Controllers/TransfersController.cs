@@ -7,10 +7,7 @@ using MODAMS.Models;
 using MODAMS.Models.ViewModels;
 using MODAMS.Models.ViewModels.Dto;
 using MODAMS.Utility;
-using NuGet.ContentModel;
 using System.Runtime.CompilerServices;
-using static System.Net.Mime.MediaTypeNames;
-using System.Security.Cryptography.Xml;
 using Notification = MODAMS.Models.Notification;
 
 namespace MODAMSWeb.Areas.Users.Controllers
@@ -29,8 +26,6 @@ namespace MODAMSWeb.Areas.Users.Controllers
             _func = func;
             _employeeId = _func.GetEmployeeId();
         }
-
-
 
         public IActionResult Index(int id = 0, int transferStatusId = 0)
         {
@@ -861,8 +856,6 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             return totalValue;
         }
-
-
         private decimal GetTotalReceivedValue(int storeId)
         {
             var transferIds = _db.Transfers
