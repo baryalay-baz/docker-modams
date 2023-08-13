@@ -7,7 +7,10 @@ using MODAMS.Models;
 using MODAMS.Models.ViewModels;
 using MODAMS.Models.ViewModels.Dto;
 using MODAMS.Utility;
+using NuGet.ContentModel;
 using System.Runtime.CompilerServices;
+using static System.Net.Mime.MediaTypeNames;
+using System.Security.Cryptography.Xml;
 using Notification = MODAMS.Models.Notification;
 
 namespace MODAMSWeb.Areas.Users.Controllers
@@ -99,18 +102,16 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 .ToList();
             dto.IncomingTransfers = transfers;
 
-            List<dtoTransferChart> incomingChartData = GetChartData(2).GetAwaiter().GetResult();
             List<dtoTransferChart> outgoingChartData = GetChartData(1).GetAwaiter().GetResult();
+            List<dtoTransferChart> incomingChartData = GetChartData(2).GetAwaiter().GetResult();
 
             dto.IncomingChartData = incomingChartData;
             dto.OutgoingChartData = outgoingChartData;
 
-            return View(dto);
-        }
+            dto.TotalTransferValue = GetTotalTransferValue(_storeId);
+            dto.TotalReceivedValue = GetTotalReceivedValue(_storeId);
 
-        private string GetEmployeeStore(int employeeId)
-        {
-            return _func.GetDepartmentName(employeeId);
+            return View(dto);
         }
 
         [Authorize(Roles = "StoreOwner, User")]
@@ -600,7 +601,6 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             return RedirectToAction("PreviewTransfer", "Transfers", new { id = id });
         }
-
         public async Task<List<dtoTransferChart>> GetChartData(int type)
         {
             List<dtoTransferChart> dtoTransferCharts = new List<dtoTransferChart>();
@@ -627,7 +627,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
             })
             .ToListAsync();
 
-            foreach (var item in result) {
+            foreach (var item in result)
+            {
                 dtoTransferChart dto = new dtoTransferChart()
                 {
                     Id = item.Id,
@@ -638,7 +639,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 };
                 dtoTransferCharts.Add(dto);
             }
-            
+
             if (type == 1)
             {
                 dtoTransferCharts = dtoTransferCharts.Where(m => m.StoreFromId == _storeId).ToList();
@@ -651,6 +652,101 @@ namespace MODAMSWeb.Areas.Users.Controllers
             return dtoTransferCharts;
         }
 
+        [HttpGet]
+        public IActionResult TransferredAssets(int id)
+        {
+            var transferDetails = _db.TransferDetails
+                .Include(td => td.Transfer)
+                .Where(td => td.Transfer.StoreFromId == id && td.Transfer.TransferStatusId==3)
+                .ToList();
+
+            var assetIds = transferDetails.Select(td => td.AssetId).ToList();
+
+            var assets = _db.Assets
+                .Include(asset => asset.SubCategory.Category)
+                .Where(asset => assetIds.Contains(asset.Id))
+                .ToList();
+
+            var dto = new List<dtoTransfersOutgoingAsset>();
+
+            foreach (var td in transferDetails)
+            {
+                var transferAsset = assets.FirstOrDefault(a => a.Id == td.AssetId);
+
+                if (transferAsset != null)
+                {
+                    var outgoingAsset = new dtoTransfersOutgoingAsset
+                    {
+                        TransferDate = td.Transfer.TransferDate,
+                        StoreFrom = _func.GetStoreNameByStoreId(td.Transfer.StoreFromId),
+                        StoreTo = _func.GetStoreNameByStoreId(td.Transfer.StoreId),
+                        AssetId = td.AssetId,
+                        Category = transferAsset.SubCategory?.Category?.CategoryName,
+                        SubCategory = transferAsset.SubCategory?.SubCategoryName,
+                        Make = transferAsset.Make,
+                        Model = transferAsset.Model,
+                        AssetName = transferAsset.Name,
+                        Barcode = transferAsset.Barcode,
+                        Condition = transferAsset.Condition?.ToString(),
+                        SerialNumber = transferAsset.SerialNo,
+                        Cost = transferAsset.Cost,
+                        CurrentValue = _func.GetDepreciatedCost(td.AssetId)
+                    };
+
+                    dto.Add(outgoingAsset);
+                }
+            }
+
+            return View(dto);
+        }
+
+        [HttpGet]
+        public IActionResult ReceivedAssets(int id)
+        {
+            var transferDetails = _db.TransferDetails
+                .Include(td => td.Transfer)
+                .Where(td => td.Transfer.StoreId == id && td.Transfer.TransferStatusId == 3)
+                .ToList();
+
+            var assetIds = transferDetails.Select(td => td.AssetId).ToList();
+
+            var assets = _db.Assets
+                .Include(asset => asset.SubCategory.Category)
+                .Where(asset => assetIds.Contains(asset.Id))
+                .ToList();
+
+            var dto = new List<dtoTransfersIncomingAsset>();
+
+            foreach (var td in transferDetails)
+            {
+                var transferAsset = assets.FirstOrDefault(a => a.Id == td.AssetId);
+
+                if (transferAsset != null)
+                {
+                    var incomingAssets = new dtoTransfersIncomingAsset
+                    {
+                        TransferDate = td.Transfer.TransferDate,
+                        StoreFrom = _func.GetStoreNameByStoreId(td.Transfer.StoreFromId),
+                        StoreTo = _func.GetStoreNameByStoreId(td.Transfer.StoreId),
+                        AssetId = td.AssetId,
+                        Category = transferAsset.SubCategory?.Category?.CategoryName,
+                        SubCategory = transferAsset.SubCategory?.SubCategoryName,
+                        Make = transferAsset.Make,
+                        Model = transferAsset.Model,
+                        AssetName = transferAsset.Name,
+                        Barcode = transferAsset.Barcode,
+                        Condition = transferAsset.Condition?.ToString(),
+                        SerialNumber = transferAsset.SerialNo,
+                        Cost = transferAsset.Cost,
+                        CurrentValue = _func.GetDepreciatedCost(td.AssetId)
+                    };
+
+                    dto.Add(incomingAssets);
+                }
+            }
+
+            return View(dto);
+        }
 
         //Private functions
         private bool IsAssetSelected(int assetId, List<TransferDetail> transferDetails)
@@ -742,6 +838,55 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 .Select(m => m.Id).FirstOrDefaultAsync();
 
             return currentStoreId;
+        }
+
+        private decimal GetTotalTransferValue(int storeId)
+        {
+            var transferIds = _db.Transfers
+                .Where(transfer => transfer.TransferStatusId == 3 && transfer.StoreFromId == storeId)
+                .Select(transfer => transfer.Id)
+                .ToList();
+
+            var transferDetails = _db.TransferDetails.ToList();
+            decimal totalValue = 0;
+
+            foreach (var transferId in transferIds)
+            {
+                var transferDetailValue = transferDetails
+                    .Where(detail => detail.TransferId == transferId)
+                    .Sum(detail => _func.GetDepreciatedCost(detail.AssetId));
+
+                totalValue += transferDetailValue;
+            }
+
+            return totalValue;
+        }
+
+
+        private decimal GetTotalReceivedValue(int storeId)
+        {
+            var transferIds = _db.Transfers
+                .Where(transfer => transfer.TransferStatusId == 3 && transfer.StoreId == storeId)
+                .Select(transfer => transfer.Id)
+                .ToList();
+
+            var transferDetails = _db.TransferDetails.ToList();
+            decimal totalValue = 0;
+
+            foreach (var transferId in transferIds)
+            {
+                var transferDetailValue = transferDetails
+                    .Where(detail => detail.TransferId == transferId)
+                    .Sum(detail => _func.GetDepreciatedCost(detail.AssetId));
+
+                totalValue += transferDetailValue;
+            }
+
+            return totalValue;
+        }
+        private string GetEmployeeStore(int employeeId)
+        {
+            return _func.GetDepartmentName(employeeId);
         }
     }
 }

@@ -6,8 +6,11 @@ using System.Threading.Tasks;
 
 namespace MODAMS.Models.ViewModels.Dto
 {
-    public class dtoTransferAsset
+    public class dtoTransfersIncomingAsset
     {
+        public DateTime? TransferDate { get; set; }
+        public string StoreFrom { get; set; } = string.Empty;
+        public string StoreTo { get; set; } = string.Empty;
         public string Category { get; set; } = string.Empty;
         public string SubCategory { get; set; } = string.Empty;
         public string Make { get; set; } = string.Empty;
@@ -19,6 +22,5 @@ namespace MODAMS.Models.ViewModels.Dto
         public string Condition { get; set; } = string.Empty;
         public decimal Cost { get; set; } = decimal.Zero;
         public decimal CurrentValue { get; set; } = decimal.Zero;
-        public bool IsSelected { get; set; } = false;
     }
 }
