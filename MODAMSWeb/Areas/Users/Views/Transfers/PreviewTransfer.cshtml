@@ -268,12 +268,8 @@
 @section scripts{
     <script>
         $(document).ready(function () {
-            hideMenu();
-
-            console.log($("#dvAction").html());
             $("#btnSubmit").on("click",(e)=>{
                 //e.preventDefault();
-                
                 $("#btnSubmit").addClass("btn-loading btn-icon");
             });
         });

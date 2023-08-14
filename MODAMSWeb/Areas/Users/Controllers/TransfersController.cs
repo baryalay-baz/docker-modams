@@ -158,11 +158,10 @@ namespace MODAMSWeb.Areas.Users.Controllers
         [Authorize(Roles = "StoreOwner, User")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult CreateTransfer(dtoCreateTransfer transferDTO)
+        public IActionResult CreateTransfer(dtoCreateTransfer transferDTO, string selectedAssets)
         {
             _employeeId = (User.IsInRole("User")) ? _func.GetSupervisorId(_employeeId) : _employeeId;
             var storeId = _func.GetStoreIdByEmployeeId(_employeeId);
-
 
 
             if (!ModelState.IsValid)
@@ -193,16 +192,18 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 return RedirectToAction("CreateTransfer", "Transfers");
             }
 
-            var assets = transferDTO.Assets.Where(m => m.IsSelected == true).ToList();
-            foreach (var asset in assets)
+            if (!string.IsNullOrEmpty(selectedAssets))
             {
-                var transferDetail = new TransferDetail()
-                {
-                    AssetId = asset.AssetId,
-                    PrevStoreId = GetCurrentStoreId().GetAwaiter().GetResult(),
-                    TransferId = transfer.Id
-                };
-                _db.TransferDetails.Add(transferDetail);
+                var selectedIds = selectedAssets.Split(',').Select(id => int.Parse(id));
+                foreach (var asset in selectedIds) {
+                    var transferDetail = new TransferDetail()
+                    {
+                        AssetId = asset,
+                        PrevStoreId = GetCurrentStoreId().GetAwaiter().GetResult(),
+                        TransferId = transfer.Id
+                    };
+                    _db.TransferDetails.Add(transferDetail);
+                }
             }
             try
             {
@@ -279,7 +280,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
         [Authorize(Roles = "StoreOwner, User")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult EditTransfer(dtoEditTransfer transferDTO)
+        public IActionResult EditTransfer(dtoEditTransfer transferDTO, string selectedAssets)
         {
             _employeeId = (User.IsInRole("User")) ? _func.GetSupervisorId(_employeeId) : _employeeId;
             var storeId = _func.GetStoreIdByEmployeeId(_employeeId);
@@ -317,16 +318,19 @@ namespace MODAMSWeb.Areas.Users.Controllers
             _db.RemoveRange(transferDetails);
             _db.SaveChanges();
 
-            var assets = transferDTO.Assets.Where(m => m.IsSelected == true).ToList();
-            foreach (var asset in assets)
+            if (!string.IsNullOrEmpty(selectedAssets))
             {
-                var transferDetail = new TransferDetail()
+                var selectedIds = selectedAssets.Split(',').Select(id => int.Parse(id));
+                foreach (var asset in selectedIds)
                 {
-                    AssetId = asset.AssetId,
-                    PrevStoreId = GetCurrentStoreId().GetAwaiter().GetResult(),
-                    TransferId = transfer.Id
-                };
-                _db.TransferDetails.Add(transferDetail);
+                    var transferDetail = new TransferDetail()
+                    {
+                        AssetId = asset,
+                        PrevStoreId = GetCurrentStoreId().GetAwaiter().GetResult(),
+                        TransferId = transfer.Id
+                    };
+                    _db.TransferDetails.Add(transferDetail);
+                }
             }
             try
             {

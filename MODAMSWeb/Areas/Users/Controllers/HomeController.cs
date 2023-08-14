@@ -321,7 +321,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             _db.SaveChanges();
             return RedirectToAction(notification.NotificationSection.action,
                 notification.NotificationSection.controller,
-                new {area=notification.NotificationSection.area, id=notification.Id});
+                new {area=notification.NotificationSection.area, id=notification.TargetRecordId});
         
         }
 

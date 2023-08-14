@@ -102,45 +102,61 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
         public IActionResult StoreDetails(int id)
         {
-            var vwStore = _db.vwStores.Where(m => m.Id == id).FirstOrDefault();
+            var vwStore = _db.vwStores.FirstOrDefault(m => m.Id == id);
 
-            var dto = new dtoStore();
-
-            if (vwStore != null)
+            if (vwStore == null)
             {
-                dto.vwStore = vwStore;
-
-                var storeOwnerId = vwStore.EmployeeId;
-                if (storeOwnerId > 0)
-                {
-                    var employees = _db.Employees.ToList();
-                    var employee = employees.Where(m => m.Id == storeOwnerId).FirstOrDefault();
-                    if (employee != null)
-                    {
-                        dto.employees.Add(employee);
-
-                        var employee_users = employees.Where(m => m.SupervisorEmployeeId == employee.Id).ToList();
-                        if (employee_users != null)
-                        {
-                            dto.employees.AddRange(employee_users);
-                        }
-                    }
-                }
-                var storeCategoryAssets = _db.vwStoreCategoryAssets
-                    .Where(m => m.StoreId == id).ToList();
-
-                var assets = _db.Assets.Where(m => m.StoreId == id)
-                    .Include(m => m.SubCategory).Include(m => m.Condition).Include(m => m.AssetStatus)
-                    .ToList();
-
-                dto.storeAssets = assets;
-                dto.StoreCategoryAssets = storeCategoryAssets;
-
-                TempData["storeId"] = id;
-                TempData["storeName"] = vwStore.Name;
+                return RedirectToAction("Index","Stores");
             }
+
+            var dto = new dtoStore
+            {
+                vwStore = vwStore,
+                employees = new List<Employee>()
+            };
+
+            var storeOwnerId = vwStore.EmployeeId;
+            if (storeOwnerId > 0)
+            {
+                var storeOwner = _db.Employees.FirstOrDefault(e => e.Id == storeOwnerId);
+                if (storeOwner != null)
+                {
+                    dto.employees.Add(storeOwner);
+                    dto.employees.AddRange(_db.Employees
+                        .Where(e => e.SupervisorEmployeeId == storeOwnerId)
+                        .ToList());
+                }
+            }
+
+            dto.storeAssets = _db.Assets
+                .Where(a => a.StoreId == id)
+                .Include(a => a.SubCategory)
+                .Include(a => a.Condition)
+                .Include(a => a.AssetStatus)
+                .ToList();
+
+            dto.StoreCategoryAssets = _db.vwStoreCategoryAssets
+                .Where(sca => sca.StoreId == id)
+                .ToList();
+
+            dto.TransferredAssets = _db.TransferDetails
+                .Include(td => td.Transfer)
+                .Count(td => td.Transfer.StoreFromId == id && td.Transfer.TransferStatusId == SD.Transfer_Completed);
+
+            dto.ReceivedAssets = _db.TransferDetails
+                .Include(td => td.Transfer)
+                .Count(td => td.Transfer.StoreId == id && td.Transfer.TransferStatusId == SD.Transfer_Completed);
+
+            dto.Handovers = 0;
+            dto.Disposals = 0;
+
+            TempData["storeId"] = id;
+            TempData["storeName"] = vwStore.Name;
+
             return View(dto);
         }
+
+
 
     }
 }

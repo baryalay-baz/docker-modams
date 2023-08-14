@@ -20,7 +20,7 @@
                     <table id="tblTransfers" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
                         <thead class="bg-primary-gradient ms-auto divShadow">
                             <tr>
-                                <th class="text-white bg-transparent border-bottom-0 w-5">S.No</th>
+                                <th class="text-white text-center bg-transparent border-bottom-0 w-5">S.No</th>
                                 <th class="text-white bg-transparent border-bottom-0">Transfer Date</th>
                                 <th class="text-white bg-transparent border-bottom-0">Store To</th>
                                 <th class="text-white bg-transparent border-bottom-0">Sub Category</th>
@@ -42,17 +42,17 @@
                                     string sCounter = (nCounter < 10) ? "0" + nCounter : nCounter.ToString();
 
                                     <tr>
-                                        <td>@sCounter</td>
-                                        <td>@ot.TransferDate?.ToString("dd-MMM-yyyy")</td>
-                                        <td>@ot.StoreTo</td>
-                                        <td>@ot.SubCategory</td>
-                                        <td>@ot.Make</td>
-                                        <td>@ot.Model</td>
-                                        <td>@ot.AssetName</td>
-                                        <td>@ot.Barcode</td>
-                                        <td>@ot.SerialNumber</td>
-                                        <td>@ot.Cost.ToString("n2")</td>
-                                        <td>@ot.CurrentValue.ToString("n2")</td>
+                                        <td class="text-muted text-center fs-15 fw-semibold">@sCounter</td>
+                                        <td class="text-muted text-center fs-15 fw-semibold">@ot.TransferDate?.ToString("dd-MMM-yyyy")</td>
+                                        <td class="text-muted fs-15 fw-semibold">@ot.StoreTo</td>
+                                        <td class="text-muted fs-15 fw-semibold">@ot.SubCategory</td>
+                                        <td class="text-muted fs-15 fw-semibold">@ot.Make</td>
+                                        <td class="text-muted fs-15 fw-semibold">@ot.Model</td>
+                                        <td class="text-muted fs-15 fw-semibold">@ot.AssetName</td>
+                                        <td class="text-muted fs-15 fw-semibold">@ot.Barcode</td>
+                                        <td class="text-muted fs-15 fw-semibold">@ot.SerialNumber</td>
+                                        <td class="text-muted fs-15 fw-semibold">@ot.Cost.ToString("n2")</td>
+                                        <td class="text-muted fs-15 fw-semibold">@ot.CurrentValue.ToString("n2")</td>
                                     </tr>
                                 }
                             }

@@ -69,6 +69,7 @@
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-sm-6">
+                                            <input type="hidden" id="selectedAssets" name="selectedAssets" />
                                             <div class="mb-3 form-group">
                                                 <div class="mb-3 form-group">
                                                     <label>Transfer from Store</label>
@@ -132,25 +133,25 @@
                                                                             {
                                                                                 for (var i = 0; i < Model.Assets.Count(); i++)
                                                                                 {
-                                                                                    <tr>
+                                                                                            <tr>
 
-                                                                                        <td>
-                                                                                            <input asp-for="@Model.Assets[i].AssetId" hidden />
-                                                                                            <div class="col-auto">
-                                                                                                <label class="ckbox" asp-for="@Model.Assets[i].IsSelected">
-                                                                                                    <input onclick="return selectAsset(@Model.Assets[i].AssetId,this);"
-                                                                                                           type="checkbox" asp-for="@Model.Assets[i].IsSelected">
-                                                                                                    <span></span>
-                                                                                                </label>
-                                                                                            </div>
-                                                                                        </td>
-                                                                                        <td>@Model.Assets[i].Category</td>
-                                                                                        <td>@Model.Assets[i].Make</td>
-                                                                                        <td>@Model.Assets[i].Model</td>
-                                                                                        <td>@Model.Assets[i].AssetName</td>
-                                                                                        <td>@Model.Assets[i].SerialNumber</td>
-                                                                                        <td>@Model.Assets[i].Barcode</td>
-                                                                                    </tr>
+                                                                                                <td>
+                                                                                                    <input asp-for="@Model.Assets[i].AssetId" hidden />
+                                                                                                    <div class="col-auto">
+                                                                                                        <label class="ckbox" asp-for="@Model.Assets[i].IsSelected">
+                                                                                                            <input onclick="return selectAsset(@Model.Assets[i].AssetId,this);"
+                                                                                                                   type="checkbox" asp-for="@Model.Assets[i].IsSelected">
+                                                                                                            <span></span>
+                                                                                                        </label>
+                                                                                                    </div>
+                                                                                                </td>
+                                                                                                <td>@Model.Assets[i].Category</td>
+                                                                                                <td>@Model.Assets[i].Make</td>
+                                                                                                <td>@Model.Assets[i].Model</td>
+                                                                                                <td>@Model.Assets[i].AssetName</td>
+                                                                                                <td>@Model.Assets[i].SerialNumber</td>
+                                                                                                <td>@Model.Assets[i].Barcode</td>
+                                                                                            </tr>
                                                                                 }
                                                                             }
                                                                         }
@@ -177,11 +178,11 @@
                                         @{
                                             if (Model.Assets == null)
                                             {
-                                                <button type="button" class="btn btn-primary disabled" id="btnSubmit"><i class="fa fa-check-circle"></i>&nbsp;Save Transfer</button>
+                                                        <button type="button" class="btn btn-primary disabled" id="btnSubmit"><i class="fa fa-check-circle"></i>&nbsp;Save Transfer</button>
                                             }
                                             else
                                             {
-                                                <button type="button" class="btn btn-primary" id="btnSubmit"><i class="fa fa-check-circle"></i>&nbsp;Save Transfer</button>
+                                                        <button type="button" class="btn btn-primary" id="btnSubmit"><i class="fa fa-check-circle"></i>&nbsp;Save Transfer</button>
                                             }
                                         }
 
@@ -224,7 +225,7 @@
         let sData = '';
         let Data = null;
         let selection = [];
-
+        let selectionIds = []
         $(document).ready(function () {
 
             sData = '@Html.Raw(Json.Serialize(Model.Assets))';
@@ -243,6 +244,8 @@
             $("#btnSubmit").on("click", (e) => {
                 e.preventDefault();
                 if (checkSelection()) {
+                    console.log(selectionIds);
+                    $("#selectedAssets").val(selectionIds.join(','));
                     $("#frmTransfer").submit();
                 } else {
                     notif({
@@ -266,12 +269,18 @@
                     if (isChecked) {
                         e.isSelected = true;
                         selection.push(e.make + " - " + e.assetName + " - " + e.serialNumber);
+                        selectionIds.push(id);
                     } else {
                         e.isSelected = false;
                         let index = selection.indexOf(e.make + " - " + e.assetName + " - " + e.serialNumber);
                         if (index !== -1) {
                             selection.splice(index, 1);
                         }
+                        index = selectionIds.indexOf(e.assetId);
+                        if (index !== -1) { 
+                            selectionIds.splice(index, 1);
+                        }
+
                     }
                 }
             });

@@ -396,14 +396,29 @@
                     sSearch: '',
                 }
             });
-            if(type=="2"){
-                table.buttons().container()
-                    .appendTo(tableName + '_wrapper .col-md-6:eq(0)');
-            }
             
             $('.even').addClass("bg-light-transparent");
             $('.odd').removeClass("bg-light-transparent");
+            
+            table.on('page.dt', function () {
+                table.rows().invalidate().draw(false);
+                $('.even').addClass("bg-light-transparent");
+                $('.odd').removeClass("bg-light-transparent");
+            });
+
+            table.on('order.dt', function () {
+                $('.even').addClass("bg-light-transparent");
+                $('.odd').removeClass("bg-light-transparent");
+            });
+
+            if (type == "2") {
+                table.buttons().container()
+                    .appendTo(tableName + '_wrapper .col-md-6:eq(0)');
+            }
+
         }
+
+       
         const formattedDate = (date) => {
             var dateObject = moment(date);
 

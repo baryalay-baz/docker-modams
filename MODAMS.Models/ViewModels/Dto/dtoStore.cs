@@ -20,6 +20,10 @@ namespace MODAMS.Models.ViewModels.Dto
         {
             return storeAssets.Where(m => m.SubCategoryId == id).ToList();
         }
+        public int TransferredAssets { get; set; }
+        public int ReceivedAssets { get; set; }
+        public int Handovers { get; set; }
+        public int Disposals { get; set; }
 
         public int TotalAssets()
         {
@@ -33,11 +37,12 @@ namespace MODAMS.Models.ViewModels.Dto
         public int GetBalance()
         {
             int balance;
-            int transferred = 0;
-            int handover = 0;
-            int disposed = 0;
+            int transferred = TransferredAssets;
+            int received = ReceivedAssets;
+            int handover = Handovers;
+            int disposed = Disposals;
 
-            balance = TotalAssets() - transferred - handover - disposed;
+            balance = TotalAssets() - transferred + received - handover - disposed;
 
             return balance;
         }
