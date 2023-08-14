@@ -39,6 +39,9 @@ namespace MODAMS.DataAccess.Data
         public DbSet<TransferDetail> TransferDetails { get; set; }
         public DbSet<TransactionType> TransactionTypes { get; set; }
         public DbSet<AssetHistory> AssetHistory { get; set; }
+        public DbSet<DisposalType> DisposalTypes { get; set; }
+        public DbSet<Disposal> Disposals { get; set; }
+        public DbSet<DisposalImage> DisposalImages { get; set; }
 
 
         //Section for Views

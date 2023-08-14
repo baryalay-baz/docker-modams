@@ -4,6 +4,7 @@ using MODAMS.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MODAMS.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230814123754_AddDisposalTypesTable")]
+    partial class AddDisposalTypesTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -334,63 +337,6 @@ namespace MODAMS.DataAccess.Migrations
                     b.HasIndex("EmployeeId");
 
                     b.ToTable("DepartmentHeads");
-                });
-
-            modelBuilder.Entity("MODAMS.Models.Disposal", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AssetId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("DisposalDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("DisposalTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Notes")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AssetId");
-
-                    b.HasIndex("DisposalTypeId");
-
-                    b.HasIndex("EmployeeId");
-
-                    b.ToTable("Disposals");
-                });
-
-            modelBuilder.Entity("MODAMS.Models.DisposalImage", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("DisposalId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DisposalId");
-
-                    b.ToTable("DisposalImages");
                 });
 
             modelBuilder.Entity("MODAMS.Models.DisposalType", b =>
@@ -1345,44 +1291,6 @@ namespace MODAMS.DataAccess.Migrations
                     b.Navigation("Department");
 
                     b.Navigation("Employee");
-                });
-
-            modelBuilder.Entity("MODAMS.Models.Disposal", b =>
-                {
-                    b.HasOne("MODAMS.Models.Asset", "Asset")
-                        .WithMany()
-                        .HasForeignKey("AssetId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MODAMS.Models.DisposalType", "DisposalType")
-                        .WithMany()
-                        .HasForeignKey("DisposalTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MODAMS.Models.Employee", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Asset");
-
-                    b.Navigation("DisposalType");
-
-                    b.Navigation("Employee");
-                });
-
-            modelBuilder.Entity("MODAMS.Models.DisposalImage", b =>
-                {
-                    b.HasOne("MODAMS.Models.Disposal", "Disposal")
-                        .WithMany()
-                        .HasForeignKey("DisposalId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Disposal");
                 });
 
             modelBuilder.Entity("MODAMS.Models.Log", b =>

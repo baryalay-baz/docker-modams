@@ -511,5 +511,38 @@ namespace MODAMS.Utility
             return sResult;
         }
 
+        public string GetStoreOwnerInfo(int storeId)
+        {
+            string sResult = "Vacant";
+            string storeOwner = "";
+            string emailAddress = "";
+            string imageUrl = "";
+            bool blnCheck = false;
+
+            var employeeId = GetStoreOwnerId(storeId);
+            var rec = _db.Employees.FirstOrDefault(m => m.Id == employeeId);
+            if (rec != null)
+            {
+                storeOwner = rec.FullName;
+                emailAddress = rec.Email;
+                imageUrl = rec.ImageUrl;
+                blnCheck = true;
+            }
+
+            if (blnCheck)
+            {
+                sResult = "<div class=\"d-flex align-items-center\">" +
+                    "<div class=\"me-2\"><span>" +
+                    "<img style=\"min-width:30px;\" src=\"" + imageUrl + "\" alt=\"profile-user\" class=\"data-image avatar avatar-lg rounded-circle\">" +
+                    "</span></div><div><h6 class=\"mb-0\">" + storeOwner + "</h6><span class=\"text-muted fs-12\">" + emailAddress + "</span>\r\n" +
+                    "</div></div>";
+            }
+            else
+            {
+                sResult = "<span class=\"text-secondary\">Store is vacant</span>";
+            }
+
+            return sResult;
+        }
     }
 }

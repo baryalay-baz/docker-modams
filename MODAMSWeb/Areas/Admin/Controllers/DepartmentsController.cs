@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MODAMS.DataAccess.Data;
 using MODAMS.Utility;
@@ -8,11 +6,9 @@ using Microsoft.EntityFrameworkCore;
 using MODAMS.Models.ViewModels;
 using MODAMS.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.CodeAnalysis.CSharp;
 using Newtonsoft.Json;
 using Kendo.Mvc.UI;
-using Elfie.Serialization;
-using System.Diagnostics.Metrics;
+
 using MODAMS.Models.ViewModels.Dto;
 
 namespace MODAMSWeb.Areas.Admin.Controllers
@@ -258,49 +254,42 @@ namespace MODAMSWeb.Areas.Admin.Controllers
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> AssignOwner(dtoDepartmentHeads dto)
         {
-
             int nDepartmentId = dto.DepartmentId;
             int nEmployeeId = dto.EmployeeId;
 
-            var departmentHead = await _db.DepartmentHeads.Where(m => m.DepartmentId == nDepartmentId && m.IsActive == true)
-                .FirstOrDefaultAsync();
+            var departmentHead = await _db.DepartmentHeads
+                .FirstOrDefaultAsync(m => m.DepartmentId == nDepartmentId && m.IsActive);
 
             if (departmentHead != null)
             {
                 departmentHead.IsActive = false;
                 departmentHead.EndDate = DateTime.Now;
-                await _db.SaveChangesAsync();
             }
 
             if (nEmployeeId != 0)
             {
-                var newDepartmentHead = new DepartmentHead()
+                var newDepartmentHead = new DepartmentHead
                 {
                     DepartmentId = nDepartmentId,
                     EmployeeId = nEmployeeId,
                     StartDate = DateTime.Now,
                     IsActive = true
                 };
-                await _db.DepartmentHeads.AddAsync(newDepartmentHead);
-                await _db.SaveChangesAsync();
+                _db.DepartmentHeads.Add(newDepartmentHead);
             }
 
-            var department = await _db.Departments.Where(m => m.Id == nDepartmentId).FirstOrDefaultAsync();
+            var department = await _db.Departments.FirstOrDefaultAsync(m => m.Id == nDepartmentId);
             if (department != null)
             {
-                if (nEmployeeId == 0)
-                {
-                    department.EmployeeId = null;
-                }
-                else
-                {
-                    department.EmployeeId = nEmployeeId;
-                }
-                await _db.SaveChangesAsync();
+                department.EmployeeId = nEmployeeId != 0 ? nEmployeeId : null;
             }
-            TempData["success"] = "Owner set successfuly!";
+
+            await _db.SaveChangesAsync();
+
+            TempData["success"] = "Owner set successfully!";
             return RedirectToAction("Index", "Departments");
         }
+
 
 
         //private functions

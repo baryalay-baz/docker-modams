@@ -430,15 +430,9 @@
 
     <script>
         $(document).ready(function () {
-            $('#tblDocuments').DataTable({
-                language: {
-                    searchPlaceholder: 'Search...',
-                    sSearch: '',
-                }
-            });
-            $('.even').addClass("bg-light-transparent");
-            $('.odd').removeClass("bg-light-transparent");
+            hideMenu();
 
+            makeDataTable('#tblDocuments');
 
             setTab();
         });

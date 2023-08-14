@@ -18,6 +18,7 @@ using System.Drawing;
 namespace MODAMSWeb.Areas.Users.Controllers
 {
     [Area("Users")]
+    [Authorize]
     public class AssetsController : Controller
     {
         private readonly ApplicationDbContext _db;
@@ -56,6 +57,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             {
                 assets = assets,
                 StoreOwnerId = _func.GetStoreOwnerId(id),
+                StoreOwnerInfo = _func.GetStoreOwnerInfo(id),
                 CategorySelectList = categories
             };
 

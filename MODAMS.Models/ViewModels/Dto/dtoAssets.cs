@@ -25,7 +25,7 @@ namespace MODAMS.Models.ViewModels.Dto
             return assets.Count;
         }
         public bool IsAuthorized { get; set; } = false;
-
+        public string StoreOwnerInfo { get; set; }
 
     }
 }

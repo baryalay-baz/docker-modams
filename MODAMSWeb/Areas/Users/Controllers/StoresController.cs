@@ -112,7 +112,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
             var dto = new dtoStore
             {
                 vwStore = vwStore,
-                employees = new List<Employee>()
+                employees = new List<Employee>(),
+                StoreOwnerInfo = _func.GetStoreOwnerInfo(id)
             };
 
             var storeOwnerId = vwStore.EmployeeId;

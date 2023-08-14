@@ -37,18 +37,18 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="card divShadow">
                                             <div class="card-body">
                                                 <a asp-area="Users" asp-controller="Transfers" asp-action="TransferredAssets" asp-route-id="@Model.StoreId">
                                                     <div class="row">
                                                         <div class="col-7">
-                                                            <h6>Assets Transferred</h6>
-                                                            <span>Count: </span><span class="text-bold">@Model.TotalTransferCount(Model.StoreId)</span><br />
-                                                            <span>Value: </span><span class="text-bold"> $@Model.TotalTransferValue.ToString("n2")</span>
+                                                            <h6 class="text-info">Assets Transferred</h6>
+                                                            <span class="text-info text-bold">Count: @Model.TotalTransferCount(Model.StoreId)</span><br />
+                                                            <span class="text-info text-bold">Value: $@Model.TotalTransferValue.ToString("n2")</span>
                                                         </div>
                                                         <div class="col-5">
-                                                            <div class="hpx-50 wpx-50 br-5 d-flex align-items-center justify-content-center bg-secondary-gradient text-white ms-auto">
+                                                            <div class="hpx-50 wpx-50 br-5 d-flex align-items-center justify-content-center bg-info-gradient text-white ms-auto">
                                                                 <i class="fe fe-arrow-up"></i>
                                                             </div>
                                                         </div>
@@ -57,15 +57,15 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="card divShadow">
                                             <div class="card-body">
                                                 <a asp-area="Users" asp-controller="Transfers" asp-action="ReceivedAssets" asp-route-id="@Model.StoreId">
                                                     <div class="row">
                                                         <div class="col-7">
-                                                            <h6>Assets Received</h6>
-                                                            <span>Count: </span><span class="text-bold"> @Model.TotalReceivedCount(Model.StoreId)</span><br />
-                                                            <span>Value: </span><span class="text-bold"> $@Model.TotalReceivedValue.ToString("n2")</span>
+                                                            <h6 class="text-primary">Assets Received</h6>
+                                                            <span class="text-primary text-bold">Count: @Model.TotalReceivedCount(Model.StoreId)</span><br />
+                                                            <span class="text-primary text-bold">Value: $@Model.TotalReceivedValue.ToString("n2")</span>
                                                         </div>
                                                         <div class="col-5">
                                                             <div class="hpx-50 wpx-50 br-5 d-flex align-items-center justify-content-center bg-primary-gradient text-white ms-auto">
@@ -114,7 +114,7 @@
                                                             <table id="tblTransfers" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
                                                                 <thead class="bg-primary-gradient ms-auto divShadow">
                                                                     <tr>
-                                                                        <th class="text-white bg-transparent border-bottom-0 w-5">S.No</th>
+                                                                        <th class="text-white bg-transparent border-bottom-0 w-2">#</th>
                                                                         <th class="text-white bg-transparent border-bottom-0 w-10">Date</th>
                                                                         <th class="text-white bg-transparent border-bottom-0 w-20">Store From</th>
                                                                         <th class="text-white bg-transparent border-bottom-0 w-20">Store To</th>
@@ -198,7 +198,7 @@
                                                             <table id="tblTransfersIncoming" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
                                                                 <thead class="bg-primary-gradient ms-auto divShadow">
                                                                     <tr>
-                                                                        <th class="text-white bg-transparent border-bottom-0 w-5">S.No</th>
+                                                                        <th class="text-white bg-transparent border-bottom-0 w-2">#</th>
                                                                         <th class="text-white bg-transparent border-bottom-0 w-10">Date</th>
                                                                         <th class="text-white bg-transparent border-bottom-0 w-20">Store From</th>
                                                                         <th class="text-white bg-transparent border-bottom-0 w-20">Store To</th>
@@ -279,7 +279,7 @@
     @*<script src="~/assets/js/project-list.js"></script>*@
     <script>
         $(document).ready(function () {
-            //$("#hideMenu").click();
+            hideMenu();
 
             makeDataTable('#tblTransfers', 1)
             makeDataTable('#tblTransfersIncoming', 1)
