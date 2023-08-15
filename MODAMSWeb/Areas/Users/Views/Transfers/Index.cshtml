@@ -90,7 +90,7 @@
                                             <ul class="nav panel-tabs">
                                                 <li><a href="#tabOutgoing" class="active me-1 text-default my-1" data-bs-toggle="tab">Outgoing Transfers</a></li>
                                                 <li>
-                                                    <a href="#tabIncoming" data-bs-toggle="tab" class="me-1 text-default my-1">Incoming Transfers</a>
+                                                    <a href="#tabIncoming" data-bs-toggle="tab" class="me-1 text-default my-1">Incoming Transfers &nbsp;<span id="spnNew" class="badge bg-danger"></span></a>
                                                 </li>
                                             </ul>
                                         </div>
@@ -210,10 +210,14 @@
                                                                 <tbody>
                                                                     @{
                                                                         int nCounterIncoming = 0;
-
+                                                                        int spnNew = 0;
+                                                                        string sSpnNew = "";
                                                                         foreach (var transfer in Model.IncomingTransfers)
                                                                         {
                                                                             nCounterIncoming++;
+                                                                            if (transfer.TransferStatusId == 2) {
+                                                                                spnNew++;
+                                                                            }
                                                                             <tr>
                                                                                 <td>@nCounterIncoming</td>
                                                                                 <td>@transfer.TransferDate?.ToString("dd-MMM-yyyy")</td>
@@ -228,6 +232,7 @@
                                                                                 </td>
                                                                             </tr>
                                                                         }
+                                                                        sSpnNew = spnNew > 0 ? spnNew.ToString() : "";
                                                                     }
                                                                 </tbody>
                                                             </table>
@@ -291,7 +296,8 @@
             });
             //setRadioButtons();
 
-
+            $("#spnNew").html('@Html.Raw(sSpnNew)');
+            
             pieChartOutgoing();
             pieChartIncoming();
         });

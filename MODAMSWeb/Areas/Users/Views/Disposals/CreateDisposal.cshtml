@@ -1,0 +1,233 @@
+﻿@model MODAMS.Models.ViewModels.Dto.dtoCreateDisposal
+
+<style>
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        display: none;
+    }
+
+    .center-align {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .bordered-div {
+        border-left: 1px solid lightgray;
+        border-top: 1px solid lightgray;
+        border-right: 1px solid lightgray;
+        border-bottom: 1px solid lightgray;
+    }
+
+    .bordered-div-top {
+        border-top: 1px solid lightgray;
+    }
+
+    .bordered-div-left {
+        border-left: 1px solid lightgray;
+    }
+
+    .bordered-div-right {
+        border-right: 1px solid lightgray;
+    }
+
+    .bordered-div-bottom {
+        border-bottom: 1px solid lightgray;
+    }
+
+    .text-xsmall {
+        font-size: 10px;
+    }
+
+</style>
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Create Disposal</h1>
+    </div>
+    <div class="ms-auto pageheader-btn">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Disposals" asp-action="Index">Disposals</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Create Disposal</li>
+        </ol>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card divShadow">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center justify-content-between">
+                    <h4 class="m-0">Create new disposal</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 mb-3">
+        @{
+            string sDisabled = "disabled";
+            if (Model.IsAuthorized)
+            {
+                sDisabled = "";
+            }
+        }
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-status bg-primary br-tr-7 br-tl-7"></div>
+                            <div class="card-body">
+                                <form method="post" asp-action="CreateAsset" id="frmDisposal">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+                                            <div class="mb-3 form-group">
+                                                <label asp-for="Disposal.DisposalDate"></label>
+                                                <input asp-for="Disposal.DisposalDate" asp-format="{0:dd-MMM-yyyy}" class="form-control picker" aria-required="true" type="text" autocomplete="off" />
+                                                <span asp-validation-for="Disposal.DisposalDate" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3 form-group">
+                                                <label asp-for="Disposal.DisposalTypeId"></label>
+                                                <select asp-for="Disposal.DisposalTypeId" asp-items="@Model.DisposalTypeList"
+                                                        class="form-control select2 form-select">
+                                                    <option disabled selected>-Select Disposal Type-</option>
+                                                </select>
+                                                <span asp-validation-for="Disposal.DisposalTypeId" class="text-danger"></span>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div aria-multiselectable="true" class="accordion-dark mb-3" id="accordion8" role="tablist">
+                                                <div class="card mb-0">
+                                                    <div class="card-header border-bottom-0" id="heading8" role="tab">
+                                                        <a class="accor-style2 collapsed" aria-controls="collapse8" aria-expanded="false" data-bs-toggle="collapse" href="#collapse8">
+                                                            <i class="fe fe-plus-circle me-2"></i>Select Asset to dispose
+                                                        </a>
+                                                    </div>
+                                                    <div aria-labelledby="heading8" class="collapse" data-bs-parent="#accordion8" id="collapse8" role="tabpanel">
+                                                        <div class="card-body">
+                                                            <div class="table-responsive">
+                                                                <table id="tblAssets" class="table text-nowrap mb-0 table-bordered key-buttons border-top border-bottom project-list-main">
+                                                                    <thead class="bg-primary-gradient ms-auto divShadow">
+                                                                        <tr>
+                                                                            <th class="text-white bg-transparent border-bottom-0 w-2"></th>
+                                                                            <th class="text-white bg-transparent border-bottom-0 w-10">Category</th>
+                                                                            <th class="text-white bg-transparent border-bottom-0 w-20">Make</th>
+                                                                            <th class="text-white bg-transparent border-bottom-0 w-20">Model</th>
+                                                                            <th class="text-white bg-transparent border-bottom-0 w-20">Asset Name</th>
+                                                                            <th class="text-white bg-transparent border-bottom-0 w-20">Identification</th>
+                                                                            <th class="text-white bg-transparent border-bottom-0 w-20">Barcode</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @{
+                                                                            int nCounter = 0;
+                                                                            string sCounter = "";
+                                                                            string sIdentification = "";
+                                                                            foreach (var asset in Model.Assets)
+                                                                            {
+                                                                                sCounter = nCounter < 10 ? "0" + nCounter.ToString() : nCounter.ToString();
+                                                                                sIdentification = asset.SubCategory.CategoryId == 16 ? "Plate No: " + asset.Plate : "SN: " + asset.SerialNo;
+                                                                                    <tr>
+                                                                                        <td></td>
+                                                                                        <td>@asset.SubCategory.Category.CategoryName</td>
+                                                                                        <td>@asset.Make</td>
+                                                                                        <td>@asset.Model</td>
+                                                                                        <td>@asset.Name</td>
+                                                                                        <td>@sIdentification</td>
+                                                                                        <td>@asset.Barcode</td>
+                                                                                    </tr>
+                                                                            }
+                                                                        }
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="mb-3 form-group">
+                                                <label asp-for="Disposal.Notes"></label>
+                                                <textarea asp-for="Disposal.Notes" class="form-control mb-4" placeholder="Disposal Notes" rows="3"></textarea>
+                                                <span asp-validation-for="Disposal.Notes" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="mb-3 form-group">
+                                                <label asp-for="Disposal.ImageUrl"></label>
+                                                <input asp-for="Disposal.ImageUrl" class="form-control readonly" rows="3" aria-required="true" type="text" autocomplete="off" />
+                                                <span asp-validation-for="Disposal.ImageUrl" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex">
+                                        @{
+                                            if (Model.Assets == null)
+                                            {
+                                                sDisabled = "disabled";
+                                            }
+                                                <button type="button" class="btn btn-primary @sDisabled" id="btnSubmit">
+                                                    <i class="fa fa-check-circle"></i>&nbsp;Save Disposal
+                                                </button>
+                                        }
+
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-status bg-info br-tr-7 br-tl-7"></div>
+                            <div class="card-body table-bordered" style="height: 412px; display: flex; justify-content: center; align-items: center;">
+                                <input id="file" name="file" type="file" class="dropify" data-height="400" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Internal Fancy uploader js-->
+<script src="~/assets/plugins/fancyuploder/jquery.ui.widget.js"></script>
+<script src="~/assets/plugins/fancyuploder/jquery.fileupload.js"></script>
+<script src="~/assets/plugins/fancyuploder/jquery.iframe-transport.js"></script>
+<script src="~/assets/plugins/fancyuploder/jquery.fancy-fileupload.js"></script>
+<script src="~/assets/plugins/fancyuploder/fancy-uploader.js"></script>
+
+<script src="~/assets/plugins/fileuploads/js/fileupload.js"></script>
+<script src="~/assets/plugins/fileuploads/js/file-upload.js"></script>
+
+@section scripts{
+    <script>
+        $(document).ready(() => {
+            $('.picker').datepicker({
+                autoclose: true,
+                format: 'dd-MM-yyyy',
+                todayHighlight: true
+            });
+            const currentDate = new Date();
+            $('.picker').datepicker('setDate', currentDate).val("");
+
+            makeDataTable('#tblAssets', "1");
+
+            $("#file").on("change", () => {
+                const fileName = $("#file").prop("files")[0].name;
+                $("#Disposal_ImageUrl").val(fileName);
+            });
+        });
+    </script>
+}
