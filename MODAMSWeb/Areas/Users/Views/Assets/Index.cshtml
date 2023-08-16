@@ -1,4 +1,5 @@
-﻿@model MODAMS.Models.ViewModels.Dto.dtoAssets
+﻿@using MODAMS.Utility;
+@model MODAMS.Models.ViewModels.Dto.dtoAssets
 
 <div class="page-header">
     <div>
@@ -75,11 +76,26 @@
                             @{
                                 int nCounter = 0;
                                 string sCounter = "0";
+                                string sBackground = "primary";
+
                                 foreach (var asset in Model.assets)
                                 {
                                     nCounter++;
                                     sCounter = (nCounter < 10) ? "0" + nCounter.ToString() : nCounter.ToString();
+                                    switch (asset.AssetStatusId)
+                                    {
+                                        case SD.Asset_Available:
+                                            sBackground = "primary";
+                                            break;
+                                        case SD.Asset_Disposed:
+                                            sBackground = "secondary";
+                                            break;
+                                        case SD.Asset_HandedOver:
+                                            sBackground = "info";
+                                            break;
+                                    }
 
+                                    
                                     <tr>
                                         <td class="text-muted text-center fs-15 fw-semibold">@sCounter.</td>
                                         <td class="text-muted fs-15 fw-semibold">@asset.SubCategory.SubCategoryName</td>
@@ -89,8 +105,8 @@
                                         <td class="text-muted fs-15 fw-semibold">@asset.Plate</td>
                                         <td class="text-muted fs-15 fw-semibold">@asset.SerialNo</td>
                                         <td class="text-muted fs-15 fw-semibold">
-                                            <span class="text-primary">
-                                                <span class="mb-0 mt-1 badge rounded-pill bg-primary-transparent text-info">
+                                            <span class="text-@sBackground">
+                                                <span class="mb-0 mt-1 badge rounded-pill bg-@sBackground-transparent text-@sBackground">
                                                     @asset.AssetStatus.StatusName
                                                 </span>
                                             </span>

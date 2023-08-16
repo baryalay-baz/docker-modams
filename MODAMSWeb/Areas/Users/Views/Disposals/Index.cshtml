@@ -11,82 +11,101 @@
         </ol>
     </div>
 </div>
-<div class="row">
-    <div class="col-md-12">
-        <div class="card divShadow">
-            <div class="card-body p-4">
-                <div class="d-flex align-items-center justify-content-between">
-                    @*<h4 class="m-0">@TempData["storeName"]</h4>*@
-                    @* <h4 class="m-0">@TempData["SubCategoryName"] (Count: @Model.TotalAssets())</h4> *@
-                    @* <select asp-for="@Model.SubCategoryId" asp-items="@Model.CategorySelectList"
-                    class="form-control select2 form-select">
-                    <option value="0">All Assets</option>
-                    </select> *@
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card divShadow">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-between">
+                            @*<h4 class="m-0">@TempData["storeName"]</h4>*@
+                            @* <h4 class="m-0">@TempData["SubCategoryName"] (Count: @Model.TotalAssets())</h4> *@
+                            @* <select asp-for="@Model.SubCategoryId" asp-items="@Model.CategorySelectList"
+                            class="form-control select2 form-select">
+                            <option value="0">All Assets</option>
+                            </select> *@
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-    <div class="col-md-12 mb-3">
-        <div class="btn-list">
-            @{
-                string sDisabled = "disabled";
-                if (Model.IsAuthorized)
-                {
-                    sDisabled = "";
-                }
-            }
-        </div>
-    </div>
-    <div class="col-12 col-sm-12">
-        <div class="card">
-            <div class="card-body project-list-table-container">
-                <a asp-area="Users" asp-controller="Disposals" asp-action="CreateDisposal"
-                   asp-route-id="@Model.StoreId"
-                   class="btn btn-primary-gradient trShadow @sDisabled mb-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-inner-icn text-white" enable-background="new 0 0 24 24" viewBox="0 0 24 24"><path d="M16,11.5h-3.5V8c0-0.276123-0.223877-0.5-0.5-0.5S11.5,7.723877,11.5,8v3.5H8c-0.276123,0-0.5,0.223877-0.5,0.5s0.223877,0.5,0.5,0.5h3.5v3.5005493C11.5001831,16.2765503,11.723999,16.5001831,12,16.5h0.0006104C12.2765503,16.4998169,12.5001831,16.276001,12.5,16v-3.5H16c0.276123,0,0.5-0.223877,0.5-0.5S16.276123,11.5,16,11.5z M12,2C6.4771729,2,2,6.4771729,2,12s4.4771729,10,10,10c5.5202026-0.0062866,9.9937134-4.4797974,10-10C22,6.4771729,17.5228271,2,12,2z M12,21c-4.9705811,0-9-4.0294189-9-9s4.0294189-9,9-9c4.9682617,0.0056152,8.9943848,4.0317383,9,9C21,16.9705811,16.9705811,21,12,21z" /></svg>
-                    New Disposal
-                </a>
-                <div class="table-responsive export-table">
-                    <table id="tblDisposals" class="table text-nowrap mb-0 table-bordered key-buttons border-top border-bottom project-list-main">
-                        <thead class="bg-primary-gradient ms-auto divShadow">
-                            <tr>
-                                <th class="text-white bg-transparent border-bottom-0 w-5">S.No</th>
-                                <th class="text-white bg-transparent border-bottom-0 w-10">Date</th>
-                                <th class="text-white bg-transparent border-bottom-0 w-10">Disposal Type</th>
-                                <th class="text-white bg-transparent border-bottom-0 w-10">Category</th>
-                                <th class="text-white bg-transparent border-bottom-0 w-10">Make</th>
-                                <th class="text-white bg-transparent border-bottom-0 w-10">Model</th>
-                                <th class="text-white bg-transparent border-bottom-0 w-20">Asset Name</th>
-                                <th class="text-white bg-transparent border-bottom-0 w-10">Identification</th>
-                                <th class="text-white bg-transparent border-bottom-0 w-10 no-btn">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @{
-                                int nCounter = 0;
-                                string sCounter = "0";
-                                string sIdentification = "";
-                                foreach (var disposal in Model.Disposals)
-                                {
-                                    nCounter++;
-                                    sCounter = nCounter < 10 ? '0' + nCounter.ToString() : nCounter.ToString();
-                                    sIdentification = disposal.Asset.SubCategory.CategoryId == 2
-                                    ? "Plate: " + disposal.Asset.Plate 
-                                    : "SN: " + disposal.Asset.SerialNo;
-
+            <div class="col-md-12 mb-3">
+                <div class="btn-list">
+                    @{
+                        string sDisabled = "disabled";
+                        if (Model.IsAuthorized)
+                        {
+                            sDisabled = "";
+                        }
+                    }
+                </div>
+            </div>
+            <div class="col-8 col-sm-8">
+                <div class="card">
+                    <div class="card-status bg-primary br-tr-7 br-tl-7"></div>
+                    <div class="card-body project-list-table-container">
+                        <a asp-area="Users" asp-controller="Disposals" asp-action="CreateDisposal"
+                           class="btn btn-primary-gradient trShadow @sDisabled mb-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-inner-icn text-white" enable-background="new 0 0 24 24" viewBox="0 0 24 24"><path d="M16,11.5h-3.5V8c0-0.276123-0.223877-0.5-0.5-0.5S11.5,7.723877,11.5,8v3.5H8c-0.276123,0-0.5,0.223877-0.5,0.5s0.223877,0.5,0.5,0.5h3.5v3.5005493C11.5001831,16.2765503,11.723999,16.5001831,12,16.5h0.0006104C12.2765503,16.4998169,12.5001831,16.276001,12.5,16v-3.5H16c0.276123,0,0.5-0.223877,0.5-0.5S16.276123,11.5,16,11.5z M12,2C6.4771729,2,2,6.4771729,2,12s4.4771729,10,10,10c5.5202026-0.0062866,9.9937134-4.4797974,10-10C22,6.4771729,17.5228271,2,12,2z M12,21c-4.9705811,0-9-4.0294189-9-9s4.0294189-9,9-9c4.9682617,0.0056152,8.9943848,4.0317383,9,9C21,16.9705811,16.9705811,21,12,21z" /></svg>
+                            New Disposal
+                        </a>
+                        <div class="table-responsive export-table">
+                            <table id="tblDisposals" class="table text-nowrap mb-0 table-bordered key-buttons border-top border-bottom project-list-main">
+                                <thead class="bg-primary-gradient ms-auto divShadow">
                                     <tr>
-                                        <td>sCounter</td>
-                                        <td>@disposal.DisposalDate.ToString("dd-MMM-yyyy")</td>
-                                        <td>@disposal.Asset.SubCategory.SubCategoryName</td>
-                                        <td>@disposal.Asset.Make</td>
-                                        <td>@disposal.Asset.Model</td>
-                                        <td>@sIdentification</td>
-                                        <td></td>
+                                        <th class="text-white bg-transparent border-bottom-0 w-5">S.No</th>
+                                        <th class="text-white bg-transparent border-bottom-0 w-10">Date</th>
+                                        <th class="text-white bg-transparent border-bottom-0 w-10">Disposal Type</th>
+                                        <th class="text-white bg-transparent border-bottom-0 w-10">Category</th>
+                                        <th class="text-white bg-transparent border-bottom-0 w-20">Asset Name</th>
+                                        <th class="text-white bg-transparent border-bottom-0 w-10">Identification</th>
+                                        <th class="text-white bg-transparent border-bottom-0 w-10">Store</th>
+                                        <th class="text-white bg-transparent border-bottom-0 w-10 no-btn">Action</th>
                                     </tr>
-                                }
-                            }
-                        </tbody>
-                    </table>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        int nCounter = 0;
+                                        string sCounter = "0";
+                                        string sIdentification = "";
+                                        foreach (var disposal in Model.Disposals)
+                                        {
+                                            nCounter++;
+                                            sCounter = nCounter < 10 ? '0' + nCounter.ToString() : nCounter.ToString();
+                                            sIdentification = disposal.Asset.SubCategory.Category.CategoryName == "Vehicles"
+                                            ? "Plate: " + disposal.Asset.Plate
+                                            : "SN: " + disposal.Asset.SerialNo;
+
+                                            <tr>
+                                                <td>@sCounter</td>
+                                                <td>@disposal.DisposalDate.ToString("dd-MMM-yyyy")</td>
+                                                <td>@disposal.DisposalType.Type</td>
+                                                <td>@disposal.Asset.SubCategory.SubCategoryName</td>
+                                                <td>@disposal.Asset.Name</td>
+                                                <td>@sIdentification</td>
+                                                <td>@disposal.Asset.Store.Name</td>
+                                                <td>
+                                                    <a asp-controller="Disposals" asp-action="EditDisposal" asp-route-id="@disposal.Id" class="btn btn-sm btn-outline-primary border me-2 @sDisabled" data-bs-toggle="tooltip" data-bs-original-title="Edit Disposal">
+                                                        <i class="fe fe-edit"></i>
+                                                    </a>
+                                                    <a asp-controller="Disposals" asp-action="PreviewDisposal" asp-route-id="@disposal.Id" class="btn btn-sm btn-outline-primary border me-2" data-bs-toggle="tooltip" data-bs-original-title="Preview Disposal">
+                                                        <i class="fe fe-eye"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4 col-sm-4">
+                <div class="card">
+                    <div class="card-status bg-info br-tr-7 br-tl-7"></div>
+                    <div id="card-body-file" class="card-body table-bordered" style="height: 412px; display: flex; justify-content: center; align-items: center;">
+
+                    </div>
                 </div>
             </div>
         </div>
@@ -95,6 +114,7 @@
 @section scripts{
     <script>
         $(document).ready(() => {
+            hideMenu();
             makeDataTable('#tblDisposals', 1);
         });
     </script>

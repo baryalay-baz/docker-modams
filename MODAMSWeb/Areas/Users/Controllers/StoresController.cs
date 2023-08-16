@@ -149,7 +149,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 .Count(td => td.Transfer.StoreId == id && td.Transfer.TransferStatusId == SD.Transfer_Completed);
 
             dto.Handovers = 0;
-            dto.Disposals = 0;
+            dto.Disposals = _db.Assets.Where(m=>m.AssetStatusId==SD.Asset_Disposed).Count();
 
             TempData["storeId"] = id;
             TempData["storeName"] = vwStore.Name;

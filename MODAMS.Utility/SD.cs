@@ -9,6 +9,11 @@ namespace MODAMS.Utility
         public const string Role_SeniorManagement = "SeniorManagement";
         public const string Role_Administrator = "Administrator";
 
+        public const int Asset_Available = 1;
+        public const int Asset_HandedOver = 2;
+        public const int Asset_Disposed = 3;
+
+
         public const int Transfer_Pending = 1;
         public const int Transfer_SubmittedForAcknowledgement = 2;
         public const int Transfer_Completed = 3;

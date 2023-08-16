@@ -38,6 +38,10 @@
         font-size: 10px;
     }
 
+    .selected {
+        background-color: #f5f5f5; /* Change to your desired background color */
+    }
+
 </style>
 
 <div class="page-header">
@@ -72,15 +76,30 @@
         }
         <div class="card">
             <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-status bg-primary br-tr-7 br-tl-7"></div>
-                            <div class="card-body">
-                                <form method="post" asp-action="CreateAsset" id="frmDisposal">
+                <form method="post" asp-action="CreateDisposal" id="frmDisposal" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="card">
+                                <div class="card-status bg-primary br-tr-7 br-tl-7"></div>
+                                <div class="card-body">
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+                                            <div class="mb-3 form-group">
+                                                <label>Store</label>
+                                                <span id="StoreName" type="text" class="form-control" readonly>@Model.StoreName</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3 form-group">
+                                                <label>Store Owner</label>
+                                                <span id="StoreOwner" type="text" class="form-control" readonly>@Model.StoreOwner</span>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
                                             <div class="mb-3 form-group">
                                                 <label asp-for="Disposal.DisposalDate"></label>
                                                 <input asp-for="Disposal.DisposalDate" asp-format="{0:dd-MMM-yyyy}" class="form-control picker" aria-required="true" type="text" autocomplete="off" />
@@ -96,7 +115,15 @@
                                                 </select>
                                                 <span asp-validation-for="Disposal.DisposalTypeId" class="text-danger"></span>
                                             </div>
-
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="mb-3 form-group">
+                                                <label asp-for="Disposal.Notes"></label>
+                                                <textarea asp-for="Disposal.Notes" class="form-control mb-4" placeholder="" rows="3"></textarea>
+                                                <span asp-validation-for="Disposal.Notes" class="text-danger"></span>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -104,7 +131,7 @@
                                             <div aria-multiselectable="true" class="accordion-dark mb-3" id="accordion8" role="tablist">
                                                 <div class="card mb-0">
                                                     <div class="card-header border-bottom-0" id="heading8" role="tab">
-                                                        <a class="accor-style2 collapsed" aria-controls="collapse8" aria-expanded="false" data-bs-toggle="collapse" href="#collapse8">
+                                                        <a id="collapse-button" class="accor-style2 collapsed" aria-controls="collapse8" aria-expanded="true" data-bs-toggle="collapse" href="#collapse8">
                                                             <i class="fe fe-plus-circle me-2"></i>Select Asset to dispose
                                                         </a>
                                                     </div>
@@ -132,15 +159,15 @@
                                                                             {
                                                                                 sCounter = nCounter < 10 ? "0" + nCounter.ToString() : nCounter.ToString();
                                                                                 sIdentification = asset.SubCategory.CategoryId == 16 ? "Plate No: " + asset.Plate : "SN: " + asset.SerialNo;
-                                                                                    <tr>
-                                                                                        <td></td>
-                                                                                        <td>@asset.SubCategory.Category.CategoryName</td>
-                                                                                        <td>@asset.Make</td>
-                                                                                        <td>@asset.Model</td>
-                                                                                        <td>@asset.Name</td>
-                                                                                        <td>@sIdentification</td>
-                                                                                        <td>@asset.Barcode</td>
-                                                                                    </tr>
+                                                                                        <tr>
+                                                                                            <td><a class="btn btn-primary btn-sm" onclick="return selectAsset(@asset.Id,event);">select</a></td>
+                                                                                            <td>@asset.SubCategory.Category.CategoryName</td>
+                                                                                            <td>@asset.Make</td>
+                                                                                            <td>@asset.Model</td>
+                                                                                            <td>@asset.Name</td>
+                                                                                            <td>@sIdentification</td>
+                                                                                            <td>@asset.Barcode</td>
+                                                                                        </tr>
                                                                             }
                                                                         }
                                                                     </tbody>
@@ -152,21 +179,33 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <div class="mb-3 form-group">
-                                                <label asp-for="Disposal.Notes"></label>
-                                                <textarea asp-for="Disposal.Notes" class="form-control mb-4" placeholder="Disposal Notes" rows="3"></textarea>
-                                                <span asp-validation-for="Disposal.Notes" class="text-danger"></span>
+                                    <div id="AssetDetails" style="display:none;">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3 form-group">
+                                                    <label>Make</label>
+                                                    <span id="spnMake" type="text" class="form-control mb-4" placeholder="Make" readonly></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3 form-group">
+                                                    <label>Model</label>
+                                                    <span id="spnModel" type="text" class="form-control mb-4" placeholder="Model" readonly></span>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <div class="mb-3 form-group">
-                                                <label asp-for="Disposal.ImageUrl"></label>
-                                                <input asp-for="Disposal.ImageUrl" class="form-control readonly" rows="3" aria-required="true" type="text" autocomplete="off" />
-                                                <span asp-validation-for="Disposal.ImageUrl" class="text-danger"></span>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3 form-group">
+                                                    <label>Asset Name</label>
+                                                    <span id="spnAssetName" type="text" class="form-control mb-4" placeholder="Asset Name" readonly></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3 form-group">
+                                                    <label>Identification</label>
+                                                    <span id="spnIdentification" type="text" class="form-control mb-4" placeholder="Identification" readonly></span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -176,26 +215,27 @@
                                             {
                                                 sDisabled = "disabled";
                                             }
-                                                <button type="button" class="btn btn-primary @sDisabled" id="btnSubmit">
-                                                    <i class="fa fa-check-circle"></i>&nbsp;Save Disposal
-                                                </button>
+                                                    <button type="button" class="btn btn-primary @sDisabled" id="btnSubmit">
+                                                        <i class="fa fa-check-circle"></i>&nbsp;Save Disposal
+                                                    </button>
                                         }
 
                                     </div>
-                                </form>
+
+                                </div>
                             </div>
                         </div>
-                        
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-status bg-info br-tr-7 br-tl-7"></div>
-                            <div class="card-body table-bordered" style="height: 412px; display: flex; justify-content: center; align-items: center;">
-                                <input id="file" name="file" type="file" class="dropify" data-height="400" />
+                        <div class="col-md-5">
+                            <div class="card">
+                                <div class="card-status bg-info br-tr-7 br-tl-7"></div>
+                                <div id="card-body-file" class="card-body table-bordered" style="height: 412px; display: flex; justify-content: center; align-items: center;">
+                                    <input asp-for="file" type="file" class="dropify" data-height="400" />
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                    <input asp-for="Disposal.AssetId" hidden />
+                </form>
             </div>
         </div>
     </div>
@@ -224,10 +264,53 @@
 
             makeDataTable('#tblAssets', "1");
 
-            $("#file").on("change", () => {
-                const fileName = $("#file").prop("files")[0].name;
-                $("#Disposal_ImageUrl").val(fileName);
+            $("#btnSubmit").on("click", (e) => {
+                e.preventDefault();
+                if ($("#Disposal_AssetId").val() == 0) {
+                    notif({
+                        type: "error",
+                        msg: "<b>Error: </b>No asset selected!",
+                        position: "center",
+                        width: 500,
+                        height: 60,
+                        autohide: false
+                    });
+                } else {
+                    $("#frmDisposal").submit();
+                }
             });
+
         });
+
+        const selectAsset = (id, e) => {
+            e.preventDefault();
+
+            const assets = @Html.Raw(Json.Serialize(Model.Assets));
+            console.log(assets);
+            if (assets && assets.length > 0) {
+                const selectedAsset = assets.find(asset => asset.id === id);
+
+                if (selectedAsset) {
+                    $("#spnMake").html(selectedAsset.make);
+                    $("#spnModel").html(selectedAsset.model);
+                    $("#spnAssetName").html(selectedAsset.name);
+
+                    const categoryName = selectedAsset.subCategory.category.categoryName;
+                    
+                    const isVehicle = categoryName=="Vehicles";
+
+                    const identification = isVehicle ? "Plate No: " + selectedAsset.plate : "Serial No: " + selectedAsset.serialNo;
+                    $("#spnIdentification").html(identification);
+                }
+            }
+
+            $("#Disposal_AssetId").val(id);
+            $("#collapse8").collapse("hide");
+            $("#AssetDetails").show();
+
+            $("#card-body-file").css("height", "575px");
+        };
+
+
     </script>
 }

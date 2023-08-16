@@ -39,6 +39,7 @@
   <ItemGroup>
     <Folder Include="wwwroot\assets\plugins\google-api\" />
     <Folder Include="wwwroot\assetdocuments\" />
+    <Folder Include="wwwroot\disposaldocuments\" />
   </ItemGroup>
 
 </Project>

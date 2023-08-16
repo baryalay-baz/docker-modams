@@ -37,7 +37,7 @@ namespace MODAMS.Models
         public int EmployeeId { get; set; }
 
         [Display(Name ="Disposal Image")]
-        public string ImageUrl { get; set; }
+        public string? ImageUrl { get; set; }
 
         [ValidateNever]
         public Asset Asset { get; set; }

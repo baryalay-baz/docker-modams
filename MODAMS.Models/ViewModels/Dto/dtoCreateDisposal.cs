@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
@@ -10,10 +11,24 @@ namespace MODAMS.Models.ViewModels.Dto
 {
     public class dtoCreateDisposal
     {
-        public Disposal Disposal { get; set; } = new Disposal();
-        public List<Asset> Assets { get; set; }
         public bool IsAuthorized { get; set; } = false;
 
+
+
+        public Disposal Disposal { get; set; } = new Disposal();
+
+
+        public IFormFile? file { get; set; }
+
+        [ValidateNever]
+        public string StoreName { get; set; }
+
+        [ValidateNever]
+        public string StoreOwner { get; set; }
+
+        [ValidateNever]
+        public List<Asset> Assets { get; set; }
+        
         [ValidateNever]
         public IEnumerable<SelectListItem> DisposalTypeList { get; set; }
 
