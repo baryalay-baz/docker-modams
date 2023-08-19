@@ -28,5 +28,8 @@ namespace MODAMS.Models.ViewModels.Dto
 
         [ValidateNever]
         public IEnumerable<SelectListItem> DisposalTypeList { get; set; }
+
+        [ValidateNever]
+        public Asset CurrentDisposedAsset { get; set; }
     }
 }

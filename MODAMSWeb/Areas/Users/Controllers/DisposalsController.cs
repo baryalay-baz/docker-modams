@@ -52,7 +52,26 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             dto.Disposals = disposals;
             dto.StoreId = _storeId;
-            dto.IsAuthorized = true;
+            if (_func.GetStoreOwnerId(_storeId) == _employeeId)
+            {
+                dto.IsAuthorized = true;
+            }
+            else {
+                dto.IsAuthorized = false;
+            }
+            
+
+            var disposalChart = (from disposal in _db.Disposals
+                          join disposalType in _db.DisposalTypes on disposal.DisposalTypeId equals disposalType.Id
+                          group disposal by new { disposalType.Id, disposalType.Type } into grouped
+                          select new DisposalChart
+                          {
+                              Id = grouped.Key.Id,
+                              Type = grouped.Key.Type,
+                              Count = grouped.Count()
+                          }).ToList();
+
+            dto.ChartData = disposalChart;
 
             return View(dto);
         }
@@ -189,7 +208,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             var dto = new dtoEditDisposal
             {
                 Disposal = disposal,
-                Assets = _db.Assets.Where(a => a.StoreId == storeId)
+                Assets = _db.Assets.Where(a => a.StoreId == storeId && a.AssetStatusId != SD.Asset_Disposed)
                     .Include(a => a.SubCategory).ThenInclude(s => s.Category).ToList(),
 
                 IsAuthorized = _func.GetStoreOwnerId(storeId) == employeeId,
@@ -201,8 +220,17 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     {
                         Text = dt.Type,
                         Value = dt.Id.ToString()
-                    })
+                    }),
             };
+            var currentDisposedAsset = _db.Assets
+                .Include(m => m.SubCategory).ThenInclude(m => m.Category)
+                .FirstOrDefault(m => m.Id == disposal.AssetId);
+
+            if (currentDisposedAsset != null)
+            {
+                dto.CurrentDisposedAsset = currentDisposedAsset;
+            }
+
 
             return View(dto);
         }
@@ -232,7 +260,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 // Construct the file path
                 string wwwRootPath = _webHostEnvironment.WebRootPath;
                 var fileNameGuid = Guid.NewGuid().ToString();
-                var targetDir = "disposaldocuments"; // Change this to your desired directory
+                var targetDir = "disposaldocuments";
                 var fileExtension = Path.GetExtension(dto.file.FileName);
                 var uniqueFileName = fileNameGuid + fileExtension;
                 var filePath = Path.Combine(wwwRootPath, targetDir, uniqueFileName);
@@ -304,7 +332,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 _db.AssetHistory.Add(newAssetHistory);
                 _db.SaveChanges();
             }
-            
+
             // Update asset status if an asset is associated with the disposal
             var asset = _db.Assets.FirstOrDefault(m => m.Id == disposal.AssetId);
             if (asset != null)
@@ -313,8 +341,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 _db.SaveChanges(); // Save changes to the asset status
             }
 
-            TempData["success"] = "Disposal added successfully!";
-            return RedirectToAction("Index");
+            TempData["success"] = "Disposal updated successfully!";
+            return RedirectToAction("EditDisposal", "Disposals", new { disposal.Id });
         }
 
     }

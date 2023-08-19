@@ -197,7 +197,7 @@
                                                                             foreach (var asset in Model.Assets)
                                                                             {
                                                                                 sCounter = nCounter < 10 ? "0" + nCounter.ToString() : nCounter.ToString();
-                                                                                sIdentification = asset.SubCategory.CategoryId == 16 ? "Plate No: " + asset.Plate : "SN: " + asset.SerialNo;
+                                                                                sIdentification = asset.SubCategory.Category.CategoryName == "Vehicles" ? "Plate No: " + asset.Plate : "SN: " + asset.SerialNo;
                                                                                 <tr>
                                                                                     <td><a class="btn btn-primary btn-sm" onclick="return selectAsset(@asset.Id,event);">select</a></td>
                                                                                     <td>@asset.SubCategory.Category.CategoryName</td>
@@ -223,13 +223,13 @@
                                             <div class="col-md-6">
                                                 <div class="mb-3 form-group">
                                                     <label>Make</label>
-                                                    <span id="spnMake" type="text" class="form-control mb-4" placeholder="Make" readonly></span>
+                                                    <span id="spnMake" type="text" class="form-control mb-4" placeholder="Make" readonly>@Model.CurrentDisposedAsset.Make</span>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="mb-3 form-group">
                                                     <label>Model</label>
-                                                    <span id="spnModel" type="text" class="form-control mb-4" placeholder="Model" readonly></span>
+                                                    <span id="spnModel" type="text" class="form-control mb-4" placeholder="Model" readonly>@Model.CurrentDisposedAsset.Model</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -237,13 +237,16 @@
                                             <div class="col-md-6">
                                                 <div class="mb-3 form-group">
                                                     <label>Asset Name</label>
-                                                    <span id="spnAssetName" type="text" class="form-control mb-4" placeholder="Asset Name" readonly></span>
+                                                    <span id="spnAssetName" type="text" class="form-control mb-4" placeholder="Asset Name" readonly>@Model.CurrentDisposedAsset.Name</span>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="mb-3 form-group">
                                                     <label>Identification</label>
-                                                    <span id="spnIdentification" type="text" class="form-control mb-4" placeholder="Identification" readonly></span>
+                                                    @{
+                                                        sIdentification = Model.CurrentDisposedAsset.SubCategory.Category.CategoryName == "Vehicles" ? "Plate No: " + Model.CurrentDisposedAsset.Plate : "Serial No: " + Model.CurrentDisposedAsset.SerialNo;
+                                                    }
+                                                    <span id="spnIdentification" type="text" class="form-control mb-4" placeholder="Identification" readonly>@sIdentification</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -279,7 +282,7 @@
                                         <div class="button-container">
                                             @if (Model.Disposal.ImageUrl == null)
                                             {
-                                                <button class="btn btn-outline-primary btn-sm" onclick="return showImageLoader(event);"><i class="fe fe-upload"></i>&nbsp;Upload Picture</button>
+                                                <button id="btnUpload-Image" class="btn btn-outline-primary btn-sm" onclick="return showImageLoader(event);"><i class="fe fe-upload"></i>&nbsp;Upload Picture</button>
                                             }
                                         </div>
 
@@ -353,12 +356,14 @@
         const showImageLoader = (e) => {
             e.preventDefault();
             $(".image-container").hide();
+            $("#btnUpload-Image").hide();
             $("#dvImageLoader").show();
         }
 
         const cancelImageLoad = (e) => {
             e.preventDefault();
             $(".image-container").show();
+            $("#btnUpload-Image").show();
             $("#dvImageLoader").hide();
         }
         const loadSelection = () => {

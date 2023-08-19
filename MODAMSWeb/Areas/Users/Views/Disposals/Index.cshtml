@@ -18,28 +18,21 @@
                 <div class="card divShadow">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center justify-content-between">
-                            @*<h4 class="m-0">@TempData["storeName"]</h4>*@
-                            @* <h4 class="m-0">@TempData["SubCategoryName"] (Count: @Model.TotalAssets())</h4> *@
-                            @* <select asp-for="@Model.SubCategoryId" asp-items="@Model.CategorySelectList"
-                            class="form-control select2 form-select">
-                            <option value="0">All Assets</option>
-                            </select> *@
+                            <h4 class="m-0">Asset Disposals</h4>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-12 mb-3">
-                <div class="btn-list">
-                    @{
-                        string sDisabled = "disabled";
-                        if (Model.IsAuthorized)
-                        {
-                            sDisabled = "";
-                        }
-                    }
-                </div>
-            </div>
-            <div class="col-8 col-sm-8">
+        </div>
+        @{
+            string sDisabled = "disabled";
+            if (Model.IsAuthorized)
+            {
+                sDisabled = "";
+            }
+        }
+        <div class="row">
+            <div class="col-md-8 col-md-8">
                 <div class="card">
                     <div class="card-status bg-primary br-tr-7 br-tl-7"></div>
                     <div class="card-body project-list-table-container">
@@ -87,9 +80,9 @@
                                                     <a asp-controller="Disposals" asp-action="EditDisposal" asp-route-id="@disposal.Id" class="btn btn-sm btn-outline-primary border me-2 @sDisabled" data-bs-toggle="tooltip" data-bs-original-title="Edit Disposal">
                                                         <i class="fe fe-edit"></i>
                                                     </a>
-                                                    <a asp-controller="Disposals" asp-action="PreviewDisposal" asp-route-id="@disposal.Id" class="btn btn-sm btn-outline-primary border me-2" data-bs-toggle="tooltip" data-bs-original-title="Preview Disposal">
-                                                        <i class="fe fe-eye"></i>
-                                                    </a>
+                                                    @*<a asp-controller="Disposals" asp-action="PreviewDisposal" asp-route-id="@disposal.Id" class="btn btn-sm btn-outline-primary border me-2" data-bs-toggle="tooltip" data-bs-original-title="Preview Disposal">
+                                            <i class="fe fe-eye"></i>
+                                            </a>*@
                                                 </td>
                                             </tr>
                                         }
@@ -100,11 +93,11 @@
                     </div>
                 </div>
             </div>
-            <div class="col-4 col-sm-4">
+            <div class="col-md-4 col-md-4">
                 <div class="card">
                     <div class="card-status bg-info br-tr-7 br-tl-7"></div>
-                    <div id="card-body-file" class="card-body table-bordered" style="height: 412px; display: flex; justify-content: center; align-items: center;">
-
+                    <div id="card-body-file" class="card-body container" style="height: 500px; display: flex; justify-content: center; align-items: center; width: 70%; margin: auto;">
+                        <canvas id="pieChartDisposals"></canvas>
                     </div>
                 </div>
             </div>
@@ -112,10 +105,51 @@
     </div>
 </div>
 @section scripts{
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/c3@0.7.20/c3.min.css">
     <script>
         $(document).ready(() => {
             hideMenu();
             makeDataTable('#tblDisposals', 1);
+            pieChartDisposals();
+
         });
+
+        const pieChartDisposals = () => {
+            var data = '@Html.Raw(Json.Serialize(Model.ChartData))';
+            var ctx = document.getElementById('pieChartDisposals').getContext('2d');
+
+            var labels = @Html.Raw(Json.Serialize(Model.ChartData.Select(item => item.Type)));
+            var values = @Html.Raw(Json.Serialize(Model.ChartData.Select(item => item.Count)));
+
+            var pieChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: [
+                            'rgba(20, 99, 132, 0.7)',
+                            'rgba(200, 19, 12, 0.7)',
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(255, 206, 86, 0.7)',
+                            'rgba(200, 106, 76, 0.7)',
+                            'rgba(115, 211, 56, 0.7)',
+                            'rgba(155, 51, 97, 0.7)',
+                            // Add more colors as needed
+                        ],
+                    }],
+                },
+                options: {
+                    plugins: {
+                        datalabels: {
+                            color: 'white',
+                            formatter: (value, context) => {
+                                return context.chart.data.labels[context.dataIndex] + ': ' + value;
+                            }
+                        }
+                    }
+                }
+            });
+        }
     </script>
 }
