@@ -13,6 +13,7 @@ namespace MODAMS.Models
         public string Make { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
         public string AlertType { get; set; }= string.Empty;
+        public string Description { get; set; }
         public int DepartmentId { get; set; }
         public string Department { get; set; } = string.Empty;
         public int? EmployeeId { get; set; }

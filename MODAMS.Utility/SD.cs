@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace MODAMS.Utility
 {
@@ -32,5 +33,8 @@ namespace MODAMS.Utility
         public const int NS_Transfer = 3;
 
 
+        
     }
+
+    
 }

@@ -59,20 +59,30 @@ namespace MODAMSWeb.Areas.Users.Controllers
             else {
                 dto.IsAuthorized = false;
             }
-            
 
-            var disposalChart = (from disposal in _db.Disposals
-                          join disposalType in _db.DisposalTypes on disposal.DisposalTypeId equals disposalType.Id
-                          group disposal by new { disposalType.Id, disposalType.Type } into grouped
-                          select new DisposalChart
-                          {
-                              Id = grouped.Key.Id,
-                              Type = grouped.Key.Type,
-                              Count = grouped.Count()
-                          }).ToList();
+            var disposalChart = _db.Disposals
+                .Join(
+                    _db.DisposalTypes,
+                    disposal => disposal.DisposalTypeId,
+                    disposalType => disposalType.Id,
+                    (disposal, disposalType) => new { Disposal = disposal, DisposalType = disposalType }
+                )
+                .GroupBy(
+                    joined => new { joined.DisposalType.Type, joined.Disposal.EmployeeId },
+                    (key, grouped) => new DisposalChart
+                    {
+                        Type = key.Type,
+                        EmployeeId = key.EmployeeId,
+                        Count = grouped.Count()
+                    }
+                )
+                .ToList();
 
+            if (User.IsInRole("User") || User.IsInRole("StoreOwner"))
+            {
+                disposalChart = disposalChart.Where(m => m.EmployeeId == _employeeId).ToList();
+            }
             dto.ChartData = disposalChart;
-
             return View(dto);
         }
 

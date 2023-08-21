@@ -95,12 +95,17 @@
         </ol>
     </div>
 </div>
+@{
+    string sDisposalLabel = Model.CurrentDisposedAsset.Make + " - " + Model.CurrentDisposedAsset.Model + " - " + Model.CurrentDisposedAsset.Name;
+    string sIdentification = Model.CurrentDisposedAsset.SubCategory.Category.CategoryName == "Vehicles" ? "Plate No: " + Model.CurrentDisposedAsset.Plate : "Serial No: " + Model.CurrentDisposedAsset.SerialNo;
+}
+
 <div class="row">
     <div class="col-md-12">
         <div class="card divShadow">
             <div class="card-body p-4">
                 <div class="d-flex align-items-center justify-content-between">
-                    <h4 class="m-0">Edit Disposal</h4>
+                    <h4 id="disposal-title" class="m-0">@(sDisposalLabel + " - " + sIdentification)</h4>
                 </div>
             </div>
         </div>
@@ -193,7 +198,6 @@
                                                                         @{
                                                                             int nCounter = 0;
                                                                             string sCounter = "";
-                                                                            string sIdentification = "";
                                                                             foreach (var asset in Model.Assets)
                                                                             {
                                                                                 sCounter = nCounter < 10 ? "0" + nCounter.ToString() : nCounter.ToString();
@@ -243,9 +247,6 @@
                                             <div class="col-md-6">
                                                 <div class="mb-3 form-group">
                                                     <label>Identification</label>
-                                                    @{
-                                                        sIdentification = Model.CurrentDisposedAsset.SubCategory.Category.CategoryName == "Vehicles" ? "Plate No: " + Model.CurrentDisposedAsset.Plate : "Serial No: " + Model.CurrentDisposedAsset.SerialNo;
-                                                    }
                                                     <span id="spnIdentification" type="text" class="form-control mb-4" placeholder="Identification" readonly>@sIdentification</span>
                                                 </div>
                                             </div>

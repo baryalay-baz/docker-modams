@@ -275,13 +275,6 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/c3@0.7.20/c3.min.css">
 @section scripts {
 
-    @* <script src="~/assets/plugins/c3-0.7.20/c3.min.js"></script>
-    <script src="~/assets/plugins/c3-0.7.20/d3-5.8.2.min.js"></script>
- *@
-
-
-    <!-- PROJECT-LIST JS-->
-    @*<script src="~/assets/js/project-list.js"></script>*@
     <script>
         $(document).ready(function () {
             hideMenu();
@@ -329,12 +322,13 @@
                 },
                 options: {
                     plugins: {
-                        datalabels: {
-                            color: 'white',
+                        labels: {
+                            render: 'value',
+                            fontColor: '#ffffff',
                             formatter: (value, context) => {
-                                return context.chart.data.labels[context.dataIndex] + ': ' + value;
+                                return context.dataset.data[context.dataIndex];
                             }
-                        }
+                        },
                     }
                 }
             });
@@ -367,12 +361,13 @@
                 },
                 options: {
                     plugins: {
-                        datalabels: {
-                            color: 'white',
+                        labels: {
+                            render: 'value',
+                            fontColor: '#ffffff',
                             formatter: (value, context) => {
-                                return context.chart.data.labels[context.dataIndex] + ': ' + value;
+                                return context.dataset.data[context.dataIndex];
                             }
-                        }
+                        },
                     }
                 }
             });

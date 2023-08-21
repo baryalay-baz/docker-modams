@@ -3,7 +3,13 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="~/assets/plugins/chart/chartjs4.3.3.min.js"></script>
+    
+    @* <script src="~/assets/plugins/chart/chartjs4.3.3.min.js"></script> *@
+    @* <script src="~/assets/plugins/chart/chartjs-plugin-datalabels.js"></script> *@
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.bundle.min.js"></script>
+    <script src="~/assets/plugins/chart/chartjs-plugin-labels.js"></script>
+
+
     @* <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> *@
     @* <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script> *@
     
@@ -76,6 +82,7 @@
 
 
     <script src="~/assets/plugins/bootstrap-datepicker/js/datepicker.js"></script>
+
 
 </head>
 @{
@@ -197,7 +204,6 @@
             });
             loadNotificationsData();
         });
-
         const formatTables = () => {
 
             $('thead').removeClass("bg-primary-gradient ms-auto divShadow").addClass("bg-primary-gradient ms-auto divShadow");
@@ -208,7 +214,6 @@
 
 
         }
-
         const setMode = () => {
             if (localStorage.getItem("displayMode") == "dark-mode") {
                 $('body').addClass('dark-mode');
@@ -286,7 +291,6 @@
                 });
             }
         }
-
         const loadNotificationsData = () => {
             var postData = {};
             $.ajax({
@@ -303,7 +307,6 @@
                 }
             });
         };
-        
         const loadNotifications = () => {
             const sData = $("#dvNotificationsData").html();
             if (sData !== "No Records Found") {
@@ -369,7 +372,6 @@
                 }
             }
         };
-
         const clearNotifications = () => { 
             var postData = {};
             $.ajax({
@@ -386,7 +388,6 @@
                 }
             });
         }
-
         const makeDataTable = (tableName, type) => {
             var table = $(tableName).DataTable({
                 buttons: ['copy', 'excel', 'pdf', 'colvis'],
@@ -417,8 +418,6 @@
             }
 
         }
-
-       
         const formattedDate = (date) => {
             var dateObject = moment(date);
 
@@ -426,11 +425,9 @@
             var formattedDate = dateObject.format('DD-MMM-YYYY');
             return formattedDate;
         }
-
         const hideMenu = () => {
             $("#hideMenu").click();
         }
-
         const shortenMessage = (message) => { 
             const index = message.indexOf(',');
             if (index !== -1) { 
@@ -440,6 +437,4 @@
         }
     </script>
 </body>
-
-
 </html>

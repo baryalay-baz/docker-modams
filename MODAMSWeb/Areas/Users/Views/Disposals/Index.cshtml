@@ -96,7 +96,7 @@
             <div class="col-md-4 col-md-4">
                 <div class="card">
                     <div class="card-status bg-info br-tr-7 br-tl-7"></div>
-                    <div id="card-body-file" class="card-body container" style="height: 500px; display: flex; justify-content: center; align-items: center; width: 70%; margin: auto;">
+                    <div id="card-body-file" class="card-body container" style="height: 500px; display: flex; justify-content: center; align-items: center; width: 80%; margin: auto;">
                         <canvas id="pieChartDisposals"></canvas>
                     </div>
                 </div>
@@ -141,12 +141,13 @@
                 },
                 options: {
                     plugins: {
-                        datalabels: {
-                            color: 'white',
+                        labels: {
+                            render: 'value',
+                            fontColor: '#ffffff',
                             formatter: (value, context) => {
-                                return context.chart.data.labels[context.dataIndex] + ': ' + value;
+                                return context.dataset.data[context.dataIndex];
                             }
-                        }
+                        },
                     }
                 }
             });
