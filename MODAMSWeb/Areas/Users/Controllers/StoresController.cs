@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MOD_AMS.Models;
 using MODAMS.DataAccess.Data;
@@ -96,6 +97,45 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 vwStores = stores,
                 storeEmployees = storeEmployees
             };
+
+            //update dtoReportingModel for the partial view
+            dto.dtoReporting.Stores = stores.ToList().Select(m => new SelectListItem
+            {
+                Text = m.Name,
+                Value = m.Id.ToString()
+            });
+            var categories = _db.Categories.ToList().Select(m => new SelectListItem
+            {
+                Text = m.CategoryName,
+                Value = m.Id.ToString()
+            });
+            var subCategories = _db.SubCategories.ToList().Select(m => new SelectListItem
+            {
+                Text = m.SubCategoryName,
+                Value = m.Id.ToString()
+            });
+            var assetStatuses = _db.AssetStatuses.ToList().Select(m => new SelectListItem
+            {
+                Text = m.StatusName,
+                Value = m.Id.ToString()
+            });
+            var assetConditions = _db.Conditions.ToList().Select(m => new SelectListItem
+            {
+                Text = m.ConditionName,
+                Value = m.Id.ToString()
+            });
+            var donors = _db.Donors.ToList().Select(m => new SelectListItem
+            {
+                Text = m.Name,
+                Value = m.Id.ToString()
+            });
+
+            dto.dtoReporting.AssetStatuses = assetStatuses;
+            dto.dtoReporting.Categories = categories;
+            dto.dtoReporting.SubCategories = subCategories;
+            dto.dtoReporting.Conditions = assetConditions;
+            dto.dtoReporting.Donors = donors;
+
 
             return View(dto);
         }

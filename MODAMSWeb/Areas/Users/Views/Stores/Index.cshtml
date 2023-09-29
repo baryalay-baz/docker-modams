@@ -1,5 +1,28 @@
 ﻿@model MODAMS.Models.ViewModels.Dto.dtoStores
 
+<style>
+    .card.divBackground {
+        position: relative;
+        overflow: hidden; /* Ensure the pseudo-element doesn't cause overflow */
+    }
+
+        .card.divBackground::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('../assets/images/brand/FGS_Small4.png');
+            background-repeat: no-repeat;
+            background-position: center; /* Center the background image */
+            background-size: 15%; /* Increase the size by 10% */
+            opacity: 0.5; /* Adjust the opacity to your preference */
+            pointer-events: none; /* Allow interaction with content behind the pseudo-element */
+        }
+
+</style>
+
 <!-- PAGE-HEADER -->
 <div class="page-header">
     <div>
@@ -22,12 +45,7 @@
                     <div class="col-md-3"><input type="text" id="txtSearchStore" class="form-control" placeholder="search for store" /></div>
 
                     <div class="btn-list">
-                        @*<a id="btnCards" class="btn btn-primary" href="#">
-                            <svg id="svgCards" xmlns="http://www.w3.org/2000/svg" class="w-inner-icn text-white" enable-background="new 0 0 24 24" viewBox="0 0 24 24"><path d="M21.5,13h-8.0005493C13.2234497,13.0001831,12.9998169,13.223999,13,13.5v8.0005493C13.0001831,21.7765503,13.223999,22.0001831,13.5,22h8.0006104C21.7765503,21.9998169,22.0001831,21.776001,22,21.5v-8.0006104C21.9998169,13.2234497,21.776001,12.9998169,21.5,13z M21,21h-7v-7h7V21z M10.5,2H2.4993896C2.2234497,2.0001831,1.9998169,2.223999,2,2.5v8.0005493C2.0001831,10.7765503,2.223999,11.0001831,2.5,11h8.0006104C10.7765503,10.9998169,11.0001831,10.776001,11,10.5V2.4993896C10.9998169,2.2234497,10.776001,1.9998169,10.5,2z M10,10H3V3h7V10z M10.5,13H2.4993896C2.2234497,13.0001831,1.9998169,13.223999,2,13.5v8.0005493C2.0001831,21.7765503,2.223999,22.0001831,2.5,22h8.0006104C10.7765503,21.9998169,11.0001831,21.776001,11,21.5v-8.0006104C10.9998169,13.2234497,10.776001,12.9998169,10.5,13z M10,21H3v-7h7V21z M21.5,2h-8.0005493C13.2234497,2.0001831,12.9998169,2.223999,13,2.5v8.0005493C13.0001831,10.7765503,13.223999,11.0001831,13.5,11h8.0006104C21.7765503,10.9998169,22.0001831,10.776001,22,10.5V2.4993896C21.9998169,2.2234497,21.776001,1.9998169,21.5,2z M21,10h-7V3h7V10z" /></svg>
-                        </a>
-                        <a id="btnList" class="btn btn-outline-primary" href="#">
-                            <svg id="svgList" xmlns="http://www.w3.org/2000/svg" class="w-inner-icn text-white" enable-background="new 0 0 24 24" viewBox="0 0 24 24"><path d="M3.5,12C3.223877,12,3,12.223877,3,12.5S3.223877,13,3.5,13S4,12.776123,4,12.5S3.776123,12,3.5,12z M6.5,8h15C21.776123,8,22,7.776123,22,7.5S21.776123,7,21.5,7h-15C6.223877,7,6,7.223877,6,7.5S6.223877,8,6.5,8z M3.5,17C3.223877,17,3,17.223877,3,17.5S3.223877,18,3.5,18S4,17.776123,4,17.5S3.776123,17,3.5,17z M21.5,12h-15C6.223877,12,6,12.223877,6,12.5S6.223877,13,6.5,13h15c0.276123,0,0.5-0.223877,0.5-0.5S21.776123,12,21.5,12z M3.5,7C3.223877,7,3,7.223877,3,7.5S3.223877,8,3.5,8S4,7.776123,4,7.5S3.776123,7,3.5,7z M21.5,17h-15C6.223877,17,6,17.223877,6,17.5S6.223877,18,6.5,18h15c0.276123,0,0.5-0.223877,0.5-0.5S21.776123,17,21.5,17z" /></svg>
-                        </a>*@
+                        <a class="btn btn-outline-info" data-bs-target="#mdl-asset-report" data-bs-toggle="modal"><i class="fe fe-printer"></i> Asset Reports</a>
                     </div>
                 </div>
             </div>
@@ -49,7 +67,7 @@
                                         var bgType = (store.StoreType == 1) ? "bg-info" : "bg-info-transparent";
                                         var sStoreType = (store.StoreType == 1) ? "<span class=\"text-primary text-bold\">Primary Store</span>" : "Secondary Store";
                                         <div class="col-sm-12 col-md-12 col-lg-12 col-xl-4">
-                                            <div class="card divShadow">
+                                            <div class="card divShadow divBackground">
                                                 <div class="card-body">
                                                     <div class="row">
                                                         <div class="col-md-12">
@@ -134,11 +152,28 @@
         </div>
     </div>
 </div>
-<div id="dvStoreList" style="display:none;">
+<partial name="_AssetReport.cshtml" model="Model.dtoReporting" />
 
-</div>
+<div id="dvStoreList" style="display:none;"></div>
 <section id="dvStoresData" style="display:none;">@Json.Serialize(Model.vwStores)</section>
 <section id="dvStoreEmployeesData" style="display:none;">@Json.Serialize(Model.storeEmployees)</section>
 @section scripts {
     <script src="~/js/user_stores_index.js"></script>
+
+    <script>
+        $(document).ready(() => {
+            $('.select2').select2({
+                dropdownParent: $("#mdl-asset-report")
+            });
+
+            $('#btnReport').on("click", () => {
+                const storeId = $('#StoreId').val();
+                const assetStatusId = $('#AssetStatusId').val();
+                const categoryId = $('#CategoryId').val();
+                const url = `/Users/Reporting/AssetReport?StoreId=${storeId}&AssetStatusId=${assetStatusId}&CategoryId=${categoryId}`;
+                window.open(url, "_blank");
+            });
+        });
+    </script>
+
 }

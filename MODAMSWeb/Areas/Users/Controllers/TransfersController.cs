@@ -346,7 +346,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             return RedirectToAction("EditTransfer", "Transfers", new { id = transferDTO.Transfer.Id });
         }
 
-        [Authorize(Roles = "StoreOwner, User")]
+        
         [HttpGet]
         public IActionResult PreviewTransfer(int id)
         {
@@ -539,7 +539,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             _db.SaveChanges();
 
             var ownerId = _func.GetStoreOwnerId(transfer.StoreFromId);
-            var employeeName = _func.GetEmployeeNameById(ownerId);
+            var employeeName = _func.GetEmployeeNameById(_employeeId);
 
             var notification = new Notification()
             {

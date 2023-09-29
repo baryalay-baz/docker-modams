@@ -247,6 +247,9 @@ namespace MODAMSWeb.Areas.Users.Controllers
         public string GetNotifications()
         {
             string sResult = "No Records Found";
+            if (User.IsInRole("Administrator") || User.IsInRole("SeniorManagement"))
+                return "No Records Found";
+
             var notifications = _db.Notifications.Where(m => m.EmployeeTo == _employeeId)
                 .Include(m => m.NotificationSection).OrderByDescending(m => m.DateTime).ToList();
 

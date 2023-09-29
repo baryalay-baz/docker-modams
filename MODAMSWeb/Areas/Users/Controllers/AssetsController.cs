@@ -37,7 +37,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
         public IActionResult Index(int id, int subCategoryId = 0)
         {
             var assets = _db.Assets.Where(m => m.StoreId == id).Include(m => m.AssetStatus)
-                .Include(m => m.SubCategory).Include(m => m.Condition).Include(m => m.Donor)
+                .Include(m => m.SubCategory).ThenInclude(m=>m.Category)
+                .Include(m => m.Condition).Include(m => m.Donor)
                 .Include(m => m.Store).ToList();
 
             if (subCategoryId > 0)
@@ -77,7 +78,6 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             TempData["storeId"] = id;
             TempData["storeName"] = _func.GetStoreNameByStoreId(id);
-
 
             return View(dto);
         }

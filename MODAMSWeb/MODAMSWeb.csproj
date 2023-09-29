@@ -11,6 +11,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="7.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="7.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="7.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.5">
       <PrivateAssets>all</PrivateAssets>
@@ -19,6 +20,7 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="7.0.5" />
     <PackageReference Include="Telerik.Reporting" Version="17.1.23.606" />
     <PackageReference Include="Telerik.Reporting.Services.AspNetCore" Version="17.1.23.606" />
+    <PackageReference Include="Telerik.ReportViewer.Mvc" Version="17.1.23.606" />
     <PackageReference Include="Telerik.UI.for.AspNet.Core" Version="2023.2.606" />
     <PackageReference Include="ZXing.Net" Version="0.16.9" />
   </ItemGroup>

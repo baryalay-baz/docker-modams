@@ -66,8 +66,7 @@
                                 <th class="text-white bg-transparent border-bottom-0">Make</th>
                                 <th class="text-white bg-transparent border-bottom-0">Model</th>
                                 <th class="text-white bg-transparent border-bottom-0">Asset Name</th>
-                                <th class="text-white bg-transparent border-bottom-0">Plate No.</th>
-                                <th class="text-white bg-transparent border-bottom-0">Serial No.</th>
+                                <th class="text-white bg-transparent border-bottom-0">Identification</th>
                                 <th class="text-white bg-transparent border-bottom-0">Status</th>
                                 <th class="text-white bg-transparent border-bottom-0 no-btn">Action</th>
                             </tr>
@@ -77,11 +76,12 @@
                                 int nCounter = 0;
                                 string sCounter = "0";
                                 string sBackground = "primary";
-
+                                string sIdentification = "";
                                 foreach (var asset in Model.assets)
                                 {
                                     nCounter++;
                                     sCounter = (nCounter < 10) ? "0" + nCounter.ToString() : nCounter.ToString();
+                                    sIdentification = asset.SubCategory.Category.CategoryName == "Vehicles" ? "Plate: " + asset.Plate : "SN: " + asset.SerialNo;
                                     switch (asset.AssetStatusId)
                                     {
                                         case SD.Asset_Available:
@@ -102,8 +102,7 @@
                                         <td class="text-muted fs-15 fw-semibold">@asset.Make</td>
                                         <td class="text-muted fs-15 fw-semibold">@asset.Model</td>
                                         <td class="text-muted fs-15 fw-semibold">@asset.Name</td>
-                                        <td class="text-muted fs-15 fw-semibold">@asset.Plate</td>
-                                        <td class="text-muted fs-15 fw-semibold">@asset.SerialNo</td>
+                                        <td class="text-muted fs-15 fw-semibold">@sIdentification</td>
                                         <td class="text-muted fs-15 fw-semibold">
                                             <span class="text-@sBackground">
                                                 <span class="mb-0 mt-1 badge rounded-pill bg-@sBackground-transparent text-@sBackground">

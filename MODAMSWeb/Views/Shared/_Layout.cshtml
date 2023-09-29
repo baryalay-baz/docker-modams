@@ -3,21 +3,16 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
-    @* <script src="~/assets/plugins/chart/chartjs4.3.3.min.js"></script> *@
-    @* <script src="~/assets/plugins/chart/chartjs-plugin-datalabels.js"></script> *@
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.bundle.min.js"></script>
     <script src="~/assets/plugins/chart/chartjs-plugin-labels.js"></script>
-
-
-    @* <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> *@
-    @* <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script> *@
     
     <!-- FAVICON -->
     <link rel="shortcut icon" type="image/x-icon" href="~/assets/images/brand/favicon.ico" />
 
     <!-- TITLE -->
     <title>MOD Asset Management System</title>
+
     <!-- BOOTSTRAP CSS -->
     <link id="style" href="~/assets/plugins/bootstrap/css/bootstrap.min.css" asp-append-version="true" rel="stylesheet" />
 
@@ -35,7 +30,6 @@
     <link rel="stylesheet" href="https://kendo.cdn.telerik.com/themes/6.4.0/bootstrap/bootstrap-main.css" />
     <style>
         /* Gradient transparent - color - transparent */
-
         hr.customHR {
             border: 0;
             height: 1px;
@@ -51,44 +45,31 @@
             border: 1px solid lightblue;
             box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2), 0px 6px 20px 0px rgba(0,0,0,0.19);
         }
-
         .form-control {
             border-color: #ced4da;
         }
-
             .form-control:focus {
                 border-color: green;
                 border: 1px solid lightblue;
                 box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2), 0px 6px 20px 0px rgba(0,0,0,0.19);
             }
-
         .select2:focus {
             border-color: green;
             border: 1px solid lightblue;
             box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2), 0px 6px 20px 0px rgba(0,0,0,0.19);
         }
-
         .form-control:disabled {
             background-color: #e9ecef;
             opacity: 1;
         }
-
     </style>
     <script src="https://kendo.cdn.telerik.com/2023.2.606/js/jquery.min.js"></script>
 
     @* Add the Kendo UI scripts: *@
     <script src="https://kendo.cdn.telerik.com/2023.2.606/js/kendo.all.min.js"></script>
     <script src="https://kendo.cdn.telerik.com/2023.2.606/js/kendo.aspnetmvc.min.js"></script>
-
-
     <script src="~/assets/plugins/bootstrap-datepicker/js/datepicker.js"></script>
-
-
 </head>
-@{
-
-    //var mode = "";// "dark-mode";
-}
 <body class="app sidebar-mini ltr">
 
     <!-- GLOBAL-LOADER -->
@@ -96,10 +77,10 @@
         <img src="~/assets/images/loader.svg" class="loader-img" alt="Loader">
     </div>
     <!-- /GLOBAL-LOADER -->
+
     <!-- PAGE -->
     <div class="page">
         <div class="page-main">
-
             <!-- app header code -->
             <partial name="layouts/_app-header.cshtml" />
             <!-- End app header Code -->
@@ -118,10 +99,10 @@
             </div>
             <!-- CONTAINER END -->
         </div>
-
         <partial name="layouts/-selector-model.cshtml" />
         <partial name="layouts/_footer.cshtml" />
     </div>
+
     <section id="dvNotificationsData" style="display:none;"></section>
     <!-- BACK-TO-TOP -->
     <a href="#top" id="back-to-top"><i class="fa fa-long-arrow-up"></i></a>
@@ -159,13 +140,11 @@
     <script src="~/assets/plugins/datatable/dataTables.responsive.min.js"></script>
     <script src="~/assets/plugins/datatable/responsive.bootstrap5.min.js"></script>
 
-
     <!--PERFECT SCROLLBAR-->
     <script src="~/assets/plugins/p-scroll/perfect-scrollbar.js"></script>
 
     <!-- FORMVALIDATION JS -->
     <script src="~/assets/js/form-validation.js"></script>
-
 
     <!-- Perfect SCROLLBAR JS-->
     @*			<script src="~/assets/plugins/p-scroll/perfect-scrollbar.js"></script>
@@ -175,6 +154,7 @@
     <script src="~/assets/js/sticky.js"></script>
     <partial name="_ValidationScriptsPartial" />
     <partial name="_Notification" />
+
     @* @RenderSection("Scripts",false/*required*/) *@
     @await RenderSectionAsync("Scripts", required: false)
 
@@ -186,7 +166,6 @@
 
     <!-- TELERIK SCRIPTS -->
     <script src="~/js/kendo-ui-license.js"></script>
-
     <section id="dvProfileData" style="display:none;"></section>
     <script src="~/assets/plugins/moment/moment.js"></script>
     <script>
@@ -309,7 +288,7 @@
         };
         const loadNotifications = () => {
             const sData = $("#dvNotificationsData").html();
-            if (sData !== "No Records Found") {
+            if (sData != "No Records Found") {
                 const Data = JSON.parse(sData);
                 let isNewNotification = false;
                 let nCounter = 0;
@@ -329,11 +308,8 @@
                     if (nCounter > 4) {
                         break; // Exit the loop once nCounter exceeds 4
                     }
-
-                    
-
                     sHtml += `
-                                <a class="dropdown-item ${sbgClass}" href="/Users/Home/NotificationDirector/${e.Id}">
+                        <a class="dropdown-item ${sbgClass}" href="/Users/Home/NotificationDirector/${e.Id}">
                             <div class="notification-each d-flex ">
                                 <div class="avatar-container avatar-md me-2">
                                     <img alt="avatar" class="rounded-circle" src="${e.ImageUrl}">
@@ -359,17 +335,19 @@
                 } else {
                     notificationPulse.hide();
                     sHtml = `
-                        <a class="dropdown-item" href="#">
-                            <div class="notification-each d-flex">
-                                <div class="me-3 notifyimg brround">
+                            <a class="dropdown-item" href="#">
+                                <div class="notification-each d-flex">
+                                    <div class="me-3 notifyimg brround">
+                                    </div>
+                                    <div>
+                                        <span class="notification-label mb-1">No notification available</span>
+                                    </div>
                                 </div>
-                                <div>
-                                    <span class="notification-label mb-1">No notification available</span>
-                                </div>
-                            </div>
-                        </a>`;
+                            </a>`;
                     $("#dvNotifications").html(sHtml);
                 }
+            } else{
+                $("#notification-pulse").hide();
             }
         };
         const clearNotifications = () => { 
