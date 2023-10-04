@@ -22,6 +22,25 @@ namespace MODAMS.Models.ViewModels.Dto
 
             return assetTypeCounts;
         }
+
+        public List<AlertsBarChartData> GetBarChartData()
+        {
+            var alertTypeCounts = Alerts.GroupBy(alert => new { alert.AlertType, alert.Department })
+                .Select(group => new AlertsBarChartData
+                {
+                    Department = group.Key.Department,
+                    AlertType = group.Key.AlertType,
+                    Count = group.Count()
+                }).ToList();
+
+            return alertTypeCounts;
+        }
+
+    }
+    public class AlertsBarChartData { 
+        public string Department { get; set; }
+        public string AlertType { get; set; }
+        public int Count { get; set; }
     }
 
     public class AlertsChartData { 

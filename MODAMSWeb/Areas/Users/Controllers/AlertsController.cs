@@ -51,6 +51,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 Selected = (m.DepartmentId == departmentId)
             });
 
+            dto.DepartmentId = departmentId > 0 ? (int)departmentId : 0;
             dto.DepartmentList = departmentList;
 
             return View(dto);
@@ -215,17 +216,16 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     blnCheck = true;
                     sDataColumn = "Cost";
                 }
-                if (IsDate(asset.PurchaseDate.ToString()))
+                if (!DateTime.TryParse(asset.PurchaseDate.ToString(), out DateTime purchaseDate))
                 {
                     blnCheck = true;
                     sDataColumn = "Purchase Date";
                 }
-                if (IsDate(asset.RecieptDate.ToString()))
+                if (!DateTime.TryParse(asset.RecieptDate.ToString(), out DateTime recieptDate))
                 {
                     blnCheck = true;
-                    sDataColumn = "Purchase Date";
+                    sDataColumn = "Reciept Date";
                 }
-
                 if (blnCheck)
                 {
                     var subCategoryName = asset.SubCategory?.SubCategoryName ?? "";
@@ -242,7 +242,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                         Department = departmentName,
                         Name = asset.Name,
                         AlertType = "Missing Data",
-                        Description = $"{sDataColumn} field is not valid!",
+                        Description = $"{sDataColumn} is not valid!",
                         EmployeeId = employeeId
                     };
                     alerts.Add(alert);

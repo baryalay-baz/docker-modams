@@ -32,109 +32,208 @@
                     <div class="card">
                         <div class="card-status bg-primary br-tr-7 br-tl-7"></div>
                         <div class="card-body">
-                            <div class="table-responsive">
-                                <table id="tblAlerts" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
-                                    <thead class="bg-primary-gradient ms-auto divShadow">
-                                        <tr>
-                                            <th class="text-white bg-transparent border-bottom-0 w-5" width="10%">S.No</th>
-                                            <th class="text-white bg-transparent border-bottom-0">Category</th>
-                                            <th class="text-white bg-transparent border-bottom-0">Make</th>
-                                            <th class="text-white bg-transparent border-bottom-0">Asset Name</th>
-                                            <th class="text-white bg-transparent border-bottom-0">Alert Type</th>
-                                            <th class="text-white bg-transparent border-bottom-0">Department</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="table-body">
-                                        @{
-                                            int nCounter = 0;
-                                            string sCounter = "0";
-
-                                            foreach (var alert in Model.Alerts)
-                                            {
-                                                nCounter++;
-                                                sCounter = (nCounter < 10) ? "0" + nCounter.ToString() : nCounter.ToString();
-                                                <tr>
-                                                    <td class="text-muted text-center fs-15 fw-semibold">@sCounter.</td>
-                                                    <td class="text-muted fs-15 fw-semibold">@alert.SubCategory</td>
-                                                    <td class="text-muted fs-15 fw-semibold">@alert.Make</td>
-                                                    <td class="text-muted fs-15 fw-semibold"><a asp-action="AssetInfo" asp-controller="Assets" asp-area="Users" asp-route-id="@alert.AssetId">@alert.Name</a></td>
-                                                    <td class="text-muted fs-15 fw-semibold">@alert.AlertType</td>
-                                                    <td class="text-muted fs-15 fw-semibold">@alert.Department</td>
-                                                </tr>
-                                            }
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
+                            <canvas id="barChartAlerts" height="100">
+                            </canvas>
                         </div>
                     </div>
-                    
                 </div>
                 <div class="col-md-4">
                     <div class="card">
                         <div class="card-status bg-info br-tr-7 br-tl-7"></div>
-                        <div id="card-body-file" class="card-body container" style="height: 620px; display: flex; justify-content: center; align-items: center; width: 80%; margin: auto;">
-                            <canvas id="pieChartAlerts">
+                        <div id="card-body-file" class="card-body" style="display: flex; justify-content: center; align-items: center; width: 80%; margin: auto;">
+                            <canvas id="pieChartAlerts" height="275">
                             </canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div aria-multiselectable="true" id="accordion8" role="tablist">
+                        <div class="card mb-0">
+                            <div class="card-header border-bottom-0 bg-info h-5" id="heading8" role="tab">
+                                <a class="accor-style2 collapsed text-white" aria-controls="collapse8" aria-expanded="false" data-bs-toggle="collapse" href="#collapse8"><i class="fe fe-plus-circle me-2"></i>&nbsp;List of Assets with Alerts</a>
+                            </div>
+                            <div aria-labelledby="heading8" class="collapse" data-bs-parent="#accordion8" id="collapse8" role="tabpanel">
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table id="tblAlerts" class="table text-nowrap mb-0 table-bordered key-buttons border-top border-bottom project-list-main">
+                                            <thead class="bg-primary-gradient ms-auto divShadow">
+                                                <tr>
+                                                    <th class="text-white bg-transparent border-bottom-0 w-5" width="10%">S.No</th>
+                                                    <th class="text-white bg-transparent border-bottom-0">Category</th>
+                                                    <th class="text-white bg-transparent border-bottom-0">Make</th>
+                                                    <th class="text-white bg-transparent border-bottom-0">Asset Name</th>
+                                                    <th class="text-white bg-transparent border-bottom-0">Alert Type</th>
+                                                    <th class="text-white bg-transparent border-bottom-0">Description</th>
+                                                    <th class="text-white bg-transparent border-bottom-0">Department</th>
+                                                    <th class="text-white bg-transparent border-bottom-0">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="table-body">
+                                                @{
+                                                    int nCounter = 0;
+                                                    string sCounter = "0";
+
+                                                    foreach (var alert in Model.Alerts)
+                                                    {
+                                                        nCounter++;
+                                                        sCounter = (nCounter < 10) ? "0" + nCounter.ToString() : nCounter.ToString();
+                                                        <tr>
+                                                            <td class="text-muted text-center fs-15 fw-semibold">@sCounter.</td>
+                                                            <td class="text-muted fs-15 fw-semibold">@alert.SubCategory</td>
+                                                            <td class="text-muted fs-15 fw-semibold">@alert.Make</td>
+                                                            <td class="text-muted fs-15 fw-semibold">@alert.Name</td>
+                                                            <td class="text-muted fs-15 fw-semibold">@alert.AlertType</td>
+                                                            <td class="text-muted fs-15 fw-semibold">@alert.Description</td>
+                                                            <td class="text-muted fs-15 fw-semibold">@alert.Department</td>
+                                                            <td class="text-muted fs-15 fw-semibold">
+                                                                <div class="d-flex align-items-stretch">
+                                                                    <a asp-controller="Assets" asp-action="AssetInfo" asp-route-id="@alert.AssetId" class="btn btn-sm btn-outline-info border me-2" data-bs-toggle="tooltip" data-bs-original-title="Asset Information">
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                                                                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                                                            <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+                                                                        </svg>
+                                                                    </a>
+                                                                </div>
+                                                            </td>
+
+                                                        </tr>
+                                                    }
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div><div></div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-@section scripts {
-    <script>
-        $(document).ready(function () {
-            hideMenu();
-            makeDataTable($('#tblAlerts'), 1);
+    @section scripts {
+        <script>
+            $(document).ready(function () {
+                hideMenu();
+                barChartAlerts();
+                pieChartAlerts();
 
-            $('.select2').select2();
-            $('#DepartmentId').on("change", () => {
-                window.location.href = '/Users/Alerts/Index?departmentId=' + $("#DepartmentId").val();
+                $('.select2').select2();
+                $('#DepartmentId').on("change", () => {
+                    window.location.href = '/Users/Alerts/Index?departmentId=' + $("#DepartmentId").val();
+                });
+
+                makeDataTable($('#tblAlerts'));
             });
-            pieChartAlerts();
-        });
 
-        const pieChartAlerts = () => {
-            var data = '@Html.Raw(Json.Serialize(Model.GetChartData()))';
-            var ctx = document.getElementById('pieChartAlerts').getContext('2d');
+            const pieChartAlerts = () => {
+                var data = '@Html.Raw(Json.Serialize(Model.GetChartData()))';
+                var ctx = document.getElementById('pieChartAlerts').getContext('2d');
 
-            var labels = @Html.Raw(Json.Serialize(Model.GetChartData().Select(item => item.Type)));
-            var values = @Html.Raw(Json.Serialize(Model.GetChartData().Select(item => item.Count)));
+                var labels = @Html.Raw(Json.Serialize(Model.GetChartData().Select(item => item.Type)));
+                var values = @Html.Raw(Json.Serialize(Model.GetChartData().Select(item => item.Count)));
 
-            var pieChart = new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        data: values,
-                        backgroundColor: [
-                            'rgba(20, 99, 132, 0.7)',
-                            'rgba(200, 19, 12, 0.7)',
-                            'rgba(54, 162, 235, 0.7)',
-                            'rgba(255, 206, 86, 0.7)',
-                            'rgba(200, 106, 76, 0.7)',
-                            'rgba(115, 211, 56, 0.7)',
-                            'rgba(155, 51, 97, 0.7)',
-                            // Add more colors as needed
-                        ],
-                    }],
-                },
-                options: {
-                    plugins: {
-                        labels: {
-                            render: 'value',
-                            fontColor: '#ffffff',
-                            formatter: (value, context) => {
-                                return context.dataset.data[context.dataIndex];
+                var pieChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: values,
+                            backgroundColor:
+                                [
+                                    getRandomColor(),
+                                    getRandomColor(),
+                                    getRandomColor(),
+                                    // Add more colors as needed
+                                ],
+                        }],
+                    },
+                    options: {
+                        plugins: {
+                            labels: {
+                                render: 'value',
+                                fontColor: '#ffffff',
+                                formatter: (value, context) => {
+                                    return context.dataset.data[context.dataIndex];
+                                }
+                            },
+                        }
+                    }
+                });
+
+            }
+
+            const barChartAlerts = () => {
+                var ctx = document.getElementById('barChartAlerts').getContext('2d');
+                var data = JSON.parse('@Html.Raw(Json.Serialize(Model.GetBarChartData()))');
+
+                //console.log(data);
+
+                var dataArray = Array.from(data);
+
+                var departments = [...new Set(dataArray.map(item => item.department))];
+                var alertTypes = [...new Set(dataArray.map(item => item.alertType))];
+
+                var dataset = [];
+                alertTypes.forEach(alertType => {
+                    var counts = departments.map(department => {
+                        var item = dataArray.find(d => d.department === department && d.alertType === alertType);
+                        return item ? item.count : 0;
+                    });
+
+                    dataset.push({
+                        label: alertType,
+                        data: counts,
+                        backgroundColor: getRandomColor(), // You can define a function to generate random colors
+                    });
+                    console.log(dataset);
+
+                });
+
+                var chartData = {
+                    labels: departments,
+                    datasets: dataset
+                };
+
+                var chart = new Chart(ctx, {
+                    type: 'bar',
+                    data: chartData,
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: {
+                                stacked: true
+                            },
+                            y: {
+                                stacked: true,
+                                beginAtZero: true, // Start the y-axis at zero
+                                ticks: {
+                                    callback: function (value) { // Display integer values on the y-axis
+                                        return value;
+                                    }
+                                }
                             }
                         },
+                        plugins: {
+                            legend: {
+                                position: 'top', // Display legend on top
+                            },
+                            datalabels: {
+                                formatter: (value, context) => { // Display actual values on top of bars
+                                    return '';
+                                },
+                                align: 'end',
+                                anchor: 'end'
+                            }
+                        }
                     }
-                }
-            });
-            
-        }
-
-    </script>
+                });
+            }
+            const getRandomColor = () => {
+                var randomColor = '#' + Math.floor(Math.random() * 16777215).toString(16);
+                return randomColor;
+            }
+        </script>
     }
