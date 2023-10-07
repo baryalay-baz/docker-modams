@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using MODAMS.Models;
 using MODAMS.Models.ViewModels;
 using System.Reflection.Emit;
-
 
 //using
 
@@ -33,7 +34,6 @@ namespace MODAMS.DataAccess.Data
         public DbSet<AssetDocument> AssetDocuments { get; set; }
         public DbSet<AssetDocumentChecklist> AssetDocumentChecklist { get; set; }
         public DbSet<AssetPicture> AssetPictures { get; set; }
-        public DbSet<Log> Log { get; set; }
         public DbSet<TransferStatus> TransferStatuses { get; set; }
         public DbSet<Transfer> Transfers { get; set; }
         public DbSet<TransferDetail> TransferDetails { get; set; }
@@ -41,6 +41,7 @@ namespace MODAMS.DataAccess.Data
         public DbSet<AssetHistory> AssetHistory { get; set; }
         public DbSet<DisposalType> DisposalTypes { get; set; }
         public DbSet<Disposal> Disposals { get; set; }
+        public DbSet<AuditLog> AuditLog { get; set; }
 
 
         //Section for Views
@@ -55,6 +56,49 @@ namespace MODAMS.DataAccess.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+        }
+
+
+        //Modifying SaveChanges for AuditLogs
+        public override int SaveChanges()
+        {
+            var auditLogs = new List<AuditLog>();
+
+            foreach (var entry in ChangeTracker.Entries())
+            {
+                if (entry.State == EntityState.Modified)
+                {
+                    foreach (var property in entry.OriginalValues.Properties)
+                    {
+                        var original = entry.OriginalValues[property];
+                        var current = entry.CurrentValues[property];
+
+                        if (!object.Equals(original, current))
+                        {
+                            auditLogs.Add(new AuditLog
+                            {
+                                Timestamp = DateTime.Now,
+                                EmployeeId = 1, // Implement your logic to get the user ID.
+                                Action = "Modify",
+                                EntityName = entry.Entity.GetType().Name,
+                                PrimaryKeyValue = entry.OriginalValues["Id"].ToString(), // Adjust as per your primary key.
+                                PropertyName = property.Name,
+                                OldValue = original?.ToString(),
+                                NewValue = current?.ToString()
+                            });
+                        }
+                    }
+                }
+            }
+
+            // Save the audit logs
+            // You may need to create an DbSet<AuditLog> in your DbContext to save logs.
+            // context.AuditLogs.AddRange(auditLogs);
+            // context.SaveChanges();
+            
+
+
+            return base.SaveChanges();
         }
     }
 }

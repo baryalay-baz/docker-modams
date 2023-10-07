@@ -30,7 +30,6 @@ namespace MODAMS.Utility
             _contextAccessor = contextAccessor;
             _linkGenerator = linkGenerator;
         }
-
         public int GetEmployeeId()
         {
             var ctx = _contextAccessor.HttpContext;
@@ -307,12 +306,154 @@ namespace MODAMS.Utility
 
             return depreciatedCost;
         }
-
         public string GetProfileImage(int employeeId)
         {
             var employee = _db.Employees.FirstOrDefault(m => m.Id == employeeId);
             return employee?.ImageUrl ?? "";
         }
+        public string FormatMessage(string title, string message, string email, string returnUrl, string btntext)
+        {
+            string emailMessage = "";
+            string initials = email.Substring(0, 1).ToUpper();
+            string src = SD.WebAddress;
+
+            emailMessage = "<div class=\"container\"> <div class=\"row\"><div class=\"col-md-12\"><br><br /></div> </div> <div class=\"row\"><div class=\"col-lg-12\"><table class=\"body-wrap\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; width: 100%; background-color: transparent; margin: 0;\" bgcolor=\"transparent\"> <tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\"><td style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0;\" valign=\"top\"></td><td class=\"container\" width=\"600\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; display: block !important; max-width: 600px !important; clear: both !important; margin: 0 auto;\" valign=\"top\"><div class=\"content\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; max-width: 600px; display: block; margin: 0 auto; padding: 20px;\"> <table class=\"main\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" itemprop=\"action\" itemscope itemtype=\"http://schema.org/ConfirmAction\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; border-radius: 3px; background-color: transparent; margin: 0; border: 1px dashed #4d79f6;\" bgcolor=\"#fff\"><tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\"><td class=\"content-wrap\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 20px;\" valign=\"top\"> <meta itemprop=\"name\" content=\"Confirm Email\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\" /> <table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\">" +
+                 "<tr><img src=\"" + src + "/assets/images/brand/FGS_Small.png\" alt=\"\" style=\"margin-left: auto; margin-right: auto; display:block; margin-bottom: 10px; height: 100px;\"></td></tr><tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\"><td class=\"content-block\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; color: #4e5e69; font-size: 24px; font-weight: 700; text-align: center; vertical-align: top; margin: 0; padding: 0 0 10px;\" valign=\"top\"> <hr style=\"border-color: #2541f7; border-style:dashed; border-width:0.5px;\" /></td></tr><tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\"><td class=\"content-block\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; color: #3f5db3; font-size: 18px; vertical-align: top; margin: 0; padding: 10px 10px;\" valign=\"top\" align=\"center\">" +
+                title +
+                "</td></tr><tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\"><td class=\"content-block\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 10px 10px;\" valign=\"top\" align=\"left\"><br />" +
+                "Dear " + email + ", <br /><br />" + message +
+                "<br /><br /><span style=\"font-size: 10px;\">" +
+                "Note: This email is generated automatically, please do not reply" +
+                "<br><br></span></td></tr><tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\"><td class=\"content-block\" itemprop=\"handler\" itemscope itemtype=\"http://schema.org/HttpActionHandler\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 10px 10px;\" valign=\"top\">" +
+                "<a href=\"" + returnUrl + "\" class=\"btn btn-primary\" style=\"color:white; background-color:#2541f7; font-size: 14px; text-decoration: none; line-height: 2em; font-weight: bold; text-align: center; cursor: pointer; display: block; border-radius: 5px; text-transform: capitalize; border: none; padding: 10px 20px;\">" + btntext + " </a></td></tr><tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\"><td class=\"content-block\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; padding-top: 5px; vertical-align: top; margin: 0; text-align: center;\" valign=\"top\"> <br /> <div><img src=\"" + src + "/assets/images/brand/ams_small.png\" /></div></td></tr> </table></td></tr> </table><!--end table--></div><!--end content--></td><td style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0;\" valign=\"top\"></td> </tr></table><!--end table--></div><!--end col--> </div><!--end row--></div>";
+
+            return emailMessage;
+        }
+        public decimal GetDepreciatedCostByStoreId(int storeId)
+        {
+            var assetList = _db.Assets.Where(m => m.StoreId == storeId)
+                .Select(m => new { m.Id }).ToList();
+
+            decimal totalCost = 0;
+
+            foreach (var asset in assetList)
+            {
+                totalCost += GetDepreciatedCost(asset.Id);
+            }
+            return Math.Round(totalCost, 0);
+        }
+        public int GetStoreOwnerId(int storeId)
+        {
+            int departmentId = 0;
+            int storeOwnerId = 0;
+
+            var store = _db.Stores.Where(m => m.Id == storeId).FirstOrDefault();
+            if (store != null)
+            {
+                departmentId = store.DepartmentId;
+                var departmentHead = _db.DepartmentHeads
+                    .Where(m => m.DepartmentId == departmentId && m.IsActive == true).FirstOrDefault();
+                if (departmentHead != null)
+                {
+                    storeOwnerId = departmentHead.EmployeeId;
+                }
+            }
+            return storeOwnerId;
+        }
+        public int GetStoreIdByEmployeeId(int employeeId)
+        {
+            int storeId = 0;
+            var department = _db.Departments.Where(m => m.EmployeeId == employeeId).FirstOrDefault();
+            if (department != null)
+            {
+                var store = _db.Stores.Where(m => m.DepartmentId == department.Id).FirstOrDefault();
+                if (store != null)
+                {
+                    storeId = store.Id;
+                }
+            }
+            return storeId;
+        }
+        public string GetEmployeeNameById(int employeeId)
+        {
+            string EmployeeName = "Not found!";
+            var employee = _db.Employees.Where(m => m.Id == employeeId).FirstOrDefault();
+            if (employee != null)
+            {
+                EmployeeName = employee.FullName;
+            }
+            return EmployeeName;
+        }
+        public string GetBGColor(int counter)
+        {
+            string sResult = "";
+            switch (counter)
+            {
+                case 1:
+                    sResult = "bg-primary";
+                    break;
+                case 2:
+                    sResult = "bg-secondary";
+                    break;
+                case 3:
+                    sResult = "bg-warning";
+                    break;
+                case 4:
+                    sResult = "bg-info";
+                    break;
+                case 5:
+                    sResult = "bg-danger";
+                    break;
+            }
+            return sResult;
+        }
+        public string GetStoreOwnerInfo(int storeId)
+        {
+            string sResult = "Vacant";
+            string storeOwner = "";
+            string emailAddress = "";
+            string imageUrl = "";
+            bool blnCheck = false;
+
+            var employeeId = GetStoreOwnerId(storeId);
+            var rec = _db.Employees.FirstOrDefault(m => m.Id == employeeId);
+            if (rec != null)
+            {
+                storeOwner = rec.FullName;
+                emailAddress = rec.Email;
+                imageUrl = rec.ImageUrl;
+                blnCheck = true;
+            }
+
+            if (blnCheck)
+            {
+                sResult = "<div class=\"d-flex align-items-center\">" +
+                    "<div class=\"me-2\"><span>" +
+                    "<img style=\"min-width:30px;\" src=\"" + imageUrl + "\" alt=\"profile-user\" class=\"data-image avatar avatar-lg rounded-circle\">" +
+                    "</span></div><div><h6 class=\"mb-0\">" + storeOwner + "</h6><span class=\"text-muted fs-12\">" + emailAddress + "</span>\r\n" +
+                    "</div></div>";
+            }
+            else
+            {
+                sResult = "<span class=\"text-secondary\">Store is vacant</span>";
+            }
+
+            return sResult;
+        }
+        public bool IsUserActive(string emailAddress)
+        {
+            var blnResult = false;
+            var employee = _db.Employees.Where(m => m.Email == emailAddress).FirstOrDefault();
+            if (employee != null)
+            {
+                if (employee.IsActive)
+                {
+                    blnResult = true;
+                }
+            }
+            return blnResult;
+        }
+
 
 
         //Private methods
@@ -369,21 +510,6 @@ namespace MODAMS.Utility
 
 
         }
-
-        public bool IsUserActive(string emailAddress)
-        {
-            var blnResult = false;
-            var employee = _db.Employees.Where(m => m.Email == emailAddress).FirstOrDefault();
-            if (employee != null)
-            {
-                if (employee.IsActive)
-                {
-                    blnResult = true;
-                }
-            }
-            return blnResult;
-        }
-
         private string GenerateUrl(int notificationSectionId, int targetRecordId)
         {
             string? callbackUrl = "";
@@ -407,142 +533,6 @@ namespace MODAMS.Utility
             }
 
             return HtmlEncoder.Default.Encode(callbackUrl);
-        }
-
-        public string FormatMessage(string title, string message, string email, string returnUrl, string btntext)
-        {
-            string emailMessage = "";
-            string initials = email.Substring(0, 1).ToUpper();
-            string src = SD.WebAddress;
-
-            emailMessage = "<div class=\"container\"> <div class=\"row\"><div class=\"col-md-12\"><br><br /></div> </div> <div class=\"row\"><div class=\"col-lg-12\"><table class=\"body-wrap\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; width: 100%; background-color: transparent; margin: 0;\" bgcolor=\"transparent\"> <tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\"><td style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0;\" valign=\"top\"></td><td class=\"container\" width=\"600\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; display: block !important; max-width: 600px !important; clear: both !important; margin: 0 auto;\" valign=\"top\"><div class=\"content\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; max-width: 600px; display: block; margin: 0 auto; padding: 20px;\"> <table class=\"main\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" itemprop=\"action\" itemscope itemtype=\"http://schema.org/ConfirmAction\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; border-radius: 3px; background-color: transparent; margin: 0; border: 1px dashed #4d79f6;\" bgcolor=\"#fff\"><tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\"><td class=\"content-wrap\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 20px;\" valign=\"top\"> <meta itemprop=\"name\" content=\"Confirm Email\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\" /> <table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\">" +
-                 "<tr><img src=\"" + src + "/assets/images/brand/FGS_Small.png\" alt=\"\" style=\"margin-left: auto; margin-right: auto; display:block; margin-bottom: 10px; height: 100px;\"></td></tr><tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\"><td class=\"content-block\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; color: #4e5e69; font-size: 24px; font-weight: 700; text-align: center; vertical-align: top; margin: 0; padding: 0 0 10px;\" valign=\"top\"> <hr style=\"border-color: #2541f7; border-style:dashed; border-width:0.5px;\" /></td></tr><tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\"><td class=\"content-block\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; color: #3f5db3; font-size: 18px; vertical-align: top; margin: 0; padding: 10px 10px;\" valign=\"top\" align=\"center\">" +
-                title +
-                "</td></tr><tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\"><td class=\"content-block\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 10px 10px;\" valign=\"top\" align=\"left\"><br />" +
-                "Dear " + email + ", <br /><br />" + message +
-                "<br /><br /><span style=\"font-size: 10px;\">" +
-                "Note: This email is generated automatically, please do not reply" +
-                "<br><br></span></td></tr><tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\"><td class=\"content-block\" itemprop=\"handler\" itemscope itemtype=\"http://schema.org/HttpActionHandler\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 10px 10px;\" valign=\"top\">" +
-                "<a href=\"" + returnUrl + "\" class=\"btn btn-primary\" style=\"color:white; background-color:#2541f7; font-size: 14px; text-decoration: none; line-height: 2em; font-weight: bold; text-align: center; cursor: pointer; display: block; border-radius: 5px; text-transform: capitalize; border: none; padding: 10px 20px;\">" + btntext + " </a></td></tr><tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\"><td class=\"content-block\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; padding-top: 5px; vertical-align: top; margin: 0; text-align: center;\" valign=\"top\"> <br /> <div><img src=\"" + src + "/assets/images/brand/ams_small.png\" /></div></td></tr> </table></td></tr> </table><!--end table--></div><!--end content--></td><td style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0;\" valign=\"top\"></td> </tr></table><!--end table--></div><!--end col--> </div><!--end row--></div>";
-
-            return emailMessage;
-        }
-
-        public decimal GetDepreciatedCostByStoreId(int storeId)
-        {
-            var assetList = _db.Assets.Where(m => m.StoreId == storeId)
-                .Select(m => new { m.Id }).ToList();
-
-            decimal totalCost = 0;
-
-            foreach (var asset in assetList)
-            {
-                totalCost += GetDepreciatedCost(asset.Id);
-            }
-            return Math.Round(totalCost, 0);
-        }
-
-        public int GetStoreOwnerId(int storeId)
-        {
-            int departmentId = 0;
-            int storeOwnerId = 0;
-
-            var store = _db.Stores.Where(m => m.Id == storeId).FirstOrDefault();
-            if (store != null)
-            {
-                departmentId = store.DepartmentId;
-                var departmentHead = _db.DepartmentHeads
-                    .Where(m => m.DepartmentId == departmentId && m.IsActive == true).FirstOrDefault();
-                if (departmentHead != null)
-                {
-                    storeOwnerId = departmentHead.EmployeeId;
-                }
-            }
-            return storeOwnerId;
-        }
-
-        public int GetStoreIdByEmployeeId(int employeeId)
-        {
-            int storeId = 0;
-            var department = _db.Departments.Where(m => m.EmployeeId == employeeId).FirstOrDefault();
-            if (department != null)
-            {
-                var store = _db.Stores.Where(m => m.DepartmentId == department.Id).FirstOrDefault();
-                if (store != null)
-                {
-                    storeId = store.Id;
-                }
-            }
-            return storeId;
-        }
-
-        public string GetEmployeeNameById(int employeeId)
-        {
-            string EmployeeName = "Not found!";
-            var employee = _db.Employees.Where(m => m.Id == employeeId).FirstOrDefault();
-            if (employee != null)
-            {
-                EmployeeName = employee.FullName;
-            }
-            return EmployeeName;
-        }
-
-        public string GetBGColor(int counter)
-        {
-            string sResult = "";
-            switch (counter)
-            {
-                case 1:
-                    sResult = "bg-primary";
-                    break;
-                case 2:
-                    sResult = "bg-secondary";
-                    break;
-                case 3:
-                    sResult = "bg-warning";
-                    break;
-                case 4:
-                    sResult = "bg-info";
-                    break;
-                case 5:
-                    sResult = "bg-danger";
-                    break;
-            }
-            return sResult;
-        }
-
-        public string GetStoreOwnerInfo(int storeId)
-        {
-            string sResult = "Vacant";
-            string storeOwner = "";
-            string emailAddress = "";
-            string imageUrl = "";
-            bool blnCheck = false;
-
-            var employeeId = GetStoreOwnerId(storeId);
-            var rec = _db.Employees.FirstOrDefault(m => m.Id == employeeId);
-            if (rec != null)
-            {
-                storeOwner = rec.FullName;
-                emailAddress = rec.Email;
-                imageUrl = rec.ImageUrl;
-                blnCheck = true;
-            }
-
-            if (blnCheck)
-            {
-                sResult = "<div class=\"d-flex align-items-center\">" +
-                    "<div class=\"me-2\"><span>" +
-                    "<img style=\"min-width:30px;\" src=\"" + imageUrl + "\" alt=\"profile-user\" class=\"data-image avatar avatar-lg rounded-circle\">" +
-                    "</span></div><div><h6 class=\"mb-0\">" + storeOwner + "</h6><span class=\"text-muted fs-12\">" + emailAddress + "</span>\r\n" +
-                    "</div></div>";
-            }
-            else
-            {
-                sResult = "<span class=\"text-secondary\">Store is vacant</span>";
-            }
-
-            return sResult;
         }
     }
 }

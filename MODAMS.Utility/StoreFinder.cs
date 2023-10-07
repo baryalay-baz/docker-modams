@@ -1,7 +1,7 @@
 ﻿using MODAMS.Models;
 using MODAMS.Models.ViewModels;
 
-namespace MOD_AMS.Models
+namespace MODAMS.Models
 {
     public class StoreFinder
     {

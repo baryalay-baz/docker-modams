@@ -186,6 +186,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
                     await _db.Assets.AddAsync(newAsset);
                     await _db.SaveChangesAsync();
+
+
                     TempData["success"] = "Asset added successfuly!";
                     return RedirectToAction("Index", "Assets", new { area = "Users", id = dto.StoreId });
                 }
@@ -738,7 +740,6 @@ namespace MODAMSWeb.Areas.Users.Controllers
             }
 
         }
-
         private int GetAssetDocumentId(int assetId, int documentTypeId)
         {
             int nResult = 0;
@@ -749,7 +750,6 @@ namespace MODAMSWeb.Areas.Users.Controllers
             }
             return nResult;
         }
-
         private bool DeleteFile(string fileName, string folderName)
         {
             string wwwRootPath = _webHostEnvironment.WebRootPath;

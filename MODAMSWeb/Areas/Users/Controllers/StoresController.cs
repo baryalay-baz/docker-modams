@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using MOD_AMS.Models;
 using MODAMS.DataAccess.Data;
 using MODAMS.Models;
 using MODAMS.Models.ViewModels;
