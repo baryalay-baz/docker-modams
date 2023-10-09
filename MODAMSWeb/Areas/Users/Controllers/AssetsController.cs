@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.CodeAnalysis.Elfie.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGeneration.EntityFrameworkCore;
 using MODAMS.DataAccess.Data;
@@ -37,7 +38,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
         public IActionResult Index(int id, int subCategoryId = 0)
         {
             var assets = _db.Assets.Where(m => m.StoreId == id).Include(m => m.AssetStatus)
-                .Include(m => m.SubCategory).ThenInclude(m=>m.Category)
+                .Include(m => m.SubCategory).ThenInclude(m => m.Category)
                 .Include(m => m.Condition).Include(m => m.Donor)
                 .Include(m => m.Store).ToList();
 
@@ -187,6 +188,12 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     await _db.Assets.AddAsync(newAsset);
                     await _db.SaveChangesAsync();
 
+                    //Log Newsfeed
+                    string employeeName = _func.GetEmployeeName();
+                    string assetName = newAsset.Name;
+                    string storeName = _func.GetStoreNameByStoreId(newAsset.StoreId);
+                    string message = $"{employeeName} registered a new asset ({assetName}) in {storeName}";
+                    _func.LogNewsFeed(message, "Users", "Assets", "AssetInfo", newAsset.Id);
 
                     TempData["success"] = "Asset added successfuly!";
                     return RedirectToAction("Index", "Assets", new { area = "Users", id = dto.StoreId });
@@ -316,6 +323,13 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
                     await _db.SaveChangesAsync();
 
+                    //Log Newsfeed
+                    string employeeName = _func.GetEmployeeName();
+                    string assetName = assetInDb.Name;
+                    string storeName = _func.GetStoreNameByStoreId(assetInDb.StoreId);
+                    string message = $"{employeeName} modified an asset ({assetName}) in {storeName}";
+                    _func.LogNewsFeed(message, "Users", "Assets", "AssetInfo", assetInDb.Id);
+
                     TempData["success"] = "Changes saved succesfuly!";
                     return RedirectToAction("EditAsset", "Assets", new { area = "Users", id = dto.Id });
                 }
@@ -404,6 +418,13 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     };
                     await _db.AssetDocuments.AddAsync(newAssetDocument);
                     await _db.SaveChangesAsync();
+
+                    //Log News feed
+                    string employeeName = _func.GetEmployeeName();
+                    string assetName = _func.GetAssetName(Id);
+                    string storeName = _func.GetStoreNameByStoreId(_func.GetStoreIdByAssetId(Id));
+                    string message = $"{employeeName} uploaded {sFileName} for ({assetName}) in {storeName}";
+                    _func.LogNewsFeed(message, "Users", "Assets", "AssetInfo", Id);
                 }
                 catch (Exception ex)
                 {
@@ -456,7 +477,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             TempData["tab"] = tab.ToString();
 
-            var assetHistory = _db.AssetHistory.Where(m => m.AssetId == id).OrderBy(m=>m.TimeStamp).ToList();
+            var assetHistory = _db.AssetHistory.Where(m => m.AssetId == id).OrderBy(m => m.TimeStamp).ToList();
 
             dto.dtoAssetPictures = dtoAssetPictures;
             dto.AssetHistory = assetHistory;
@@ -554,6 +575,14 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     };
                     await _db.AssetPictures.AddAsync(assetPicture);
                     await _db.SaveChangesAsync();
+
+                    //Log NewsFeed
+                    string employeeName = _func.GetEmployeeName();
+                    string assetName = _func.GetAssetName(AssetId);
+                    string storeName = _func.GetStoreNameByStoreId(_func.GetStoreIdByAssetId(AssetId));
+                    string message = $"{employeeName} uploaded a picture for ({assetName}) in {storeName}";
+                    _func.LogNewsFeed(message, "Users", "Assets", "AssetInfo", AssetId);
+
                 }
                 catch (Exception ex)
                 {
@@ -661,7 +690,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             return sResult;
         }
 
-        
+
 
         //API Calls End
 
@@ -767,5 +796,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             }
             return blnResult;
         }
+        
+
     }
 }

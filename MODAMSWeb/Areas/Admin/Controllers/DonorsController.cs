@@ -92,7 +92,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
                 return View(donor);
             }
 
-            var donorInDb = await _db.Donors.Where(m => m.Code == donor.Code).FirstOrDefaultAsync();
+            var donorInDb = await _db.Donors.Where(m => m.Id == donor.Id).FirstOrDefaultAsync();
             if (donorInDb != null)
             {
                 donorInDb.Code = donor.Code;

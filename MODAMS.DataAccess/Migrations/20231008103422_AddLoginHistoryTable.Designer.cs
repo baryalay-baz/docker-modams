@@ -4,6 +4,7 @@ using MODAMS.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MODAMS.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231008103422_AddLoginHistoryTable")]
+    partial class AddLoginHistoryTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -263,9 +266,11 @@ namespace MODAMS.DataAccess.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NewValue")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("OldValue")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PrimaryKeyValue")
@@ -280,8 +285,6 @@ namespace MODAMS.DataAccess.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("EmployeeId");
 
                     b.ToTable("AuditLog");
                 });
@@ -526,7 +529,7 @@ namespace MODAMS.DataAccess.Migrations
                     b.ToTable("Employees");
                 });
 
-            modelBuilder.Entity("MODAMS.Models.NewsFeed", b =>
+            modelBuilder.Entity("MODAMS.Models.LoginHistory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -534,26 +537,7 @@ namespace MODAMS.DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Action")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Area")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Controller")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SourceRecordId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("TimeStamp")
@@ -561,9 +545,7 @@ namespace MODAMS.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EmployeeId");
-
-                    b.ToTable("NewsFeed");
+                    b.ToTable("LoginHistory");
                 });
 
             modelBuilder.Entity("MODAMS.Models.Notification", b =>
@@ -1355,17 +1337,6 @@ namespace MODAMS.DataAccess.Migrations
                     b.Navigation("Asset");
                 });
 
-            modelBuilder.Entity("MODAMS.Models.AuditLog", b =>
-                {
-                    b.HasOne("MODAMS.Models.Employee", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Employee");
-                });
-
             modelBuilder.Entity("MODAMS.Models.DepartmentHead", b =>
                 {
                     b.HasOne("MODAMS.Models.Department", "Department")
@@ -1408,17 +1379,6 @@ namespace MODAMS.DataAccess.Migrations
                     b.Navigation("Asset");
 
                     b.Navigation("DisposalType");
-
-                    b.Navigation("Employee");
-                });
-
-            modelBuilder.Entity("MODAMS.Models.NewsFeed", b =>
-                {
-                    b.HasOne("MODAMS.Models.Employee", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.Navigation("Employee");
                 });

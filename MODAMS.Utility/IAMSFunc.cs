@@ -32,7 +32,9 @@ namespace MODAMS.Utility
         public void NotifyDepartment(int departmentId, Notification notification);
         public string GetProfileImage(int employeeId);
         public string GetBGColor(int counter);
-
         public string GetStoreOwnerInfo(int storeId);
+        public void LogNewsFeed(string description, string area, string controller, string action, int sourceRecordId);
+        public string GetAssetName(int assetId);
+
     }
 }

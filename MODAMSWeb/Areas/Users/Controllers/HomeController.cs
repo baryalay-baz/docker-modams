@@ -14,6 +14,7 @@ using MODAMS.Models.ViewModels.Dto;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using MODAMS.Models.ViewModels;
+using Org.BouncyCastle.Ocsp;
 
 namespace MODAMSWeb.Areas.Users.Controllers
 {
@@ -47,10 +48,12 @@ namespace MODAMSWeb.Areas.Users.Controllers
         public IActionResult Index()
         {
             var categoryAssets = _db.vwCategoryAssets.ToList();
+            var newsFeed = _db.NewsFeed.ToList();
 
             var dto = new dtoDashboard()
             {
-                CategoryAssets = categoryAssets
+                CategoryAssets = categoryAssets,
+                NewsFeed = newsFeed
             };
 
             dto.StoreCount = _db.Stores.Count();
@@ -107,6 +110,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 rec.Phone = form.Phone;
                 rec.CardNumber = form.CardNumber;
                 await _db.SaveChangesAsync();
+
+                _func.LogNewsFeed(_func.GetEmployeeName() + " updated his profile", "Users", "Home", "Profile", rec.Id);
             }
             else
             {
@@ -205,6 +210,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 {
                     employee.ImageUrl = "/assets/images/faces/" + fileName;
                     await _db.SaveChangesAsync();
+
+                    _func.LogNewsFeed(_func.GetEmployeeName() + " uploaded a profile picture", "Users", "Home", "Profile", employee.Id);
                 }
             }
             catch (Exception ex)
@@ -313,7 +320,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
         public IActionResult NotificationDirector(int id)
         {
             var notification = _db.Notifications.Where(m => m.Id == id)
-                .Include(m=>m.NotificationSection)
+                .Include(m => m.NotificationSection)
                 .FirstOrDefault();
 
             if (notification == null)
@@ -324,8 +331,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
             _db.SaveChanges();
             return RedirectToAction(notification.NotificationSection.action,
                 notification.NotificationSection.controller,
-                new {area=notification.NotificationSection.area, id=notification.TargetRecordId});
-        
+                new { area = notification.NotificationSection.area, id = notification.TargetRecordId });
+
         }
 
         [HttpGet]
@@ -361,13 +368,14 @@ namespace MODAMSWeb.Areas.Users.Controllers
             }
             return View(dto);
         }
-        public IActionResult ClearNotifications() {
-            
+        public IActionResult ClearNotifications()
+        {
+
             var notifications = _db.Notifications.Where(m => m.EmployeeTo == _employeeId).ToList();
             _db.Notifications.RemoveRange(notifications);
             _db.SaveChanges();
 
-            return RedirectToAction("Index","Home");
+            return RedirectToAction("Index", "Home");
         }
         private decimal GetCurrentValue()
         {

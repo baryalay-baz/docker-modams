@@ -1,11 +1,10 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using MODAMS.Models;
 using MODAMS.Models.ViewModels;
-using System.Reflection.Emit;
+using System.Security.Claims;
+
 
 //using
 
@@ -13,8 +12,10 @@ namespace MODAMS.DataAccess.Data
 {
     public class ApplicationDbContext : IdentityDbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IHttpContextAccessor httpContextAccessor) : base(options)
         {
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public DbSet<Employee> Employees { get; set; }
@@ -42,6 +43,7 @@ namespace MODAMS.DataAccess.Data
         public DbSet<DisposalType> DisposalTypes { get; set; }
         public DbSet<Disposal> Disposals { get; set; }
         public DbSet<AuditLog> AuditLog { get; set; }
+        public DbSet<NewsFeed> NewsFeed { get; set; }
 
 
         //Section for Views
@@ -66,8 +68,19 @@ namespace MODAMS.DataAccess.Data
 
             foreach (var entry in ChangeTracker.Entries())
             {
-                if (entry.State == EntityState.Modified)
+                if (entry.State == EntityState.Modified || entry.State == EntityState.Added || entry.State == EntityState.Deleted)
                 {
+                    var action = "Modify";
+
+                    if (entry.State == EntityState.Added)
+                    {
+                        action = "Add";
+                    }
+                    else if (entry.State == EntityState.Deleted)
+                    {
+                        action = "Delete";
+                    }
+
                     foreach (var property in entry.OriginalValues.Properties)
                     {
                         var original = entry.OriginalValues[property];
@@ -78,8 +91,8 @@ namespace MODAMS.DataAccess.Data
                             auditLogs.Add(new AuditLog
                             {
                                 Timestamp = DateTime.Now,
-                                EmployeeId = 1, // Implement your logic to get the user ID.
-                                Action = "Modify",
+                                EmployeeId = GetCurrentUserId(),
+                                Action = action,
                                 EntityName = entry.Entity.GetType().Name,
                                 PrimaryKeyValue = entry.OriginalValues["Id"].ToString(), // Adjust as per your primary key.
                                 PropertyName = property.Name,
@@ -90,15 +103,83 @@ namespace MODAMS.DataAccess.Data
                     }
                 }
             }
-
-            // Save the audit logs
-            // You may need to create an DbSet<AuditLog> in your DbContext to save logs.
-            // context.AuditLogs.AddRange(auditLogs);
-            // context.SaveChanges();
-            
-
+            AuditLog.AddRange(auditLogs);
 
             return base.SaveChanges();
+        }
+
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var auditLogs = new List<AuditLog>();
+
+            foreach (var entry in ChangeTracker.Entries())
+            {
+                var action = "Modify";
+                if (entry.State == EntityState.Modified || entry.State == EntityState.Added || entry.State == EntityState.Deleted)
+                {
+                    if (entry.State == EntityState.Added)
+                    {
+                        action = "Add";
+                    }
+                    else if (entry.State == EntityState.Deleted)
+                    {
+                        action = "Delete";
+                    }
+                }
+                foreach (var property in entry.OriginalValues.Properties)
+                {
+                    var original = entry.OriginalValues[property];
+                    var current = entry.CurrentValues[property];
+
+                    if (action == "Modify")
+                    {
+                        if (!object.Equals(original, current))
+                        {
+                            auditLogs.Add(new AuditLog
+                            {
+                                Timestamp = DateTime.Now,
+                                EmployeeId = GetCurrentUserId(),
+                                Action = action,
+                                EntityName = entry.Entity.GetType().Name,
+                                PrimaryKeyValue = entry.OriginalValues["Id"].ToString(), // Adjust as per your primary key.
+                                PropertyName = property.Name,
+                                OldValue = original?.ToString(),
+                                NewValue = current?.ToString()
+                            });
+                        }
+                    }
+                    else {
+                        auditLogs.Add(new AuditLog
+                        {
+                            Timestamp = DateTime.Now,
+                            EmployeeId = GetCurrentUserId(),
+                            Action = action,
+                            EntityName = entry.Entity.GetType().Name,
+                            PrimaryKeyValue = entry.OriginalValues["Id"].ToString(), // Adjust as per your primary key.
+                            PropertyName = property.Name,
+                            OldValue = original?.ToString(),
+                            NewValue = current?.ToString()
+                        });
+                    }
+                }
+            }
+
+            AuditLog.AddRange(auditLogs);
+            return await base.SaveChangesAsync(cancellationToken);
+        }
+
+        private int GetCurrentUserId()
+        {
+            int EmployeeId = 0;
+            // Get the current claims principal
+            var user = _httpContextAccessor.HttpContext.User;
+
+            // Find the user's ID claim
+            var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim != null)
+                EmployeeId = DbFunctions.EmployeeId(userIdClaim?.Value);
+
+            return EmployeeId;
         }
     }
 }

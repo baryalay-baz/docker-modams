@@ -7,6 +7,7 @@ using MODAMS.DataAccess.Data;
 using MODAMS.Models;
 using MODAMS.Models.ViewModels.Dto;
 using MODAMS.Utility;
+using NuGet.ContentModel;
 using Org.BouncyCastle.Ocsp;
 
 namespace MODAMSWeb.Areas.Users.Controllers
@@ -118,7 +119,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
         //Post CreateDisposal form
         [HttpPost]
         [Authorize(Roles = "StoreOwner, User")]
-        public IActionResult CreateDisposal(dtoCreateDisposal dto)
+        public async Task<IActionResult> CreateDisposal(dtoCreateDisposal dto)
         {
 
             // Get the supervisor ID if the user is in the "User" role
@@ -160,14 +161,14 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             // Add and save the disposal entity
             _db.Disposals.Add(disposal);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
 
             // Update asset status if an asset is associated with the disposal
             var asset = _db.Assets.FirstOrDefault(m => m.Id == disposal.AssetId);
             if (asset != null)
             {
                 asset.AssetStatusId = SD.Asset_Disposed;
-                _db.SaveChanges(); // Save changes to the asset status
+                await _db.SaveChangesAsync(); // Save changes to the asset status
             }
 
             var assetHistory = new AssetHistory()
@@ -179,14 +180,19 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 Description = "Asset disposed by " + _func.GetEmployeeName(_employeeId)
             };
             _db.AssetHistory.Add(assetHistory);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
+
+            //Log NewsFeed
+            string employeeName = _func.GetEmployeeName();
+            string assetName = _func.GetAssetName(disposal.AssetId);
+            string storeName = _func.GetStoreNameByStoreId(_func.GetStoreIdByAssetId(disposal.AssetId));
+            string message = $"{employeeName} dipsosed an asset ({assetName}) in {storeName}";
+            _func.LogNewsFeed(message, "Users", "Disposals", "EditDiposal", disposal.AssetId);
 
             TempData["success"] = "Disposal added successfully!";
             return RedirectToAction("Index");
         }
 
-        [HttpGet]
-        [Authorize(Roles = "StoreOwner, User")]
         [HttpGet]
         [Authorize(Roles = "StoreOwner, User")]
         public IActionResult EditDisposal(int id)
@@ -248,7 +254,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
         [HttpPost]
         [Authorize(Roles = "StoreOwner, User")]
-        public IActionResult EditDisposal(dtoEditDisposal dto)
+        public async Task<IActionResult> EditDisposal(dtoEditDisposal dto)
         {
 
             // Get the supervisor ID if the user is in the "User" role
@@ -278,7 +284,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 // Save the uploaded file to the directory
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
-                    dto.file.CopyTo(stream);
+                    await dto.file.CopyToAsync(stream);
                 }
 
                 sFileName = uniqueFileName;
@@ -302,7 +308,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             int prevAssetId = disposalInDb.AssetId;
 
             _db.Entry(disposalInDb).CurrentValues.SetValues(disposal);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
 
 
 
@@ -348,8 +354,15 @@ namespace MODAMSWeb.Areas.Users.Controllers
             if (asset != null)
             {
                 asset.AssetStatusId = SD.Asset_Disposed;
-                _db.SaveChanges(); // Save changes to the asset status
+                await _db.SaveChangesAsync(); // Save changes to the asset status
             }
+
+            //Log NewsFeed
+            string employeeName = _func.GetEmployeeName();
+            string assetName = _func.GetAssetName(disposal.AssetId);
+            string storeName = _func.GetStoreNameByStoreId(_func.GetStoreIdByAssetId(disposal.AssetId));
+            string message = $"{employeeName} modified disposal record for an asset ({assetName}) in {storeName}";
+            _func.LogNewsFeed(message, "Users", "Disposals", "EditDisposal", disposal.Id);
 
             TempData["success"] = "Disposal updated successfully!";
             return RedirectToAction("EditDisposal", "Disposals", new { disposal.Id });

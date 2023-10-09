@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Hosting;
 using MODAMS.Models.ViewModels.Dto;
+using System.Security.Claims;
 
 namespace MODAMS.Utility
 {
@@ -32,13 +33,18 @@ namespace MODAMS.Utility
         }
         public int GetEmployeeId()
         {
-            var ctx = _contextAccessor.HttpContext;
-            var user = _userManager.GetUserId(ctx.User);
+            int EmployeeId = 0;
+            // Get the current claims principal
+            var user = _contextAccessor.HttpContext.User;
 
-            int nEmployeeId = _db.ApplicationUsers.Where(m => m.Id == user).Select(m => m.EmployeeId).FirstOrDefault();
+            // Find the user's ID claim
+            var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim != null)
+                EmployeeId = _db.ApplicationUsers.Where(m => m.Id == userIdClaim.Value).Select(m => m.EmployeeId).FirstOrDefault();
 
-            return nEmployeeId;
+            return EmployeeId;
         }
+
         public int GetEmployeeIdByEmail(string email)
         {
             int nEmployeeId = _db.Employees.Where(m => m.Email == email).Select(m => m.Id).FirstOrDefault();
@@ -453,7 +459,33 @@ namespace MODAMS.Utility
             }
             return blnResult;
         }
+        public void LogNewsFeed(string description, string area, string controller, string action, int sourceRecordId)
+        {
+            NewsFeed feed = new NewsFeed()
+            {
+                Description = description,
+                Area = area,
+                Controller = controller,
+                Action = action,
+                SourceRecordId = sourceRecordId,
+                EmployeeId = GetEmployeeId(),
+                TimeStamp = DateTime.Now
+            };
+            _db.NewsFeed.Add(feed);
+            _db.SaveChanges();
+        }
 
+        public string GetAssetName(int assetId)
+        {
+            var asset = _db.Assets.Where(m => m.Id == assetId).FirstOrDefault();
+
+            string assetName = "";
+            if (asset != null)
+            {
+                assetName = asset.Name.ToString();
+            }
+            return assetName;
+        }
 
 
         //Private methods

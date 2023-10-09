@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,7 +19,13 @@ namespace MODAMS.Models
         public string EntityName { get; set; }
         public string PrimaryKeyValue { get; set; }
         public string PropertyName { get; set; }
-        public string OldValue { get; set; }
-        public string NewValue { get; set; }
+
+        [AllowNull]
+        public string? OldValue { get; set; }
+        [AllowNull]
+        public string? NewValue { get; set; }
+
+        [ValidateNever]
+        public Employee Employee { get; set; }
     }
 }

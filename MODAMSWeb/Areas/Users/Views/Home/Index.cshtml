@@ -1,6 +1,51 @@
 ﻿@model MODAMS.Models.ViewModels.Dto.dtoDashboard
 <link href="~/assets/plugins/c3-0.7.20/c3.min.css" rel="stylesheet" />
+<style>
+    body {
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+    }
 
+    .marquee-container {
+        overflow: hidden;
+        position: relative;
+        width: 100%;
+        height: 40px; /* Adjust the height as needed */
+    }
+
+    .marquee {
+        white-space: nowrap;
+        position: absolute;
+        animation: marquee 30s linear infinite; /* Adjust the duration as needed */
+    }
+
+    @@keyframes marquee {
+        0% {
+            transform: translateX(100%);
+        }
+
+        100% {
+            transform: translateX(-100%);
+        }
+    }
+
+
+    .news-item.text-muted {
+        /* Your regular styles here */
+        /* For example, you can set the text color and other styles */
+        color: #333;
+        font-size: 16px;
+        /* Add any other styles you need */
+        /* Add the glow effect */
+        transition: box-shadow 0.3s ease-in-out;
+    }
+
+        .news-item.text-muted:hover {
+            box-shadow: 0 0 10px 2px rgba(234, 220, 71, 0.8); /* Adjust the glow color and size as needed */
+        }
+
+</style>
 <style>
     .hover-effect {
         position: relative;
@@ -26,10 +71,48 @@
         cursor: pointer;
         color: white;
     }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .page-header .marquee-container {
+            width: 70% !important;
+            margin: 0 auto; /* Center the container horizontally */
+            text-align: center;
+            display: flex;
+            align-items: center;
+        }
+
 </style>
 <div class="page-header">
     <div>
         <h1 class="page-title">Dashboard</h1>
+    </div>
+    <br />
+    <div class="marquee-container" id="marquee-container">
+        <div class="marquee" id="marquee">
+            @{
+                foreach (var newsfeed in Model.NewsFeed)
+                {
+                    <a asp-area="@newsfeed.Area" asp-controller="@newsfeed.Controller" asp-action="@newsfeed.Action" asp-route-id="@newsfeed.SourceRecordId">
+                        <span class="news-item text-muted p-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512">
+                                <style>
+                                    svg {
+                                        fill: lightblue
+                                    }
+                                </style>
+                                <path d="M0 256L28.5 28c2-16 15.6-28 31.8-28H228.9c15 0 27.1 12.1 27.1 27.1c0 3.2-.6 6.5-1.7 9.5L208 160H347.3c20.2 0 36.7 16.4 36.7 36.7c0 7.4-2.2 14.6-6.4 20.7l-192.2 281c-5.9 8.6-15.6 13.7-25.9 13.7h-2.9c-15.7 0-28.5-12.8-28.5-28.5c0-2.3 .3-4.6 .9-6.9L176 288H32c-17.7 0-32-14.3-32-32z" />
+                            </svg>
+                            @newsfeed.Description
+                        </span>&nbsp;&nbsp;&nbsp;&nbsp;
+                    </a>
+                }
+            }
+        </div>
     </div>
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
@@ -38,6 +121,7 @@
         </ol>
     </div>
 </div>
+
 
 <div class="row">
     <div class="col-md-3">
@@ -194,7 +278,7 @@
                             }
 
                         </tbody>
-                        
+
                     </table>
                 </div>
                 <div class="col-md-6 mt-5 container">
@@ -285,8 +369,28 @@
 
     <script>
         $(document).ready(function () {
-            makeDataTable('#tblCategories','1', 1);
+            makeDataTable('#tblCategories', '1', 1);
             pieChart();
+
+            const marqueeContainer = document.getElementById("marquee-container");
+            const marquee = document.getElementById("marquee");
+
+            let isPaused = false;
+
+            marqueeContainer.addEventListener("mouseover", () => {
+                if (!isPaused) {
+                    marquee.style.animationPlayState = "paused";
+                    isPaused = true;
+                }
+            });
+
+            marqueeContainer.addEventListener("mouseout", () => {
+                if (isPaused) {
+                    marquee.style.animationPlayState = "running";
+                    isPaused = false;
+                }
+            });
+
         });
 
         const pieChart = () => {

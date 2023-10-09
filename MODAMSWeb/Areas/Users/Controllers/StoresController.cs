@@ -27,6 +27,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             _supervisorEmployeeId = _func.GetSupervisorId(_employeeId);
         }
 
+        [HttpGet]
         public IActionResult Index()
         {
             var stores = _db.vwStores.OrderByDescending(m => m.TotalCost).ToList();
@@ -139,6 +140,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             return View(dto);
         }
 
+        [HttpGet]
         public IActionResult StoreDetails(int id)
         {
             var vwStore = _db.vwStores.FirstOrDefault(m => m.Id == id);

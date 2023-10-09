@@ -13,6 +13,7 @@ namespace MODAMS.Models.ViewModels.Dto
         public decimal CurrentValue { get; set; }
 
         public List<vwCategoryAsset> CategoryAssets { get; set; } = new List<vwCategoryAsset>();
+        public List<NewsFeed> NewsFeed { get; set; } = new List<NewsFeed>();
         public int TotalAssets()
         {
             int total = 0;
