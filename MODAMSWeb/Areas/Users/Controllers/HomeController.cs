@@ -48,7 +48,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
         public IActionResult Index()
         {
             var categoryAssets = _db.vwCategoryAssets.ToList();
-            var newsFeed = _db.NewsFeed.ToList();
+            var newsFeed = _db.NewsFeed.OrderByDescending(m=>m.TimeStamp).Take(5).ToList();
 
             var dto = new dtoDashboard()
             {
@@ -368,14 +368,20 @@ namespace MODAMSWeb.Areas.Users.Controllers
             }
             return View(dto);
         }
-        public IActionResult ClearNotifications()
+        public async Task<IActionResult> ClearNotifications()
         {
 
             var notifications = _db.Notifications.Where(m => m.EmployeeTo == _employeeId).ToList();
             _db.Notifications.RemoveRange(notifications);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
 
             return RedirectToAction("Index", "Home");
+        }
+
+        [HttpGet]
+        public IActionResult Newsfeed() {
+            var newsFeed = _db.NewsFeed.OrderByDescending(m => m.TimeStamp).ToList();
+            return View(newsFeed);
         }
         private decimal GetCurrentValue()
         {

@@ -1,0 +1,112 @@
+﻿@model List<MODAMS.Models.NewsFeed>
+@inject MODAMS.Utility.IAMSFunc _func;
+
+<!-- PAGE-HEADER -->
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Newsfeed</h1>
+    </div>
+    <div class="ms-auto pageheader-btn">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Newsfeed</li>
+        </ol>
+    </div>
+</div>
+<!-- PAGE-HEADER END -->
+<!-- ROW-1 OPEN -->
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card divShadow">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h4 class="m-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512">
+                                    <style>
+                                        svg {
+                                            fill: gray
+                                        }
+                                    </style>
+                                    <path d="M0 256L28.5 28c2-16 15.6-28 31.8-28H228.9c15 0 27.1 12.1 27.1 27.1c0 3.2-.6 6.5-1.7 9.5L208 160H347.3c20.2 0 36.7 16.4 36.7 36.7c0 7.4-2.2 14.6-6.4 20.7l-192.2 281c-5.9 8.6-15.6 13.7-25.9 13.7h-2.9c-15.7 0-28.5-12.8-28.5-28.5c0-2.3 .3-4.6 .9-6.9L176 288H32c-17.7 0-32-14.3-32-32z" />
+                                </svg>
+                                Live Newsfeed
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-status bg-primary br-tr-7 br-tl-7"></div>
+                    <div class="card-body project-list-table-container">
+                        @{
+                            int nCounter = 0;
+                            <table class="table table-responsive" style="width:100%;">
+                                @foreach (var feed in Model)
+                                {
+                                    nCounter++;
+                                    <tr>
+                                        <td>
+                                            <span>@nCounter.</span>
+                                        </td>
+                                        <td>
+                                            <div class="flex">
+                                                <span>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512">
+                                                        <style>
+                                                            svg {
+                                                                fill: gray;
+                                                            }
+                                                        </style>
+                                                        <path d="M0 256L28.5 28c2-16 15.6-28 31.8-28H228.9c15 0 27.1 12.1 27.1 27.1c0 3.2-.6 6.5-1.7 9.5L208 160H347.3c20.2 0 36.7 16.4 36.7 36.7c0 7.4-2.2 14.6-6.4 20.7l-192.2 281c-5.9 8.6-15.6 13.7-25.9 13.7h-2.9c-15.7 0-28.5-12.8-28.5-28.5c0-2.3 .3-4.6 .9-6.9L176 288H32c-17.7 0-32-14.3-32-32z" />
+                                                    </svg>
+                                                    @feed.Description
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            @_func.GetDepartmentName(feed.EmployeeId)
+                                        </td>
+                                        <td>
+                                            <span class="text-end" id="spnTimeStamp">
+                                                @{
+                                                    // Calculate time elapsed
+                                                    var timeElapsed = DateTime.Now - feed.TimeStamp;
+                                                    string timeElapsedStr = "";
+
+                                                    // Format time elapsed
+                                                    if (timeElapsed.TotalMinutes < 1)
+                                                    {
+                                                        timeElapsedStr = $"{(int)timeElapsed.TotalSeconds} seconds ago";
+                                                    }
+                                                    else if (timeElapsed.TotalHours < 1)
+                                                    {
+                                                        timeElapsedStr = $"{(int)timeElapsed.TotalMinutes} minutes ago";
+                                                    }
+                                                    else if (timeElapsed.TotalDays < 1)
+                                                    {
+                                                        timeElapsedStr = $"{(int)timeElapsed.TotalHours} hours ago";
+                                                    }
+                                                    else
+                                                    {
+                                                        timeElapsedStr = $"{(int)timeElapsed.TotalDays} days ago";
+                                                    }
+
+                                                    @timeElapsedStr
+                                                }
+                                            </span>
+                                        </td>
+                                    </tr>
+                                }
+                            </table>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
