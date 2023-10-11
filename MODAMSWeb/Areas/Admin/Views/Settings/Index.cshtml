@@ -1,0 +1,71 @@
+﻿@model List<MODAMS.Models.LoginHistory>
+
+<style>
+    .trShadow {
+        border: 1px solid lightblue;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2), 0px 6px 20px 0px rgba(0,0,0,0.19);
+    }
+</style>
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Departments</h1>
+    </div>
+    <div class="ms-auto pageheader-btn">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Settings</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            User login history
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table id="tblDepartments" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
+                                    <thead class="table-head">
+                                        <tr>
+                                            <th class="bg-transparent border-bottom-0 w-5">S.No</th>
+                                            <th class="bg-transparent border-bottom-0">Employee Name</th>
+                                            <th class="bg-transparent border-bottom-0">Department</th>
+                                            <th class="bg-transparent border-bottom-0">Role</th>
+                                            <th class="bg-transparent border-bottom-0">Timestamp</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="table-body">
+                                        @{
+                                            var nCounter = 0;
+                                            var sCounter = "";
+
+                                            foreach (var loginHistory in Model)
+                                            {
+                                                nCounter++;
+                                                sCounter = (nCounter < 10) ? "0" + nCounter : nCounter.ToString();
+
+                                                <tr>
+                                                    <td class="text-muted fs-15 fw-semibold text-center">@sCounter.</td>
+                                                    <td class="text-muted fs-15 fw-semibold">@loginHistory.Employee.FullName</td>
+                                                    <td class="text-muted fs-15 fw-semibold"></td>
+                                                    <td class="text-muted fs-15 fw-semibold"></td>
+                                                    <td class="text-muted fs-15 fw-semibold"></td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -44,6 +44,7 @@ namespace MODAMS.DataAccess.Data
         public DbSet<Disposal> Disposals { get; set; }
         public DbSet<AuditLog> AuditLog { get; set; }
         public DbSet<NewsFeed> NewsFeed { get; set; }
+        public DbSet<LoginHistory> LoginHistory { get; set; }
 
 
         //Section for Views

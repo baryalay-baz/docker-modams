@@ -36,13 +36,21 @@ namespace MODAMS.Utility
             int EmployeeId = 0;
             // Get the current claims principal
             var user = _contextAccessor.HttpContext.User;
-
+            
             // Find the user's ID claim
             var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier);
             if (userIdClaim != null)
                 EmployeeId = _db.ApplicationUsers.Where(m => m.Id == userIdClaim.Value).Select(m => m.EmployeeId).FirstOrDefault();
 
             return EmployeeId;
+        }
+
+        public int GetEmployeeIdByUserId(string userId) {
+            int EmployeeId = 0;
+
+            EmployeeId = _db.ApplicationUsers.Where(m => m.Id == userId).Select(m => m.EmployeeId).FirstOrDefault();
+
+            return EmployeeId == 0 ? 0 : EmployeeId;
         }
 
         public int GetEmployeeIdByEmail(string email)
@@ -487,6 +495,19 @@ namespace MODAMS.Utility
             return assetName;
         }
 
+        public void RecordLogin(string userId) {
+
+            string ipAddress = _contextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
+
+            LoginHistory login = new LoginHistory()
+            {
+                EmployeeId = GetEmployeeIdByUserId(userId),
+                IPAddress = ipAddress,
+                TimeStamp = DateTime.Now
+            };
+            _db.LoginHistory.Add(login);
+            _db.SaveChanges();
+        }
 
         //Private methods
         private void Notify(int[] arrEmpIds, Notification notification)

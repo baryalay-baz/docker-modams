@@ -4,6 +4,7 @@ using MODAMS.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MODAMS.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231011074619_AddLoginHistoryTableToDb")]
+    partial class AddLoginHistoryTableToDb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -545,8 +548,6 @@ namespace MODAMS.DataAccess.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("EmployeeId");
 
                     b.ToTable("LoginHistory");
                 });
@@ -1433,17 +1434,6 @@ namespace MODAMS.DataAccess.Migrations
                     b.Navigation("Asset");
 
                     b.Navigation("DisposalType");
-
-                    b.Navigation("Employee");
-                });
-
-            modelBuilder.Entity("MODAMS.Models.LoginHistory", b =>
-                {
-                    b.HasOne("MODAMS.Models.Employee", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.Navigation("Employee");
                 });

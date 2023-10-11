@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using MODAMS.Utility;
 
 namespace MODAMSWeb.Areas.Identity.Pages.Account
 {
@@ -19,15 +20,16 @@ namespace MODAMSWeb.Areas.Identity.Pages.Account
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<LoginWith2faModel> _logger;
-
+        private readonly IAMSFunc _func;
         public LoginWith2faModel(
             SignInManager<IdentityUser> signInManager,
             UserManager<IdentityUser> userManager,
-            ILogger<LoginWith2faModel> logger)
+            ILogger<LoginWith2faModel> logger, IAMSFunc func)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _logger = logger;
+            _func = func;
         }
 
         /// <summary>
@@ -113,6 +115,8 @@ namespace MODAMSWeb.Areas.Identity.Pages.Account
             if (result.Succeeded)
             {
                 _logger.LogInformation("User with ID '{UserId}' logged in with 2fa.", user.Id);
+                _func.RecordLogin(user.Id);
+
                 return LocalRedirect(returnUrl);
             }
             else if (result.IsLockedOut)

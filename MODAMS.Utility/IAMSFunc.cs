@@ -35,6 +35,9 @@ namespace MODAMS.Utility
         public string GetStoreOwnerInfo(int storeId);
         public void LogNewsFeed(string description, string area, string controller, string action, int sourceRecordId);
         public string GetAssetName(int assetId);
+        public void RecordLogin(string userId);
+        public int GetEmployeeIdByUserId(string userId);
+
 
     }
 }
