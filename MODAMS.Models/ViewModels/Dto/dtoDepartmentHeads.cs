@@ -14,6 +14,8 @@ namespace MODAMS.Models.ViewModels.Dto
         [Display(Name = "Select Employee to Assign as Owner")]
         public int EmployeeId { get; set; }
         public int DepartmentId { get; set; }
+        public string DepartmentName { get; set; }
+        public string Owner {  get; set; }
 
         public List<DepartmentHead> DepartmentHeads { get; set; }
 

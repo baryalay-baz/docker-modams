@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MODAMS.DataAccess.Data;
 using MODAMS.Models;
+using MODAMS.Models.ViewModels.Dto;
 using MODAMS.Utility;
 
 namespace MODAMSWeb.Areas.Admin.Controllers
@@ -25,8 +26,15 @@ namespace MODAMSWeb.Areas.Admin.Controllers
         {
             var loginHistory = _db.LoginHistory.Include(m => m.Employee)
                 .OrderByDescending(m => m.TimeStamp).ToList();
+            var auditLog = _db.AuditLog.Include(m => m.Employee)
+                .OrderByDescending(m=>m.Timestamp).ToList();
+            var dto = new dtoSettings()
+            {
+                auditLog = auditLog,
+                loginHistory = loginHistory
+            };
 
-            return View(loginHistory);
+            return View(dto);
         }
     }
 }

@@ -220,6 +220,15 @@ namespace MODAMS.Utility
             }
             return sResult;
         }
+        public string GetDepartmentNameById(int nDepartmentId) {
+            string sResult = "Department not available!";
+            var department = _db.Departments.Where(m => m.Id == nDepartmentId).FirstOrDefault();
+            if (department != null)
+            {
+                sResult = department.Name;
+            }
+            return sResult;
+        }
         public string GetRoleName(int nEmployeeId)
         {
             string? rolename = _db.vwEmployees.Where(m => m.Id == nEmployeeId).Select(m => m.RoleName).FirstOrDefault();

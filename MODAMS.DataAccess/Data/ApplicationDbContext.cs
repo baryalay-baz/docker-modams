@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using MODAMS.Models;
 using MODAMS.Models.ViewModels;
 using System.Security.Claims;
@@ -69,6 +71,11 @@ namespace MODAMS.DataAccess.Data
 
             foreach (var entry in ChangeTracker.Entries())
             {
+                if (entry.Entity.GetType() == typeof(IdentityUserRole<string>))
+                {
+                    continue;
+                }
+
                 if (entry.State == EntityState.Modified || entry.State == EntityState.Added || entry.State == EntityState.Deleted)
                 {
                     var action = "Modify";
@@ -115,7 +122,12 @@ namespace MODAMS.DataAccess.Data
 
             foreach (var entry in ChangeTracker.Entries())
             {
+                if (entry.Entity.GetType() == typeof(IdentityUserRole<string>))
+                {
+                    continue;
+                }
                 var action = "Modify";
+
                 if (entry.State == EntityState.Modified || entry.State == EntityState.Added || entry.State == EntityState.Deleted)
                 {
                     if (entry.State == EntityState.Added)
@@ -142,7 +154,7 @@ namespace MODAMS.DataAccess.Data
                                 EmployeeId = GetCurrentUserId(),
                                 Action = action,
                                 EntityName = entry.Entity.GetType().Name,
-                                PrimaryKeyValue = entry.OriginalValues["Id"].ToString(), // Adjust as per your primary key.
+                                PrimaryKeyValue = entry.OriginalValues["Id"].ToString(),
                                 PropertyName = property.Name,
                                 OldValue = original?.ToString(),
                                 NewValue = current?.ToString()
@@ -156,7 +168,7 @@ namespace MODAMS.DataAccess.Data
                             EmployeeId = GetCurrentUserId(),
                             Action = action,
                             EntityName = entry.Entity.GetType().Name,
-                            PrimaryKeyValue = entry.OriginalValues["Id"].ToString(), // Adjust as per your primary key.
+                            PrimaryKeyValue = entry.OriginalValues["Id"].ToString(),
                             PropertyName = property.Name,
                             OldValue = original?.ToString(),
                             NewValue = current?.ToString()
@@ -181,6 +193,18 @@ namespace MODAMS.DataAccess.Data
                 EmployeeId = DbFunctions.EmployeeId(userIdClaim?.Value);
 
             return EmployeeId;
+        }
+        private string GetPrimaryKeyValue(EntityEntry entry)
+        {
+            if (entry.Entity.ToString() =="AspNetUserRoles")
+            {
+                return "UserId";
+            }
+            else
+            {
+                // Handle other entities with a standard primary key property
+                return entry.OriginalValues["Id"].ToString(); // Adjust as per your primary key.
+            }
         }
     }
 }

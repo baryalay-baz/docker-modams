@@ -15,6 +15,7 @@ namespace MODAMS.Utility
         public int GetDepartmentHead(int nDepartmentId);
         public List<Employee> GetDepartmentMembers(int nDepartmentId);
         public string GetDepartmentName(int nEmployeeId);
+        public string GetDepartmentNameById(int nDepartmentId);
         public string GetRoleName(int nEmployeeId);
         public int GetSupervisorId(int nEmployeeId);
         public string GetSupervisorName(int nEmployeeId);

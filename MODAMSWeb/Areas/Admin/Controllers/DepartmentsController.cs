@@ -26,6 +26,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
             _db = db;
             _func = func;
             _employeeId = _func.GetEmployeeId();
+
         }
 
         public IActionResult Index()
@@ -95,8 +96,6 @@ namespace MODAMSWeb.Areas.Admin.Controllers
         [Authorize(Roles = "Administrator")]
         public IActionResult EditDepartment(int id)
         {
-            var departmentDto = new dtoDepartment();
-
             if (id == 0)
             {
                 TempData["error"] = "Please select a department!";
@@ -104,11 +103,15 @@ namespace MODAMSWeb.Areas.Admin.Controllers
             }
 
             var department = _db.Departments.Where(m => m.Id == id).FirstOrDefault();
+            string departmentOwner = "";
 
             if (department == null)
             {
                 TempData["error"] = "Department not found!";
                 return RedirectToAction("Index", "Departments");
+            }
+            else {
+                departmentOwner = _func.GetEmployeeNameById(department.EmployeeId == 0 || department.EmployeeId == null ? 0 : (int)department.EmployeeId);
             }
 
             var employeeList = _db.Employees.ToList().Select(m => new SelectListItem
@@ -123,11 +126,15 @@ namespace MODAMSWeb.Areas.Admin.Controllers
                 Value = m.Id.ToString()
             });
 
-            departmentDto.department = department;
-            departmentDto.Employees = employeeList;
-            departmentDto.Departments = departmentList;
+            var dto = new dtoDepartment()
+            {
+                department = department,
+                Employees = employeeList,
+                Departments = departmentList,
+                DepartmentOwner = departmentOwner
+            };
 
-            return View(departmentDto);
+            return View(dto);
         }
 
         [Authorize(Roles = "Administrator")]
@@ -148,10 +155,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
             }
             department.Name = form.department.Name;
             department.UpperLevelDeptId = form.department.UpperLevelDeptId;
-            if (form.department.EmployeeId != 0)
-            {
-                department.EmployeeId = form.department.EmployeeId;
-            }
+            
             await _db.SaveChangesAsync();
 
             TempData["success"] = "Department saved successfuly!";
@@ -239,12 +243,15 @@ namespace MODAMSWeb.Areas.Admin.Controllers
                 Text = m.FullName,
                 Value = m.Id.ToString()
             });
-
+            var storeOwner = _func.GetEmployeeNameById(_func.GetDepartmentHead(id));
+            storeOwner = storeOwner == "Not found!" ? "Vacant" : storeOwner;
             var dto = new dtoDepartmentHeads()
             {
                 DepartmentHeads = departmentHeads,
                 Employees = employeeList,
-                DepartmentId = id
+                DepartmentId = id,
+                DepartmentName = _func.GetDepartmentNameById(id),
+                Owner = storeOwner
             };
 
             return View(dto);

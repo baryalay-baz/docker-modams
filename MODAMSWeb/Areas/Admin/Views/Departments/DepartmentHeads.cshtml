@@ -1,5 +1,4 @@
 ﻿@model MODAMS.Models.ViewModels.Dto.dtoDepartmentHeads
-
 <style>
     .custom-row {
         margin-right: -20px;
@@ -10,6 +9,7 @@
             padding-right: 10px;
             padding-left: 10px;
         }
+
 </style>
 
 
@@ -30,103 +30,105 @@
     <div class="col-md-12">
         <div class="card">
             <div class="card-body p-4">
-                <div class="d-flex align-items-center justify-content-between">
-                    <h4 class="m-0">Assign Owner</h4>
-                    <div class="btn-list">
-                    </div>
+                <div class="d-flex align-items-center justify-content-left">
+                    <div class="m-0 h4">@Model.DepartmentName</div>&nbsp;&nbsp;
+                    @{
+                        string bgType = "bg-success";
+                        if (Model.Owner == "Vacant")
+                            bgType = "bg-danger";
+                    }
+                    <span class="badge @bgType my-1">@Model.Owner</span>
                 </div>
+
             </div>
         </div>
     </div>
     <div class="col-md-12">
+        <a class="btn btn-primary-gradient mb-2" data-bs-target="#mdlAssignOwner" data-bs-toggle="modal" href="javascript:void(0)">Manage Ownership</a>
         <div class="card">
-            <div class="card-body">
-                <form method="post" asp-action="AssignOwner" id="frmAssignOwner">
-                    <input asp-for="DepartmentId" hidden />
-                    <div class="row">
-                        <div class="col-sm-6 col-md-6 col-xl-6">
-                            <div class="container">
-                                <div class="form-group">
-                                    <div class="row no-gutters">
-                                        <div class="col-md-6">
-                                            <div class="input-group">
-                                                <select name="EmployeeId" id="EmployeeId" asp-items="@Model.Employees"
-                                                        class="form-control select2-style1 form-select">
-                                                    <option value="0">Vacant</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="input-group">
-                                                <button class="btn btn-outline-primary mt-1"><i class="fa fa-user"></i>&nbsp;Assign Owner</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+            <div class="card-body project-list-table-container">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="table-responsive">
+                            <table id="tblDepartmentHeads" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
+                                <thead class="table-head">
+                                    <tr>
+                                        <th class="bg-transparent border-bottom-0 w-5">S.No</th>
+                                        <th class="bg-transparent border-bottom-0">Owner Name</th>
+                                        <th class="bg-transparent border-bottom-0">Date From</th>
+                                        <th class="bg-transparent border-bottom-0">Date To</th>
+                                        <th class="bg-transparent border-bottom-0">Is Active</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-body">
+                                    @{
+                                        int nCounter = 0;
+                                        string sCounter = "";
+                                        foreach (var dh in Model.DepartmentHeads)
+                                        {
+                                            nCounter++;
+                                            sCounter = (nCounter < 10) ? '0' + nCounter.ToString() : nCounter.ToString();
+                                            <tr>
+                                                <td class="text-muted fs-15 fw-semibold text-center">@sCounter.</td>
+                                                <td class="text-muted fs-15 fw-semibold">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="me-2">
+                                                            <span>
+                                                                <img style="min-width:30px;" src="@dh.Employee.ImageUrl" alt="profile-user" class="data-image avatar avatar-lg rounded-circle">
+                                                            </span>
+                                                        </div>
+                                                        <div>
+                                                            <h6 class="mb-0">@dh.Employee.FullName</h6>
+                                                            <span class="text-muted fs-12">@dh.Employee.Email</span>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="text-muted fs-15 fw-semibold">@dh.StartDate.ToString("dd-MMM-yyyy")</td>
+                                                <td class="text-muted fs-15 fw-semibold">@dh.EndDate?.ToString("dd-MMM-yyyy")</td>
+                                                <td class="text-muted fs-15 fw-semibold">@dh.IsActive</td>
+                                            </tr>
+                                        }
+                                    }
+
+                                </tbody>
+                            </table>
+
                         </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a asp-area="Admin" asp-controller="Departments" asp-action="Index" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="mdlAssignOwner">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content modal-content-demo">
+                <form method="post" asp-action="AssignOwner" id="frmAssignOwner">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Department Ownership</h5><button aria-label="Close" class="btn-close" data-bs-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>List of available employees</p>
+                        <input asp-for="DepartmentId" hidden />
+                        <div class="mb-3 form-group">
+                            <select name="EmployeeId" id="EmployeeId" asp-items="@Model.Employees" class="form-control select2-style1 form-select">
+                                <option disabled selected value="0">-select owner-</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary">Save changes</button> <button class="btn btn-light" data-bs-dismiss="modal">Close</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-body project-list-table-container">
-                <div class="col-md-8">
-                <div class="table-responsive">
-                    <table id="tblDepartmentHeads" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
-                        <thead class="table-head">
-                            <tr>
-                                <th class="bg-transparent border-bottom-0 w-5">S.No</th>
-                                <th class="bg-transparent border-bottom-0">Owner Name</th>
-                                <th class="bg-transparent border-bottom-0">Date From</th>
-                                <th class="bg-transparent border-bottom-0">Date To</th>
-                                <th class="bg-transparent border-bottom-0">Is Active</th>
-                            </tr>
-                        </thead>
-                        <tbody class="table-body">
-                            @{
-                                int nCounter = 0;
-                                string sCounter = "";
-                                foreach (var dh in Model.DepartmentHeads)
-                                {
-                                    nCounter++;
-                                    sCounter = (nCounter < 10) ? '0' + nCounter.ToString() : nCounter.ToString();
-                                    <tr>
-                                        <td class="text-muted fs-15 fw-semibold text-center">@sCounter.</td>
-                                        <td class="text-muted fs-15 fw-semibold">
-                                            <div class="d-flex align-items-center">
-                                                <div class="me-2">
-                                                    <span>
-                                                        <img style="min-width:30px;" src="@dh.Employee.ImageUrl" alt="profile-user" class="data-image avatar avatar-lg rounded-circle">
-                                                    </span>
-                                                </div>
-                                                <div>
-                                                    <h6 class="mb-0">@dh.Employee.FullName</h6>
-                                                    <span class="text-muted fs-12">@dh.Employee.Email</span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="text-muted fs-15 fw-semibold">@dh.StartDate.ToString("dd-MMM-yyyy")</td>
-                                        <td class="text-muted fs-15 fw-semibold">@dh.EndDate?.ToString("dd-MMM-yyyy")</td>
-                                        <td class="text-muted fs-15 fw-semibold">@dh.IsActive</td>
-                                    </tr>
-                                }
-                            }
 
-                        </tbody>
-                    </table>
-
-                </div>
-            </div>
-            <div class="card-footer">
-                <a asp-area="Admin" asp-controller="Departments" asp-action="Index" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
-            </div>
-        </div>
-    </div>
+    <section id="dvFacesData" style="display:none;"></section>
 </div>
-<section id="dvFacesData" style="display:none;"></section>
 
 @section Scripts{
     <script>
@@ -140,10 +142,14 @@
                 }
             });
 
+            $('#btnShowForm').on("click", () => {
+                $("#dvAssignOwner").show();
+            });
+
             //$('.select2').select2({
             //    //dropdownParent: $("#mdlDepartmentHeads")
             //});
-
+            //setSelect2();
 
         });
 
@@ -171,18 +177,15 @@
                 escapeMarkup: function (m) { return m; }
             });
         }
-
         function select2Style1(data) {
             if (!data.id) { return data.text; }
-            console.log(data.text);
+
             var $data = $(
                 '<span>' + getFace(data.element.value.toLowerCase()) + data.text + '</span>'
             );
             return $data;
         };
-
         const getFace = (id) => {
-            console.log("face id: " + id);
             var sFace = '<img src="/assets/images/faces/profile_placeholder.png" class="rounded-circle avatar-sm" />';
 
             var sData = $("#dvFacesData").html();
@@ -194,7 +197,6 @@
                     }
                 });
             }
-            console.log(sFace);
             return sFace;
         }
 

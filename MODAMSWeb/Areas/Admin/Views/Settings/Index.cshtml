@@ -1,4 +1,4 @@
-﻿@model List<MODAMS.Models.LoginHistory>
+﻿@model MODAMS.Models.ViewModels.Dto.dtoSettings
 
 <style>
     .trShadow {
@@ -9,7 +9,7 @@
 
 <div class="page-header">
     <div>
-        <h1 class="page-title">Departments</h1>
+        <h1 class="page-title">Administrative Settings</h1>
     </div>
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
@@ -22,50 +22,99 @@
 <div class="row">
     <div class="col-md-12">
         <div class="card">
+            <div class="card-header">
+                <div class="card-title">User login history</div>
+            </div>
             <div class="card-body">
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header">
-                            User login history
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table id="tblDepartments" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
-                                    <thead class="table-head">
-                                        <tr>
-                                            <th class="bg-transparent border-bottom-0 w-5">S.No</th>
-                                            <th class="bg-transparent border-bottom-0">Employee Name</th>
-                                            <th class="bg-transparent border-bottom-0">Department</th>
-                                            <th class="bg-transparent border-bottom-0">Role</th>
-                                            <th class="bg-transparent border-bottom-0">Timestamp</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="table-body">
-                                        @{
-                                            var nCounter = 0;
-                                            var sCounter = "";
+                <div class="table-responsive">
+                    <table id="tblLoginHistory" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
+                        <thead class="table-head">
+                            <tr>
+                                <th class="bg-transparent border-bottom-0 w-5">S.No</th>
+                                <th class="bg-transparent border-bottom-0">Employee Name</th>
+                                <th class="bg-transparent border-bottom-0">Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-body">
+                            @{
+                                var nCounter = 0;
+                                var sCounter = "";
 
-                                            foreach (var loginHistory in Model)
-                                            {
-                                                nCounter++;
-                                                sCounter = (nCounter < 10) ? "0" + nCounter : nCounter.ToString();
+                                foreach (var loginHistory in Model.loginHistory)
+                                {
+                                    nCounter++;
+                                    sCounter = (nCounter < 10) ? "0" + nCounter : nCounter.ToString();
 
-                                                <tr>
-                                                    <td class="text-muted fs-15 fw-semibold text-center">@sCounter.</td>
-                                                    <td class="text-muted fs-15 fw-semibold">@loginHistory.Employee.FullName</td>
-                                                    <td class="text-muted fs-15 fw-semibold"></td>
-                                                    <td class="text-muted fs-15 fw-semibold"></td>
-                                                    <td class="text-muted fs-15 fw-semibold"></td>
-                                                </tr>
-                                            }
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
+                                    <tr>
+                                        <td class="text-muted fs-15 fw-semibold text-center">@sCounter.</td>
+                                        <td class="text-muted fs-15 fw-semibold">@loginHistory.Employee.FullName</td>
+                                        <td class="text-muted fs-15 fw-semibold">@loginHistory.TimeStamp.ToString("F")</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Audit Log</div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="tblAuditLog" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
+                        <thead class="table-head">
+                            <tr>
+                                <th class="bg-transparent border-bottom-0 w-5">S.No</th>
+                                <th class="bg-transparent border-bottom-0">Action</th>
+                                <th class="bg-transparent border-bottom-0">Entity</th>
+                                <th class="bg-transparent border-bottom-0">Record Id</th>
+                                <th class="bg-transparent border-bottom-0">Field Name</th>
+                                <th class="bg-transparent border-bottom-0">Old Value</th>
+                                <th class="bg-transparent border-bottom-0">New Value</th>
+                                <th class="bg-transparent border-bottom-0">Employee</th>
+                                <th class="bg-transparent border-bottom-0">Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-body">
+                            @{
+                                nCounter = 0;
+                                sCounter = "";
+
+                                foreach (var log in Model.auditLog)
+                                {
+                                    nCounter++;
+                                    sCounter = (nCounter < 10) ? "0" + nCounter : nCounter.ToString();
+
+                                    <tr>
+                                        <td class="text-muted fs-15 fw-semibold text-center">@sCounter.</td>
+                                        <td class="text-muted fs-15 fw-semibold">@log.Action</td>
+                                        <td class="text-muted fs-15 fw-semibold">@log.EntityName</td>
+                                        <td class="text-muted fs-15 fw-semibold">@log.PrimaryKeyValue</td>
+                                        <td class="text-muted fs-15 fw-semibold">@log.PropertyName</td>
+                                        <td class="text-muted fs-15 fw-semibold">@log.OldValue</td>
+                                        <td class="text-muted fs-15 fw-semibold">@log.NewValue</td>
+                                        <td class="text-muted fs-15 fw-semibold">@log.Employee.FullName</td>
+                                        <td class="text-muted fs-15 fw-semibold">@log.Timestamp.ToString("F")</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
 </div>
+@section scripts{
+    <script>
+        $(document).ready(() => {
+            hideMenu();
+            makeDataTable($('#tblLoginHistory'));
+            makeDataTable($('#tblAuditLog'));
+        })
+    </script>
+}
