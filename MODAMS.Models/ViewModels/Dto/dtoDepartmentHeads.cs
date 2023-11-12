@@ -16,6 +16,7 @@ namespace MODAMS.Models.ViewModels.Dto
         public int DepartmentId { get; set; }
         public string DepartmentName { get; set; }
         public string Owner {  get; set; }
+        public List<vwEmployees> DepartmentUsers { get; set; }
 
         public List<DepartmentHead> DepartmentHeads { get; set; }
 

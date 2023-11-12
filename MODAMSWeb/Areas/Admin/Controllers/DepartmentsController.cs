@@ -26,7 +26,6 @@ namespace MODAMSWeb.Areas.Admin.Controllers
             _db = db;
             _func = func;
             _employeeId = _func.GetEmployeeId();
-
         }
 
         public IActionResult Index()
@@ -110,7 +109,8 @@ namespace MODAMSWeb.Areas.Admin.Controllers
                 TempData["error"] = "Department not found!";
                 return RedirectToAction("Index", "Departments");
             }
-            else {
+            else
+            {
                 departmentOwner = _func.GetEmployeeNameById(department.EmployeeId == 0 || department.EmployeeId == null ? 0 : (int)department.EmployeeId);
             }
 
@@ -155,7 +155,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
             }
             department.Name = form.department.Name;
             department.UpperLevelDeptId = form.department.UpperLevelDeptId;
-            
+
             await _db.SaveChangesAsync();
 
             TempData["success"] = "Department saved successfuly!";
@@ -216,7 +216,6 @@ namespace MODAMSWeb.Areas.Admin.Controllers
             return Json(dto);
         }
 
-
         [HttpGet]
         [Authorize(Roles = "SeniorManagement, Administrator, StoreOwner")]
         public string GetDepartments()
@@ -245,13 +244,17 @@ namespace MODAMSWeb.Areas.Admin.Controllers
             });
             var storeOwner = _func.GetEmployeeNameById(_func.GetDepartmentHead(id));
             storeOwner = storeOwner == "Not found!" ? "Vacant" : storeOwner;
+
+            var users = _db.vwEmployees.Where(m => m.SupervisorEmployeeId == _func.GetDepartmentHead(id) & m.RoleName == "User").ToList();
+
             var dto = new dtoDepartmentHeads()
             {
                 DepartmentHeads = departmentHeads,
                 Employees = employeeList,
                 DepartmentId = id,
                 DepartmentName = _func.GetDepartmentNameById(id),
-                Owner = storeOwner
+                Owner = storeOwner,
+                DepartmentUsers = users
             };
 
             return View(dto);
@@ -296,8 +299,6 @@ namespace MODAMSWeb.Areas.Admin.Controllers
             TempData["success"] = "Owner set successfully!";
             return RedirectToAction("Index", "Departments");
         }
-
-
 
         //private functions
         private async Task CreateStore(Department department)

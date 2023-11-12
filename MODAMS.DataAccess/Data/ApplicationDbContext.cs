@@ -181,9 +181,9 @@ namespace MODAMS.DataAccess.Data
             return await base.SaveChangesAsync(cancellationToken);
         }
 
-        private int GetCurrentUserId()
+        private int? GetCurrentUserId()
         {
-            int EmployeeId = 0;
+            int? EmployeeId = null;
             // Get the current claims principal
             var user = _httpContextAccessor.HttpContext.User;
 

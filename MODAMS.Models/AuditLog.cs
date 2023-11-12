@@ -14,7 +14,9 @@ namespace MODAMS.Models
         [Key]
         public int Id { get; set; }
         public DateTime Timestamp { get; set; }
-        public int EmployeeId { get; set; }
+
+        [AllowNull]
+        public int? EmployeeId { get; set; }
         public string Action { get; set; }
         public string EntityName { get; set; }
         public string PrimaryKeyValue { get; set; }

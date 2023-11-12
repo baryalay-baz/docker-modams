@@ -44,8 +44,115 @@
         </div>
     </div>
     <div class="col-md-12">
-        <a class="btn btn-primary-gradient mb-2" data-bs-target="#mdlAssignOwner" data-bs-toggle="modal" href="javascript:void(0)">Manage Ownership</a>
         <div class="card">
+
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 col-xl-4">
+                        <div class="card ">
+                            <div class="card-header bg-gray-300">
+                                <h3 class="card-title ">Store Owner</h3>
+                                <div class="card-options">
+                                    <a href="#" class="card-options-collapse" data-bs-toggle="card-collapse"><i class="fe fe-chevron-up"></i></a>
+                                    <a href="#" class="card-options-remove" data-bs-toggle="card-remove"><i class="fe fe-x "></i></a>
+                                </div>
+                            </div>
+                            <div class="card-body text-center">
+                                @{
+                                    var dhRow = Model.DepartmentHeads.Where(m => m.IsActive == true).FirstOrDefault();
+
+                                    string sImageUrl = "/assets/images/faces/profile_placeholder.png";
+                                    string sJobTitle = "";
+                                    string sPhone = "";
+                                    string sEmail = "";
+
+                                    if (dhRow != null)
+                                    {
+                                        sImageUrl = dhRow.Employee.ImageUrl;
+                                        sJobTitle = dhRow.Employee.JobTitle;
+                                        sPhone = dhRow.Employee.Phone;
+                                        sEmail = dhRow.Employee.Email;
+                                    }
+
+                                }
+
+                                <span><img src="@sImageUrl" class="avatar avatar-xxl brround cover-image cover-image"></span>
+                                <h4 class="h4 mb-0 mt-3">@Model.Owner</h4>
+                                <p class="card-text">@sJobTitle</p>
+                                <div>
+                                    <a class="btn btn-primary-gradient btn-sm mb-2" data-bs-target="#mdlAssignOwner" data-bs-toggle="modal" href="javascript:void(0)">Manage Ownership</a>
+                                </div>
+                            </div>
+                            <div class="card-footer text-center">
+                                <div class="row user-social-detail d-flex justify-content-center align-items-center">
+                                    <a href="#" class="social-profile me-4 rounded d-flex align-items-center justify-content-center">
+                                        <i class="fa fa-phone" aria-hidden="true"></i>
+                                    </a>
+                                    @sPhone
+                                    &nbsp;&nbsp;&nbsp;
+                                    <a href="#" class="social-profile me-4 rounded d-flex align-items-center justify-content-center">
+                                        <i class="fa fa-envelope" aria-hidden="true"></i>
+                                    </a>
+                                    @sEmail
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- COL END -->
+                    <div class="col-md-8 col-xl-8">
+                        <div class="card ">
+                            <div class="card-header bg-gray-300">
+                                <h3 class="card-title ">Store Users</h3>
+                                <div class="card-options">
+                                    <a href="#" class="card-options-collapse" data-bs-toggle="card-collapse"><i class="fe fe-chevron-up"></i></a>
+                                    <a href="#" class="card-options-remove" data-bs-toggle="card-remove"><i class="fe fe-x "></i></a>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <table class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main" id="tblUsers">
+                                    <thead>
+                                        <tr>
+                                            <th>S.No</th>
+                                            <th>Full Name</th>
+                                            <th>Job Title</th>
+                                            <th>Telephone</th>
+                                            <th>Email</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @{
+                                            int nCounter = 0; string sCounter = "";
+                                            foreach (var departmentUser in Model.DepartmentUsers)
+                                            {
+                                                nCounter++;
+                                                sCounter = (nCounter < 10) ? '0' + nCounter.ToString() : nCounter.ToString();
+                                                <tr>
+                                                    <td>@sCounter</td>
+                                                    <td>@departmentUser.FullName</td>
+                                                    <td>@departmentUser.JobTitle</td>
+                                                    <td>@departmentUser.Phone</td>
+                                                    <td>@departmentUser.Email</td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="card card-collapsed">
+            <div class="card-header bg-gray-300">
+                <h5 class="card-title">Ownerhsip history</h5>
+                <div class="card-options">
+                    <a href="#" class="card-options-collapse" data-bs-toggle="card-collapse"><i class="fe fe-chevron-up"></i></a>
+                    <a href="#" class="card-options-remove" data-bs-toggle="card-remove"><i class="fe fe-x "></i></a>
+                </div>
+            </div>
             <div class="card-body project-list-table-container">
                 <div class="row">
                     <div class="col-md-8">
@@ -62,8 +169,8 @@
                                 </thead>
                                 <tbody class="table-body">
                                     @{
-                                        int nCounter = 0;
-                                        string sCounter = "";
+                                        nCounter = 0;
+                                        sCounter = "";
                                         foreach (var dh in Model.DepartmentHeads)
                                         {
                                             nCounter++;
@@ -106,11 +213,12 @@
     <div class="modal fade" id="mdlAssignOwner">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content modal-content-demo">
-                <form method="post" asp-action="AssignOwner" id="frmAssignOwner">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Department Ownership</h5><button aria-label="Close" class="btn-close" data-bs-dismiss="modal"><span aria-hidden="true">&times;</span></button>
-                    </div>
-                    <div class="modal-body">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Department Ownership</h5><button aria-label="Close" class="btn-close" data-bs-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" asp-action="AssignOwner" id="frmAssignOwner">
                         <p>List of available employees</p>
                         <input asp-for="DepartmentId" hidden />
                         <div class="mb-3 form-group">
@@ -118,11 +226,11 @@
                                 <option disabled selected value="0">-select owner-</option>
                             </select>
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-primary">Save changes</button> <button class="btn btn-light" data-bs-dismiss="modal">Close</button>
-                    </div>
-                </form>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button id="btnSaveChanges" class="btn btn-primary">Save changes</button> <button class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
@@ -135,16 +243,19 @@
         $(document).ready(() => {
             loadFaces();
 
-            $('#tblDepartmentHeads').DataTable({
-                language: {
-                    searchPlaceholder: 'Search...',
-                    sSearch: '',
-                }
+            $('#btnSaveChanges').on("click", () => {
+                $("#frmAssignOwner").submit();
             });
 
-            $('#btnShowForm').on("click", () => {
-                $("#dvAssignOwner").show();
-            });
+            makeDataTable('#tblDepartmentHeads');
+            makeDataTable("#tblUsers");
+
+            // $('#tblUsers').DataTable({
+            //     language: {
+            //         searchPlaceholder: 'Search...',
+            //         sSearch: '',
+            //     }
+            // });
 
             //$('.select2').select2({
             //    //dropdownParent: $("#mdlDepartmentHeads")

@@ -44,7 +44,6 @@ namespace MODAMS.Utility
 
             return EmployeeId;
         }
-
         public int GetEmployeeIdByUserId(string userId) {
             int EmployeeId = 0;
 
@@ -52,7 +51,6 @@ namespace MODAMS.Utility
 
             return EmployeeId == 0 ? 0 : EmployeeId;
         }
-
         public int GetEmployeeIdByEmail(string email)
         {
             int nEmployeeId = _db.Employees.Where(m => m.Email == email).Select(m => m.Id).FirstOrDefault();
@@ -491,7 +489,6 @@ namespace MODAMS.Utility
             _db.NewsFeed.Add(feed);
             _db.SaveChanges();
         }
-
         public string GetAssetName(int assetId)
         {
             var asset = _db.Assets.Where(m => m.Id == assetId).FirstOrDefault();
@@ -503,7 +500,6 @@ namespace MODAMS.Utility
             }
             return assetName;
         }
-
         public void RecordLogin(string userId) {
 
             string ipAddress = _contextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();

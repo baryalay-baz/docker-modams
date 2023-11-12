@@ -26,7 +26,8 @@ namespace MODAMS.Utility
         public const int Transaction_Disposal = 4;
         public const int Transaction_Verification = 5;
 
-        public const string WebAddress = "https://localhost:44398";
+        public const string WebAddress = "http://misportal.ddns.net:85";
+        public const string WebAddressLocal = "https://localhost:44398";
 
         public const int NS_NewRegistration = 1;
         public const int NS_ForgotPassword = 2;
