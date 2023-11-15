@@ -23,5 +23,12 @@ namespace MODAMS.Models.ViewModels.Dto
         [ValidateNever]
         public IEnumerable<SelectListItem> Employees { get; set; }
 
+        [ValidateNever]
+        public IEnumerable<SelectListItem> Months { get; set; }
+
+        [ValidateNever]
+        public IEnumerable<SelectListItem> Years { get; set; }
+
+
     }
 }

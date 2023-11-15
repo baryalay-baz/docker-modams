@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace MODAMS.Models.ViewModels
 {
-    public class vwAvalableEmloyees
+    public class vwAvailableEmloyees
     {
         public int Id { get; set; }
         public string FullName { get; set; }
+        public string RoleName { get; set; }
     }
 }

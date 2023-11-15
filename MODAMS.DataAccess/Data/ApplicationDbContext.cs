@@ -52,7 +52,7 @@ namespace MODAMS.DataAccess.Data
         //Section for Views
         public DbSet<vwEmployees> vwEmployees { get; set; }
         public DbSet<vwDepartments> vwDepartments { get; set; }
-        public DbSet<vwAvalableEmloyees> vwAvailableEmployees { get; set; }
+        public DbSet<vwAvailableEmloyees> vwAvailableEmployees { get; set; }
         public DbSet<vwStore> vwStores { get; set; }
         public DbSet<vwStoreCategoryAsset> vwStoreCategoryAssets { get; set; }
         public DbSet<vwCategoryAsset> vwCategoryAssets { get; set; }

@@ -21,90 +21,115 @@
 
 <div class="row">
     <div class="col-md-12">
-        <div class="card">
-            <div class="card-header">
-                <div class="card-title">User login history</div>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table id="tblLoginHistory" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
-                        <thead class="table-head">
-                            <tr>
-                                <th class="bg-transparent border-bottom-0 w-5">S.No</th>
-                                <th class="bg-transparent border-bottom-0">Employee Name</th>
-                                <th class="bg-transparent border-bottom-0">Timestamp</th>
-                            </tr>
-                        </thead>
-                        <tbody class="table-body">
-                            @{
-                                var nCounter = 0;
-                                var sCounter = "";
-
-                                foreach (var loginHistory in Model.loginHistory)
-                                {
-                                    nCounter++;
-                                    sCounter = (nCounter < 10) ? "0" + nCounter : nCounter.ToString();
-
-                                    <tr>
-                                        <td class="text-muted fs-15 fw-semibold text-center">@sCounter.</td>
-                                        <td class="text-muted fs-15 fw-semibold">@loginHistory.Employee.FullName</td>
-                                        <td class="text-muted fs-15 fw-semibold">@loginHistory.TimeStamp.ToString("F")</td>
-                                    </tr>
-                                }
-                            }
-                        </tbody>
-                    </table>
+        <div class="card ">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center justify-content-between w-25">
+                    <select asp-for="@Model.SelectedMonth" asp-items="@Model.Months" class="form-select">
+                    </select>
+                    <select asp-for="@Model.SelectedYear" asp-items="@Model.Years" class="form-select">
+                    </select>
                 </div>
             </div>
         </div>
     </div>
+</div>
+
+<div class="row">
     <div class="col-md-12">
-        <div class="card">
-            <div class="card-header">
-                <div class="card-title">Audit Log</div>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table id="tblAuditLog" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
-                        <thead class="table-head">
-                            <tr>
-                                <th class="bg-transparent border-bottom-0 w-5">S.No</th>
-                                <th class="bg-transparent border-bottom-0">Action</th>
-                                <th class="bg-transparent border-bottom-0">Entity</th>
-                                <th class="bg-transparent border-bottom-0">Record Id</th>
-                                <th class="bg-transparent border-bottom-0">Field Name</th>
-                                <th class="bg-transparent border-bottom-0">Old Value</th>
-                                <th class="bg-transparent border-bottom-0">New Value</th>
-                                <th class="bg-transparent border-bottom-0">Employee</th>
-                                <th class="bg-transparent border-bottom-0">Timestamp</th>
-                            </tr>
-                        </thead>
-                        <tbody class="table-body">
-                            @{
-                                nCounter = 0;
-                                sCounter = "";
-
-                                foreach (var log in Model.auditLog)
-                                {
-                                    nCounter++;
-                                    sCounter = (nCounter < 10) ? "0" + nCounter : nCounter.ToString();
-
-                                    <tr>
-                                        <td class="text-muted fs-15 fw-semibold text-center">@sCounter.</td>
-                                        <td class="text-muted fs-15 fw-semibold">@log.Action</td>
-                                        <td class="text-muted fs-15 fw-semibold">@log.EntityName</td>
-                                        <td class="text-muted fs-15 fw-semibold">@log.PrimaryKeyValue</td>
-                                        <td class="text-muted fs-15 fw-semibold">@log.PropertyName</td>
-                                        <td class="text-muted fs-15 fw-semibold">@log.OldValue</td>
-                                        <td class="text-muted fs-15 fw-semibold">@log.NewValue</td>
-                                        <td class="text-muted fs-15 fw-semibold">@log.Employee.FullName</td>
-                                        <td class="text-muted fs-15 fw-semibold">@log.Timestamp.ToString("F")</td>
-                                    </tr>
-                                }
-                            }
-                        </tbody>
-                    </table>
+        <div aria-multiselectable="true" class="accordion-dark mb-2" id="accordion2" role="tablist">
+            <div class="card mb-0 mt-2">
+                <div class="card-header border-bottom-0" id="headinig2" role="tab">
+                    <a class="accor-style2 collapsed" aria-controls="collapse2" aria-expanded="false" data-bs-toggle="collapse" href="#collapse2"><i class="fe fe-plus-circle me-2"></i>Login History</a>
                 </div>
+                <div aria-labelledby="headinig2" class="collapse" data-bs-parent="#accordion2" id="collapse2" role="tabpanel" style="">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="tblLoginHistory" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
+                                <thead class="table-head">
+                                    <tr>
+                                        <th class="bg-transparent border-bottom-0 w-5">S.No</th>
+                                        <th class="bg-transparent border-bottom-0">Employee Name</th>
+                                        <th class="bg-transparent border-bottom-0">Timestamp</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-body">
+                                    @{
+                                        var nCounter = 0;
+                                        var sCounter = "";
+
+                                        foreach (var loginHistory in Model.loginHistory)
+                                        {
+                                            nCounter++;
+                                            sCounter = (nCounter < 10) ? "0" + nCounter : nCounter.ToString();
+
+                                            <tr>
+                                                <td class="text-muted fs-15 fw-semibold text-center">@sCounter.</td>
+                                                <td class="text-muted fs-15 fw-semibold">@loginHistory.Employee.FullName</td>
+                                                <td class="text-muted fs-15 fw-semibold">@loginHistory.TimeStamp.ToString("F")</td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- collapse -->
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div aria-multiselectable="true" class="accordion-dark mb-2" id="accordion3" role="tablist">
+            <div class="card mb-0 mt-2">
+                <div class="card-header border-bottom-0" id="heading3" role="tab">
+                    <a class="accor-style2 collapsed" aria-controls="collapse3" aria-expanded="false" data-bs-toggle="collapse" href="#collapse3"><i class="fe fe-plus-circle me-2"></i>Audit Log</a>
+                </div>
+                <div aria-labelledby="heading3" class="collapse" data-bs-parent="#accordion3" id="collapse3" role="tabpanel" style="">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="tblAuditLog" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
+                                <thead class="table-head">
+                                    <tr>
+                                        <th class="bg-transparent border-bottom-0 w-5">S.No</th>
+                                        <th class="bg-transparent border-bottom-0">Action</th>
+                                        <th class="bg-transparent border-bottom-0">Entity</th>
+                                        <th class="bg-transparent border-bottom-0">Record Id</th>
+                                        <th class="bg-transparent border-bottom-0">Field Name</th>
+                                        <th class="bg-transparent border-bottom-0">Old Value</th>
+                                        <th class="bg-transparent border-bottom-0">New Value</th>
+                                        <th class="bg-transparent border-bottom-0">Employee</th>
+                                        <th class="bg-transparent border-bottom-0">Timestamp</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-body">
+                                    @{
+                                        nCounter = 0;
+                                        sCounter = "";
+
+                                        foreach (var log in Model.auditLog)
+                                        {
+                                            nCounter++;
+                                            sCounter = (nCounter < 10) ? "0" + nCounter : nCounter.ToString();
+                                            //sFullName = (log.Employee.FullName == null) ? "-" : log.Employee.FullName;
+                                            <tr>
+                                                <td class="text-muted fs-15 fw-semibold text-center">@sCounter.</td>
+                                                <td class="text-muted fs-15 fw-semibold">@log.Action</td>
+                                                <td class="text-muted fs-15 fw-semibold">@log.EntityName</td>
+                                                <td class="text-muted fs-15 fw-semibold">@log.PrimaryKeyValue</td>
+                                                <td class="text-muted fs-15 fw-semibold">@log.PropertyName</td>
+                                                <td class="text-muted fs-15 fw-semibold">@log.OldValue</td>
+                                                <td class="text-muted fs-15 fw-semibold">@log.NewValue</td>
+                                                <td class="text-muted fs-15 fw-semibold">@log.Employee.FullName</td>
+                                                <td class="text-muted fs-15 fw-semibold">@log.Timestamp.ToString("F")</td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- collapse -->
             </div>
         </div>
     </div>
@@ -115,6 +140,13 @@
             hideMenu();
             makeDataTable($('#tblLoginHistory'));
             makeDataTable($('#tblAuditLog'));
+
+            $("#SelectedMonth").on("change", () => {
+                let sVal = $("#SelectedMonth").val();
+                window.location.href = "/Admin/Settings/Index?nMonth=" + sVal + "&nYear=2023";
+            });
+
+            $('.select2').select2();
         })
     </script>
 }

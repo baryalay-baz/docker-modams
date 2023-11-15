@@ -180,12 +180,15 @@
     @*<script src="~/assets/js/project-list.js"></script>*@
     <script>
         $(document).ready(function () {
-            $('#tblEmployees').DataTable({
-                language: {
-                    searchPlaceholder: 'Search...',
-                    sSearch: '',
-                }
-            });
+            hideMenu();
+            makeDatatable('#tblEmployees', 1);
+
+            // $('#tblEmployees').DataTable({
+            //     language: {
+            //         searchPlaceholder: 'Search...',
+            //         sSearch: '',
+            //     }
+            // });
         });
     </script>
 

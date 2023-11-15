@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MODAMS.DataAccess.Data;
 using MODAMS.Models;
 using MODAMS.Models.ViewModels.Dto;
 using MODAMS.Utility;
+using System.Globalization;
+using Telerik.SvgIcons;
 
 namespace MODAMSWeb.Areas.Admin.Controllers
 
@@ -22,19 +25,75 @@ namespace MODAMSWeb.Areas.Admin.Controllers
             _func = func;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index(int? nMonth, int? nYear)
         {
-            var loginHistory = _db.LoginHistory.Include(m => m.Employee)
-                .OrderByDescending(m => m.TimeStamp).ToList();
-            var auditLog = _db.AuditLog.Include(m => m.Employee)
-                .OrderByDescending(m=>m.Timestamp).ToList();
+            var loginHistory = await _db.LoginHistory.Include(m => m.Employee)
+                .OrderByDescending(m => m.TimeStamp).ToListAsync();
+
+            var auditLog = await _db.AuditLog.Where(m => m.EmployeeId != null)
+                .Include(m => m.Employee).OrderByDescending(m => m.Timestamp)
+                .ToListAsync();
+
+            int month = nMonth ?? DateTime.Now.Month;
+            int year = nYear ?? DateTime.Now.Year;
+
+            loginHistory = loginHistory
+                    .Where(m => m.TimeStamp.Month == month && m.TimeStamp.Year == year)
+                    .ToList();
+
+            auditLog = auditLog
+                .Where(m => m.Timestamp.Month == month && m.Timestamp.Year == year)
+                .ToList();
+
             var dto = new dtoSettings()
             {
                 auditLog = auditLog,
-                loginHistory = loginHistory
+                loginHistory = loginHistory,
+                Months = GetMonths(month),
+                Years = GetYears(year),
+                SelectedMonth = month,
+                SelectedYear = year
             };
 
             return View(dto);
+        }
+
+        private List<SelectListItem> GetMonths(int nSelected)
+        {
+            var months = Enumerable.Range(1, 12).Select(i => new SelectListItem
+            {
+                Value = i.ToString(),
+                Text = GetMonthName(i),
+                Selected = (i == nSelected)
+            }).ToList();
+            return months;
+        }
+
+        private List<SelectListItem> GetYears(int nSelected)
+        {
+
+            var years = Enumerable.Range(2023, 5).Select(i => new SelectListItem
+            {
+                Value = i.ToString(),
+                Text = i.ToString(),
+                Selected = (i == nSelected)
+            }).ToList();
+
+            return years;
+        }
+
+        private string GetMonthName(int monthNumber)
+        {
+            if (monthNumber < 1 || monthNumber > 12)
+            {
+                throw new ArgumentOutOfRangeException(nameof(monthNumber), "Month number should be between 1 and 12");
+            }
+
+            CultureInfo cultureInfo = CultureInfo.CurrentCulture;
+            DateTimeFormatInfo dateTimeFormat = cultureInfo.DateTimeFormat;
+            string monthName = dateTimeFormat.GetMonthName(monthNumber);
+
+            return monthName;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,5 +11,12 @@ namespace MODAMS.Models.ViewModels.Dto
     {
         public List<LoginHistory> loginHistory = new List<LoginHistory>();
         public List<AuditLog> auditLog = new List<AuditLog>();
+
+        public int SelectedMonth { get; set; }
+        public int SelectedYear { get; set; }
+        public List<SelectListItem> Months { get; set; }
+        public List<SelectListItem> Years { get; set; }
+
+        
     }
 }

@@ -237,7 +237,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
             List<DepartmentHead> departmentHeads = _db.DepartmentHeads.Where(m => m.DepartmentId == id)
                 .Include(m => m.Employee).Include(m => m.Department).OrderByDescending(m => m.StartDate).ToList();
 
-            var employeeList = _db.vwAvailableEmployees.ToList().Select(m => new SelectListItem
+            var employeeList = _db.vwAvailableEmployees.Where(m=>m.RoleName=="StoreOwner").ToList().Select(m => new SelectListItem
             {
                 Text = m.FullName,
                 Value = m.Id.ToString()
@@ -267,13 +267,28 @@ namespace MODAMSWeb.Areas.Admin.Controllers
             int nDepartmentId = dto.DepartmentId;
             int nEmployeeId = dto.EmployeeId;
 
+            if(nEmployeeId == 0)
+            {
+                TempData["error"] = "Employee Id not found!";
+                return RedirectToAction("Index", "Departments");
+            }
+
             var departmentHead = await _db.DepartmentHeads
                 .FirstOrDefaultAsync(m => m.DepartmentId == nDepartmentId && m.IsActive);
+
 
             if (departmentHead != null)
             {
                 departmentHead.IsActive = false;
                 departmentHead.EndDate = DateTime.Now;
+
+                var departmentUsers = await _db.Employees.Where(m => m.SupervisorEmployeeId == departmentHead.EmployeeId).ToListAsync();
+                if (departmentUsers != null) { 
+                    foreach(var user in departmentUsers )
+                    {
+                        user.SupervisorEmployeeId = nEmployeeId;
+                    }
+                }
             }
 
             if (nEmployeeId != 0)
