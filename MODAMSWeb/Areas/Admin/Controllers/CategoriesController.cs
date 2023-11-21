@@ -132,41 +132,56 @@ namespace MODAMSWeb.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult CreateSubCategory(int id)
         {
-            var subCategory = new SubCategory();
+            dtoSubCategory dto = new dtoSubCategory();
 
             if (id > 0)
             {
-                subCategory.CategoryId = id;
+                dto.CategoryId = id;
             }
             else
             {
                 TempData["error"] = "Please select a category first!";
                 return RedirectToAction("Index", "Categories");
             }
-            return View(subCategory);
+
+            return View(dto);
         }
 
         [Authorize(Roles = "Administrator, StoreOwner")]
         [HttpPost]
-        public async Task<IActionResult> CreateSubCategory(SubCategory subCategory)
+        public async Task<IActionResult> CreateSubCategory(dtoSubCategory dto)
         {
-            if(subCategory != null)
+            if (dto != null)
             {
-                var subCategoryInDb = await _db.SubCategories.Where(m=>m.SubCategoryName==subCategory.SubCategoryName).FirstOrDefaultAsync();
+                var subCategoryInDb = await _db.SubCategories.Where(m => m.SubCategoryName == dto.SubCategoryName).FirstOrDefaultAsync();
                 if (subCategoryInDb != null)
                 {
                     TempData["error"] = "Sub-Category with this name already exists!";
-                    return View(subCategory);
+                    return View(dto);
                 }
-
-                await _db.SubCategories.AddAsync(subCategory);
-                await _db.SaveChangesAsync();
+                try
+                {
+                    SubCategory subCategory = new SubCategory()
+                    {
+                        CategoryId = dto.CategoryId,
+                        SubCategoryCode = dto.SubCategoryCode,
+                        SubCategoryName = dto.SubCategoryName,
+                        LifeSpan = dto.LifeSpan
+                    };
+                    await _db.SubCategories.AddAsync(subCategory);
+                    await _db.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    TempData["error0"] = ex.Message;
+                    return View(dto);
+                }
 
                 TempData["success"] = "Sub-Category added successfuly!";
                 return RedirectToAction("Index", "Categories");
             }
 
-            return View(subCategory);
+            return View(dto);
         }
 
 
@@ -179,9 +194,9 @@ namespace MODAMSWeb.Areas.Admin.Controllers
                 TempData["error"] = "Please select a subcategory to first";
                 return RedirectToAction("Index", "Categories");
             }
-            var subCategory = _db.SubCategories.Where(m=>m.Id==id).FirstOrDefault();
+            var subCategory = _db.SubCategories.Where(m => m.Id == id).FirstOrDefault();
 
-            if(subCategory == null)
+            if (subCategory == null)
             {
                 TempData["error"] = "Sub-Category not found!";
                 return RedirectToAction("Index", "Categories");
@@ -196,7 +211,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
         {
             if (subCategory != null)
             {
-                var subCategoryInDb = await _db.SubCategories.Where(m => m.Id==subCategory.Id).FirstOrDefaultAsync();
+                var subCategoryInDb = await _db.SubCategories.Where(m => m.Id == subCategory.Id).FirstOrDefaultAsync();
                 if (subCategoryInDb == null)
                 {
                     TempData["error"] = "Sub-Category not found!";

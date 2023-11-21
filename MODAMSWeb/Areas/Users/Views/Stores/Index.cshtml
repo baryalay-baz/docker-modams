@@ -130,7 +130,7 @@
                                                                             {
                                                                                 foreach (var emp in storeEmps)
                                                                                 {
-                                                                                    string sContent = $"{emp.FullName} <br /> {emp.Email} <br /> {emp.Role}";    
+                                                                                    string sContent = $"{emp.Email} <br /> {emp.Role}";    
 
                                                                                     <a data-bs-container="body"
                                                                                        data-bs-content="@Html.Raw(sContent)"
@@ -138,7 +138,7 @@
                                                                                        data-bs-placement="right"
                                                                                        data-bs-popover-color="default"
                                                                                        data-bs-toggle="popover"
-                                                                                       data-bs-original-title="Employee Details"
+                                                                                       data-bs-original-title="@emp.FullName"
                                                                                        role="button" tabindex="0" data-bs-trigger="hover">
                                                                                         <span><img src="@emp.ImageUrl" alt="profile-user" class="avatar bradius cover-image"></span>
                                                                                     </a>
