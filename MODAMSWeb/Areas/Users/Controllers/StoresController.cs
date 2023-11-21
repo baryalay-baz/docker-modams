@@ -64,25 +64,31 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 {
                     if (store.EmployeeId > 0)
                     {
-                        var empl = _db.Employees.Where(m => m.Id == store.EmployeeId).FirstOrDefault();
+                        var empl = _db.vwEmployees.Where(m => m.Id == store.EmployeeId).FirstOrDefault();
                         if (empl != null)
                         {
                             vwStoreEmployee se = new vwStoreEmployee()
                             {
                                 Id = empl.Id,
+                                FullName = empl.FullName,
+                                Email = empl.Email,
+                                Role = empl.RoleName,
                                 ImageUrl = empl.ImageUrl,
                                 StoreId = store.Id
                             };
                             storeEmployees.Add(se);
 
                             //Add store users
-                            var storeUsers = _db.Employees.Where(m => m.SupervisorEmployeeId == empl.Id).ToList();
+                            var storeUsers = _db.vwEmployees.Where(m => m.SupervisorEmployeeId == empl.Id).ToList();
                             foreach (var user in storeUsers)
                             {
                                 vwStoreEmployee su = new vwStoreEmployee()
                                 {
                                     Id = user.Id,
                                     ImageUrl = user.ImageUrl,
+                                    FullName = user.FullName,
+                                    Email = user.Email,
+                                    Role = user.RoleName,
                                     StoreId = store.Id
                                 };
                                 storeEmployees.Add(su);
@@ -147,7 +153,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             if (vwStore == null)
             {
-                return RedirectToAction("Index","Stores");
+                return RedirectToAction("Index", "Stores");
             }
 
             var dto = new dtoStore
@@ -190,7 +196,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 .Count(td => td.Transfer.StoreId == id && td.Transfer.TransferStatusId == SD.Transfer_Completed);
 
             dto.Handovers = 0;
-            dto.Disposals = _db.Assets.Where(m=>m.StoreId==id && m.AssetStatusId==SD.Asset_Disposed).Count();
+            dto.Disposals = _db.Assets.Where(m => m.StoreId == id && m.AssetStatusId == SD.Asset_Disposed).Count();
 
             TempData["storeId"] = id;
             TempData["storeName"] = vwStore.Name;

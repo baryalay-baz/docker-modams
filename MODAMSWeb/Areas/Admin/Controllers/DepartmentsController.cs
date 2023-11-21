@@ -30,7 +30,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
 
         public IActionResult Index()
         {
-            List<vwDepartments> departments = _db.vwDepartments.ToList();
+            List<vwDepartments> departments = _db.vwDepartments.OrderByDescending(m=>m.EmployeeId).ToList();
             return View(departments);
         }
 
@@ -157,6 +157,8 @@ namespace MODAMSWeb.Areas.Admin.Controllers
             department.UpperLevelDeptId = form.department.UpperLevelDeptId;
 
             await _db.SaveChangesAsync();
+            await UpdateStore(department);
+
 
             TempData["success"] = "Department saved successfuly!";
             return RedirectToAction("Index", "Departments");
@@ -325,6 +327,17 @@ namespace MODAMSWeb.Areas.Admin.Controllers
                 DepartmentId = department.Id
             };
             await _db.Stores.AddAsync(store);
+            await _db.SaveChangesAsync();
+        }
+
+        private async Task UpdateStore(Department department)
+        {
+            var storeInDb = await _db.Stores.FirstOrDefaultAsync(m => m.DepartmentId == department.Id);
+
+            if (storeInDb != null)
+            {
+                storeInDb.Name = department.Name;
+            }
             await _db.SaveChangesAsync();
         }
     }

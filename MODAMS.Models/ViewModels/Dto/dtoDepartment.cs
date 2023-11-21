@@ -13,7 +13,9 @@ namespace MODAMS.Models.ViewModels.Dto
     {
         public Department department { get; set; }
 
+
         [Display(Name ="Department Head")]
+        [ValidateNever]
         public string DepartmentOwner { get; set; }
 
         [ValidateNever]

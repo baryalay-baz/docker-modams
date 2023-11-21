@@ -159,44 +159,67 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 var asset = _db.Assets.Where(m => m.SerialNo == dto.SerialNo).FirstOrDefault();
                 if (asset == null)
                 {
-                    var newAsset = new MODAMS.Models.Asset()
+                    try
                     {
-                        Name = dto.Name,
-                        Make = dto.Make,
-                        Model = dto.Model,
-                        Year = dto.Year,
-                        ManufacturingCountry = dto.ManufacturingCountry,
-                        SerialNo = dto.SerialNo,
-                        Barcode = dto.Barcode,
-                        Engine = dto.Engine,
-                        Chasis = dto.Chasis,
-                        Plate = dto.Plate,
-                        Specifications = dto.Specifications,
-                        Cost = dto.Cost,
-                        PurchaseDate = dto.PurchaseDate,
-                        PONumber = dto.PONumber,
-                        RecieptDate = dto.RecieptDate,
-                        ProcuredBy = dto.ProcuredBy,
-                        Remarks = dto.Remarks,
-                        SubCategoryId = dto.SubCategoryId,
-                        ConditionId = dto.ConditionId,
-                        StoreId = dto.StoreId,
-                        DonorId = dto.DonorId,
-                        AssetStatusId = 1
-                    };
+                        var newAsset = new MODAMS.Models.Asset()
+                        {
+                            Name = dto.Name,
+                            Make = dto.Make,
+                            Model = dto.Model,
+                            Year = dto.Year,
+                            ManufacturingCountry = dto.ManufacturingCountry,
+                            SerialNo = dto.SerialNo,
+                            Barcode = dto.Barcode,
+                            Engine = dto.Engine,
+                            Chasis = dto.Chasis,
+                            Plate = dto.Plate,
+                            Specifications = dto.Specifications,
+                            Cost = dto.Cost,
+                            PurchaseDate = dto.PurchaseDate,
+                            PONumber = dto.PONumber,
+                            RecieptDate = dto.RecieptDate,
+                            ProcuredBy = dto.ProcuredBy,
+                            Remarks = dto.Remarks,
+                            SubCategoryId = dto.SubCategoryId,
+                            ConditionId = dto.ConditionId,
+                            StoreId = dto.StoreId,
+                            DonorId = dto.DonorId,
+                            AssetStatusId = 1
+                        };
 
-                    await _db.Assets.AddAsync(newAsset);
-                    await _db.SaveChangesAsync();
+                        await _db.Assets.AddAsync(newAsset);
+                        await _db.SaveChangesAsync();
 
-                    //Log Newsfeed
-                    string employeeName = _func.GetEmployeeName();
-                    string assetName = newAsset.Name;
-                    string storeName = _func.GetStoreNameByStoreId(newAsset.StoreId);
-                    string message = $"{employeeName} registered a new asset ({assetName}) in {storeName}";
-                    _func.LogNewsFeed(message, "Users", "Assets", "AssetInfo", newAsset.Id);
+                        //Log Newsfeed
+                        string employeeName = _func.GetEmployeeName();
+                        string assetName = newAsset.Name;
+                        string storeName = _func.GetStoreNameByStoreId(newAsset.StoreId);
+                        string message = $"{employeeName} registered a new asset ({assetName}) in {storeName}";
+                        _func.LogNewsFeed(message, "Users", "Assets", "AssetInfo", newAsset.Id);
 
-                    TempData["success"] = "Asset added successfuly!";
-                    return RedirectToAction("Index", "Assets", new { area = "Users", id = dto.StoreId });
+                        var ah = new AssetHistory()
+                        {
+                            AssetId = newAsset.Id,
+                            Description = "Asset Registered by " + employeeName,
+                            TimeStamp = DateTime.Now,
+                            TransactionRecordId = newAsset.Id,
+                            TransactionTypeId = SD.Transaction_Registration
+                        };
+                        await _db.AssetHistory.AddAsync(ah);
+                        await _db.SaveChangesAsync();
+
+                        TempData["success"] = "Asset added successfuly!";
+                        return RedirectToAction("Index", "Assets", new { area = "Users", id = dto.StoreId });
+                    }
+                    catch (Exception ex)
+                    {
+                        TempData["error"] = ex.Message;
+                        TempData["storeId"] = dto.StoreId;
+                        TempData["storeName"] = _func.GetStoreNameByStoreId(dto.StoreId);
+                        dto = PopulateDtoAsset(dto);
+                        return View(dto);
+                    }
+
                 }
                 else
                 {
@@ -322,6 +345,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     assetInDb.AssetStatusId = dto.AssetStatusId;
 
                     await _db.SaveChangesAsync();
+
 
                     //Log Newsfeed
                     string employeeName = _func.GetEmployeeName();
@@ -796,7 +820,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             }
             return blnResult;
         }
-        
+
 
     }
 }

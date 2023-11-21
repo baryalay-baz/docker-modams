@@ -21,6 +21,38 @@
             pointer-events: none; /* Allow interaction with content behind the pseudo-element */
         }
 
+    .tooltip-container {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+        color: #333;
+        font-size: 16px;
+        padding: 10px;
+    }
+
+    .tooltip {
+        visibility: hidden;
+        width: 240px; /* Adjust the width as needed */
+        background-color: #fff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        position: absolute;
+        z-index: 1;
+        top: 125%;
+        left: 50%;
+        margin-left: -120px; /* Half of the width */
+        opacity: 0;
+        transition: opacity 0.3s, visibility 0.3s;
+    }
+
+    .cardTooltip {
+        padding: 16px;
+    }
+
+    .tooltip-container:hover .tooltip {
+        visibility: visible;
+        opacity: 1;
+    }
 </style>
 
 <!-- PAGE-HEADER -->
@@ -98,7 +130,18 @@
                                                                             {
                                                                                 foreach (var emp in storeEmps)
                                                                                 {
-                                                                                    <span><img src="@emp.ImageUrl" alt="profile-user" class="avatar bradius cover-image"></span>
+                                                                                    string sContent = $"{emp.FullName} <br /> {emp.Email} <br /> {emp.Role}";    
+
+                                                                                    <a data-bs-container="body"
+                                                                                       data-bs-content="@Html.Raw(sContent)"
+                                                                                       data-bs-html="true"
+                                                                                       data-bs-placement="right"
+                                                                                       data-bs-popover-color="default"
+                                                                                       data-bs-toggle="popover"
+                                                                                       data-bs-original-title="Employee Details"
+                                                                                       role="button" tabindex="0" data-bs-trigger="hover">
+                                                                                        <span><img src="@emp.ImageUrl" alt="profile-user" class="avatar bradius cover-image"></span>
+                                                                                    </a>
                                                                                 }
                                                                             }
                                                                             else
@@ -172,6 +215,16 @@
                 const categoryId = $('#CategoryId').val();
                 const url = `/Users/Reporting/AssetReport?StoreId=${storeId}&AssetStatusId=${assetStatusId}&CategoryId=${categoryId}`;
                 window.open(url, "_blank");
+            });
+        });
+    </script>
+
+    <script>
+        // Initialize the popover
+        var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+        var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+            return new bootstrap.Popover(popoverTriggerEl, {
+                trigger: 'focus', // Close popover on blur
             });
         });
     </script>
