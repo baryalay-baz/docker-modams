@@ -30,7 +30,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
 
         public IActionResult Index()
         {
-            List<vwDepartments> departments = _db.vwDepartments.OrderByDescending(m=>m.EmployeeId).ToList();
+            List<vwDepartments> departments = _db.vwDepartments.OrderByDescending(m => m.EmployeeId).ToList();
             return View(departments);
         }
 
@@ -239,7 +239,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
             List<DepartmentHead> departmentHeads = _db.DepartmentHeads.Where(m => m.DepartmentId == id)
                 .Include(m => m.Employee).Include(m => m.Department).OrderByDescending(m => m.StartDate).ToList();
 
-            var employeeList = _db.vwAvailableEmployees.Where(m=>m.RoleName=="StoreOwner").ToList().Select(m => new SelectListItem
+            var employeeList = _db.vwAvailableEmployees.Where(m => m.RoleName == "StoreOwner").ToList().Select(m => new SelectListItem
             {
                 Text = m.FullName,
                 Value = m.Id.ToString()
@@ -261,7 +261,6 @@ namespace MODAMSWeb.Areas.Admin.Controllers
 
             return View(dto);
         }
-
         [HttpPost]
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> AssignOwner(dtoDepartmentHeads dto)
@@ -269,7 +268,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
             int nDepartmentId = dto.DepartmentId;
             int nEmployeeId = dto.EmployeeId;
 
-            if(nEmployeeId == 0)
+            if (nEmployeeId == 0)
             {
                 TempData["error"] = "Employee Id not found!";
                 return RedirectToAction("Index", "Departments");
@@ -285,8 +284,9 @@ namespace MODAMSWeb.Areas.Admin.Controllers
                 departmentHead.EndDate = DateTime.Now;
 
                 var departmentUsers = await _db.Employees.Where(m => m.SupervisorEmployeeId == departmentHead.EmployeeId).ToListAsync();
-                if (departmentUsers != null) { 
-                    foreach(var user in departmentUsers )
+                if (departmentUsers != null)
+                {
+                    foreach (var user in departmentUsers)
                     {
                         user.SupervisorEmployeeId = nEmployeeId;
                     }
@@ -316,6 +316,31 @@ namespace MODAMSWeb.Areas.Admin.Controllers
             TempData["success"] = "Owner set successfully!";
             return RedirectToAction("Index", "Departments");
         }
+        
+        [Authorize(Roles = "Administrator")]
+        [HttpPost]
+        public async Task<IActionResult> VacateDepartment(dtoDepartmentHeads dto)
+        {
+            var department = await _db.Departments.FirstOrDefaultAsync(m => m.Id == dto.DepartmentId);
+            if (department != null)
+            {
+                department.EmployeeId = null;
+
+                var departmentHead = _db.DepartmentHeads.FirstOrDefault(m=>m.IsActive==true);
+                if (departmentHead != null)
+                {
+                    departmentHead.EndDate = DateTime.Now;
+                    departmentHead.IsActive = false;
+                }
+                await _db.SaveChangesAsync();
+            }
+
+            TempData["success"] = "Store Vacated Successfuly!";
+            return RedirectToAction("Index", "Departments");
+
+
+        }
+
 
         //private functions
         private async Task CreateStore(Department department)

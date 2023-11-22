@@ -227,7 +227,11 @@
                         </div>
                     </form>
                 </div>
+                <form method="post" asp-action="VacateDepartment" id="frmVacateDepartment">
+                    <input asp-for="DepartmentId" hidden />
+                </form>
                 <div class="modal-footer">
+                    <button id="btnVacate" class="btn btn-danger">Vacate Store</button>
                     <button id="btnSaveChanges" class="btn btn-primary">Assign Owner</button> <button class="btn btn-light" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -237,13 +241,17 @@
     <section id="dvFacesData" style="display:none;"></section>
 </div>
 
-@section Scripts{
+@section Scripts {
     <script>
         $(document).ready(() => {
             loadFaces();
 
             $('#btnSaveChanges').on("click", () => {
                 $("#frmAssignOwner").submit();
+            });
+
+            $('#btnVacate').on("click", () => {
+                $("#frmVacateDepartment").submit();
             });
 
             makeDataTable('#tblDepartmentHeads');
@@ -311,4 +319,4 @@
         }
 
     </script>
-    }
+}
