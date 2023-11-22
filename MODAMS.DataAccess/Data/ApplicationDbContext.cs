@@ -65,121 +65,124 @@ namespace MODAMS.DataAccess.Data
 
         //Temporarily stopped Logging Audit for Account Issues... 
         //Modifying SaveChanges for AuditLogs
-        //public override int SaveChanges()
-        //{
-        //    var auditLogs = new List<AuditLog>();
+        public override int SaveChanges()
+        {
+            var auditLogs = new List<AuditLog>();
 
-        //    foreach (var entry in ChangeTracker.Entries())
-        //    {
-        //        if (entry.Entity.GetType() == typeof(IdentityUserRole<string>))
-        //        {
-        //            continue;
-        //        }
+            foreach (var entry in ChangeTracker.Entries())
+            {
+                if (entry.Entity.GetType() == typeof(IdentityUserRole<string>))
+                {
+                    continue;
+                }
 
-        //        if (entry.State == EntityState.Modified || entry.State == EntityState.Added || entry.State == EntityState.Deleted)
-        //        {
-        //            var action = "Modify";
+                if (entry.State == EntityState.Modified || entry.State == EntityState.Added || entry.State == EntityState.Deleted)
+                {
+                    var action = "Modify";
 
-        //            if (entry.State == EntityState.Added)
-        //            {
-        //                action = "Add";
-        //            }
-        //            else if (entry.State == EntityState.Deleted)
-        //            {
-        //                action = "Delete";
-        //            }
+                    if (entry.State == EntityState.Added)
+                    {
+                        action = "Add";
+                    }
+                    else if (entry.State == EntityState.Deleted)
+                    {
+                        action = "Delete";
+                    }
 
-        //            foreach (var property in entry.OriginalValues.Properties)
-        //            {
-        //                var original = entry.OriginalValues[property];
-        //                var current = entry.CurrentValues[property];
+                    foreach (var property in entry.OriginalValues.Properties)
+                    {
+                        var original = entry.OriginalValues[property];
+                        var current = entry.CurrentValues[property];
 
-        //                if (!object.Equals(original, current))
-        //                {
-        //                    auditLogs.Add(new AuditLog
-        //                    {
-        //                        Timestamp = DateTime.Now,
-        //                        EmployeeId = GetCurrentUserId(),
-        //                        Action = action,
-        //                        EntityName = entry.Entity.GetType().Name,
-        //                        PrimaryKeyValue = entry.OriginalValues["Id"].ToString(), // Adjust as per your primary key.
-        //                        PropertyName = property.Name,
-        //                        OldValue = original?.ToString(),
-        //                        NewValue = current?.ToString()
-        //                    });
-        //                }
-        //            }
-        //        }
-        //    }
-        //    AuditLog.AddRange(auditLogs);
+                        if (!object.Equals(original, current))
+                        {
+                            auditLogs.Add(new AuditLog
+                            {
+                                Timestamp = DateTime.Now,
+                                EmployeeId = GetCurrentUserId(),
+                                Action = action,
+                                EntityName = entry.Entity.GetType().Name,
+                                PrimaryKeyValue = entry.OriginalValues["Id"].ToString(), // Adjust as per your primary key.
+                                PropertyName = property.Name,
+                                OldValue = original?.ToString(),
+                                NewValue = current?.ToString()
+                            });
+                        }
+                    }
+                }
+            }
+            AuditLog.AddRange(auditLogs);
 
-        //    return base.SaveChanges();
-        //}
+            return base.SaveChanges();
+        }
 
-        //public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken))
-        //{
-        //    var auditLogs = new List<AuditLog>();
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var auditLogs = new List<AuditLog>();
 
-        //    foreach (var entry in ChangeTracker.Entries())
-        //    {
-        //        if (entry.Entity.GetType() == typeof(IdentityUserRole<string>))
-        //        {
-        //            continue;
-        //        }
-        //        var action = "Modify";
+            foreach (var entry in ChangeTracker.Entries())
+            {
+                if (entry.Entity.GetType() == typeof(IdentityUserRole<string>) ||
+                    entry.Entity.GetType() == typeof(IdentityUser<string>) ||
+                    entry.Entity.GetType() == typeof(IdentityRole<string>))
+                {
+                    continue;
+                }
+                var action = "Modify";
 
-        //        if (entry.State == EntityState.Modified || entry.State == EntityState.Added || entry.State == EntityState.Deleted)
-        //        {
-        //            if (entry.State == EntityState.Added)
-        //            {
-        //                action = "Add";
-        //            }
-        //            else if (entry.State == EntityState.Deleted)
-        //            {
-        //                action = "Delete";
-        //            }
-        //        }
-        //        foreach (var property in entry.OriginalValues.Properties)
-        //        {
-        //            var original = entry.OriginalValues[property];
-        //            var current = entry.CurrentValues[property];
+                if (entry.State == EntityState.Modified || entry.State == EntityState.Added || entry.State == EntityState.Deleted)
+                {
+                    if (entry.State == EntityState.Added)
+                    {
+                        action = "Add";
+                    }
+                    else if (entry.State == EntityState.Deleted)
+                    {
+                        action = "Delete";
+                    }
+                }
+                foreach (var property in entry.OriginalValues.Properties)
+                {
+                    var original = entry.OriginalValues[property];
+                    var current = entry.CurrentValues[property];
 
-        //            if (action == "Modify")
-        //            {
-        //                if (!object.Equals(original, current))
-        //                {
-        //                    auditLogs.Add(new AuditLog
-        //                    {
-        //                        Timestamp = DateTime.Now,
-        //                        EmployeeId = GetCurrentUserId(),
-        //                        Action = action,
-        //                        EntityName = entry.Entity.GetType().Name,
-        //                        PrimaryKeyValue = entry.OriginalValues["Id"].ToString(),
-        //                        PropertyName = property.Name,
-        //                        OldValue = original?.ToString(),
-        //                        NewValue = current?.ToString()
-        //                    });
-        //                }
-        //            }
-        //            else {
-        //                auditLogs.Add(new AuditLog
-        //                {
-        //                    Timestamp = DateTime.Now,
-        //                    EmployeeId = GetCurrentUserId(),
-        //                    Action = action,
-        //                    EntityName = entry.Entity.GetType().Name,
-        //                    PrimaryKeyValue = entry.OriginalValues["Id"].ToString(),
-        //                    PropertyName = property.Name,
-        //                    OldValue = original?.ToString(),
-        //                    NewValue = current?.ToString()
-        //                });
-        //            }
-        //        }
-        //    }
+                    if (action == "Modify")
+                    {
+                        if (!object.Equals(original, current))
+                        {
+                            auditLogs.Add(new AuditLog
+                            {
+                                Timestamp = DateTime.Now,
+                                EmployeeId = GetCurrentUserId(),
+                                Action = action,
+                                EntityName = entry.Entity.GetType().Name,
+                                PrimaryKeyValue = entry.OriginalValues["Id"].ToString(),
+                                PropertyName = property.Name,
+                                OldValue = original?.ToString(),
+                                NewValue = current?.ToString()
+                            });
+                        }
+                    }
+                    else
+                    {
+                        auditLogs.Add(new AuditLog
+                        {
+                            Timestamp = DateTime.Now,
+                            EmployeeId = GetCurrentUserId(),
+                            Action = action,
+                            EntityName = entry.Entity.GetType().Name,
+                            PrimaryKeyValue = entry.OriginalValues["Id"].ToString(),
+                            PropertyName = property.Name,
+                            OldValue = original?.ToString(),
+                            NewValue = current?.ToString()
+                        });
+                    }
+                }
+            }
 
-        //    AuditLog.AddRange(auditLogs);
-        //    return await base.SaveChangesAsync(cancellationToken);
-        //}
+            AuditLog.AddRange(auditLogs);
+            return await base.SaveChangesAsync(cancellationToken);
+        }
 
         private int? GetCurrentUserId()
         {

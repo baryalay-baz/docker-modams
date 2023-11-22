@@ -51,6 +51,27 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 else
                 {
                     var sl = _db.vwTransfers.Select(m => new { m.StoreFromId, m.StoreFrom }).Distinct().ToList();
+
+                    if (sl.Count > 0)
+                    {
+                        int firstStoreId = sl.Select(m => m.StoreFromId).First();
+                        var storeList = sl.Select(m => new SelectListItem
+                        {
+                            Text = m.StoreFrom,
+                            Value = m.StoreFromId.ToString(),
+                            Selected = (m.StoreFromId == firstStoreId)
+                        });
+                        dto.StoreList = storeList;
+                        _storeId = firstStoreId;
+                    }
+                }
+            }
+            else
+            {
+                _storeId = id;
+                var sl = _db.vwTransfers.Select(m => new { m.StoreFromId, m.StoreFrom }).Distinct().ToList();
+                if (sl.Count > 0)
+                {
                     int firstStoreId = sl.Select(m => m.StoreFromId).First();
 
                     var storeList = sl.Select(m => new SelectListItem
@@ -60,22 +81,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                         Selected = (m.StoreFromId == firstStoreId)
                     });
                     dto.StoreList = storeList;
-                    _storeId = firstStoreId;
                 }
-            }
-            else
-            {
-                _storeId = id;
-                var sl = _db.vwTransfers.Select(m => new { m.StoreFromId, m.StoreFrom }).Distinct().ToList();
-                int firstStoreId = sl.Select(m => m.StoreFromId).First();
-
-                var storeList = sl.Select(m => new SelectListItem
-                {
-                    Text = m.StoreFrom,
-                    Value = m.StoreFromId.ToString(),
-                    Selected = (m.StoreFromId == firstStoreId)
-                });
-                dto.StoreList = storeList;
             }
             if (_employeeId == _func.GetStoreOwnerId(_storeId))
                 dto.IsAuthorized = true;
@@ -198,7 +204,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
             {
                 var selectedIds = selectedAssets.Split(',').Select(id => int.Parse(id));
 
-                foreach (var asset in selectedIds) {
+                foreach (var asset in selectedIds)
+                {
                     var transferDetail = new TransferDetail()
                     {
                         AssetId = asset,
@@ -359,7 +366,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             return RedirectToAction("EditTransfer", "Transfers", new { id = transferDTO.Transfer.Id });
         }
 
-        
+
         [HttpGet]
         public IActionResult PreviewTransfer(int id)
         {
@@ -432,7 +439,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             return View(dto);
         }
 
-        
+
         [Authorize(Roles = "StoreOwner, User")]
         public IActionResult DeleteTransfer(int id)
         {
@@ -686,7 +693,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
         {
             var transferDetails = _db.TransferDetails
                 .Include(td => td.Transfer)
-                .Where(td => td.Transfer.StoreFromId == id && td.Transfer.TransferStatusId==3)
+                .Where(td => td.Transfer.StoreFromId == id && td.Transfer.TransferStatusId == 3)
                 .ToList();
 
             var assetIds = transferDetails.Select(td => td.AssetId).ToList();
