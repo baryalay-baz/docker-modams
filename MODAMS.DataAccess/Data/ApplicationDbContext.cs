@@ -71,7 +71,11 @@ namespace MODAMS.DataAccess.Data
 
             foreach (var entry in ChangeTracker.Entries())
             {
-                if (entry.Entity.GetType() == typeof(IdentityUserRole<string>))
+                if (entry.Entity.GetType() == typeof(IdentityUserRole<string>) ||
+                    entry.Entity.GetType() == typeof(IdentityUser<string>) ||
+                    entry.Entity.GetType() == typeof(IdentityRole<string>) ||
+                    entry.Entity.GetType() == typeof(IdentityUserToken<string>)
+                    )
                 {
                     continue;
                 }
@@ -124,7 +128,9 @@ namespace MODAMS.DataAccess.Data
             {
                 if (entry.Entity.GetType() == typeof(IdentityUserRole<string>) ||
                     entry.Entity.GetType() == typeof(IdentityUser<string>) ||
-                    entry.Entity.GetType() == typeof(IdentityRole<string>))
+                    entry.Entity.GetType() == typeof(IdentityRole<string>) ||
+                    entry.Entity.GetType() == typeof(IdentityUserToken<string>)
+                    )
                 {
                     continue;
                 }
