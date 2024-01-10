@@ -30,7 +30,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            var stores = _db.vwStores.OrderByDescending(m => m.TotalCost).ToList();
+            var stores = _db.vwStores.OrderByDescending(m => m.TotalCount).ToList();
             var allStores = stores;
 
             if (User.IsInRole("User"))

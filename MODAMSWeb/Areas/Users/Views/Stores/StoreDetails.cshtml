@@ -60,7 +60,7 @@
                     <div class="row">
                         <div class="col-7">
                             <h6 class="text-bold text-info">Registered</h6>
-                            <span class="text-info text-bold">@Model.StoreCategoryAssets.Sum(m=>m.TotalAssets)</span>
+                            <span class="text-info text-bold">@Model.StoreCategoryAssets.Sum(m => m.TotalAssets)</span>
                         </div>
                         <div class="col-5">
                             <div class="hpx-50 wpx-50 br-5 d-flex align-items-center justify-content-center bg-info-gradient text-white ms-auto">
@@ -191,16 +191,25 @@
                             <thead class="bg-primary-gradient ms-auto divShadow">
                                 <tr>
                                     <th class="text-white">Category</th>
+                                    <th class="text-white">Sub Category</th>
                                     <th class="text-white">Total Assets</th>
+                                    <th class="text-white">Total Cost</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @{
                                     if (Model.StoreCategoryAssets.Count > 0)
                                     {
+                                        int nTotalAssets = 0;
+                                        decimal nTotalAssetCost = 0;
                                         foreach (var sca in Model.StoreCategoryAssets)
                                         {
+                                            nTotalAssets += sca.TotalAssets;
+                                            nTotalAssetCost += sca.TotalCost;
                                             <tr>
+                                                <td class="text-muted fs-15 fw-semibold">
+                                                    @sca.CategoryName
+                                                </td>
                                                 <td class="text-muted fs-15 fw-semibold">
                                                     <a asp-action="Index" asp-controller="Assets"
                                                        asp-route-id="@sca.StoreId"
@@ -209,11 +218,19 @@
                                                         @sca.SubCategoryName
                                                     </a>
                                                 </td>
-                                                <td class="text-muted text-gray-dark fs-15 fw-semibold">
+                                                <td class="text-muted fs-15 fw-semibold" style="text-align: right;">
                                                     @sca.TotalAssets
+                                                </td>
+                                                <td class="text-muted fs-15 fw-semibold" style="text-align: right;">
+                                                    @sca.TotalCost.ToString("N2")
                                                 </td>
                                             </tr>
                                         }
+                                        <tr>
+                                            <td colspan="2" style="text-align:right; font-weight:bold;">Total:</td>
+                                            <td style="text-align:right; font-weight:bold;">@nTotalAssets</td>
+                                            <td style="text-align:right; font-weight:bold;">@nTotalAssetCost.ToString("N2")</td>
+                                        </tr>
                                     }
                                 }
                             </tbody>
@@ -240,7 +257,7 @@
     <script>
         $(document).ready(function () {
             hideMenu();
-            makeDataTable('#tblCategories', "1");
+            //makeDataTable('#tblCategories', "1");
 
             pieChart();
 
