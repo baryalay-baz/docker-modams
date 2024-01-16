@@ -37,7 +37,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
         public IActionResult Index(int id, int subCategoryId = 0)
         {
-            var assets = _db.Assets.Where(m => m.StoreId == id).Include(m => m.AssetStatus)
+            var assets = _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted && m.StoreId == id).Include(m => m.AssetStatus)
                 .Include(m => m.SubCategory).ThenInclude(m => m.Category)
                 .Include(m => m.Condition).Include(m => m.Donor)
                 .Include(m => m.Store).ToList();
@@ -79,14 +79,13 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             TempData["storeId"] = id;
             TempData["storeName"] = _func.GetStoreNameByStoreId(id);
-
             return View(dto);
         }
 
         public IActionResult AssetList(int id)
         {
 
-            var assets = _db.Assets.Include(m => m.AssetStatus)
+            var assets = _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted).Include(m => m.AssetStatus)
                 .Include(m => m.SubCategory).Include(m => m.Condition).Include(m => m.Donor)
                 .Include(m => m.Store).ToList();
 
@@ -156,7 +155,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             if (ModelState.IsValid)
             {
-                var asset = _db.Assets.Where(m => m.SerialNo == dto.SerialNo).FirstOrDefault();
+                var asset = _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted && m.SerialNo == dto.SerialNo).FirstOrDefault();
                 if (asset == null)
                 {
                     try
@@ -669,6 +668,82 @@ namespace MODAMSWeb.Areas.Users.Controllers
             return RedirectToAction("AssetPictures", "Assets", new { area = "Users", id = assetId });
         }
 
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> DeleteAsset(int id)
+        {
+            if (id == 0)
+            {
+                TempData["error"] = "Asset not found!";
+                return RedirectToAction("AssetInfo", "Assets", new { id = id });
+            }
+
+            var assetInDb = await _db.Assets.FirstOrDefaultAsync(m => m.Id == id);
+            if (assetInDb == null)
+            {
+                TempData["error"] = "Asset not found!";
+                return RedirectToAction("AssetInfo", "Assets", new { id = id });
+            }
+            else
+            {
+                assetInDb.AssetStatusId = 4;
+                assetInDb.Remarks = $"Asset Deleted by {_func.GetEmployeeName()}";
+            }
+            await _db.SaveChangesAsync();
+
+            var assetHistory = new AssetHistory()
+            {
+                AssetId = id,
+                Description = $"Asset Deleted by {_func.GetEmployeeName()}",
+                TimeStamp = DateTime.Now,
+                TransactionRecordId = id,
+                TransactionTypeId = SD.Transaction_Delete
+            };
+            _db.AssetHistory.Add(assetHistory);
+            await _db.SaveChangesAsync();
+
+
+            TempData["success"] = "Asset deleted successfuly!";
+            return RedirectToAction("AssetInfo", "Assets", new { id = id });
+        }
+
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> RecoverAsset(int id)
+        {
+            if (id == 0)
+            {
+                TempData["error"] = "Asset not found!";
+                return RedirectToAction("Index", "Settings", new { area = "Admin", id = id });
+            }
+
+            var assetInDb = await _db.Assets.FirstOrDefaultAsync(m => m.Id == id);
+            if (assetInDb == null)
+            {
+                TempData["error"] = "Asset not found!";
+                return RedirectToAction("Index", "Settings", new { area = "Admin", id = id });
+            }
+            else
+            {
+                assetInDb.AssetStatusId = 1;
+                assetInDb.Remarks = $"Asset Recovered by {_func.GetEmployeeName()}";
+            }
+            await _db.SaveChangesAsync();
+
+            var assetHistory = new AssetHistory()
+            {
+                AssetId = id,
+                Description = $"Asset Recovered by {_func.GetEmployeeName()}",
+                TimeStamp = DateTime.Now,
+                TransactionRecordId = id,
+                TransactionTypeId = SD.Transaction_Recover
+            };
+            _db.AssetHistory.Add(assetHistory);
+            await _db.SaveChangesAsync();
+
+
+            TempData["success"] = "Asset Recovered successfuly!";
+            return RedirectToAction("Index", "Settings", new { area = "Admin", id = id });
+        }
+
         //API Calls
         [HttpGet]
         public async Task<string> GetCategories()
@@ -714,11 +789,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             return sResult;
         }
 
-
-
         //API Calls End
-
-
 
         //Private functions
         private dtoAsset PopulateDtoAsset(dtoAsset dto)

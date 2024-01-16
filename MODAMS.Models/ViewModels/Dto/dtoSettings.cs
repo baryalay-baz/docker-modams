@@ -11,6 +11,7 @@ namespace MODAMS.Models.ViewModels.Dto
     {
         public List<LoginHistory> loginHistory = new List<LoginHistory>();
         public List<AuditLog> auditLog = new List<AuditLog>();
+        public List<Asset> deletedAssets= new List<Asset>();
 
         public int SelectedMonth { get; set; }
         public int SelectedYear { get; set; }

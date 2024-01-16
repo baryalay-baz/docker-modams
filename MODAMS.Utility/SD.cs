@@ -13,7 +13,7 @@ namespace MODAMS.Utility
         public const int Asset_Available = 1;
         public const int Asset_HandedOver = 2;
         public const int Asset_Disposed = 3;
-
+        public const int Asset_Deleted = 4;
 
         public const int Transfer_Pending = 1;
         public const int Transfer_SubmittedForAcknowledgement = 2;
@@ -25,6 +25,8 @@ namespace MODAMS.Utility
         public const int Transaction_Handover = 3;
         public const int Transaction_Disposal = 4;
         public const int Transaction_Verification = 5;
+        public const int Transaction_Delete = 6;
+        public const int Transaction_Recover = 7;
 
         public const string WebAddress = "http://misportal.ddns.net:85";
         public const string WebAddressLocal = "https://localhost:44398";

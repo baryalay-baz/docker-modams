@@ -202,15 +202,30 @@
                                     {
                                         int nTotalAssets = 0;
                                         decimal nTotalAssetCost = 0;
+                                        int nCategoryCount = 0;
+                                        int nCount = 0;
+                                        bool CategoryCheck = true;
+                                        string sbgClass = "";
                                         foreach (var sca in Model.StoreCategoryAssets)
                                         {
                                             nTotalAssets += sca.TotalAssets;
                                             nTotalAssetCost += sca.TotalCost;
+                                            if (CategoryCheck)
+                                            {
+                                                nCategoryCount = Model.StoreCategoryAssets.Where(m => m.CategoryId == sca.CategoryId).Count();
+                                            }
                                             <tr>
-                                                <td class="text-muted fs-15 fw-semibold">
-                                                    @sca.CategoryName
-                                                </td>
-                                                <td class="text-muted fs-15 fw-semibold">
+                                                @{
+                                                    sbgClass = (sbgClass == "") ? "bg-light-transparent" : "";
+                                                    if (CategoryCheck)
+                                                    {
+                                                        <td rowspan="@nCategoryCount" class="text-muted fs-15 fw-semibold">
+                                                            @sca.CategoryName
+                                                        </td>
+                                                        CategoryCheck = false;
+                                                    }
+                                                }
+                                                <td class="text-muted fs-15 fw-semibold @sbgClass">
                                                     <a asp-action="Index" asp-controller="Assets"
                                                        asp-route-id="@sca.StoreId"
                                                        asp-route-subCategoryId="@sca.SubCategoryId"
@@ -218,13 +233,20 @@
                                                         @sca.SubCategoryName
                                                     </a>
                                                 </td>
-                                                <td class="text-muted fs-15 fw-semibold" style="text-align: right;">
+                                                <td class="text-muted fs-15 fw-semibold @sbgClass" style="text-align: right;">
                                                     @sca.TotalAssets
                                                 </td>
-                                                <td class="text-muted fs-15 fw-semibold" style="text-align: right;">
+                                                <td class="text-muted fs-15 fw-semibold @sbgClass" style="text-align: right;">
                                                     @sca.TotalCost.ToString("N2")
                                                 </td>
                                             </tr>
+                                            nCount++;
+                                            if (nCount == nCategoryCount)
+                                            {
+                                                CategoryCheck = true;
+                                                nCount = 0;
+                                            }
+
                                         }
                                         <tr>
                                             <td colspan="2" style="text-align:right; font-weight:bold;">Total:</td>

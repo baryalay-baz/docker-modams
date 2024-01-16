@@ -133,6 +133,62 @@
             </div>
         </div>
     </div>
+    <div class="col-md-12">
+        <div aria-multiselectable="true" class="accordion-dark mb-2" id="accordion4" role="tablist">
+            <div class="card mb-0 mt-2">
+                <div class="card-header border-bottom-0" id="heading4" role="tab">
+                    <a class="accor-style2 collapsed" aria-controls="collapse4" aria-expanded="false" data-bs-toggle="collapse" href="#collapse4"><i class="fe fe-plus-circle me-2"></i>Deleted Assets</a>
+                </div>
+                <div aria-labelledby="heading4" class="collapse" data-bs-parent="#accordion4" id="collapse4" role="tabpanel" style="">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="tblDeletedAssets" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
+                                <thead class="table-head">
+                                    <tr>
+                                        <th class="bg-transparent border-bottom-0 w-5">S.No</th>
+                                        <th class="bg-transparent border-bottom-0">Category</th>
+                                        <th class="bg-transparent border-bottom-0">SubCagtegory</th>
+                                        <th class="bg-transparent border-bottom-0">Make</th>
+                                        <th class="bg-transparent border-bottom-0">Model</th>
+                                        <th class="bg-transparent border-bottom-0">Year</th>
+                                        <th class="bg-transparent border-bottom-0">Identification</th>
+                                        <th class="bg-transparent border-bottom-0">Department</th>
+                                        <th class="bg-transparent border-bottom-0">Recovery</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-body">
+                                    @{
+                                        nCounter = 0;
+                                        sCounter = "";
+                                        var sIdentification = "";
+                                        foreach (var asset in Model.deletedAssets)
+                                        {
+                                            nCounter++;
+                                            sCounter = (nCounter < 10) ? "0" + nCounter : nCounter.ToString();
+                                            sIdentification = asset.SubCategory.Category.CategoryName == "Vehicles" ? "Plate: " + asset.Plate : "SN: " + asset.SerialNo;
+
+                                            <tr>
+                                                <td class="text-muted fs-15 fw-semibold text-center">@sCounter.</td>
+                                                <td class="text-muted fs-15 fw-semibold">@asset.SubCategory.Category.CategoryName</td>
+                                                <td class="text-muted fs-15 fw-semibold">@asset.SubCategory.SubCategoryName</td>
+                                                <td class="text-muted fs-15 fw-semibold">@asset.Make</td>
+                                                <td class="text-muted fs-15 fw-semibold">@asset.Model</td>
+                                                <td class="text-muted fs-15 fw-semibold">@asset.Year</td>
+                                                <td class="text-muted fs-15 fw-semibold">@sIdentification</td>
+                                                <td class="text-muted fs-15 fw-semibold">@asset.Store.Department.Name</td>
+                                                <td class="text-muted fs-15 fw-semibold"><a asp-area="Users" asp-action="RecoverAsset" asp-controller="Assets" asp-route-id="@asset.Id" class="btn btn-primary">Recover</a></td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- collapse -->
+            </div>
+        </div>
+    </div>
 </div>
 @section scripts{
     <script>
@@ -140,6 +196,7 @@
             hideMenu();
             makeDataTable($('#tblLoginHistory'));
             makeDataTable($('#tblAuditLog'));
+            makeDataTable($('#tblDeletedAssets'));
 
             $("#SelectedMonth").on("change", () => {
                 let sVal = $("#SelectedMonth").val();

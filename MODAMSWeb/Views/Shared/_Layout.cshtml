@@ -413,6 +413,27 @@
             }
             return message;
         }
+        const Notify = (type, message) => {
+            if (type == "success") {
+                notif({
+                    type: "primary",
+                    msg: "<b>Success: </b> " + message,
+                    position: "center",
+                    width: 500,
+                    height: 60,
+                    autohide: true
+                });
+            } else {
+                notif({
+                    type: "error",
+                    msg: "<b>Error: </b> " + message,
+                    position: "center",
+                    width: 500,
+                    height: 60,
+                    autohide: true
+                });
+            }
+        }
     </script>
 </body>
 </html>

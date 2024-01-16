@@ -34,6 +34,12 @@ namespace MODAMSWeb.Areas.Admin.Controllers
                 .Include(m => m.Employee).OrderByDescending(m => m.Timestamp)
                 .ToListAsync();
 
+            var deletedAssets = await _db.Assets.Where(m => m.AssetStatusId == 4)
+                .Include(m=>m.Store).ThenInclude(m=>m.Department)
+                .Include(m => m.SubCategory)
+                .ThenInclude(m => m.Category).ToListAsync();
+
+
             int month = nMonth ?? DateTime.Now.Month;
             int year = nYear ?? DateTime.Now.Year;
 
@@ -45,10 +51,13 @@ namespace MODAMSWeb.Areas.Admin.Controllers
                 .Where(m => m.Timestamp.Month == month && m.Timestamp.Year == year)
                 .ToList();
 
+
+
             var dto = new dtoSettings()
             {
                 auditLog = auditLog,
                 loginHistory = loginHistory,
+                deletedAssets = deletedAssets,
                 Months = GetMonths(month),
                 Years = GetYears(year),
                 SelectedMonth = month,

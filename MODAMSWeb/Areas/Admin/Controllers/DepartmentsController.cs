@@ -239,11 +239,12 @@ namespace MODAMSWeb.Areas.Admin.Controllers
             List<DepartmentHead> departmentHeads = _db.DepartmentHeads.Where(m => m.DepartmentId == id)
                 .Include(m => m.Employee).Include(m => m.Department).OrderByDescending(m => m.StartDate).ToList();
 
-            var employeeList = _db.vwAvailableEmployees.Where(m => m.RoleName == "StoreOwner").ToList().Select(m => new SelectListItem
+            var availableEmployeesList = _db.vwAvailableEmployees.Where(m => m.RoleName == "StoreOwner").ToList().Select(m => new SelectListItem
             {
                 Text = m.FullName,
                 Value = m.Id.ToString()
             });
+
             var storeOwner = _func.GetEmployeeNameById(_func.GetDepartmentHead(id));
             storeOwner = storeOwner == "Not found!" ? "Vacant" : storeOwner;
 
@@ -252,7 +253,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
             var dto = new dtoDepartmentHeads()
             {
                 DepartmentHeads = departmentHeads,
-                Employees = employeeList,
+                Employees = availableEmployeesList,
                 DepartmentId = id,
                 DepartmentName = _func.GetDepartmentNameById(id),
                 Owner = storeOwner,
@@ -326,7 +327,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
             {
                 department.EmployeeId = null;
 
-                var departmentHead = _db.DepartmentHeads.FirstOrDefault(m=>m.IsActive==true);
+                var departmentHead = _db.DepartmentHeads.FirstOrDefault(m=>m.DepartmentId== dto.DepartmentId && m.IsActive==true);
                 if (departmentHead != null)
                 {
                     departmentHead.EndDate = DateTime.Now;

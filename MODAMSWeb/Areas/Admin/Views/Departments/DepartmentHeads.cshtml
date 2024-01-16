@@ -126,13 +126,13 @@
                                             {
                                                 nCounter++;
                                                 sCounter = (nCounter < 10) ? '0' + nCounter.ToString() : nCounter.ToString();
-                                                <tr>
-                                                    <td>@sCounter</td>
-                                                    <td>@departmentUser.FullName</td>
-                                                    <td>@departmentUser.JobTitle</td>
-                                                    <td>@departmentUser.Phone</td>
-                                                    <td>@departmentUser.Email</td>
-                                                </tr>
+                                                        <tr>
+                                                            <td>@sCounter</td>
+                                                            <td>@departmentUser.FullName</td>
+                                                            <td>@departmentUser.JobTitle</td>
+                                                            <td>@departmentUser.Phone</td>
+                                                            <td>@departmentUser.Email</td>
+                                                        </tr>
                                             }
                                         }
                                     </tbody>
@@ -175,25 +175,25 @@
                                         {
                                             nCounter++;
                                             sCounter = (nCounter < 10) ? '0' + nCounter.ToString() : nCounter.ToString();
-                                            <tr>
-                                                <td class="text-muted fs-15 fw-semibold text-center">@sCounter.</td>
-                                                <td class="text-muted fs-15 fw-semibold">
-                                                    <div class="d-flex align-items-center">
-                                                        <div class="me-2">
-                                                            <span>
-                                                                <img style="min-width:30px;" src="@dh.Employee.ImageUrl" alt="profile-user" class="data-image avatar avatar-lg rounded-circle">
-                                                            </span>
-                                                        </div>
-                                                        <div>
-                                                            <h6 class="mb-0">@dh.Employee.FullName</h6>
-                                                            <span class="text-muted fs-12">@dh.Employee.Email</span>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td class="text-muted fs-15 fw-semibold">@dh.StartDate.ToString("dd-MMM-yyyy")</td>
-                                                <td class="text-muted fs-15 fw-semibold">@dh.EndDate?.ToString("dd-MMM-yyyy")</td>
-                                                <td class="text-muted fs-15 fw-semibold">@dh.IsActive</td>
-                                            </tr>
+                                                    <tr>
+                                                        <td class="text-muted fs-15 fw-semibold text-center">@sCounter.</td>
+                                                        <td class="text-muted fs-15 fw-semibold">
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="me-2">
+                                                                    <span>
+                                                                        <img style="min-width:30px;" src="@dh.Employee.ImageUrl" alt="profile-user" class="data-image avatar avatar-lg rounded-circle">
+                                                                    </span>
+                                                                </div>
+                                                                <div>
+                                                                    <h6 class="mb-0">@dh.Employee.FullName</h6>
+                                                                    <span class="text-muted fs-12">@dh.Employee.Email</span>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td class="text-muted fs-15 fw-semibold">@dh.StartDate.ToString("dd-MMM-yyyy")</td>
+                                                        <td class="text-muted fs-15 fw-semibold">@dh.EndDate?.ToString("dd-MMM-yyyy")</td>
+                                                        <td class="text-muted fs-15 fw-semibold">@dh.IsActive</td>
+                                                    </tr>
                                         }
                                     }
 
@@ -223,6 +223,7 @@
                         <input asp-for="DepartmentId" hidden />
                         <div class="mb-3 form-group">
                             <select name="EmployeeId" id="EmployeeId" asp-items="@Model.Employees" class="form-control select2-style1 form-select">
+                                <option disabled selected>-Select Employee-</option>
                             </select>
                         </div>
                     </form>
@@ -247,7 +248,12 @@
             loadFaces();
 
             $('#btnSaveChanges').on("click", () => {
-                $("#frmAssignOwner").submit();
+                let employeeId = $('#EmployeeId').val();
+                if (employeeId != null) {
+                    $("#frmAssignOwner").submit();
+                } else { 
+                    Notify("error","Please select an Employee!")
+                }
             });
 
             $('#btnVacate').on("click", () => {

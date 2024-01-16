@@ -95,7 +95,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             _employeeId = User.IsInRole("User") ? _func.GetSupervisorId(_employeeId) : _employeeId;
             _storeId = _func.GetStoreIdByEmployeeId(_employeeId);
 
-            var assetList = _db.Assets.Where(m => m.StoreId == _storeId)
+            var assetList = _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted && m.StoreId == _storeId)
                 .Include(m => m.SubCategory).Include(m => m.SubCategory.Category)
                 .Where(m => m.AssetStatusId == SD.Asset_Available).ToList();
 
@@ -224,7 +224,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             var dto = new dtoEditDisposal
             {
                 Disposal = disposal,
-                Assets = _db.Assets.Where(a => a.StoreId == storeId && a.AssetStatusId != SD.Asset_Disposed)
+                Assets = _db.Assets.Where(a => a.StoreId == storeId && a.AssetStatusId != SD.Asset_Deleted && a.AssetStatusId != SD.Asset_Disposed)
                     .Include(a => a.SubCategory).ThenInclude(s => s.Category).ToList(),
 
                 IsAuthorized = _func.GetStoreOwnerId(storeId) == employeeId,

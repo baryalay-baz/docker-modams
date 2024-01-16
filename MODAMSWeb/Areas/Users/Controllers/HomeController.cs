@@ -296,7 +296,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
         public IActionResult GlobalSearch(string barcode)
         {
-            var asset = _db.Assets.Where(m => m.Barcode == barcode)
+            var asset = _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted && m.Barcode == barcode)
                 .Include(m => m.SubCategory).Include(m => m.SubCategory.Category)
                 .FirstOrDefault();
             dtoGlobalSearch dto = new dtoGlobalSearch();

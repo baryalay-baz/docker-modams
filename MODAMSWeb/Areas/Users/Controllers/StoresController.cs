@@ -177,14 +177,14 @@ namespace MODAMSWeb.Areas.Users.Controllers
             }
 
             dto.storeAssets = _db.Assets
-                .Where(a => a.StoreId == id)
+                .Where(a => a.AssetStatusId != SD.Asset_Deleted && a.StoreId == id)
                 .Include(a => a.SubCategory)
                 .Include(a => a.Condition)
                 .Include(a => a.AssetStatus)
                 .ToList();
 
             dto.StoreCategoryAssets = _db.vwStoreCategoryAssets
-                .Where(sca => sca.StoreId == id)
+                .Where(sca => sca.StoreId == id).OrderBy(m=>m.CategoryId)
                 .ToList();
 
             dto.TransferredAssets = _db.TransferDetails
