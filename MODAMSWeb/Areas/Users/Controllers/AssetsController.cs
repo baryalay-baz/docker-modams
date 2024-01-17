@@ -701,9 +701,10 @@ namespace MODAMSWeb.Areas.Users.Controllers
             _db.AssetHistory.Add(assetHistory);
             await _db.SaveChangesAsync();
 
+            int storeId = _func.GetStoreIdByAssetId(id);
 
             TempData["success"] = "Asset deleted successfuly!";
-            return RedirectToAction("AssetInfo", "Assets", new { id = id });
+            return RedirectToAction("Index", "Assets", new { id = storeId });
         }
 
         [Authorize(Roles = "Administrator")]

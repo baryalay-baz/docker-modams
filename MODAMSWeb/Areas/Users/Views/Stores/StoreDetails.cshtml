@@ -187,76 +187,78 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <table id="tblCategories" class="table text-nowrap mb-0 table-bordered border-top border-bottom divShadow">
-                            <thead class="bg-primary-gradient ms-auto divShadow">
-                                <tr>
-                                    <th class="text-white">Category</th>
-                                    <th class="text-white">Sub Category</th>
-                                    <th class="text-white">Total Assets</th>
-                                    <th class="text-white">Total Cost</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @{
-                                    if (Model.StoreCategoryAssets.Count > 0)
-                                    {
-                                        int nTotalAssets = 0;
-                                        decimal nTotalAssetCost = 0;
-                                        int nCategoryCount = 0;
-                                        int nCount = 0;
-                                        bool CategoryCheck = true;
-                                        string sbgClass = "";
-                                        foreach (var sca in Model.StoreCategoryAssets)
+                        <div class="table-responsive">
+                            <table id="tblCategories" class="table text-nowrap mb-0 table-bordered border-top border-bottom divShadow">
+                                <thead class="bg-primary-gradient ms-auto divShadow">
+                                    <tr>
+                                        <th class="text-white">Category</th>
+                                        <th class="text-white">Sub Category</th>
+                                        <th class="text-white">Total Assets</th>
+                                        <th class="text-white">Total Cost</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        if (Model.StoreCategoryAssets.Count > 0)
                                         {
-                                            nTotalAssets += sca.TotalAssets;
-                                            nTotalAssetCost += sca.TotalCost;
-                                            if (CategoryCheck)
+                                            int nTotalAssets = 0;
+                                            decimal nTotalAssetCost = 0;
+                                            int nCategoryCount = 0;
+                                            int nCount = 0;
+                                            bool CategoryCheck = true;
+                                            string sbgClass = "";
+                                            foreach (var sca in Model.StoreCategoryAssets)
                                             {
-                                                nCategoryCount = Model.StoreCategoryAssets.Where(m => m.CategoryId == sca.CategoryId).Count();
+                                                nTotalAssets += sca.TotalAssets;
+                                                nTotalAssetCost += sca.TotalCost;
+                                                if (CategoryCheck)
+                                                {
+                                                    nCategoryCount = Model.StoreCategoryAssets.Where(m => m.CategoryId == sca.CategoryId).Count();
+                                                }
+                                                <tr>
+                                                    @{
+                                                        sbgClass = (sbgClass == "") ? "bg-light-transparent" : "";
+                                                        if (CategoryCheck)
+                                                        {
+                                                            <td rowspan="@nCategoryCount" class="text-muted fs-15 fw-semibold">
+                                                                @sca.CategoryName
+                                                            </td>
+                                                            CategoryCheck = false;
+                                                        }
+                                                    }
+                                                    <td class="text-muted fs-15 fw-semibold @sbgClass">
+                                                        <a asp-action="Index" asp-controller="Assets"
+                                                           asp-route-id="@sca.StoreId"
+                                                           asp-route-subCategoryId="@sca.SubCategoryId"
+                                                           class="text-muted hover-effect">
+                                                            @sca.SubCategoryName
+                                                        </a>
+                                                    </td>
+                                                    <td class="text-muted fs-15 fw-semibold @sbgClass" style="text-align: right;">
+                                                        @sca.TotalAssets
+                                                    </td>
+                                                    <td class="text-muted fs-15 fw-semibold @sbgClass" style="text-align: right;">
+                                                        @sca.TotalCost.ToString("N2")
+                                                    </td>
+                                                </tr>
+                                                nCount++;
+                                                if (nCount == nCategoryCount)
+                                                {
+                                                    CategoryCheck = true;
+                                                    nCount = 0;
+                                                }
+
                                             }
                                             <tr>
-                                                @{
-                                                    sbgClass = (sbgClass == "") ? "bg-light-transparent" : "";
-                                                    if (CategoryCheck)
-                                                    {
-                                                        <td rowspan="@nCategoryCount" class="text-muted fs-15 fw-semibold">
-                                                            @sca.CategoryName
-                                                        </td>
-                                                        CategoryCheck = false;
-                                                    }
-                                                }
-                                                <td class="text-muted fs-15 fw-semibold @sbgClass">
-                                                    <a asp-action="Index" asp-controller="Assets"
-                                                       asp-route-id="@sca.StoreId"
-                                                       asp-route-subCategoryId="@sca.SubCategoryId"
-                                                       class="text-muted hover-effect">
-                                                        @sca.SubCategoryName
-                                                    </a>
-                                                </td>
-                                                <td class="text-muted fs-15 fw-semibold @sbgClass" style="text-align: right;">
-                                                    @sca.TotalAssets
-                                                </td>
-                                                <td class="text-muted fs-15 fw-semibold @sbgClass" style="text-align: right;">
-                                                    @sca.TotalCost.ToString("N2")
-                                                </td>
+                                                <td colspan="2" style="text-align:right; font-weight:bold;">Total:</td>
+                                                <td style="text-align:right; font-weight:bold;">@nTotalAssets</td>
+                                                <td style="text-align:right; font-weight:bold;">@nTotalAssetCost.ToString("N2")</td>
                                             </tr>
-                                            nCount++;
-                                            if (nCount == nCategoryCount)
-                                            {
-                                                CategoryCheck = true;
-                                                nCount = 0;
-                                            }
-
                                         }
-                                        <tr>
-                                            <td colspan="2" style="text-align:right; font-weight:bold;">Total:</td>
-                                            <td style="text-align:right; font-weight:bold;">@nTotalAssets</td>
-                                            <td style="text-align:right; font-weight:bold;">@nTotalAssetCost.ToString("N2")</td>
-                                        </tr>
                                     }
-                                }
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                     <div class="col-md-6 container">
                         <div id="chart" class="mt-5"></div>
