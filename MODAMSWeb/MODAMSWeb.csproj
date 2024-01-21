@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Reports\**" />
+    <Content Remove="Reports\**" />
+    <EmbeddedResource Remove="Reports\**" />
+    <None Remove="Reports\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="googleAuthenticator" Version="3.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="7.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.5" />
@@ -18,9 +25,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="7.0.5" />
-    <PackageReference Include="Telerik.Reporting" Version="17.1.23.606" />
-    <PackageReference Include="Telerik.Reporting.Services.AspNetCore" Version="17.1.23.606" />
-    <PackageReference Include="Telerik.ReportViewer.Mvc" Version="17.1.23.606" />
+    <PackageReference Include="Telerik.Reporting.Services.AspNetCore" Version="17.2.23.1114" />
     <PackageReference Include="Telerik.UI.for.AspNet.Core" Version="2023.2.606" />
     <PackageReference Include="ZXing.Net" Version="0.16.9" />
   </ItemGroup>
@@ -35,6 +40,9 @@
     <Content Update="Areas\Admin\Views\Employees\Index.cshtml">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\reports\Report1.trdp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 

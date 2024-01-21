@@ -199,6 +199,10 @@ namespace MODAMS.Utility
         }
         public int GetDepartmentId(int nEmployeeId)
         {
+            var employeeRole = _db.vwEmployees.Where(m => m.Id == nEmployeeId).Select(m => m.RoleName).FirstOrDefault();
+
+            nEmployeeId = employeeRole == "User" ? GetSupervisorId(nEmployeeId) : nEmployeeId;
+
             int departmentId = 0;
             var department = _db.Departments.Where(m => m.EmployeeId == nEmployeeId).FirstOrDefault();
             if (department != null)

@@ -3,10 +3,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MODAMS.DataAccess.Data;
+using MODAMS.Models;
 using MODAMS.Models.ViewModels.Dto;
 using MODAMS.Utility;
+using NuGet.ContentModel;
+using Telerik.Reporting;
+using Telerik.Reporting.Processing;
 using Telerik.Reporting.Services;
 using Telerik.Reporting.Services.AspNetCore;
+
 
 namespace MODAMSWeb.Areas.Users.Controllers
 {
@@ -79,7 +84,24 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
         [HttpGet]
         public IActionResult AssetReport(int storeId = 0, int assetStatusId = 0, int categoryId = 0) {
-            return View();
+            var reportSource = new UriReportSource();
+            reportSource.Uri = Path.Combine(_webHostEnvironment.WebRootPath,  "Reports\\AssetReport.trdp");
+            var processor = new ReportProcessor();
+
+            var assets = _db.Assets.ToList();
+
+            //assets = assets.Where(m => m.StoreId == storeId && m.AssetStatusId == assetStatusId && m.SubCategory.CategoryId == categoryId).ToList();
+
+
+            var reportParameters = new System.Collections.Hashtable
+            {
+                { "MODAMS", assets }
+            };
+
+            var result = processor.RenderReport("PDF", reportSource, reportParameters);
+
+
+            return File(result.DocumentBytes, result.MimeType);
         }
     }
 }

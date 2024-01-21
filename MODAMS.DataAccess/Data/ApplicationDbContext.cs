@@ -7,9 +7,6 @@ using MODAMS.Models;
 using MODAMS.Models.ViewModels;
 using System.Security.Claims;
 
-
-//using
-
 namespace MODAMS.DataAccess.Data
 {
     public class ApplicationDbContext : IdentityDbContext
@@ -57,6 +54,7 @@ namespace MODAMS.DataAccess.Data
         public DbSet<vwStoreCategoryAsset> vwStoreCategoryAssets { get; set; }
         public DbSet<vwCategoryAsset> vwCategoryAssets { get; set; }
         public DbSet<vwTransfer> vwTransfers { get; set; }
+        public DbSet<vwAssets> vwAssets { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

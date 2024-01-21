@@ -73,17 +73,6 @@ builder.Services.Configure<IISServerOptions>(options =>
     options.AllowSynchronousIO = true;
 });
 
-builder.Services.TryAddSingleton<IReportServiceConfiguration>(options =>
-    new ReportServiceConfiguration
-    {
-        ReportingEngineConfiguration = builder.Configuration,
-        HostAppId = "Net7RestServiceWithCors",
-        Storage = new FileStorage(),
-        ReportSourceResolver = new UriReportSourceResolver(
-            System.IO.Path.Combine(
-                options.GetService<IWebHostEnvironment>().WebRootPath, "Reports"))
-    });
-
 builder.Services.AddRazorPages();
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
