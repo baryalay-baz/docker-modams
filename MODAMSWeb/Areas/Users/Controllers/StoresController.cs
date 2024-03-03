@@ -12,6 +12,7 @@ using System.Data;
 namespace MODAMSWeb.Areas.Users.Controllers
 {
     [Area("Users")]
+    [Authorize]
     public class StoresController : Controller
     {
 
@@ -79,7 +80,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                             storeEmployees.Add(se);
 
                             //Add store users
-                            var storeUsers = _db.vwEmployees.Where(m => m.SupervisorEmployeeId == empl.Id).ToList();
+                            var storeUsers = _db.vwEmployees.Where(m => m.SupervisorEmployeeId == empl.Id && m.RoleName == "User").ToList();
                             foreach (var user in storeUsers)
                             {
                                 vwStoreEmployee su = new vwStoreEmployee()
@@ -184,7 +185,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 .ToList();
 
             dto.StoreCategoryAssets = _db.vwStoreCategoryAssets
-                .Where(sca => sca.StoreId == id).OrderBy(m=>m.CategoryId)
+                .Where(sca => sca.StoreId == id).OrderBy(m => m.CategoryId)
                 .ToList();
 
             dto.TransferredAssets = _db.TransferDetails

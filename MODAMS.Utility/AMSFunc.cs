@@ -331,6 +331,19 @@ namespace MODAMS.Utility
 
             return depreciatedCost;
         }
+        public decimal GetDepreciatedCostByStoreId(int storeId)
+        {
+            var assetList = _db.Assets.Where(m => m.StoreId == storeId)
+                .Select(m => new { m.Id }).ToList();
+
+            decimal totalCost = 0;
+
+            foreach (var asset in assetList)
+            {
+                totalCost += GetDepreciatedCost(asset.Id);
+            }
+            return Math.Round(totalCost, 0);
+        }
         public string GetProfileImage(int employeeId)
         {
             var employee = _db.Employees.FirstOrDefault(m => m.Id == employeeId);
@@ -354,19 +367,7 @@ namespace MODAMS.Utility
 
             return emailMessage;
         }
-        public decimal GetDepreciatedCostByStoreId(int storeId)
-        {
-            var assetList = _db.Assets.Where(m => m.StoreId == storeId)
-                .Select(m => new { m.Id }).ToList();
-
-            decimal totalCost = 0;
-
-            foreach (var asset in assetList)
-            {
-                totalCost += GetDepreciatedCost(asset.Id);
-            }
-            return Math.Round(totalCost, 0);
-        }
+        
         public int GetStoreOwnerId(int storeId)
         {
             int departmentId = 0;

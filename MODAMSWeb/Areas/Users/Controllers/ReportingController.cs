@@ -83,25 +83,19 @@ namespace MODAMSWeb.Areas.Users.Controllers
         }
 
         [HttpGet]
-        public IActionResult AssetReport(int storeId = 0, int assetStatusId = 0, int categoryId = 0) {
-            var reportSource = new UriReportSource();
-            reportSource.Uri = Path.Combine(_webHostEnvironment.WebRootPath,  "Reports\\AssetReport.trdp");
-            var processor = new ReportProcessor();
+        public IActionResult ReportViewer(int storeId = 0, int assetStatusId = 0, int categoryId = 0)
+        {
+            var reportPath = Path.Combine(_webHostEnvironment.WebRootPath, "Reports\\AssetReport.trdp");
 
-            var assets = _db.Assets.ToList();
-
-            //assets = assets.Where(m => m.StoreId == storeId && m.AssetStatusId == assetStatusId && m.SubCategory.CategoryId == categoryId).ToList();
-
-
-            var reportParameters = new System.Collections.Hashtable
+            var reportPackager = new ReportPackager();
+            using (var sourceStream = System.IO.File.OpenRead(reportPath))
             {
-                { "MODAMS", assets }
-            };
+                var list = _db.Assets.ToList();
+                var report = (Telerik.Reporting.Processing.Report)reportPackager.UnpackageDocument(sourceStream);
+                report.DataSource = list;
+            }
 
-            var result = processor.RenderReport("PDF", reportSource, reportParameters);
-
-
-            return File(result.DocumentBytes, result.MimeType);
+            return View();
         }
     }
 }

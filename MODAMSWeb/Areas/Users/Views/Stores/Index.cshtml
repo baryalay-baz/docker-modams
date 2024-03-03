@@ -125,7 +125,7 @@
                                                                     <p class="m-0 mb-2">Members</p>
                                                                     <div class="avatar-list avatar-list-stacked">
                                                                         @{
-                                                                            var storeEmps = Model.storeEmployees.Where(m => m.StoreId == store.Id).OrderByDescending(m => m.Id).ToList();
+                                                                            var storeEmps = Model.storeEmployees.Where(m => m.StoreId == store.Id).OrderByDescending(m => m.Role).ToList();
                                                                             if (storeEmps.Count > 0)
                                                                             {
                                                                                 foreach (var emp in storeEmps)

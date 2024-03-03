@@ -227,7 +227,7 @@
         let selection = [];
         let selectionIds = []
         $(document).ready(function () {
-
+            hideMenu();
             sData = '@Html.Raw(Json.Serialize(Model.Assets))';
             Data = JSON.parse(sData);
 

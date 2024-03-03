@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Configuration;
+using System.IO;
 using Microsoft.EntityFrameworkCore;
 using MODAMS.DataAccess.Data;
 using Microsoft.AspNetCore.Identity;
@@ -8,7 +10,25 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Telerik.Reporting.Services;
 using Telerik.Reporting.Cache.File;
 
+
+
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddControllers();
+builder.Services.AddMvc();
+
+builder.Services.AddScoped<IReportSourceResolver, CustomReportSourceResolver>();
+
+builder.Services.TryAddSingleton<IReportServiceConfiguration>(sp => new ReportServiceConfiguration
+{
+	ReportingEngineConfiguration = sp.GetService<IConfiguration>(),
+	HostAppId = "Html5ReportViewerDemo",
+	Storage = new FileStorage(),
+    //ReportSourceResolver = new UriReportSourceResolver(
+    //	System.IO.Path.Combine(GetReportsDir(sp))),
+    ReportSourceResolver = sp.GetRequiredService<IReportSourceResolver>()
+
+});
+
 
 builder.Services.AddKendo();
 
@@ -79,6 +99,7 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddSingleton<IEmailSender, EmailSender>();
 builder.Services.AddScoped<IAMSFunc, AMSFunc>();
 
+
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
@@ -99,14 +120,26 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseCors();
 
 app.MapRazorPages();
 
+//app.UseEndpoints(endpoints =>
+//{
+//    endpoints.MapControllers();
+//    // ... 
+//});
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{area=Users}/{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+
+static string GetReportsDir(IServiceProvider sp)
+{
+	return Path.Combine(sp.GetService<IWebHostEnvironment>().ContentRootPath, "Reports");
+}
