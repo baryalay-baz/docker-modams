@@ -134,25 +134,25 @@
                                                                             {
                                                                                 for (var i = 0; i < Model.Assets.Count(); i++)
                                                                                 {
-                                                                                            <tr>
+                                                                                                <tr>
 
-                                                                                                <td>
-                                                                                                    <input asp-for="@Model.Assets[i].AssetId" hidden />
-                                                                                                    <div class="col-auto">
-                                                                                                        <label class="ckbox" asp-for="@Model.Assets[i].IsSelected">
-                                                                                                            <input onclick="return selectAsset(@Model.Assets[i].AssetId,this);"
-                                                                                                                   type="checkbox" asp-for="@Model.Assets[i].IsSelected">
-                                                                                                            <span></span>
-                                                                                                        </label>
-                                                                                                    </div>
-                                                                                                </td>
-                                                                                                <td>@Model.Assets[i].Category</td>
-                                                                                                <td>@Model.Assets[i].Make</td>
-                                                                                                <td>@Model.Assets[i].Model</td>
-                                                                                                <td>@Model.Assets[i].AssetName</td>
-                                                                                                <td>@Model.Assets[i].SerialNumber</td>
-                                                                                                <td>@Model.Assets[i].Barcode</td>
-                                                                                            </tr>
+                                                                                                    <td>
+                                                                                                        <input asp-for="@Model.Assets[i].AssetId" hidden />
+                                                                                                        <div class="col-auto">
+                                                                                                            <label class="ckbox" asp-for="@Model.Assets[i].IsSelected">
+                                                                                                                <input onclick="return selectAsset(@Model.Assets[i].AssetId,this);"
+                                                                                                                       type="checkbox" asp-for="@Model.Assets[i].IsSelected">
+                                                                                                                <span></span>
+                                                                                                            </label>
+                                                                                                        </div>
+                                                                                                    </td>
+                                                                                                    <td>@Model.Assets[i].Category</td>
+                                                                                                    <td>@Model.Assets[i].Make</td>
+                                                                                                    <td>@Model.Assets[i].Model</td>
+                                                                                                    <td>@Model.Assets[i].AssetName</td>
+                                                                                                    <td>@Model.Assets[i].SerialNumber</td>
+                                                                                                    <td>@Model.Assets[i].Barcode</td>
+                                                                                                </tr>
                                                                                 }
                                                                             }
                                                                         }
@@ -179,22 +179,22 @@
                                         @{
                                             if (Model.Transfer.TransferStatusId == 1)
                                             {
-                                                        <button type="submit" class="btn btn-primary " id="btnSubmit"><i class="fa fa-check-circle"></i>&nbsp;Save Transfer</button>
+                                                            <button type="submit" class="btn btn-primary " id="btnSubmit"><i class="fa fa-check-circle"></i>&nbsp;Save Transfer</button>
 
-                                                        <button class="btn btn-secondary btn-secondary" data-bs-toggle="dropdown" aria-expanded="false">
-                                                            <i class="fe fe-trash"></i> Delete Transfer<i class="icon ion-ios-arrow-down text-12"></i>
-                                                        </button>
+                                                            <button class="btn btn-secondary btn-secondary" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                <i class="fe fe-trash"></i> Delete Transfer<i class="icon ion-ios-arrow-down text-12"></i>
+                                                            </button>
 
-                                                        <div class="dropdown-menu" style="">
-                                                            <div class="p-2">
-                                                                <h4 class="dropdown-title">Delete Transfer</h4><br />
-                                                                <p>
-                                                                    You will not be able to recover this transfer!<br /><br />Are you sure?
-                                                                </p>
-                                                                    <a asp-area="Users" asp-action="DeleteTransfer" asp-controller="Transfers" asp-route-id="@Model.Transfer.Id" class="btn btn-default btn-sm"><i class="fe fe-trash"></i> Delete Transfer</a>
-                                                                
+                                                            <div class="dropdown-menu" style="">
+                                                                <div class="p-3">
+                                                                    <h4 class="dropdown-title">Delete Transfer</h4><br />
+                                                                    <p>
+                                                                        You will not be able to recover this transfer!<br /><br />Are you sure?
+                                                                    </p>
+                                                                        <a asp-area="Users" asp-action="DeleteTransfer" asp-controller="Transfers" asp-route-id="@Model.Transfer.Id" class="btn btn-outline-danger"><i class="fe fe-trash"></i> Delete Transfer</a>
+                                                                    
+                                                                </div>
                                                             </div>
-                                                        </div>
                                             }
                                         }
 
@@ -242,11 +242,11 @@
         let selection = [];
         let selectionIds = [];
 
-        $(document).ready(function () {
+        $(document).ready(()=> {
+            hideMenu();
 
             sData = '@Html.Raw(Json.Serialize(Model.Assets))';
             Data = JSON.parse(sData);
-            console.log(sData);
             $('.select2').select2();
 
             $('.picker').datepicker({
@@ -276,12 +276,15 @@
             });
         });
         const loadSelection = () => {
-            Data.forEach(function (e) {
-                if (e.isSelected == true) {
-                    selection.push(e.make + " - " + e.assetName + " - " + e.serialNumber);
-                    selectionIds.push(e.assetId);
-                }
-            });
+            if (Data != null) {
+                Data.forEach((e)=> {
+                    if (e.isSelected == true) {
+                        selection.push(e.make + " - " + e.assetName + " - " + e.serialNumber);
+                        selectionIds.push(e.assetId);
+                    }
+                });
+            }
+            
 
             var sHtml = '<Table class="table table-bordered"><tbody>';
             if (selection.length > 0) {

@@ -11,8 +11,9 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="7.0.5" />
     <PackageReference Include="MimeKit" Version="4.3.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
-    <PackageReference Include="Telerik.Reporting" Version="18.0.24.305" />
-    <PackageReference Include="Telerik.Reporting.Services.AspNetCore" Version="18.0.24.305" />
+    <PackageReference Include="Telerik.Reporting" Version="18.0.24.130" />
+    <PackageReference Include="Telerik.Reporting.OpenXmlRendering" Version="18.0.24.130" />
+    <PackageReference Include="Telerik.Reporting.Services.AspNetCore" Version="18.0.24.130" />
     <PackageReference Include="ZXing.Net" Version="0.16.9" />
   </ItemGroup>
 

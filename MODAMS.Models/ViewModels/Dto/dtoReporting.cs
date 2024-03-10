@@ -23,7 +23,13 @@ namespace MODAMS.Models.ViewModels.Dto
         [Display(Name = "Asset Status")]
         public int AssetStatusId { get; set; }
 
+        [Display(Name ="Asset Condition")]
+        public int AssetConditionId { get; set; }
 
+        [Display(Name = "Donor")]
+        public int DonorId { get; set; }
+
+        public string ReportId { get; set; }
 
         [ValidateNever]
         public IEnumerable<SelectListItem> Stores { get; set; }

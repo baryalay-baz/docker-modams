@@ -18,7 +18,7 @@
             <div class="card-body">
                 @{
                     bool readOnly = (User.IsInRole("User") || User.IsInRole("StoreOwner")) ? true : false;
-
+                    
                     if (readOnly)
                     {
                         <select asp-for="StoreId" asp-items="@Model.StoreList"
@@ -99,7 +99,7 @@
                                         <div class="tab-content">
                                             <div class="tab-pane active " id="tabOutgoing">
                                                 <div class="row">
-                                                    <div class="col-7 col-sm-7">
+                                                    <div class="col-8 col-sm-8">
                                                         <div class="mb-4">
                                                             <div class="input-group">
                                                                 <label class="rdiobox" for="rd-0"><input onclick="return radioCall(0);" class="mr-5" name="rd-status" type="radio" id="rd-0" checked><span style="font-size:medium;">All Transfers</span></label>&nbsp;&nbsp;
@@ -166,7 +166,7 @@
                                                         <br />
                                                         <a asp-action="CreateTransfer" asp-controller="Transfers" id="btnCreate" class="btn btn-outline-primary pt-1"><i class="fe fe-plus-circle"></i>&nbsp;New Transfer</a>
                                                     </div>
-                                                    <div class="col-5 col-sm-5">
+                                                    <div class="col-4 col-sm-4">
                                                         <div class="card">
                                                             <div class="card-header">
                                                                 <h4>Outgoing Transfers by Category</h4>
@@ -184,7 +184,7 @@
                                             </div>
                                             <div class="tab-pane " id="tabIncoming">
                                                 <div class="row">
-                                                    <div class="col-7 col-sm-7">
+                                                    <div class="col-8 col-sm-8">
                                                         <div class="mb-4">
                                                             <div class="input-group">
                                                                 <label class="rdiobox" for="rd-incoming-0"><input onclick="return radioCallIncoming(0);" class="mr-5" name="rd-status-incoming" type="radio" id="rd-incoming-0" checked><span style="font-size:medium;">All Transfers</span></label>&nbsp;&nbsp;
@@ -238,7 +238,7 @@
                                                             </table>
                                                         </div>
                                                     </div>
-                                                    <div class="col-5 col-sm-5">
+                                                    <div class="col-4 col-sm-4">
                                                         <div class="card">
                                                             <div class="card-header">
                                                                 <h4>Incoming Transfers By Category</h4>

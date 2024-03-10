@@ -1,5 +1,6 @@
 ﻿@model MODAMS.Models.ViewModels.Dto.dtoReporting
 
+
 <div class="page-header">
     <div>
         <h1 class="page-title">Report</h1>
@@ -29,36 +30,58 @@
                 <div class="card divShadow">
                     <div class="card-status bg-primary br-tr-7 br-tl-7"></div>
                     <div class="card-body pnlHeight">
-                        <div class="row">
-                            <div class="col">
-                                <h3 class="mb-2 fw-semibold">Assets</h3>
-                                <p class="text-muted fs-13 mb-0">Asset Report</p>
-                            </div>
-                            <div class="col col-auto top-icn dash">
-                                <div class="counter-icon bg-primary dash ms-auto box-shadow-primary">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-archive" viewBox="0 0 16 16"> <path d="M0 2a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1v7.5a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 1 12.5V5a1 1 0 0 1-1-1V2zm2 3v7.5A1.5 1.5 0 0 0 3.5 14h9a1.5 1.5 0 0 0 1.5-1.5V5H2zm13-3H1v2h14V2zM5 7.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z" /> </svg>
-                                </div>
-                            </div>
+                        <form method="post" asp-action="ReportViewer" id="frmAssetReport">
+                            <input type="hidden" name="ReportId" id="ReportId" value="AssetReport" />
                             <div class="row">
                                 <div class="col">
-                                    @* <small class="text-muted">
-                                        Asset Store for every single department of the ministry, add, edit, update assets in this section
-                                    </small> *@
-                                    <div class="form-group">
-                                        <select asp-for="@Model.StoreId" asp-items="@Model.Stores"
-                                                class="form-control select2 form-select">
-                                            <option value="0">All Stores</option>
-                                        </select>
+                                    <h3 class="mb-2 fw-semibold">Assets</h3>
+                                    <p class="text-muted fs-13 mb-0">Asset Report</p>
+                                </div>
+                                <div class="col col-auto top-icn dash">
+                                    <div class="counter-icon bg-primary dash ms-auto box-shadow-primary">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-archive" viewBox="0 0 16 16"> <path d="M0 2a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1v7.5a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 1 12.5V5a1 1 0 0 1-1-1V2zm2 3v7.5A1.5 1.5 0 0 0 3.5 14h9a1.5 1.5 0 0 0 1.5-1.5V5H2zm13-3H1v2h14V2zM5 7.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z" /> </svg>
                                     </div>
-                                    <div class="form-group">
-                                        <select asp-for="@Model.AssetStatusId" asp-items="@Model.AssetStatuses"
-                                                class="form-control select2 form-select">
-                                            <option value="0">All Statuses</option>
-                                        </select>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="form-group">
+                                            <select asp-for="@Model.StoreId" asp-items="@Model.Stores"
+                                                    class="form-control select2 form-select">
+                                                <option value="0">All Stores</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <select asp-for="@Model.AssetStatusId" asp-items="@Model.AssetStatuses"
+                                                    class="form-control select2 form-select">
+                                                <option value="0">All Statuses</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <select asp-for="@Model.CategoryId" asp-items="@Model.Categories"
+                                                    class="form-control select2 form-select">
+                                                <option value="0">All Categories</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <select asp-for="@Model.AssetConditionId" asp-items="@Model.Conditions"
+                                                    class="form-control select2 form-select">
+                                                <option value="0">All Conditions</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <select asp-for="@Model.DonorId" asp-items="@Model.Donors"
+                                                    class="form-control select2 form-select">
+                                                <option value="0">All Donors</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group flex text-center">
+                                            <button class="btn btn-primary"><i class="fa fa-print"></i>&nbsp;Generate Report</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -73,13 +96,12 @@
                             </div>
                             <div class="col col-auto top-icn dash">
                                 <div class="counter-icon bg-secondary dash ms-auto box-shadow-primary">
-                                    @*<svg xmlns="http://www.w3.org/2000/svg" class="side-menu__icon" enable-background="new 0 0 24 24" viewBox="0 0 24 24"><path d="M16.6766357,7.3233643C15.7435303,4.2431641,12.8848267,2,9.5,2C5.3578491,2,2,5.3578491,2,9.5c0,3.3848267,2.2431641,6.2435303,5.3233643,7.1766357C8.2564697,19.7568359,11.1151733,22,14.5,22c4.1402588-0.0045166,7.4954834-3.3597412,7.5-7.5C22,11.1151733,19.7568359,8.2564697,16.6766357,7.3233643z M16,9.5c0,0.8760376-0.1757202,1.7103882-0.4899292,2.4730225l-3.4830933-3.4830933C12.7896118,8.1757202,13.6239624,8,14.5,8c0.4649658,0.0005493,0.9176636,0.0518799,1.3549194,0.1450806C15.9481201,8.5823364,15.9994507,9.0350342,16,9.5z M15.0283203,12.906311c-0.5328369,0.862854-1.2597656,1.5897217-2.1226807,2.1224365l-3.9343872-3.9343872c0.5328369-0.8630981,1.2598877-1.5901489,2.1229858-2.1230469L15.0283203,12.906311z M7.0787354,15.5289917C4.6891479,14.5682983,3,12.2332764,3,9.5C3,5.9101562,5.9101562,3,9.5,3c2.7313232,0.0031738,5.06427,1.6907959,6.0264893,4.0783081C15.1900635,7.0321655,14.8491211,7,14.5,7C10.3578491,7,7,10.3578491,7,14.5C7,14.8500366,7.0323486,15.1917114,7.0787354,15.5289917z M8,14.5c0-0.8759766,0.1757812-1.7103271,0.4899292-2.4729614l3.4830322,3.4830322C11.2103271,15.8242188,10.3759766,16,9.5,16c-0.465332,0-0.918457-0.0509644-1.3560791-0.1439209C8.0509644,15.418457,8,14.965332,8,14.5z M14.5,21c-2.7332764,0-5.0682983-1.6891479-6.0289917-4.0787354C8.8082886,16.9676514,9.1499634,17,9.5,17c4.1402588-0.0045166,7.4954834-3.3597412,7.5-7.5c0-0.3491211-0.0321655-0.6900635-0.0783081-1.0264893C19.3092041,9.43573,20.9968262,11.7686768,21,14.5C21,18.0898438,18.0898438,21,14.5,21z" /></svg>*@
                                     <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-arrow-left-right" viewBox="0 0 16 16"> <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z" /> </svg>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <div class="form-group">
+                                    @* <div class="form-group">
                                         <select asp-for="@Model.StoreId" asp-items="@Model.Stores"
                                                 class="form-control select2 form-select">
                                             <option value="0">All Stores</option>
@@ -90,13 +112,12 @@
                                                 class="form-control select2 form-select">
                                             <option value="0">All Statuses</option>
                                         </select>
-                                    </div>
+                                    </div> *@
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
             </div>
             <div class="col-md-3">
                 <div class="card divShadow">
@@ -126,41 +147,14 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card divShadow">
-                    <div class="card-status bg-warning br-tr-7 br-tl-7"></div>
-                    <div class="card-body pnlHeight">
-                        <div class="row">
-                            <div class="col">
-                                <h3 class="mb-2 fw-semibold">Handovers</h3>
-                                <p class="text-muted fs-13 mb-0">Handover Report</p>
-                            </div>
-                            <div class="col col-auto top-icn dash">
-                                <div class="counter-icon bg-warning dash ms-auto box-shadow-warning">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-basket3" viewBox="0 0 25 25">
-                                        <g> <path fill="none" d="M0 0h24v24H0z" id="mainIconPathAttribute" stroke-width="0" stroke="#fbf9f9"></path> <path fill-rule="nonzero" d="M5 9a1 1 0 0 1 1 1 6.97 6.97 0 0 1 4.33 1.5h2.17c1.333 0 2.53.58 3.354 1.5H19a5 5 0 0 1 4.516 2.851C21.151 18.972 17.322 21 13 21c-2.79 0-5.15-.603-7.06-1.658A.998.998 0 0 1 5 20H2a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1h3zm1.001 3L6 17.022l.045.032C7.84 18.314 10.178 19 13 19c3.004 0 5.799-1.156 7.835-3.13l.133-.133-.12-.1a2.994 2.994 0 0 0-1.643-.63L19 15h-2.111c.072.322.111.656.111 1v1H8v-2l6.79-.001-.034-.078a2.501 2.501 0 0 0-2.092-1.416L12.5 13.5H9.57A4.985 4.985 0 0 0 6.002 12zM4 11H3v7h1v-7zm14-6a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 2a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-7-5a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 2a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" id="mainIconPathAttribute" stroke="#fbf9f9"></path> </g>
-                                    </svg>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col">
-                                    <small class="text-muted">
-                                        Disposal of Assets that includes selling, recycling, donating, or scrapping the asset.
-                                    </small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
             </div>
-
         </div>
     </div>
-</div>
-@section scripts{
-    <script>
-        $(document).ready(() => {
-            
-        });
-    </script>
-}
+
+    @section scripts {
+        <script>
+            $(document).ready(() => {
+                $('.select2').select2();
+            });
+        </script>
+    }

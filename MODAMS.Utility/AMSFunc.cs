@@ -15,6 +15,7 @@ using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Hosting;
 using MODAMS.Models.ViewModels.Dto;
 using System.Security.Claims;
+using System.ComponentModel;
 
 namespace MODAMS.Utility
 {
@@ -31,19 +32,29 @@ namespace MODAMS.Utility
             _contextAccessor = contextAccessor;
             _linkGenerator = linkGenerator;
         }
+        //public int GetEmployeeId()
+        //{
+        //    int EmployeeId = 0;
+        //    // Get the current claims principal
+        //    var user = _contextAccessor.HttpContext.User;
+            
+        //    // Find the user's ID claim
+        //    var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier);
+        //    if (userIdClaim != null)
+        //        EmployeeId = _db.ApplicationUsers.Where(m => m.Id == userIdClaim.Value).Select(m => m.EmployeeId).FirstOrDefault();
+
+        //    return EmployeeId;
+        //}
+
         public int GetEmployeeId()
         {
-            int EmployeeId = 0;
-            // Get the current claims principal
-            var user = _contextAccessor.HttpContext.User;
-            
-            // Find the user's ID claim
-            var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier);
-            if (userIdClaim != null)
-                EmployeeId = _db.ApplicationUsers.Where(m => m.Id == userIdClaim.Value).Select(m => m.EmployeeId).FirstOrDefault();
+            // Get the current user
+            var user = _userManager.GetUserAsync(_contextAccessor.HttpContext.User).Result as ApplicationUser;
 
-            return EmployeeId;
+            // Return the user's EmployeeId if user is found
+            return user?.EmployeeId ?? 0;
         }
+
         public int GetEmployeeIdByUserId(string userId) {
             int EmployeeId = 0;
 
@@ -518,7 +529,7 @@ namespace MODAMS.Utility
             _db.LoginHistory.Add(login);
             _db.SaveChanges();
         }
-
+        
         //Private methods
         private void Notify(int[] arrEmpIds, Notification notification)
         {

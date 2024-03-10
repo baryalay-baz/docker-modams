@@ -54,7 +54,7 @@ namespace MODAMS.DataAccess.Data
         public DbSet<vwStoreCategoryAsset> vwStoreCategoryAssets { get; set; }
         public DbSet<vwCategoryAsset> vwCategoryAssets { get; set; }
         public DbSet<vwTransfer> vwTransfers { get; set; }
-        public DbSet<vwAssets> vwAssets { get; set; }
+        public DbSet<vwAsset> vwAssets { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

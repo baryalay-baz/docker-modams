@@ -48,7 +48,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
         {
             var categoryAssets = _db.vwCategoryAssets.ToList();
             var newsFeed = _db.NewsFeed.OrderByDescending(m=>m.TimeStamp).Take(5).ToList();
-
+            
             var dto = new dtoDashboard()
             {
                 CategoryAssets = categoryAssets,

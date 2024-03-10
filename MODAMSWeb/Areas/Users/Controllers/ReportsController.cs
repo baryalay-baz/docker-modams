@@ -6,7 +6,9 @@ namespace MODAMSWeb.Areas.Users.Controllers
     using Telerik.Reporting.Services;
     using Telerik.Reporting.Services.AspNetCore;
 
-    [Route("api/reports")]
+    
+    [Route("api/[controller]")]
+    [ApiController]
     public class ReportsController : ReportsControllerBase
     {
         public ReportsController(IReportServiceConfiguration reportServiceConfiguration)

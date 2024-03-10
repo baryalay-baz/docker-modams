@@ -15,20 +15,24 @@ using Telerik.Reporting.Cache.File;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddMvc();
+builder.Services.AddControllers().AddNewtonsoftJson();
 
-builder.Services.AddScoped<IReportSourceResolver, CustomReportSourceResolver>();
 
-builder.Services.TryAddSingleton<IReportServiceConfiguration>(sp => new ReportServiceConfiguration
+
+// Configure dependencies for ReportsController.
+
+builder.Services.TryAddScoped<IReportServiceConfiguration>(sp => new ReportServiceConfiguration
 {
-	ReportingEngineConfiguration = sp.GetService<IConfiguration>(),
-	HostAppId = "Html5ReportViewerDemo",
-	Storage = new FileStorage(),
+    ReportingEngineConfiguration = sp.GetService<IConfiguration>(),
+    HostAppId = "MODAMS",
+    Storage = new FileStorage(),
     //ReportSourceResolver = new UriReportSourceResolver(
-    //	System.IO.Path.Combine(GetReportsDir(sp))),
+    //System.IO.Path.Combine(GetReportsDir(sp))),
     ReportSourceResolver = sp.GetRequiredService<IReportSourceResolver>()
-
 });
 
+
+builder.Services.AddScoped<IReportSourceResolver, CustomReportSourceResolver>();
 
 builder.Services.AddKendo();
 
@@ -78,14 +82,15 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
     builder.Configuration.GetConnectionString("DefaultConnection")
     ));
 
-builder.Services.AddCors(opts =>
+builder.Services.AddCors(options =>
 {
-    opts.AddDefaultPolicy(p =>
-    {
-        p.AllowAnyOrigin();
-        p.AllowAnyMethod();
-        p.AllowAnyMethod();
-    });
+    options.AddPolicy("AllowAll",
+        builder =>
+        {
+            builder.AllowAnyOrigin()
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        });
 });
 
 builder.Services.Configure<IISServerOptions>(options =>
@@ -123,23 +128,23 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseCors();
+app.UseCors("AllowAll");
 
 app.MapRazorPages();
-
-//app.UseEndpoints(endpoints =>
-//{
-//    endpoints.MapControllers();
-//    // ... 
-//});
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{area=Users}/{controller=Home}/{action=Index}/{id?}");
 
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+    // ... 
+});
+
 app.Run();
 
 static string GetReportsDir(IServiceProvider sp)
 {
-	return Path.Combine(sp.GetService<IWebHostEnvironment>().ContentRootPath, "Reports");
+    return Path.Combine(sp.GetService<IWebHostEnvironment>().ContentRootPath, "Reports");
 }

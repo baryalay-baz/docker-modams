@@ -91,7 +91,7 @@ namespace MODAMS.Models
 
         [Required]
         [Display(Name ="Donor")]
-        public int? DonorId { get; set; }
+        public int DonorId { get; set; }
 
         [Required]
         [Display(Name="Status")]
