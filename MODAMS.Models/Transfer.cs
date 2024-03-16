@@ -52,6 +52,10 @@ namespace MODAMS.Models
         [Display(Name ="Notes")]
         public string? Notes { get; set; }
 
+        public string SenderBarcode { get; set; } = string.Empty;
+        public string ReceiverBarcode { get; set; } = string.Empty;
+
+
         [ValidateNever]
         public TransferStatus TransferStatus { get; set; }
 

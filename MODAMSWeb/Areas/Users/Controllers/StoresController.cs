@@ -106,7 +106,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             };
 
             //update dtoReportingModel for the partial view
-            dto.dtoReporting.Stores = stores.ToList().Select(m => new SelectListItem
+            dto.dtoReporting.AssetStores = stores.ToList().Select(m => new SelectListItem
             {
                 Text = m.Name,
                 Value = m.Id.ToString()
@@ -142,7 +142,6 @@ namespace MODAMSWeb.Areas.Users.Controllers
             dto.dtoReporting.SubCategories = subCategories;
             dto.dtoReporting.Conditions = assetConditions;
             dto.dtoReporting.Donors = donors;
-
 
             return View(dto);
         }

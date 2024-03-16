@@ -17,22 +17,22 @@
                 <hr class="customHR" />
 
                 <div class="form-group">
-                    <label asp-for="@Model.StoreId" class="form-label"></label>
-                    <select asp-for="@Model.StoreId" asp-items="@Model.Stores"
+                    <label asp-for="AssetStoreId" class="form-label"></label>
+                    <select asp-for="AssetStoreId" asp-items="@Model.AssetStores"
                             class="form-control select2 form-select">
                         <option value="0">All Stores</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label asp-for="@Model.AssetStatusId" class="form-label"></label>
-                    <select asp-for="@Model.AssetStatusId" asp-items="@Model.AssetStatuses"
+                    <label asp-for="AssetStatusId" class="form-label"></label>
+                    <select asp-for="AssetStatusId" asp-items="@Model.AssetStatuses"
                             class="form-control select2 form-select">
                         <option value="0">All Statuses</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label asp-for="@Model.CategoryId" class="form-label"></label>
-                    <select asp-for="@Model.CategoryId" asp-items="@Model.Categories"
+                    <label asp-for="CategoryId" class="form-label"></label>
+                    <select asp-for="CategoryId" asp-items="@Model.Categories"
                             class="form-control select2 form-select">
                         <option value="0">All Categories</option>
                     </select>

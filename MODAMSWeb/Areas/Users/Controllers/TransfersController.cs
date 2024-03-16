@@ -129,7 +129,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
 
             TempData["storeFrom"] = _func.GetDepartmentName(_employeeId);
-            dto.Transfer.TransferNumber = GetTransferNumber();
+            
 
             if (assets.Count > 0)
             {
@@ -161,7 +161,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 Text = m.Name,
                 Value = m.Id.ToString(),
             });
-
+            dto.Transfer.TransferNumber = GetTransferNumber(currentStoreId);
             dto.StoreList = storeList;
 
             return View(dto);
@@ -434,13 +434,14 @@ namespace MODAMSWeb.Areas.Users.Controllers
             dto.IsSender = (senderId == _employeeId) ? true : false;
             dto.IsReceiver = (receiverId == _employeeId) ? true : false;
 
-            dto.TransferBy = _func.GetEmployeeNameById(senderId);
-            dto.ReceivedBy = _func.GetEmployeeNameById(receiverId);
+            dto.TransferBy = transfer.SenderBarcode;
+            dto.ReceivedBy = transfer.ReceiverBarcode;
 
-            ViewBag.FromSignature = MODAMS.Utility.Barcode.GenerateBarCode(dto.TransferBy);
-            ViewBag.ToSignature = MODAMS.Utility.Barcode.GenerateBarCode(dto.ReceivedBy);
+            if (transfer.SenderBarcode != "")
+                ViewBag.FromSignature = MODAMS.Utility.Barcode.GenerateBarCode(dto.TransferBy);
 
-
+            if (transfer.ReceiverBarcode!="")
+                ViewBag.ToSignature = MODAMS.Utility.Barcode.GenerateBarCode(dto.ReceivedBy);
 
             return View(dto);
         }
@@ -481,7 +482,10 @@ namespace MODAMSWeb.Areas.Users.Controllers
             var transfer = _db.Transfers.Where(m => m.Id == id).FirstOrDefault();
             if (transfer != null)
             {
+                int nEmployeeId = _func.GetEmployeeId();
                 transfer.TransferStatusId = SD.Transfer_SubmittedForAcknowledgement;
+                transfer.SenderBarcode = _func.GetEmployeeName(nEmployeeId);
+
                 await _db.SaveChangesAsync();
 
                 Notification notification = new Notification()
@@ -567,8 +571,11 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     return RedirectToAction("PreviewTransfer", "Transfers", new { id = id });
                 }
             }
+            int nEmployeeId = _func.GetEmployeeId();
 
             transfer.TransferStatusId = SD.Transfer_Completed;
+            transfer.ReceiverBarcode = _func.GetEmployeeName(nEmployeeId);
+
             await _db.SaveChangesAsync();
 
             var ownerId = _func.GetStoreOwnerId(transfer.StoreFromId);
@@ -790,6 +797,13 @@ namespace MODAMSWeb.Areas.Users.Controllers
             return View(dto);
         }
 
+        [HttpPost]
+        public IActionResult PrintVoucher(int id)
+        {
+            return RedirectToAction("ReportViewerExternal", "Reporting", new { Type = "PrintVoucher", id = id }); // Redirect to a different action after processing the form
+        }
+
+
         //Private functions
         private bool IsAssetSelected(int assetId, List<TransferDetail> transferDetails)
         {
@@ -801,10 +815,10 @@ namespace MODAMSWeb.Areas.Users.Controllers
             }
             return blnResult;
         }
-        private string GetTransferNumber()
+        private string GetTransferNumber(int currentStoreId)
         {
             string sResult = "";
-            
+
             var transfers = _db.Transfers.Where(m => m.EmployeeId == _employeeId).ToList();
             var maxIdTransfer = transfers.OrderByDescending(m => m.Id).FirstOrDefault();
 
@@ -840,7 +854,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 sResult = maxId.ToString();
             }
 
-            return sResult;
+            return currentStoreId + "-" + sResult;
         }
         private async Task<List<MODAMS.Models.Asset>> GetAssets([CallerMemberName] string caller = "")
         {

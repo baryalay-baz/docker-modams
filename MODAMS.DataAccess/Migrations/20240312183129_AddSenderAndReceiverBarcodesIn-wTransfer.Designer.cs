@@ -4,6 +4,7 @@ using MODAMS.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MODAMS.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240312183129_AddSenderAndReceiverBarcodesIn-wTransfer")]
+    partial class AddSenderAndReceiverBarcodesInwTransfer
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1243,6 +1246,12 @@ namespace MODAMS.DataAccess.Migrations
 
             modelBuilder.Entity("MODAMS.Models.ViewModels.vwTransferVoucher", b =>
                 {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
                     b.Property<DateTime?>("AcknowledgementDate")
                         .HasColumnType("datetime2");
 
@@ -1259,9 +1268,6 @@ namespace MODAMS.DataAccess.Migrations
 
                     b.Property<decimal>("Cost")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
 
                     b.Property<string>("Identification")
                         .IsRequired()
@@ -1282,11 +1288,11 @@ namespace MODAMS.DataAccess.Migrations
                     b.Property<int>("NumberOfAssets")
                         .HasColumnType("int");
 
-                    b.Property<string>("ReceiverBarcode")
+                    b.Property<string>("ReceiverBarCode")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SenderBarcode")
+                    b.Property<string>("SenderBarCode")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -1325,6 +1331,8 @@ namespace MODAMS.DataAccess.Migrations
                     b.Property<string>("TransferNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
 
                     b.ToTable("vwTransferVouchers");
                 });

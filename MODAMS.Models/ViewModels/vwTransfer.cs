@@ -22,5 +22,7 @@ namespace MODAMS.Models.ViewModels
         public int NumberOfAssets { get; set; }
         public int StoreFromId { get; set; }
         public string StoreFrom { get; set; }
+        public string SenderBarcode { get; set; }
+        public string ReceiverBarcode { get; set; }
     }
 }

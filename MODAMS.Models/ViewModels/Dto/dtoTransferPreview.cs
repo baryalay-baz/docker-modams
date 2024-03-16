@@ -1,10 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace MODAMS.Models.ViewModels.Dto
 {
     public class dtoTransferPreview
@@ -17,6 +11,7 @@ namespace MODAMS.Models.ViewModels.Dto
 
         [ValidateNever]
         public bool IsSender { get; set; }
+
         [ValidateNever]
         public bool IsReceiver { get; set; }
         

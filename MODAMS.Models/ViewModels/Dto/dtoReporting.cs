@@ -11,43 +11,49 @@ namespace MODAMS.Models.ViewModels.Dto
 {
     public class dtoReporting
     {
-        [Display(Name ="Store")]
-        public int StoreId { get; set; }
+        public string ReportId { get; set; }
 
-        [Display(Name ="Category")]
-        public int CategoryId { get; set; } 
 
-        [Display(Name ="Sub Category")]
+        //Section for Asset Report
+        [Display(Name = "Store")]
+        public int AssetStoreId { get; set; }
+
+        [Display(Name = "Category")]
+        public int CategoryId { get; set; }
+
+        [Display(Name = "Sub Category")]
         public int SubCategoryId { get; set; }
 
         [Display(Name = "Asset Status")]
         public int AssetStatusId { get; set; }
 
-        [Display(Name ="Asset Condition")]
+        [Display(Name = "Asset Condition")]
         public int AssetConditionId { get; set; }
 
         [Display(Name = "Donor")]
         public int DonorId { get; set; }
+        [ValidateNever] public IEnumerable<SelectListItem> AssetStores { get; set; }
+        [ValidateNever] public IEnumerable<SelectListItem> Categories { get; set; }
+        [ValidateNever] public IEnumerable<SelectListItem> SubCategories { get; set; }
+        [ValidateNever] public IEnumerable<SelectListItem> Donors { get; set; }
+        [ValidateNever] public IEnumerable<SelectListItem> AssetStatuses { get; set; }
+        [ValidateNever] public IEnumerable<SelectListItem> Conditions { get; set; }
 
-        public string ReportId { get; set; }
 
-        [ValidateNever]
-        public IEnumerable<SelectListItem> Stores { get; set; }
 
-        [ValidateNever]
-        public IEnumerable<SelectListItem> Categories { get; set; }
+        //Section for TransferReport
+        [Display(Name = "Transfer Id")]
+        public int TransferId { get; set; }
 
-        [ValidateNever]
-        public IEnumerable<SelectListItem> SubCategories { get; set; }
+        [Display(Name = "Transfer From Store")]
+        public int StoreFromId { get; set; }
 
-        [ValidateNever]
-        public IEnumerable<SelectListItem> Donors { get; set; }
+        [Display(Name = "Transfer To Store")]
+        public int StoreToId { get; set; }
 
-        [ValidateNever]
-        public IEnumerable<SelectListItem> AssetStatuses { get; set; }
-
-        [ValidateNever]
-        public IEnumerable<SelectListItem> Conditions { get; set; }
-
+        [Display(Name = "Transfer Status")]
+        public int TransferStatusId { get; set; }
+        [ValidateNever] public IEnumerable<SelectListItem> TransferStatuses { get; set; }
+        [ValidateNever] public IEnumerable<SelectListItem> TransferStores { get; set; }
     }
 }

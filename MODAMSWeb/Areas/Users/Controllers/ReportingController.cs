@@ -45,19 +45,33 @@ namespace MODAMSWeb.Areas.Users.Controllers
             //    .Include(m => m.Store).ThenInclude(m => m.Department)
             //    .Include(m => m.AssetStatus).Include(m => m.Condition).ToList();
 
-            dtoReporting dto = await PopulateDto(new dtoReporting());
+            dtoReporting dto = new dtoReporting();
+            dto = await PopulateDTO(dto);
+
             return View(dto);
+        }
+        public async Task<IActionResult> ReportViewerExternal(string Type, int id)
+        {
+            var dto = new dtoReporting();
+            if (Type == "PrintVoucher")
+            {
+                dto = await PopulateDTO(dto);
+                dto.ReportId = "TransferVoucher";
+                dto.TransferId = id;
+            }
+            return View("ReportViewer", dto);
         }
 
         [HttpPost]
         public async Task<IActionResult> ReportViewer(dtoReporting dto)
         {
-            dto = await PopulateDto(dto);
+            dto = await PopulateDTO(dto);
             return View(dto);
         }
 
-        private async Task<dtoReporting> PopulateDto(dtoReporting dto) {
-
+        private async Task<dtoReporting> PopulateDTO(dtoReporting dto)
+        {
+            //Populate Asset Report
             var stores = await _db.vwStores.OrderByDescending(m => m.TotalCount).ToListAsync();
             var allStores = stores;
 
@@ -115,14 +129,27 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 Value = m.Id.ToString()
             });
 
+            dto.AssetStores = storeSelectList;
             dto.AssetStatuses = assetStatuses;
             dto.Categories = categories;
             dto.SubCategories = subCategories;
             dto.Conditions = assetConditions;
-            dto.Stores = storeSelectList;
             dto.Donors = donors;
+
+            //Populate Transfer Report
+            dto.TransferStores = allStores.ToList().Select(m => new SelectListItem
+            {
+                Text = m.Name,
+                Value = m.Id.ToString()
+            });
+            dto.TransferStatuses = _db.TransferStatuses.ToList().Select(m => new SelectListItem
+            {
+                Text = m.Status,
+                Value = m.Id.ToString()
+            });
 
             return dto;
         }
+        
     }
 }

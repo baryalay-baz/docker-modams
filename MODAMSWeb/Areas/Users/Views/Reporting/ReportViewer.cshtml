@@ -42,23 +42,8 @@
         $(document).ready(() => {
 
             let reportId = '@Model.ReportId';
-            let params = {};
-            if (reportId == "AssetReport") {
-                let storeId = parseInt('@Model.StoreId');
-                let assetStatusId = parseInt('@Model.AssetStatusId');
-                let categoryId = parseInt('@Model.CategoryId');
-                let assetConditionId = parseInt('@Model.AssetConditionId');
-                let donorId = parseInt('@Model.DonorId');
-
-                params = {
-                    StoreId: storeId,
-                    AssetStatusId: assetStatusId,
-                    CategoryId: categoryId,
-                    AssetConditionId: assetConditionId,
-                    DonorId: donorId
-                };
-            }
-            params = Object.fromEntries(Object.entries(params).filter(([_, value]) => value > 0));
+            console.log(reportId);
+            let params = getParams(reportId);
             console.log(params);
             reportId += '.trdp';
 
@@ -81,17 +66,45 @@
             });
         });
 
-        const generateReport = () => {
-            params = {
-                StoreId: 17,
-                AssetStatusId: 1
-            };
+        const getParams = (reportId) => {
+            let params = {};
 
-            var viewer = $("#reportViewer1").data("telerik_ReportViewer");
-            viewer.reportSource({
-                report: viewer.reportSource().report,
-                parameters: params
-            });
+            if (reportId == "AssetReport") {
+                let storeId = parseInt('@Model.AssetStoreId');
+                let assetStatusId = parseInt('@Model.AssetStatusId');
+                let categoryId = parseInt('@Model.CategoryId');
+                let assetConditionId = parseInt('@Model.AssetConditionId');
+                let donorId = parseInt('@Model.DonorId');
+
+                params = {
+                    StoreId: storeId,
+                    AssetStatusId: assetStatusId,
+                    CategoryId: categoryId,
+                    AssetConditionId: assetConditionId,
+                    DonorId: donorId
+                };
+            } else if (reportId == "TransferVoucher") {
+                let transferId = '@Model.TransferId';
+                
+                params = {
+                    TransferId: transferId
+                }
+            } else if (reportId == "TransferReport") { 
+                let storeFromId = '@Model.StoreFromId';
+                let storeToId = '@Model.StoreToId';
+                let transferStatusId = '@Model.TransferStatusId';
+
+                params = {
+                    StoreFromId : storeFromId,
+                    StoreToId : storeToId,
+                    TransferStatusId : transferStatusId
+                }
+
+            }
+
+            params = Object.fromEntries(Object.entries(params).filter(([_, value]) => value > 0));
+
+            return params;
         }
     </script>
 

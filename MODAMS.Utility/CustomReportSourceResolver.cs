@@ -29,15 +29,34 @@ namespace MODAMS.Utility
             }
             if (operationOrigin == OperationOrigin.GenerateReportDocument)
             {
-                // Set the data source for the report
-                var vwAssets = GetAssetList().GetAwaiter().GetResult();
-                
-                if (vwAssets != null)
+                if (reportId == "AssetReport.trdp")
                 {
-                    report.DataSource = vwAssets;
-                    // Set the data source for another data item
-                    var graph1 = report.Items.Find("graph1", true)[0] as Graph;
-                    graph1.DataSource = vwAssets;
+                    // Set the data source for the report
+                    var vwAssets = GetAssetList(currentParameterValues).GetAwaiter().GetResult();
+
+                    if (vwAssets != null)
+                    {
+                        report.DataSource = vwAssets;
+                        // Set the data source for another data item
+                        var graph1 = report.Items.Find("graph1", true)[0] as Graph;
+                        graph1.DataSource = vwAssets;
+                    }
+                }
+                else if (reportId == "TransferVoucher.trdp")
+                {
+                    var data = GetTransferVoucherData(currentParameterValues).GetAwaiter().GetResult();
+                    if (data != null)
+                    {
+                        report.DataSource = data;
+                    }
+                }
+                else if (reportId == "TransferReport.trdp")
+                {
+                    var data = GetTransferReport(currentParameterValues).GetAwaiter().GetResult();
+                    if (data != null)
+                    {
+                        report.DataSource = data;
+                    }
                 }
             };
             return new InstanceReportSource
@@ -46,9 +65,72 @@ namespace MODAMS.Utility
             };
         }
 
-        public async Task<List<vwAsset>> GetAssetList()
+        public async Task<List<vwTransferVoucher>> GetTransferReport(IDictionary<string, object> currentParameterValues)
         {
-            var vwAssets = await _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted)
+            IQueryable<vwTransferVoucher> query = _db.vwTransferVouchers.Select(tv => new vwTransferVoucher
+            {
+                Id = tv.Id,
+                AcknowledgementDate = tv.AcknowledgementDate,
+                AssetId = tv.AssetId,
+                Barcode = tv.Barcode,
+                ConditionName = tv.ConditionName,
+                Cost = tv.Cost,
+                Identification = tv.Identification,
+                Make = tv.Make,
+                Model = tv.Model,
+                Name = tv.Name,
+                NumberOfAssets = tv.NumberOfAssets,
+                SerialNo = tv.SerialNo,
+                Status = tv.Status,
+                StoreFrom = tv.StoreFrom,
+                StoreFromId = tv.StoreFromId,
+                StoreTo = tv.StoreTo,
+                StoreToId = tv.StoreToId,
+                SubCategoryName = tv.SubCategoryName,
+                SubmissionForAcknowledgementDate = tv.SubmissionForAcknowledgementDate,
+                TransferStatusId = tv.TransferStatusId,
+                TransferDate = tv.TransferDate,
+                TransferNumber = tv.TransferNumber
+            });
+
+
+            foreach (var parameter in currentParameterValues)
+            {
+                if (parameter.Key == "StoreFromId" && Convert.ToInt64(parameter.Value) > 0)
+                {
+                    query = query.Where(m => m.StoreFromId == Convert.ToInt64(parameter.Value));
+                }
+                else if (parameter.Key == "StoreToId" && Convert.ToInt64(parameter.Value) > 0)
+                {
+                    query = query.Where(m => m.StoreToId == Convert.ToInt64(parameter.Value));
+                }
+                else if (parameter.Key == "TransferStatusId" && Convert.ToInt64(parameter.Value) > 0)
+                {
+                    query = query.Where(m => m.TransferStatusId == Convert.ToInt64(parameter.Value));
+                }
+            }
+            var data = await query.ToListAsync();
+
+            return data;
+
+        }
+        public async Task<List<vwTransferVoucher>> GetTransferVoucherData(IDictionary<string, object> currentParameterValues)
+        {
+            var data = await _db.vwTransferVouchers.ToListAsync();
+
+            foreach (var parameter in currentParameterValues)
+            {
+                if (parameter.Key == "TransferId" && Convert.ToInt64(parameter.Value) > 0)
+                {
+                    data = data.Where(m => m.TransferId == Convert.ToInt64(parameter.Value)).ToList();
+                }
+            }
+            return data;
+        }
+        public async Task<List<vwAsset>> GetAssetList(IDictionary<string, object> currentParameterValues)
+        {
+            IQueryable<vwAsset> query = _db.Assets
+                .Where(m => m.AssetStatusId != SD.Asset_Deleted)
                 .Include(m => m.SubCategory).ThenInclude(m => m.Category)
                 .Include(m => m.Condition)
                 .Include(m => m.Store).ThenInclude(m => m.Department)
@@ -90,8 +172,34 @@ namespace MODAMS.Utility
                     Identification = asset.SubCategory.Category.CategoryName == "Vehicles" ? "Plate: " + asset.Plate : "SN: " + asset.SerialNo,
                     StatusName = asset.AssetStatus.StatusName,
                     ConditionName = asset.Condition.ConditionName
-                })
-                .ToListAsync();
+                });
+
+            foreach (var parameter in currentParameterValues)
+            {
+                if (parameter.Key == "StoreId" && parameter.Value != null)
+                {
+                    query = query.Where(asset => asset.StoreId == Convert.ToInt64(parameter.Value));
+                }
+                else if (parameter.Key == "AssetStatusId" && parameter.Value != null)
+                {
+                    query = query.Where(asset => asset.AssetStatusId == Convert.ToInt64(parameter.Value));
+                }
+                else if (parameter.Key == "CategoryId" && parameter.Value != null)
+                {
+                    query = query.Where(asset => asset.CategoryId == Convert.ToInt64(parameter.Value));
+                }
+                else if (parameter.Key == "ConditionId" && parameter.Value != null)
+                {
+                    query = query.Where(asset => asset.ConditionId == Convert.ToInt64(parameter.Value));
+                }
+                else if (parameter.Key == "DonorId" && parameter.Value != null)
+                {
+                    query = query.Where(asset => asset.DonorId == Convert.ToInt64(parameter.Value));
+                }
+                // Add more conditions for other parameters if needed
+            }
+
+            var vwAssets = await query.ToListAsync();
 
             return vwAssets;
         }

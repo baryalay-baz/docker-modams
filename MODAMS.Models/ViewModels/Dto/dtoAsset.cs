@@ -17,14 +17,18 @@ namespace MODAMS.Models.ViewModels.Dto
         public int Id { get; set; }
 
         [Required]
+        [RegularExpression(@"^[a-zA-Z0-9 -]*$", ErrorMessage = "Special characters are not allowed.")]
         [Display(Name = "Asset Name")]
         public string Name { get; set; } = string.Empty;
 
         [Required]
+        [RegularExpression(@"^[a-zA-Z0-9 -]*$", ErrorMessage = "Special characters are not allowed.")]
+
         [Display(Name = "Make")]
         public string Make { get; set; } = string.Empty;
 
         [Required]
+        [RegularExpression(@"^[a-zA-Z0-9 -]*$", ErrorMessage = "Special characters are not allowed.")]
         [Display(Name = "Model")]
         public string Model { get; set; } = string.Empty;
 

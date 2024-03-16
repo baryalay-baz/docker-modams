@@ -18,7 +18,7 @@
             <div class="card-body">
                 @{
                     bool readOnly = (User.IsInRole("User") || User.IsInRole("StoreOwner")) ? true : false;
-                    
+
                     if (readOnly)
                     {
                         <select asp-for="StoreId" asp-items="@Model.StoreList"
@@ -161,7 +161,7 @@
                                                                         }
                                                                     }
                                                                 </tbody>
-                                                            </table>                                                            
+                                                            </table>
                                                         </div>
                                                         <br />
                                                         <a asp-action="CreateTransfer" asp-controller="Transfers" id="btnCreate" class="btn btn-outline-primary pt-1"><i class="fe fe-plus-circle"></i>&nbsp;New Transfer</a>
@@ -215,7 +215,8 @@
                                                                         foreach (var transfer in Model.IncomingTransfers)
                                                                         {
                                                                             nCounterIncoming++;
-                                                                            if (transfer.TransferStatusId == 2) {
+                                                                            if (transfer.TransferStatusId == 2)
+                                                                            {
                                                                                 spnNew++;
                                                                             }
                                                                             <tr>
@@ -290,7 +291,7 @@
             //setRadioButtons();
 
             $("#spnNew").html('@Html.Raw(sSpnNew)');
-            
+
             pieChartOutgoing();
             pieChartIncoming();
         });
@@ -394,24 +395,25 @@
 
             var sInitialDisabled = "";
             var sDisabled = "";
-            if ('@Model.IsAuthorized' == "False")
+            var isAuthorized = '@Model.IsAuthorized';
+            if (isAuthorized)
                 sInitialDisabled = "disabled"
 
             var sData = '@Json.Serialize(Model.OutgoingTransfers)';
             var Data = JSON.parse(sData);
             var sHtml = `<table id="tblTransfers" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
-                                                            <thead class="bg-primary-gradient ms-auto divShadow">
-                                                                <tr>
-                                                                    <th class="text-white bg-transparent border-bottom-0 w-5">#</th>
-                                                                    <th class="text-white bg-transparent border-bottom-0 w-10">Date</th>
-                                                                    <th class="text-white bg-transparent border-bottom-0 w-20">Store From</th>
-                                                                    <th class="text-white bg-transparent border-bottom-0 w-20">Store To</th>
-                                                                    <th class="text-white bg-transparent border-bottom-0 w-5">Assets</th>
-                                                                    <th class="text-white bg-transparent border-bottom-0 w-20">Status</th>
-                                                                    <th class="text-white bg-transparent border-bottom-0 w-20 no-btn">Action</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>`;
+                            <thead class="bg-primary-gradient ms-auto divShadow">
+                                <tr>
+                                    <th class="text-white bg-transparent border-bottom-0 w-5">#</th>
+                                    <th class="text-white bg-transparent border-bottom-0 w-10">Date</th>
+                                    <th class="text-white bg-transparent border-bottom-0 w-20">Store From</th>
+                                    <th class="text-white bg-transparent border-bottom-0 w-20">Store To</th>
+                                    <th class="text-white bg-transparent border-bottom-0 w-5">Assets</th>
+                                    <th class="text-white bg-transparent border-bottom-0 w-20">Status</th>
+                                    <th class="text-white bg-transparent border-bottom-0 w-20 no-btn">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
             var nCounter = 0;
             Data.forEach(function (e) {
                 nCounter++;
@@ -424,39 +426,39 @@
                 if (id > 0) {
                     if (e.transferStatusId == id) {
                         sHtml += `<tr>
-                                                            <td>`+ nCounter + `</td>
-                                                            <td>`+ formattedDate(e.transferDate) + `</td>
-                                                            <td>`+ e.storeFrom + `</td>
-                                                            <td>`+ e.storeTo + `</td>
-                                                            <td>`+ e.numberOfAssets + `</td>
-                                                            <td>`+ e.status + `</td>
-                                                            <td>
-                                                                <a href="/Users/Transfers/EditTransfer/` + e.id + `" class="btn btn-sm btn-outline-primary border me-2 ` + sDisabled + ` " data-bs-toggle="tooltip" data-bs-original-title="Edit Transfer">
-                                                                    <i class="fe fe-edit"></i>
-                                                                </a>
-                                                                        <a href="/Users/Transfers/PreviewTransfer/` + e.id + `" class="btn btn-sm btn-outline-primary border me-2" data-bs-toggle="tooltip" data-bs-original-title="Preview Transfer">
-                                                                    <i class="fe fe-eye"></i>
-                                                                </a>
-                                                            </td>
-                                                        </tr>`;
+                                        <td>${nCounter}</td>
+                                        <td>${formattedDate(e.transferDate)}</td>
+                                        <td>${e.storeFrom}</td>
+                                        <td>${e.storeTo}</td>
+                                        <td>${e.numberOfAssets}</td>
+                                        <td>${e.status}</td>
+                                    <td>
+                                        <a href="/Users/Transfers/EditTransfer/${e.id}" class="btn btn-sm btn-outline-primary border me-2 ` + sDisabled + ` " data-bs-toggle="tooltip" data-bs-original-title="Edit Transfer">
+                                            <i class="fe fe-edit"></i>
+                                        </a>
+                                                <a href="/Users/Transfers/PreviewTransfer/${e.id}" class="btn btn-sm btn-outline-primary border me-2" data-bs-toggle="tooltip" data-bs-original-title="Preview Transfer">
+                                            <i class="fe fe-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>`;
                     }
                 } else {
                     sHtml += `<tr>
-                                                                <td>`+ nCounter + `</td>
-                                                                <td>`+ formattedDate(e.transferDate) + `</td>
-                                                                <td>`+ e.storeFrom + `</td>
-                                                                <td>`+ e.storeTo + `</td>
-                                                                <td>`+ e.numberOfAssets + `</td>
-                                                                <td>`+ e.status + `</td>
-                                                                <td>
-                                                                    <a ` + sDisabled + ` href="/Users/Transfers/EditTransfer/` + e.id + `" class="btn btn-sm btn-outline-primary border me-2 ` + sDisabled + `" data-bs-toggle="tooltip" data-bs-original-title="Edit Transfer">
-                                                                        <i class="fe fe-edit"></i>
-                                                                    </a>
-                                                                    <a href="/Users/Transfers/PreviewTransfer/` + e.id + `" class="btn btn-sm btn-outline-primary border me-2" data-bs-toggle="tooltip" data-bs-original-title="Preview Transfer">
-                                                                        <i class="fe fe-eye"></i>
-                                                                    </a>
-                                                                </td>
-                                                            </tr>`;
+                                <td>${nCounter}</td>
+                                <td>${formattedDate(e.transferDate)}</td>
+                                <td>${e.storeFrom}</td>
+                                <td>${e.storeTo}</td>
+                                <td>${e.numberOfAssets}</td>
+                                <td>${e.status}</td>
+                                <td>
+                                    <a ${sDisabled} href="/Users/Transfers/EditTransfer/${e.id}" class="btn btn-sm btn-outline-primary border me-2 ` + sDisabled + `" data-bs-toggle="tooltip" data-bs-original-title="Edit Transfer">
+                                        <i class="fe fe-edit"></i>
+                                    </a>
+                                    <a href="/Users/Transfers/PreviewTransfer/${e.id}" class="btn btn-sm btn-outline-primary border me-2" data-bs-toggle="tooltip" data-bs-original-title="Preview Transfer">
+                                        <i class="fe fe-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>`;
                 }
             });
 
@@ -472,51 +474,50 @@
             var sData = '@Json.Serialize(Model.IncomingTransfers)';
             var Data = JSON.parse(sData);
             var sHtml = `<table id="tblTransfersIncoming" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
-                                                            <thead class="bg-primary-gradient ms-auto divShadow">
-                                                                <tr>
-                                                                    <th class="text-white bg-transparent border-bottom-0 w-5">#</th>
-                                                                    <th class="text-white bg-transparent border-bottom-0 w-10">Date</th>
-                                                                    <th class="text-white bg-transparent border-bottom-0 w-20">Store From</th>
-                                                                    <th class="text-white bg-transparent border-bottom-0 w-20">Store To</th>
-                                                                    <th class="text-white bg-transparent border-bottom-0 w-5">Assets</th>
-                                                                    <th class="text-white bg-transparent border-bottom-0 w-20">Status</th>
-                                                                    <th class="text-white bg-transparent border-bottom-0 w-20 no-btn">Action</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>`;
+                            <thead class="bg-primary-gradient ms-auto divShadow">
+                                <tr>
+                                    <th class="text-white bg-transparent border-bottom-0 w-5">#</th>
+                                    <th class="text-white bg-transparent border-bottom-0 w-10">Date</th>
+                                    <th class="text-white bg-transparent border-bottom-0 w-20">Store From</th>
+                                    <th class="text-white bg-transparent border-bottom-0 w-20">Store To</th>
+                                    <th class="text-white bg-transparent border-bottom-0 w-5">Assets</th>
+                                    <th class="text-white bg-transparent border-bottom-0 w-20">Status</th>
+                                    <th class="text-white bg-transparent border-bottom-0 w-20 no-btn">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
             var nCounter = 0;
             Data.forEach(function (e) {
                 nCounter++;
                 if (id > 0) {
                     if (e.transferStatusId == id) {
                         sHtml += `<tr>
-                                                                    <td>`+ nCounter + `</td>
-                                                                    <td>`+ formattedDate(e.transferDate) + `</td>
-                                                                    <td>`+ e.storeFrom + `</td>
-                                                                    <td>`+ e.storeTo + `</td>
-                                                                    <td>`+ e.numberOfAssets + `</td>
-                                                                    <td>`+ e.status + `</td>
-                                                                    <td>
-                                                                        <a href="/Users/Transfers/PreviewTransfer/` + e.id + `" class="btn btn-sm btn-outline-primary border me-2 ` + sDisabled + `" data-bs-toggle="tooltip" data-bs-original-title="Preview Transfer">
-                                                                            <i class="fe fe-eye"></i>
-                                                                        </a>
-                                                                    </td>
-                                                                </tr>`;
+                                        <td>${nCounter}</td>
+                                        <td>${formattedDate(e.transferDate)}</td>
+                                        <td>${e.storeFrom}</td>
+                                        <td>${e.storeTo}</td>
+                                        <td>${e.numberOfAssets}</td>
+                                        <td>${e.status}</td>
+                                        <a href="/Users/Transfers/PreviewTransfer/${e.id}" class="btn btn-sm btn-outline-primary border me-2 ` + sDisabled + `" data-bs-toggle="tooltip" data-bs-original-title="Preview Transfer">
+                                            <i class="fe fe-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>`;
                     }
                 } else {
                     sHtml += `<tr>
-                                                                <td>`+ nCounter + `</td>
-                                                                <td>`+ formattedDate(e.transferDate) + `</td>
-                                                                <td>`+ e.storeFrom + `</td>
-                                                                <td>`+ e.storeTo + `</td>
-                                                                <td>`+ e.numberOfAssets + `</td>
-                                                                <td>`+ e.status + `</td>
-                                                                <td>
-                                                                    <a href="/Users/Transfers/PreviewTransfer/` + e.id + `" class="btn btn-sm btn-outline-primary border me-2 ` + sDisabled + `" data-bs-toggle="tooltip" data-bs-original-title="Preview Transfer">
-                                                                        <i class="fe fe-eye"></i>
-                                                                    </a>
-                                                                </td>
-                                                            </tr>`;
+                                <td>${nCounter}</td>
+                                <td>${formattedDate(e.transferDate)}</td>
+                                <td>${e.storeFrom}</td>
+                                <td>${e.storeTo}</td>
+                                <td>${e.numberOfAssets}</td>
+                                <td>${e.status}</td>
+                                <td>
+                                   <a href="/Users/Transfers/PreviewTransfer/${e.id}" class="btn btn-sm btn-outline-primary border me-2 ` + sDisabled + `" data-bs-toggle="tooltip" data-bs-original-title="Preview Transfer">
+                                       <i class="fe fe-eye"></i>
+                                   </a>
+                                </td>
+                            </tr>`;
                 }
             });
 
