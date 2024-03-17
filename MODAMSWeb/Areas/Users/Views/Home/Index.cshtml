@@ -16,16 +16,16 @@
     .marquee {
         white-space: nowrap;
         position: absolute;
-        animation: marquee 50s linear infinite;
+        animation: marquee 20s linear infinite;
     }
 
     @@keyframes marquee {
         0% {
-            transform: translateX(100%);
+            margin-left: 100%;
         }
 
         100% {
-            transform: translateX(-100%);
+            margin-left: -100%;
         }
     }
 

@@ -179,7 +179,7 @@
                                         @{
                                             if (Model.Transfer.TransferStatusId == 1)
                                             {
-                                                            <button type="submit" class="btn btn-primary " id="btnSubmit"><i class="fa fa-check-circle"></i>&nbsp;Save Transfer</button>
+                                                            <button type="submit" class="btn btn-info-gradient " id="btnSubmit"><i class="fa fa-check-circle"></i>&nbsp;Save Transfer</button>
 
                                                             <button class="btn btn-secondary btn-secondary" data-bs-toggle="dropdown" aria-expanded="false">
                                                                 <i class="fe fe-trash"></i> Delete Transfer<i class="icon ion-ios-arrow-down text-12"></i>
@@ -198,7 +198,7 @@
                                             }
                                         }
 
-                                        <a asp-area="Users" asp-controller="Transfers" asp-action="PreviewTransfer" asp-route-id="@Model.Transfer.Id" class="btn btn-info">
+                                        <a asp-area="Users" asp-controller="Transfers" asp-action="PreviewTransfer" asp-route-id="@Model.Transfer.Id" class="btn btn-gray">
                                             <i class="fe fe-eye"></i>&nbsp;Preview Transfer
                                         </a>
                                     </div>

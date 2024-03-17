@@ -164,7 +164,7 @@
                                                             </table>
                                                         </div>
                                                         <br />
-                                                        <a asp-action="CreateTransfer" asp-controller="Transfers" id="btnCreate" class="btn btn-outline-primary pt-1"><i class="fe fe-plus-circle"></i>&nbsp;New Transfer</a>
+                                                        <a asp-action="CreateTransfer" asp-controller="Transfers" id="btnCreate" class="btn btn-outline-info pt-1"><i class="fe fe-plus-circle"></i>&nbsp;New Transfer</a>
                                                     </div>
                                                     <div class="col-4 col-sm-4">
                                                         <div class="card">
@@ -402,7 +402,7 @@
             var sData = '@Json.Serialize(Model.OutgoingTransfers)';
             var Data = JSON.parse(sData);
             var sHtml = `<table id="tblTransfers" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
-                            <thead class="bg-primary-gradient ms-auto divShadow">
+                            <thead class="bg-info-gradient ms-auto divShadow">
                                 <tr>
                                     <th class="text-white bg-transparent border-bottom-0 w-5">#</th>
                                     <th class="text-white bg-transparent border-bottom-0 w-10">Date</th>
@@ -474,7 +474,7 @@
             var sData = '@Json.Serialize(Model.IncomingTransfers)';
             var Data = JSON.parse(sData);
             var sHtml = `<table id="tblTransfersIncoming" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
-                            <thead class="bg-primary-gradient ms-auto divShadow">
+                            <thead class="bg-info-gradient ms-auto divShadow">
                                 <tr>
                                     <th class="text-white bg-transparent border-bottom-0 w-5">#</th>
                                     <th class="text-white bg-transparent border-bottom-0 w-10">Date</th>

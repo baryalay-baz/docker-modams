@@ -56,7 +56,7 @@ namespace MODAMS.DataAccess.Data
         public DbSet<vwTransfer> vwTransfers { get; set; }
         public DbSet<vwAsset> vwAssets { get; set; }
         public DbSet<vwTransferVoucher> vwTransferVouchers { get; set; }
-
+        public DbSet<vwDisposal> vwDisposals { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

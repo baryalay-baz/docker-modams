@@ -17,6 +17,7 @@
     <link href="https://kendo.cdn.telerik.com/2022.3.913/styles/kendo.common.min.css" rel="stylesheet" />
     <link href="https://kendo.cdn.telerik.com/2022.3.913/styles/kendo.blueopal.min.css" rel="stylesheet" />
 
+    <link rel="shortcut icon" type="image/x-icon" href="~/assets/images/brand/favicon.ico" />
     <!--If Kendo is used it should be added before the report viewer.-->
     <script src="/api/reports/resources/js/telerikReportViewer-18.0.24.305.min.js/"></script>
 
@@ -60,6 +61,11 @@
                 scale: 1.0,
                 enableAccessibility: true,
                 sendEmail: { enabled: false },
+                clientSettings: {
+                    messages: {
+                        noDataMessage: "No data found or no data available."
+                    }
+                },
                 ready: function () {
                     //this.refreshReport();
                 }
@@ -85,21 +91,29 @@
                 };
             } else if (reportId == "TransferVoucher") {
                 let transferId = '@Model.TransferId';
-                
+
                 params = {
                     TransferId: transferId
-                }
-            } else if (reportId == "TransferReport") { 
+                };
+            } else if (reportId == "TransferReport") {
                 let storeFromId = '@Model.StoreFromId';
                 let storeToId = '@Model.StoreToId';
                 let transferStatusId = '@Model.TransferStatusId';
 
                 params = {
-                    StoreFromId : storeFromId,
-                    StoreToId : storeToId,
-                    TransferStatusId : transferStatusId
-                }
+                    StoreFromId: storeFromId,
+                    StoreToId: storeToId,
+                    TransferStatusId: transferStatusId
+                };
 
+            } else if (reportId == "DisposalReport") { 
+                let disposalStoreId = '@Model.DisposalStoreId';
+                let disposalTypeId = '@Model.DisposalTypeId';
+
+                params = {
+                    StoreId: disposalStoreId,
+                    DisposalTypeId: disposalTypeId
+                };
             }
 
             params = Object.fromEntries(Object.entries(params).filter(([_, value]) => value > 0));

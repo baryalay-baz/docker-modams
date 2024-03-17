@@ -58,13 +58,53 @@ namespace MODAMS.Utility
                         report.DataSource = data;
                     }
                 }
+                else if (reportId == "DisposalReport.trdp")
+                {
+                    var data = GetDisposalReport(currentParameterValues).GetAwaiter().GetResult();
+                    if (data != null)
+                    {
+                        report.DataSource = data;
+                    }
+                }
             };
             return new InstanceReportSource
             {
                 ReportDocument = report
             };
         }
+        public async Task<List<vwDisposal>> GetDisposalReport(IDictionary<string, object> currentParameterValues)
+        {
+            IQueryable<vwDisposal> query = _db.vwDisposals.Select(m => new vwDisposal
+            {
+                Id = m.Id,
+                Cost = m.Cost,
+                DepartmentName = m.DepartmentName,
+                DisposalDate = m.DisposalDate,
+                DisposalTypeId = m.DisposalTypeId,
+                Identification = m.Identification,
+                Name = m.Name,
+                StoreId = m.StoreId,
+                SubCategoryName = m.SubCategoryName,
+                Type = m.Type
+            });
 
+
+            foreach (var parameter in currentParameterValues)
+            {
+                if (parameter.Key == "StoreId" && Convert.ToInt64(parameter.Value) > 0)
+                {
+                    query = query.Where(m => m.StoreId == Convert.ToInt64(parameter.Value));
+                }
+                else if (parameter.Key == "DisposalTypeId" && Convert.ToInt64(parameter.Value) > 0)
+                {
+                    query = query.Where(m => m.DisposalTypeId == Convert.ToInt64(parameter.Value));
+                }
+            }
+            var data = await query.ToListAsync();
+
+            return data;
+
+        }
         public async Task<List<vwTransferVoucher>> GetTransferReport(IDictionary<string, object> currentParameterValues)
         {
             IQueryable<vwTransferVoucher> query = _db.vwTransferVouchers.Select(tv => new vwTransferVoucher

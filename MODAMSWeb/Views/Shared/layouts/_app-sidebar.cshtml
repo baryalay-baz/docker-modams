@@ -1,3 +1,5 @@
+@inject MODAMS.Utility.IAMSFunc _func;
+
 <!--APP-SIDEBAR-->
 <div class="sticky">
     <div class="app-sidebar__overlay" data-bs-toggle="sidebar"></div>
@@ -36,19 +38,21 @@
                 @{
                     if (User.IsInRole("User"))
                     {
-                        <span>Store User</span>
+                        <div class="pb-3 text-info">Store User</div>
+                        <div>@_func.GetDepartmentName(_func.GetSupervisorId(_func.GetEmployeeId()))</div>
                     }
                     else if (User.IsInRole("StoreOwner"))
                     {
-                        <span>Store Owner</span>
+                        <div class="pb-3 text-info">Store Owner</div>
+                        <div>@_func.GetDepartmentName(_func.GetEmployeeId())</div>
                     }
                     else if (User.IsInRole("Administrator"))
                     {
-                        <span>System Administrator</span>
+                        <div class="pb-3 text-info">System Admin</div>
                     }
                     else
                     {
-                        <span>Senior Management</span>
+                        <div class="pb-3 text-info">Sr. Management</div>
                     }
                 }
             </div>

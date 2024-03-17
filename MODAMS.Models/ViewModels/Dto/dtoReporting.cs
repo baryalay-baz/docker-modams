@@ -55,5 +55,13 @@ namespace MODAMS.Models.ViewModels.Dto
         public int TransferStatusId { get; set; }
         [ValidateNever] public IEnumerable<SelectListItem> TransferStatuses { get; set; }
         [ValidateNever] public IEnumerable<SelectListItem> TransferStores { get; set; }
+
+        //Section for DisposalReport
+        [Display(Name ="Store")]
+        public int DisposalStoreId { get; set; }
+
+        [Display(Name = "Disposal Type")]
+        public int DisposalTypeId { get; set; }
+        [ValidateNever] public IEnumerable<SelectListItem> DisposalTypes { get; set; }
     }
 }

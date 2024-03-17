@@ -213,7 +213,7 @@
                                         {
                                             <form method="post" asp-action="SubmitForAcknowledgement" id="frmSubmitForAcknowledgement">
                                                 <input type="hidden" name="id" value="@Model.vwTransfer.Id" />
-                                                <button type="submit" class="btn btn-primary " id="btnSubmit">
+                                                <button type="submit" class="btn btn-info-gradient " id="btnSubmit">
                                                     <i class="fa fa-check-circle"></i><span class="loading">&nbsp;Submit for Acknowledgement</span>
                                                 </button>
                                             </form>
@@ -230,14 +230,14 @@
                                         {
                                             <form method="post" asp-action="AcknowledgeTransfer" id="frmAcknowledgeTransfer">
                                                 <input type="hidden" name="id" value="@Model.vwTransfer.Id" />
-                                                <button type="submit" class="btn btn-primary " id="btnSubmit">
+                                                <button type="submit" class="btn btn-info-gradient " id="btnSubmit">
                                                     <i class="fa fa-check-circle"></i>&nbsp;Acknowledge Transfer
                                                 </button>
                                             </form>
                                             @Html.Raw("&nbsp;&nbsp;")
                                             <form method="post" asp-action="RejectTransfer" id="frmRejectTransfer">
                                                 <input type="hidden" name="id" value="@Model.vwTransfer.Id" />
-                                                <button type="submit" class="btn btn-secondary">
+                                                <button type="submit" class="btn btn-secondary-gradient">
                                                     <i class="fa fa-close"></i>&nbsp;Reject Transfer
                                                 </button>
                                             </form>
@@ -259,7 +259,7 @@
                                 @{
                                     <form method="post" asp-action="PrintVoucher" id="frmPrintVoucher">
                                         <input type="hidden" name="id" value="@Model.vwTransfer.Id" />
-                                        <button type="submit" class="btn btn-info" id="btnSubmit">
+                                        <button type="submit" class="btn btn-gray" id="btnSubmit">
                                             <i class="fa fa-print"></i>&nbsp;<span class="loading">&nbsp;Print Voucher</span>
                                         </button>
                                     </form>

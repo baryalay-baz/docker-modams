@@ -258,7 +258,7 @@
                                             {
                                                 sDisabled = "disabled";
                                             }
-                                            <button type="button" class="btn btn-primary @sDisabled" id="btnSubmit">
+                                            <button type="button" class="btn btn-info-gradient @sDisabled" id="btnSubmit">
                                                 <i class="fa fa-check-circle"></i>&nbsp;Save Changes
                                             </button>
                                         }
@@ -283,14 +283,14 @@
                                         <div class="button-container">
                                             @if (Model.Disposal.ImageUrl == null)
                                             {
-                                                <button id="btnUpload-Image" class="btn btn-outline-primary btn-sm" onclick="return showImageLoader(event);"><i class="fe fe-upload"></i>&nbsp;Upload Picture</button>
+                                                <button id="btnUpload-Image" class="btn btn-outline-info btn-sm" onclick="return showImageLoader(event);"><i class="fe fe-upload"></i>&nbsp;Upload Picture</button>
                                             }
                                         </div>
 
                                         <div id="dvImageLoader" style="display:none;">
                                             <input asp-for="file" type="file" class="dropify" data-height="400" /><br />
                                             <center>
-                                                <button type="button" class="btn btn-primary btn-sm @sDisabled" id="btnSubmitPic">
+                                                <button type="button" class="btn btn-info btn-sm @sDisabled" id="btnSubmitPic">
                                                     <i class="fa fa-check-circle"></i>&nbsp;Save
                                                 </button>
                                                 <a href="#" class="btn btn-outline-secondary btn-sm" onclick="return cancelImageLoad(event);">Cancel</a>

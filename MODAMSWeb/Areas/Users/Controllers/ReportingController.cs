@@ -148,6 +148,14 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 Value = m.Id.ToString()
             });
 
+            //Populate Disposal= Report
+            var disposalTypes = await _db.DisposalTypes.ToListAsync();
+            dto.DisposalTypes = disposalTypes.ToList().Select(m => new SelectListItem
+            {
+                Text = m.Type,
+                Value = m.Id.ToString()
+            });
+
             return dto;
         }
         
