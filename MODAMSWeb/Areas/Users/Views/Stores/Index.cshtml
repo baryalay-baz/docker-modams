@@ -210,11 +210,7 @@
             });
 
             $('#btnReport').on("click", () => {
-                const storeId = $('#StoreId').val();
-                const assetStatusId = $('#AssetStatusId').val();
-                const categoryId = $('#CategoryId').val();
-                const url = `/Users/Reporting/AssetReport?StoreId=${storeId}&AssetStatusId=${assetStatusId}&CategoryId=${categoryId}`;
-                window.open(url, "_blank");
+                $('#frmAssetReport').submit();
             });
         });
     </script>

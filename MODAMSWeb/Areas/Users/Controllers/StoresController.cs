@@ -29,33 +29,9 @@ namespace MODAMSWeb.Areas.Users.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var stores = _db.vwStores.OrderByDescending(m => m.TotalCount).ToList();
-            var allStores = stores;
-
-            if (User.IsInRole("User"))
-            {
-                stores = stores.Where(m => m.EmployeeId == _supervisorEmployeeId).ToList();
-            }
-            else if (User.IsInRole("StoreOwner"))
-            {
-                stores = stores.Where(m => m.EmployeeId == _employeeId).ToList();
-                if (stores.Count > 0)
-                {
-                    vwStore store = stores.First();
-                    if (store != null)
-                    {
-                        int nDeptId = (int)store.DepartmentId;
-                        var storeFinder = new StoreFinder(nDeptId, allStores);
-                        stores = storeFinder.GetStores();
-                    }
-                }
-                else
-                {
-                    stores = new List<vwStore>();
-                }
-            }
+            var stores = await _func.GetStoresByEmployeeId(_employeeId);
 
             var storeEmployees = new List<vwStoreEmployee>();
 
@@ -65,7 +41,9 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 {
                     if (store.EmployeeId > 0)
                     {
-                        var empl = _db.vwEmployees.Where(m => m.Id == store.EmployeeId).FirstOrDefault();
+                        var empl = await _db.vwEmployees
+                            .FirstOrDefaultAsync(m => m.Id == store.EmployeeId);
+
                         if (empl != null)
                         {
                             vwStoreEmployee se = new vwStoreEmployee()
@@ -80,7 +58,10 @@ namespace MODAMSWeb.Areas.Users.Controllers
                             storeEmployees.Add(se);
 
                             //Add store users
-                            var storeUsers = _db.vwEmployees.Where(m => m.SupervisorEmployeeId == empl.Id && m.RoleName == "User").ToList();
+                            var storeUsers = await _db.vwEmployees
+                                .Where(m => m.SupervisorEmployeeId == empl.Id && m.RoleName == "User")
+                                .ToListAsync();
+
                             foreach (var user in storeUsers)
                             {
                                 vwStoreEmployee su = new vwStoreEmployee()

@@ -1,6 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using Microsoft.EntityFrameworkCore;
 using MODAMS.DataAccess.Data;
+using MODAMS.Models;
 using MODAMS.Models.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
@@ -13,9 +16,16 @@ namespace MODAMS.Utility
     {
         private string ReportsPath = "Reports";
         private ApplicationDbContext _db;
-        public CustomReportSourceResolver(ApplicationDbContext db)
+        private IAMSFunc _func;
+
+        private int _employeeId;
+        private int _supervisorEmployeeId;
+        public CustomReportSourceResolver(ApplicationDbContext db , IAMSFunc func)
         {
             _db = db;
+            _func = func;
+            _employeeId = _func.GetEmployeeId();
+            _supervisorEmployeeId = _func.GetSupervisorId(_employeeId);
         }
 
         public ReportSource Resolve(string reportId, OperationOrigin operationOrigin, IDictionary<string, object> currentParameterValues)
@@ -214,10 +224,12 @@ namespace MODAMS.Utility
                     ConditionName = asset.Condition.ConditionName
                 });
 
+            int storeId = 0;
             foreach (var parameter in currentParameterValues)
             {
                 if (parameter.Key == "StoreId" && parameter.Value != null)
                 {
+                    storeId = Convert.ToInt32(parameter.Value);
                     query = query.Where(asset => asset.StoreId == Convert.ToInt64(parameter.Value));
                 }
                 else if (parameter.Key == "AssetStatusId" && parameter.Value != null)
@@ -237,6 +249,14 @@ namespace MODAMS.Utility
                     query = query.Where(asset => asset.DonorId == Convert.ToInt64(parameter.Value));
                 }
                 // Add more conditions for other parameters if needed
+            }
+
+            if (storeId < 1)
+            {
+                var storeList = await _func.GetStoresByEmployeeId(_employeeId);
+
+                var storeIds = storeList.Select(s => s.Id).ToList();
+                query = query.Where(asset => storeIds.Contains(asset.StoreId));
             }
 
             var vwAssets = await query.ToListAsync();

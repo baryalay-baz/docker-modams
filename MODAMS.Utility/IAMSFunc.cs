@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using MODAMS.Models;
+using MODAMS.Models.ViewModels;
 using MODAMS.Models.ViewModels.Dto;
 
 namespace MODAMS.Utility
@@ -25,6 +26,7 @@ namespace MODAMS.Utility
         public int GetStoreIdByEmployeeId(int employeeId);
         public int GetStoreIdByDepartmentId(int departmentId);
         public string GetStoreNameByStoreId(int storeId);
+        public Task<List<vwStore>> GetStoresByEmployeeId(int employeeId);
         public int GetStoreOwnerId(int storeId);
         public string GetEmployeeNameById(int employeeId);
         public decimal GetDepreciatedCost(int nAssetId);

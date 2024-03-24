@@ -16,6 +16,8 @@ using Microsoft.Extensions.Hosting;
 using MODAMS.Models.ViewModels.Dto;
 using System.Security.Claims;
 using System.ComponentModel;
+using MODAMS.Models.ViewModels;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace MODAMS.Utility
 {
@@ -378,7 +380,6 @@ namespace MODAMS.Utility
 
             return emailMessage;
         }
-        
         public int GetStoreOwnerId(int storeId)
         {
             int departmentId = 0;
@@ -410,6 +411,38 @@ namespace MODAMS.Utility
                 }
             }
             return storeId;
+        }
+        public async Task<List<vwStore>> GetStoresByEmployeeId(int employeeId) { 
+            string sRoleName = GetRoleName(employeeId);
+            int supervisorEmployeeId = GetSupervisorId(employeeId);
+
+            var stores = await _db.vwStores.OrderByDescending(m => m.TotalCount).ToListAsync();
+            var allStores = stores;
+
+            if (sRoleName=="User")
+            {
+                stores = stores.Where(m => m.EmployeeId == supervisorEmployeeId).ToList();
+            }
+            else if (sRoleName == "StoreOwner")
+            {
+                stores = stores.Where(m => m.EmployeeId == employeeId).ToList();
+                if (stores.Count > 0)
+                {
+                    vwStore store = stores.First();
+                    if (store != null)
+                    {
+                        int nDeptId = (int)store.DepartmentId;
+                        var storeFinder = new StoreFinder(nDeptId, allStores);
+                        stores = storeFinder.GetStores();
+                    }
+                }
+                else
+                {
+                    stores = new List<vwStore>();
+                }
+            }
+
+            return stores;
         }
         public string GetEmployeeNameById(int employeeId)
         {

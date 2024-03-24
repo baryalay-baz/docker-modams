@@ -15,33 +15,45 @@
                 </div>
                 <center><h5>Asset Report</h5></center>
                 <hr class="customHR" />
-
-                <div class="form-group">
-                    <label asp-for="AssetStoreId" class="form-label"></label>
-                    <select asp-for="AssetStoreId" asp-items="@Model.AssetStores"
-                            class="form-control select2 form-select">
-                        <option value="0">All Stores</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label asp-for="AssetStatusId" class="form-label"></label>
-                    <select asp-for="AssetStatusId" asp-items="@Model.AssetStatuses"
-                            class="form-control select2 form-select">
-                        <option value="0">All Statuses</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label asp-for="CategoryId" class="form-label"></label>
-                    <select asp-for="CategoryId" asp-items="@Model.Categories"
-                            class="form-control select2 form-select">
-                        <option value="0">All Categories</option>
-                    </select>
-                </div>
+                <form method="post" target="_blank" asp-controller="Reporting" asp-action="ReportViewer" id="frmAssetReport">
+                    <input type="hidden" name="ReportId" id="ReportId" value="AssetReport" />
+                    <div class="form-group">
+                        <select asp-for="AssetStoreId" asp-items="@Model.AssetStores"
+                                class="form-control select2 form-select">
+                            <option value="0">All Stores</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select asp-for="AssetStatusId" asp-items="@Model.AssetStatuses"
+                                class="form-control select2 form-select">
+                            <option value="0">All Statuses</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select asp-for="CategoryId" asp-items="@Model.Categories"
+                                class="form-control select2 form-select">
+                            <option value="0">All Categories</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select asp-for="AssetConditionId" asp-items="@Model.Conditions"
+                                class="form-control select2 form-select">
+                            <option value="0">All Conditions</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select asp-for="DonorId" asp-items="@Model.Donors"
+                                class="form-control select2 form-select">
+                            <option value="0">All Donors</option>
+                        </select>
+                    </div>
+                </form>
             </div>
             <div class="modal-footer">
                 <button id="btnReport" class="btn btn-primary"><i class="fe fe-printer"></i>&nbsp;Generate Report</button>
                 <button class="btn btn-light" data-bs-dismiss="modal">Close</button>
             </div>
+            
         </div>
     </div>
 </div>
