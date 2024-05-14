@@ -39,9 +39,9 @@ namespace MODAMSWeb.Areas.Admin.Controllers
         }
 
         [Authorize(Roles = "StoreOwner, SeniorManagement, Administrator")]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var employees = _db.vwEmployees.ToList();
+            var employees = await _db.vwEmployees.ToListAsync();
 
             if (User.IsInRole(SD.Role_StoreOwner))
             {

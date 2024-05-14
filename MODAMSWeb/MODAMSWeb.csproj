@@ -14,6 +14,7 @@
     <Content Include="Reports\AssetReport.trdp">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
@@ -57,6 +58,18 @@
 
   <ItemGroup>
     <None Include="wwwroot\reports\AssetReport.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Reports\DisposalReport.trdp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\TransferReport.trdp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\TransferVoucher.trdp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

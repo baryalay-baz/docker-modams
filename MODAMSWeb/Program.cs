@@ -18,7 +18,6 @@ builder.Services.AddMvc();
 builder.Services.AddControllers().AddNewtonsoftJson();
 
 
-
 // Configure dependencies for ReportsController.
 
 builder.Services.TryAddScoped<IReportServiceConfiguration>(sp => new ReportServiceConfiguration

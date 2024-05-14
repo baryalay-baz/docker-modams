@@ -14,6 +14,7 @@ namespace MODAMS.Models.ViewModels.Dto
 
         [ValidateNever]
         public bool IsReceiver { get; set; }
+
         
         public vwTransfer vwTransfer = new vwTransfer();
         public List<dtoTransferAsset> transferAssets = new List<dtoTransferAsset>();

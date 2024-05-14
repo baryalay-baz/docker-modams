@@ -575,6 +575,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             transfer.TransferStatusId = SD.Transfer_Completed;
             transfer.ReceiverBarcode = _func.GetEmployeeName(nEmployeeId);
+            transfer.AcknowledgementDate = DateTime.Now;
 
             await _db.SaveChangesAsync();
 
@@ -621,6 +622,9 @@ namespace MODAMSWeb.Areas.Users.Controllers
             else
             {
                 transfer.TransferStatusId = SD.Transfer_Rejected;
+                transfer.AcknowledgementDate = DateTime.Now;
+                transfer.ReceiverBarcode = _func.GetEmployeeName(_employeeId);
+
                 await _db.SaveChangesAsync();
 
                 var ownerId = _func.GetStoreOwnerId(transfer.StoreFromId);

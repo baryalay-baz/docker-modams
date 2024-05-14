@@ -251,7 +251,7 @@ namespace MODAMS.Utility
                 // Add more conditions for other parameters if needed
             }
 
-            if (storeId < 1)
+            if (storeId == 0)
             {
                 var storeList = await _func.GetStoresByEmployeeId(_employeeId);
 

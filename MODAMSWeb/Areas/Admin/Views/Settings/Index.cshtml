@@ -24,10 +24,12 @@
         <div class="card ">
             <div class="card-body p-4">
                 <div class="d-flex align-items-center justify-content-between w-25">
+
                     <select asp-for="@Model.SelectedMonth" asp-items="@Model.Months" class="form-select">
                     </select>
                     <select asp-for="@Model.SelectedYear" asp-items="@Model.Years" class="form-select">
                     </select>
+
                 </div>
             </div>
         </div>
@@ -38,21 +40,21 @@
     <div class="col-md-12">
         <div aria-multiselectable="true" class="accordion-dark mb-2" id="accordion2" role="tablist">
             <div class="card mb-0 mt-2">
-                <div class="card-header border-bottom-0" id="headinig2" role="tab">
+                <div class="card-header border-bottom-0" id="heading2" role="tab">
                     <a class="accor-style2 collapsed" aria-controls="collapse2" aria-expanded="false" data-bs-toggle="collapse" href="#collapse2"><i class="fe fe-plus-circle me-2"></i>Login History</a>
                 </div>
-                <div aria-labelledby="headinig2" class="collapse" data-bs-parent="#accordion2" id="collapse2" role="tabpanel" style="">
+                <div aria-labelledby="heading2" class="collapse" data-bs-parent="#accordion2" id="collapse2" role="tabpanel" style="">
                     <div class="card-body">
                         <div class="table-responsive">
                             <table id="tblLoginHistory" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
-                                <thead class="table-head">
+                                <thead>
                                     <tr>
                                         <th class="bg-transparent border-bottom-0 w-5">S.No</th>
                                         <th class="bg-transparent border-bottom-0">Employee Name</th>
                                         <th class="bg-transparent border-bottom-0">Timestamp</th>
                                     </tr>
                                 </thead>
-                                <tbody class="table-body">
+                                <tbody>
                                     @{
                                         var nCounter = 0;
                                         var sCounter = "";
@@ -176,7 +178,12 @@
                                                 <td class="text-muted fs-15 fw-semibold">@asset.Year</td>
                                                 <td class="text-muted fs-15 fw-semibold">@sIdentification</td>
                                                 <td class="text-muted fs-15 fw-semibold">@asset.Store.Department.Name</td>
-                                                <td class="text-muted fs-15 fw-semibold"><a asp-area="Users" asp-action="RecoverAsset" asp-controller="Assets" asp-route-id="@asset.Id" class="btn btn-primary">Recover</a></td>
+                                                <td class="text-muted fs-15 fw-semibold">
+                                                    <a asp-area="Users" asp-action="RecoverAsset" asp-controller="Assets"
+                                                       asp-route-id="@asset.Id" class="btn btn-info-gradient">
+                                                        Recover
+                                                    </a>
+                                                </td>
                                             </tr>
                                         }
                                     }
@@ -190,20 +197,27 @@
         </div>
     </div>
 </div>
-@section scripts{
+@section scripts {
     <script>
         $(document).ready(() => {
             hideMenu();
-            makeDataTable($('#tblLoginHistory'));
-            makeDataTable($('#tblAuditLog'));
-            makeDataTable($('#tblDeletedAssets'));
+            //makeDataTable($('#tblLoginHistory'));
+            //makeDataTable($('#tblAuditLog'));
+            //makeDataTable($('#tblDeletedAssets'));
 
             $("#SelectedMonth").on("change", () => {
                 let sVal = $("#SelectedMonth").val();
-                window.location.href = "/Admin/Settings/Index?nMonth=" + sVal + "&nYear=2023";
+                let sYear = $("#SelectedYear").val();
+                window.location.href = "/Admin/Settings/Index?nMonth=" + sVal + "&nYear=" + sYear;
             });
 
-            $('.select2').select2();
+            $("#SelectedYear").on("change", () => {
+                let sVal = $("#SelectedMonth").val();
+                let sYear = $("#SelectedYear").val();
+                window.location.href = "/Admin/Settings/Index?nMonth=" + sVal + "&nYear=" + sYear;
+            });
+
+            //$('.select2').select2();
         })
     </script>
 }

@@ -1,4 +1,4 @@
-﻿@model List<MODAMS.Models.ViewModels.vwDepartments>
+﻿@model MODAMS.Models.ViewModels.Dto.dtoDepartments
 <div class="page-header">
     <div>
         <h1 class="page-title">Departments</h1>
@@ -33,7 +33,7 @@
     </div>
     <div class="col-md-12 mb-3">
         <div class="btn-list">
-            <a asp-area="Admin" asp-controller="Departments" asp-action="CreateDepartment" class="btn btn-primary">
+            <a asp-area="Admin" asp-controller="Departments" asp-action="CreateDepartment" class="btn btn-info-gradient trShadow">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-inner-icn text-white" enable-background="new 0 0 24 24" viewBox="0 0 24 24"><path d="M16,11.5h-3.5V8c0-0.276123-0.223877-0.5-0.5-0.5S11.5,7.723877,11.5,8v3.5H8c-0.276123,0-0.5,0.223877-0.5,0.5s0.223877,0.5,0.5,0.5h3.5v3.5005493C11.5001831,16.2765503,11.723999,16.5001831,12,16.5h0.0006104C12.2765503,16.4998169,12.5001831,16.276001,12.5,16v-3.5H16c0.276123,0,0.5-0.223877,0.5-0.5S16.276123,11.5,16,11.5z M12,2C6.4771729,2,2,6.4771729,2,12s4.4771729,10,10,10c5.5202026-0.0062866,9.9937134-4.4797974,10-10C22,6.4771729,17.5228271,2,12,2z M12,21c-4.9705811,0-9-4.0294189-9-9s4.0294189-9,9-9c4.9682617,0.0056152,8.9943848,4.0317383,9,9C21,16.9705811,16.9705811,21,12,21z" /></svg>
                 New Department
             </a>
@@ -42,14 +42,14 @@
     <div class="col-12 col-md-12">
         <div class="card">
             <div class="card-body project-list-table-container">
-                <div class="table-responsive">
+                <div class="col-10 table-responsive">
                     <table id="tblDepartments" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
                         <thead class="table-head">
                             <tr>
                                 <th class="bg-transparent border-bottom-0 w-5">S.No</th>
                                 <th class="bg-transparent border-bottom-0">Department Name</th>
-                                <th class="bg-transparent border-bottom-0">Parent Department</th>
-                                <th class="bg-transparent border-bottom-0">Owner</th>
+                                <th class="bg-transparent border-bottom-0">Department Owner</th>
+                                <th class="bg-transparent border-bottom-0">Department Users</th>
                                 <th class="bg-transparent border-bottom-0 no-btn">Action</th>
                             </tr>
                         </thead>
@@ -58,7 +58,7 @@
                                 var nCounter = 0;
                                 var sCounter = "";
 
-                                foreach (var department in Model)
+                                foreach (var department in Model.departments)
                                 {
                                     nCounter++;
                                     sCounter = (nCounter < 10) ? "0" + nCounter : nCounter.ToString();
@@ -66,7 +66,6 @@
                                     <tr>
                                         <td class="text-muted fs-15 fw-semibold text-center">@sCounter.</td>
                                         <td class="text-muted fs-15 fw-semibold">@department.Name</td>
-                                        <td class="text-muted fs-15 fw-semibold">@department.ULDeptName</td>
                                         <td class="text-muted fs-15 fw-semibold">
                                             @{
                                                 if (department.OwnerName != "Vacant")
@@ -89,6 +88,41 @@
                                                         <span class="mb-0 mt-1 badge rounded-pill bg-secondary-transparent text-danger">@department.OwnerName</span>
                                                     </span>
                                                 }
+                                            }
+                                        </td>
+                                        <td>
+                                            @{
+                                                <div class="avatar-list avatar-list-stacked">
+                                                    @{
+                                                        
+                                                        if (department.EmployeeId > 0)
+                                                        {
+                                                            var employees = Model.employees.Where(m => m.SupervisorEmployeeId == department.EmployeeId).ToList();
+                                                            if (employees.Count > 0)
+                                                            {
+                                                                foreach (var emp in employees)
+                                                                {
+                                                                    if (emp != null)
+                                                                    {
+                                                                        string sContent = $"{emp.JobTitle} <br /> {emp.Email}";
+
+                                                                        <a data-bs-container="body"
+                                                                           data-bs-content="@Html.Raw(sContent)"
+                                                                           data-bs-html="true"
+                                                                           data-bs-placement="right"
+                                                                           data-bs-popover-color="default"
+                                                                           data-bs-toggle="popover"
+                                                                           data-bs-original-title="@emp.FullName"
+                                                                           role="button" tabindex="0" data-bs-trigger="hover">
+                                                                            <span><img src="@emp.ImageUrl" alt="profile-user" class="avatar bradius cover-image"></span>
+                                                                        </a>
+                                                                    }
+                                                                }
+
+                                                            }
+                                                        }
+                                                    }
+                                                </div>
                                             }
                                         </td>
                                         <td>
@@ -133,12 +167,8 @@
     @*<script src="~/assets/js/project-list.js"></script>*@
     <script>
         $(document).ready(function () {
-            $('#tblDepartments').DataTable({
-                language: {
-                    searchPlaceholder: 'Search...',
-                    sSearch: '',
-                }
-            });
+            hideMenu();
+            makeDataTable("#tblDepartments","1");
 
         });
 

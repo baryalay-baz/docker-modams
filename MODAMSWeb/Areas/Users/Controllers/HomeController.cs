@@ -293,12 +293,18 @@ namespace MODAMSWeb.Areas.Users.Controllers
             return View();
         }
 
-        public IActionResult GlobalSearch(string barcode)
+        public async Task<IActionResult> GlobalSearch(string barcode)
         {
-            var asset = _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted && m.Barcode == barcode)
-                .Include(m => m.SubCategory).Include(m => m.SubCategory.Category)
-                .FirstOrDefault();
+            var transfer = await _db.Transfers.FirstOrDefaultAsync(m => m.TransferNumber == barcode);
+            if (transfer != null)
+            {
+                return RedirectToAction("PreviewTransfer", "Transfers", new { id = transfer.Id });
+            }
+
+            
+            var asset = await _func.AssetGlobalSearch(barcode.Trim());
             dtoGlobalSearch dto = new dtoGlobalSearch();
+
             if (asset != null)
             {
                 var assetPicture = _db.AssetPictures.Where(m => m.AssetId == asset.Id).FirstOrDefault();

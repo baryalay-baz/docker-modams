@@ -28,10 +28,17 @@ namespace MODAMSWeb.Areas.Admin.Controllers
             _employeeId = _func.GetEmployeeId();
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            List<vwDepartments> departments = _db.vwDepartments.OrderByDescending(m => m.EmployeeId).ToList();
-            return View(departments);
+            List<vwDepartments> depts = await _db.vwDepartments.OrderByDescending(m => m.EmployeeId).ToListAsync();
+            List<vwEmployees> empls = await _db.vwEmployees.ToListAsync();
+
+            var dto = new dtoDepartments() {
+                departments = depts,
+                employees = empls
+            };
+
+            return View(dto);
         }
 
         [HttpGet]
@@ -334,6 +341,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
                     departmentHead.IsActive = false;
                 }
                 await _db.SaveChangesAsync();
+
             }
 
             TempData["success"] = "Store Vacated Successfuly!";

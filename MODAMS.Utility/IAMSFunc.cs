@@ -40,7 +40,7 @@ namespace MODAMS.Utility
         public string GetAssetName(int assetId);
         public void RecordLogin(string userId);
         public int GetEmployeeIdByUserId(string userId);
-        
+        public Task<Asset> AssetGlobalSearch(string search);
 
     }
 }

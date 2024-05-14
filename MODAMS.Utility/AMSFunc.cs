@@ -562,7 +562,46 @@ namespace MODAMS.Utility
             _db.LoginHistory.Add(login);
             _db.SaveChanges();
         }
-        
+        public async Task<Asset> AssetGlobalSearch(string search)
+        {
+            var asset = await _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted && m.Barcode == search)
+                .Include(m => m.SubCategory).ThenInclude(m => m.Category)
+                .FirstOrDefaultAsync();
+
+            //Search by Serial Number
+            if (asset == null)
+            {
+                asset = await _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted && m.SerialNo == search)
+                .Include(m => m.SubCategory).ThenInclude(m => m.Category)
+                .FirstOrDefaultAsync();
+            }
+
+            //Search by Plate Number
+            if (asset == null)
+            {
+                asset = await _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted && m.Plate == search)
+                .Include(m => m.SubCategory).ThenInclude(m => m.Category)
+                .FirstOrDefaultAsync();
+            }
+
+            //Search by Engine Number
+            if (asset == null)
+            {
+                asset = await _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted && m.Engine == search)
+                .Include(m => m.SubCategory).ThenInclude(m => m.Category)
+                .FirstOrDefaultAsync();
+            }
+
+            //Search by Chasis Number
+            if (asset == null)
+            {
+                asset = await _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted && m.Chasis == search)
+                .Include(m => m.SubCategory).ThenInclude(m => m.Category)
+                .FirstOrDefaultAsync();
+            }
+
+            return asset;
+        }
         //Private methods
         private void Notify(int[] arrEmpIds, Notification notification)
         {

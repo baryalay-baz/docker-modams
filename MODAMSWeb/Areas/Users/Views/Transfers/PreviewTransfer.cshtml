@@ -2,6 +2,11 @@
 @using MODAMS.Utility
 
 <style>
+    .table-bordered tr {
+        height: 30px; /* Set the desired height */
+    }
+</style>
+<style>
     input[type="date"]::-webkit-calendar-picker-indicator {
         display: none;
     }
@@ -112,14 +117,20 @@
                                                     </tr>
                                                 </table>
                                                 <br /><br /><br /><br /><br />
-                                                <table class="w-75 table-bordered">
+                                                <table class="w-100 table-bordered">
                                                     <tr>
                                                         <td>Store From:&nbsp;<b>@Model.vwTransfer.StoreFrom</b></td>
                                                         <td>Store To:&nbsp;<b>@Model.vwTransfer.StoreTo</b></td>
                                                     </tr>
                                                     <tr>
                                                         <td>Assets:&nbsp;<b>@Model.vwTransfer.NumberOfAssets</b></td>
-                                                        <td>Status:&nbsp;<b>@Model.vwTransfer.Status</b></td>
+                                                        @{
+                                                            var sTransferStatus = Model.vwTransfer.Status;
+                                                            string sStatus =
+                                                            sTransferStatus == "Rejected" ? "<span class=\"text-danger\">" + sTransferStatus + "</span>" : "<span class=\"text-success\">" + sTransferStatus + "</span>";
+
+                                                        }
+                                                        <td>Status:&nbsp;<b>@Html.Raw(sStatus)</b></td>
                                                     </tr>
                                                 </table>
                                                 <table class="table table-bordered w-100">
@@ -181,11 +192,18 @@
                                                                 if (Model.vwTransfer.TransferStatusId > SD.Transfer_SubmittedForAcknowledgement)
                                                                 {
                                                                     <div class="barcode-container">
-                                                                        <div class="barcode-text">Received By</div>
-                                                                        <span style="font-family: Freestyle Script; font-size: 25pt;">
+                                                                        @{
+                                                                            string barcodeText = "Received By";
+                                                                            string sClass = "";
+                                                                            if (sTransferStatus == "Rejected")
+                                                                                sClass = "text-danger";
+                                                                        }
+
+                                                                        <div class="barcode-text @sClass">@barcodeText</div>
+                                                                        <span class="@sClass" style="font-family: Freestyle Script; font-size: 25pt;">
                                                                             @Model.vwTransfer.ReceiverBarcode
                                                                         </span>
-                                                                        <div class="barcode-text">@Model.vwTransfer.AcknowledgementDate?.ToString("D")</div>
+                                                                        <div class="barcode-text @sClass">@Model.vwTransfer.AcknowledgementDate?.ToString("D")</div>
                                                                     </div>
                                                                 }
                                                             }
@@ -260,7 +278,7 @@
                                     <form method="post" asp-action="PrintVoucher" id="frmPrintVoucher">
                                         <input type="hidden" name="id" value="@Model.vwTransfer.Id" />
                                         <button type="submit" class="btn btn-gray" id="btnSubmit">
-                                            <i class="fa fa-print"></i>&nbsp;<span class="loading">&nbsp;Print Voucher</span>
+                                            <i class="fa fa-print"></i>&nbsp;<span class="loading">&nbsp;Print Transfer Voucher</span>
                                         </button>
                                     </form>
                                 }
