@@ -201,9 +201,9 @@
     <script>
         $(document).ready(() => {
             hideMenu();
-            //makeDataTable($('#tblLoginHistory'));
-            //makeDataTable($('#tblAuditLog'));
-            //makeDataTable($('#tblDeletedAssets'));
+            makeDataTable('#tblLoginHistory','1');
+            makeDataTable('#tblAuditLog','1');
+            makeDataTable('#tblDeletedAssets','1');
 
             $("#SelectedMonth").on("change", () => {
                 let sVal = $("#SelectedMonth").val();

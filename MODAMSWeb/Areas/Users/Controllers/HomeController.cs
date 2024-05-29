@@ -62,7 +62,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
         }
 
         [HttpGet]
-        public IActionResult Profile(int? id)
+        public async Task<IActionResult> Profile(int? id)
         {
             if (id != null)
             {
@@ -70,7 +70,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             }
             var profile = new dtoProfileData();
 
-            var employeeInDb = _db.Employees.Where(m => m.Id == _employeeId).SingleOrDefault();
+            var employeeInDb = await _db.Employees.Where(m => m.Id == _employeeId).SingleOrDefaultAsync();
             if (employeeInDb != null)
             {
                 profile = new dtoProfileData()
@@ -81,7 +81,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     Email = employeeInDb.Email,
                     Phone = employeeInDb.Phone,
                     ImageUrl = employeeInDb.ImageUrl,
-                    Department = _func.GetDepartmentName(_employeeId),
+                    Department = await _func.GetDepartmentName(_employeeId),
                     RoleName = _func.GetRoleName(_employeeId),
                     SupervisorEmployeeId = employeeInDb.SupervisorEmployeeId,
                     SupervisorName = _func.GetSupervisorName(_employeeId),
@@ -110,7 +110,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 rec.CardNumber = form.CardNumber;
                 await _db.SaveChangesAsync();
 
-                _func.LogNewsFeed(_func.GetEmployeeName() + " updated his profile", "Users", "Home", "Profile", rec.Id);
+                _func.LogNewsFeed(await _func.GetEmployeeName() + " updated his profile", "Users", "Home", "Profile", rec.Id);
             }
             else
             {
@@ -210,7 +210,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     employee.ImageUrl = "/assets/images/faces/" + fileName;
                     await _db.SaveChangesAsync();
 
-                    _func.LogNewsFeed(_func.GetEmployeeName() + " uploaded a profile picture", "Users", "Home", "Profile", employee.Id);
+                    _func.LogNewsFeed(await _func.GetEmployeeName() + " uploaded a profile picture", "Users", "Home", "Profile", employee.Id);
                 }
             }
             catch (Exception ex)

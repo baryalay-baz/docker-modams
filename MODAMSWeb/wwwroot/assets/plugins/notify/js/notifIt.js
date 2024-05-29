@@ -14,6 +14,11 @@
     }
 }(this, function() {
 
+    // Function to convert camel case to space-separated string
+    function camelCaseToSpaces(str) {
+        return str.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/^./, function (str) { return str.toUpperCase(); });
+    }
+
 
     // Notification
     function notif(config) {
@@ -29,7 +34,7 @@
                     'id': 'ui_notifIt'
                 });
                 var p = $('<p>', {
-                    html: defaults.msg
+                    html: defaults.msg.toLowerCase()
                 });
                 div.append(p);
                 return div;

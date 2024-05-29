@@ -128,7 +128,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             if (User.IsInRole("StoreOwner") || User.IsInRole("User"))
             {
                 var allStores = _db.vwStores.ToList();
-                int DepartmentId = _func.GetDepartmentId(_employeeId);
+                int DepartmentId = await _func.GetDepartmentId(_employeeId);
                 var storeFinder = new StoreFinder(DepartmentId, allStores);
 
                 var stores = storeFinder.GetStores();
@@ -254,7 +254,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             if (User.IsInRole("StoreOwner") || User.IsInRole("User"))
             {
                 var allStores = _db.vwStores.ToList();
-                int DepartmentId = _func.GetDepartmentId(_employeeId);
+                int DepartmentId = await _func.GetDepartmentId(_employeeId);
                 var storeFinder = new StoreFinder(DepartmentId, allStores);
 
                 var stores = storeFinder.GetStores();

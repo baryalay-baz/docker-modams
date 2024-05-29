@@ -49,11 +49,11 @@
     .hover-effect {
         position: relative;
         left: 0;
-        transition: left 0.3s ease-in-out;
     }
 
         .hover-effect:hover {
             left: 10px;
+            
         }
 
     .pnlHeight {
@@ -279,7 +279,9 @@
                                                 <td class="text-muted fs-15 fw-semibold">
                                                     <a asp-action="AssetList" asp-controller="Assets"
                                                        asp-route-id="@sca.Id"
-                                                       class="text-muted hover-effect">@sca.CategoryName</a>
+                                                       class="text-muted hover-effect">
+                                                        @sca.CategoryName
+                                                    </a>
                                                 </td>
                                                 <td class="text-muted fs-15 fw-semibold">@sca.TotalAssets</td>
                                                 <td class="text-muted fs-15 fw-semibold text-end">@sca.TotalCost.ToString("N2")</td>
@@ -299,7 +301,6 @@
                                 }
 
                             </tbody>
-
                         </table>
                     </div>
                 </div>
@@ -405,7 +406,6 @@
                     isPaused = true;
                 }
             });
-
             marqueeContainer.addEventListener("mouseout", () => {
                 if (isPaused) {
                     marquee.style.animationPlayState = "running";

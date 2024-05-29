@@ -190,7 +190,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                         await _db.SaveChangesAsync();
 
                         //Log Newsfeed
-                        string employeeName = _func.GetEmployeeName();
+                        string employeeName = await _func.GetEmployeeName();
                         string assetName = newAsset.Name;
                         string storeName = _func.GetStoreNameByStoreId(newAsset.StoreId);
                         string message = $"{employeeName} registered a new asset ({assetName}) in {storeName}";
@@ -207,8 +207,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
                         await _db.AssetHistory.AddAsync(ah);
                         await _db.SaveChangesAsync();
 
-                        TempData["success"] = "Asset added successfuly!";
-                        return RedirectToAction("Index", "Assets", new { area = "Users", id = dto.StoreId });
+                        TempData["success"] = "Asset registered successfuly!";
+                        return RedirectToAction("EditAsset", "Assets", new { id = newAsset.Id });
                     }
                     catch (Exception ex)
                     {
@@ -347,7 +347,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
 
                     //Log Newsfeed
-                    string employeeName = _func.GetEmployeeName();
+                    string employeeName = await _func.GetEmployeeName();
                     string assetName = assetInDb.Name;
                     string storeName = _func.GetStoreNameByStoreId(assetInDb.StoreId);
                     string message = $"{employeeName} modified an asset ({assetName}) in {storeName}";
@@ -443,7 +443,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     await _db.SaveChangesAsync();
 
                     //Log News feed
-                    string employeeName = _func.GetEmployeeName();
+                    string employeeName = await _func.GetEmployeeName();
                     string assetName = _func.GetAssetName(Id);
                     string storeName = _func.GetStoreNameByStoreId(_func.GetStoreIdByAssetId(Id));
                     string message = $"{employeeName} uploaded {sFileName} for ({assetName}) in {storeName}";
@@ -566,6 +566,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 TempData["assetInfo"] = asset.Name + " - " + asset.Model + " - " + asset.Year;
             }
 
+            
+
             TempData["storeId"] = storeId;
             TempData["storeName"] = storeName;
             TempData["assetId"] = id;
@@ -600,7 +602,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     await _db.SaveChangesAsync();
 
                     //Log NewsFeed
-                    string employeeName = _func.GetEmployeeName();
+                    string employeeName = await _func.GetEmployeeName();
                     string assetName = _func.GetAssetName(AssetId);
                     string storeName = _func.GetStoreNameByStoreId(_func.GetStoreIdByAssetId(AssetId));
                     string message = $"{employeeName} uploaded a picture for ({assetName}) in {storeName}";
@@ -686,14 +688,14 @@ namespace MODAMSWeb.Areas.Users.Controllers
             else
             {
                 assetInDb.AssetStatusId = 4;
-                assetInDb.Remarks = $"Asset Deleted by {_func.GetEmployeeName()}";
+                assetInDb.Remarks = $"Asset Deleted by {await _func.GetEmployeeName()}";
             }
             await _db.SaveChangesAsync();
 
             var assetHistory = new AssetHistory()
             {
                 AssetId = id,
-                Description = $"Asset Deleted by {_func.GetEmployeeName()}",
+                Description = $"Asset Deleted by {await _func.GetEmployeeName()}",
                 TimeStamp = DateTime.Now,
                 TransactionRecordId = id,
                 TransactionTypeId = SD.Transaction_Delete
@@ -725,14 +727,14 @@ namespace MODAMSWeb.Areas.Users.Controllers
             else
             {
                 assetInDb.AssetStatusId = 1;
-                assetInDb.Remarks = $"Asset Recovered by {_func.GetEmployeeName()}";
+                assetInDb.Remarks = $"Asset Recovered by {await _func.GetEmployeeName()}";
             }
             await _db.SaveChangesAsync();
 
             var assetHistory = new AssetHistory()
             {
                 AssetId = id,
-                Description = $"Asset Recovered by {_func.GetEmployeeName()}",
+                Description = $"Asset Recovered by {await _func.GetEmployeeName()}",
                 TimeStamp = DateTime.Now,
                 TransactionRecordId = id,
                 TransactionTypeId = SD.Transaction_Recover
@@ -849,6 +851,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 vwAssetDocs.Add(vwDocType);
             }
             dto.vwAssetDocuments = vwAssetDocs;
+            dto.AssetId = AssetId;
 
             return dto;
         }

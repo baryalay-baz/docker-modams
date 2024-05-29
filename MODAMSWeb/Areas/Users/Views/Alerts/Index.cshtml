@@ -125,7 +125,7 @@
                     window.location.href = '/Users/Alerts/Index?departmentId=' + $("#DepartmentId").val();
                 });
 
-                makeDataTable($('#tblAlerts'));
+                makeDataTable('#tblAlerts', '1');
             });
 
             const pieChartAlerts = () => {
@@ -188,7 +188,6 @@
                         data: counts,
                         backgroundColor: getRandomColor(), // You can define a function to generate random colors
                     });
-                    console.log(dataset);
 
                 });
 

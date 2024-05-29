@@ -76,10 +76,10 @@
                                                 <option value="0">All Donors</option>
                                             </select>
                                         </div>
-                                        <div class="form-group flex text-center">
-                                            <button class="btn btn-primary" id="btnSubmitAssetReport"><i class="fa fa-print"></i>&nbsp;Generate Report</button>
-                                        </div>
                                     </form>
+                                    <div class="form-group flex text-center">
+                                        <button class="btn btn-primary" id="btnSubmitAssetReport" onclick="return submitForm(event, 'frmAssetReport');"><i class="fa fa-print"></i>&nbsp;Generate Report</button>
+                                    </div>
                                 </div>
                             </div>
 
@@ -127,10 +127,10 @@
                                                 <option value="0">All Statuses</option>
                                             </select>
                                         </div>
-                                        <div class="form-group flex text-center">
-                                            <button class="btn btn-secondary" id="btnSubmitTransferReport"><i class="fa fa-print"></i>&nbsp;Generate Report</button>
-                                        </div>
                                     </form>
+                                    <div class="form-group flex text-center">
+                                        <button class="btn btn-secondary" id="btnSubmitTransferReport" onclick="return submitForm(event, 'frmTransferReport');"><i class="fa fa-print"></i>&nbsp;Generate Report</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -173,7 +173,9 @@
                                             </select>
                                         </div>
                                         <div class="form-group flex text-center">
-                                            <button class="btn btn-info" id="btnSubmitDisposalReport"><i class="fa fa-print"></i>&nbsp;Generate Report</button>
+                                            <button onclick="return submitForm(event, 'frmDisposalReport');" 
+                                            class="btn btn-info" id="btnSubmitDisposalReport">
+                                            <i class="fa fa-print"></i>&nbsp;Generate Report</button>
                                         </div>
                                     </form>
                                 </div>
@@ -189,9 +191,30 @@
         <script>
             $(document).ready(() => {
                 $('.select2').select2();
-                
+
                 resizeCards();
             });
+
+            const submitForm = (event, form) => {
+                event.preventDefault();
+                // Get the screen's available width and height
+                var width = screen.availWidth;
+                var height = screen.availHeight;
+
+                // Open a new window without window controls and set it to the available screen size
+                var newWindow = window.open("", "PrintWindow", `addressbar=no,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,directories=no,status=no,width=${width},height=${height}`);
+
+                // Move the new window to the top left corner of the screen
+                newWindow.moveTo(0, 0);
+
+                // Set the form's target to the new window
+                form = $('#' + form);
+                form.attr('target', 'PrintWindow');
+
+                // Submit the form
+                form.submit();
+
+            }
 
             const resizeCards = () => {
                 var firstCardHeight = $('.col-md-3:first-child .card').outerHeight();

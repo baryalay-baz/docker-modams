@@ -48,8 +48,8 @@
                             <tr>
                                 <th class="bg-transparent border-bottom-0 w-5">S.No</th>
                                 <th class="bg-transparent border-bottom-0">Department Name</th>
-                                <th class="bg-transparent border-bottom-0">Department Owner</th>
-                                <th class="bg-transparent border-bottom-0">Department Users</th>
+                                <th class="bg-transparent border-bottom-0">Store Owner</th>
+                                <th class="bg-transparent border-bottom-0">Store Users</th>
                                 <th class="bg-transparent border-bottom-0 no-btn">Action</th>
                             </tr>
                         </thead>
@@ -91,39 +91,35 @@
                                             }
                                         </td>
                                         <td>
-                                            @{
-                                                <div class="avatar-list avatar-list-stacked">
-                                                    @{
-                                                        
-                                                        if (department.EmployeeId > 0)
+                                            <div class="avatar-list avatar-list-stacked">
+                                                @{
+                                                    if (department.EmployeeId > 0)
+                                                    {
+                                                        var employees = Model.employees.Where(m => m.SupervisorEmployeeId == department.EmployeeId).ToList();
+                                                        if (employees.Count > 0)
                                                         {
-                                                            var employees = Model.employees.Where(m => m.SupervisorEmployeeId == department.EmployeeId).ToList();
-                                                            if (employees.Count > 0)
+                                                            foreach (var emp in employees)
                                                             {
-                                                                foreach (var emp in employees)
+                                                                if (emp != null)
                                                                 {
-                                                                    if (emp != null)
-                                                                    {
-                                                                        string sContent = $"{emp.JobTitle} <br /> {emp.Email}";
+                                                                    string sContent = $"{emp.JobTitle} <br /> {emp.Email}";
 
-                                                                        <a data-bs-container="body"
-                                                                           data-bs-content="@Html.Raw(sContent)"
-                                                                           data-bs-html="true"
-                                                                           data-bs-placement="right"
-                                                                           data-bs-popover-color="default"
-                                                                           data-bs-toggle="popover"
-                                                                           data-bs-original-title="@emp.FullName"
-                                                                           role="button" tabindex="0" data-bs-trigger="hover">
-                                                                            <span><img src="@emp.ImageUrl" alt="profile-user" class="avatar bradius cover-image"></span>
-                                                                        </a>
-                                                                    }
+                                                                    <a data-bs-container="body"
+                                                                       data-bs-content="@Html.Raw(sContent)"
+                                                                       data-bs-html="true"
+                                                                       data-bs-placement="right"
+                                                                       data-bs-popover-color="default"
+                                                                       data-bs-toggle="popover"
+                                                                       data-bs-original-title="@emp.FullName"
+                                                                       role="button" tabindex="0" data-bs-trigger="hover">
+                                                                        <span><img src="@emp.ImageUrl" alt="profile-user" class="avatar bradius cover-image"></span>
+                                                                    </a>
                                                                 }
-
                                                             }
                                                         }
                                                     }
-                                                </div>
-                                            }
+                                                }
+                                            </div>
                                         </td>
                                         <td>
                                             @{
@@ -168,7 +164,7 @@
     <script>
         $(document).ready(function () {
             hideMenu();
-            makeDataTable("#tblDepartments","1");
+            makeDataTable("#tblDepartments", "1");
 
         });
 

@@ -99,7 +99,7 @@ namespace MODAMSWeb.Areas.Identity.Pages.Account
                     if (user != null)
                     {
                         var userId = user.Id;
-                        _func.RecordLogin(userId);
+                        await _func.RecordLogin(userId);
                     }
 
                     return LocalRedirect(returnUrl);

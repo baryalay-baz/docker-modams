@@ -8,7 +8,7 @@
 </style>
 <div class="page-header">
     <div>
-        <h1 class="page-title">Asset Information</h1>
+        <h1 class="page-title">Asset Pictures</h1>
     </div>
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
@@ -21,21 +21,22 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-md-12">
-        <div class="card divShadow">
-            <div class="card-body p-4">
-                <div class="d-flex align-items-center justify-content-between">
-                    <h4 class="m-0">@TempData["assetInfo"]</h4>
-                    <div class="d-sm-flex align-items-center">
-                        <div class="btn-list mx-4">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
     <div class="col-sm-12 col-md-12 col-xl-12">
         <div class="card">
+            <div class="card-header border-bottom bg-info-gradient divShadow d-flex justify-content-between align-items-center">
+                <h4 class="m-0 text-muted text-white">@TempData["assetInfo"]</h4>
+                <div class="btn-group">
+                    <a asp-action="EditAsset" asp-controller="Assets" asp-route-id="@TempData["assetId"]" class="btn btn-outline-info" data-bs-toggle="tooltip" data-bs-original-title="Edit Asset">
+                        <i class="fa fa-edit"></i>
+                    </a>
+                    <a asp-action="AssetDocuments" asp-controller="Assets" asp-route-id="@TempData["assetId"]" class="btn btn-outline-warning" data-bs-toggle="tooltip" data-bs-original-title="Asset Documents">
+                        <i class="fa fa-folder"></i>
+                    </a>
+                    <a asp-action="AssetPictures" asp-controller="Assets" asp-route-id="@TempData["assetId"]" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-original-title="Asset Pictures">
+                        <i class="fa fa-image"></i>
+                    </a>
+                </div>
+            </div>
             <div class="card-body">
                 <form method="post" asp-action="UploadPicture" enctype="multipart/form-data">
                     <input type="hidden" id="AssetId" name="AssetId" value="@TempData["assetId"]" />

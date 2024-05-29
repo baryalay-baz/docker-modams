@@ -177,13 +177,13 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 AssetId = disposal.AssetId,
                 TransactionRecordId = disposal.AssetId,
                 TransactionTypeId = SD.Transaction_Disposal,
-                Description = "Asset disposed by " + _func.GetEmployeeName(_employeeId)
+                Description = "Asset disposed by " + await _func.GetEmployeeName(_employeeId)
             };
             _db.AssetHistory.Add(assetHistory);
             await _db.SaveChangesAsync();
 
             //Log NewsFeed
-            string employeeName = _func.GetEmployeeName();
+            string employeeName = await _func.GetEmployeeName();
             string assetName = _func.GetAssetName(disposal.AssetId);
             string storeName = _func.GetStoreNameByStoreId(_func.GetStoreIdByAssetId(disposal.AssetId));
             string message = $"{employeeName} dipsosed an asset ({assetName}) in {storeName}";
@@ -332,7 +332,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     AssetId = prevAssetId,
                     TransactionRecordId = prevAssetId,
                     TransactionTypeId = SD.Transaction_Disposal,
-                    Description = "Asset un-disposed by " + _func.GetEmployeeName(_employeeId)
+                    Description = "Asset un-disposed by " + await _func.GetEmployeeName(_employeeId)
                 };
                 _db.AssetHistory.Add(assetHistory);
 
@@ -343,7 +343,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     AssetId = disposal.AssetId,
                     TransactionRecordId = disposal.AssetId,
                     TransactionTypeId = SD.Transaction_Disposal,
-                    Description = "Asset disposed by " + _func.GetEmployeeName(_employeeId)
+                    Description = "Asset disposed by " + await _func.GetEmployeeName(_employeeId)
                 };
                 _db.AssetHistory.Add(newAssetHistory);
                 _db.SaveChanges();
@@ -358,7 +358,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             }
 
             //Log NewsFeed
-            string employeeName = _func.GetEmployeeName();
+            string employeeName = await _func.GetEmployeeName();
             string assetName = _func.GetAssetName(disposal.AssetId);
             string storeName = _func.GetStoreNameByStoreId(_func.GetStoreIdByAssetId(disposal.AssetId));
             string message = $"{employeeName} modified disposal record for an asset ({assetName}) in {storeName}";

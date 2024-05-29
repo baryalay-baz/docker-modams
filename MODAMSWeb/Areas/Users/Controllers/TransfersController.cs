@@ -56,7 +56,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
                     if (sl.Count > 0)
                     {
-                        int firstStoreId = sl.Select(m => m.StoreFromId).First();
+                        int firstStoreId = sl.Select(m => m.StoreFromId).FirstOrDefault();
                         var storeList = sl.Select(m => new SelectListItem
                         {
                             Text = m.StoreFrom,
@@ -128,7 +128,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             List<dtoTransferAsset> transferAssets = new List<dtoTransferAsset>();
 
 
-            TempData["storeFrom"] = _func.GetDepartmentName(_employeeId);
+            TempData["storeFrom"] = await _func.GetDepartmentName(_employeeId);
             
 
             if (assets.Count > 0)
@@ -161,7 +161,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 Text = m.Name,
                 Value = m.Id.ToString(),
             });
-            dto.Transfer.TransferNumber = GetTransferNumber(currentStoreId);
+            dto.Transfer.TransferNumber = await GetTransferNumber(currentStoreId);
             dto.StoreList = storeList;
 
             return View(dto);
@@ -233,7 +233,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             }
 
             //Log NewsFeed
-            string employeeName = _func.GetEmployeeName();
+            string employeeName = await _func.GetEmployeeName();
             string assetName = assetNamesForLog;
             string storefrom = _func.GetStoreNameByStoreId(prevStoreId);
             string storeTo = _func.GetStoreNameByStoreId(transfer.StoreId);
@@ -251,7 +251,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
         public async Task<IActionResult> EditTransfer(int id)
         {
             _employeeId = (User.IsInRole("User")) ? _func.GetSupervisorId(_employeeId) : _employeeId;
-            TempData["storeFrom"] = _func.GetDepartmentName(_employeeId);
+            TempData["storeFrom"] = await _func.GetDepartmentName(_employeeId);
 
             var transfer = await _db.Transfers.FirstOrDefaultAsync(m => m.Id == id);
             if (transfer == null)
@@ -484,7 +484,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             {
                 int nEmployeeId = _func.GetEmployeeId();
                 transfer.TransferStatusId = SD.Transfer_SubmittedForAcknowledgement;
-                transfer.SenderBarcode = _func.GetEmployeeName(nEmployeeId);
+                transfer.SenderBarcode = await _func.GetEmployeeName(nEmployeeId);
 
                 await _db.SaveChangesAsync();
 
@@ -501,12 +501,12 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     TargetRecordId = transfer.Id,
                     NotificationSectionId = SD.NS_Transfer
                 };
-                int departmentId = _func.GetDepartmentId(notification.EmployeeTo);
+                int departmentId = await _func.GetDepartmentId(notification.EmployeeTo);
 
                 _func.NotifyDepartment(departmentId, notification);
 
                 //Log NewsFeed
-                string employeeName = _func.GetEmployeeName();
+                string employeeName = await _func.GetEmployeeName();
                 string message = $"{employeeName} submitted the transfer ({transfer.TransferNumber}) for acknowledgement";
                 _func.LogNewsFeed(message, "Users", "Transfers", "PreviewTransfer", transfer.Id);
 
@@ -574,7 +574,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             int nEmployeeId = _func.GetEmployeeId();
 
             transfer.TransferStatusId = SD.Transfer_Completed;
-            transfer.ReceiverBarcode = _func.GetEmployeeName(nEmployeeId);
+            transfer.ReceiverBarcode = await _func.GetEmployeeName(nEmployeeId);
             transfer.AcknowledgementDate = DateTime.Now;
 
             await _db.SaveChangesAsync();
@@ -594,7 +594,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 NotificationSectionId = SD.NS_Transfer
             };
 
-            var departmentId = _func.GetDepartmentId(notification.EmployeeTo);
+            var departmentId = await _func.GetDepartmentId(notification.EmployeeTo);
             _func.NotifyDepartment(departmentId, notification);
 
 
@@ -623,7 +623,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             {
                 transfer.TransferStatusId = SD.Transfer_Rejected;
                 transfer.AcknowledgementDate = DateTime.Now;
-                transfer.ReceiverBarcode = _func.GetEmployeeName(_employeeId);
+                transfer.ReceiverBarcode = await _func.GetEmployeeName(_employeeId);
 
                 await _db.SaveChangesAsync();
 
@@ -642,7 +642,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     NotificationSectionId = SD.NS_Transfer
                 };
 
-                var departmentId = _func.GetDepartmentId(notification.EmployeeTo);
+                var departmentId = await _func.GetDepartmentId(notification.EmployeeTo);
                 _func.NotifyDepartment(departmentId, notification);
 
                 //Log NewsFeed
@@ -819,11 +819,11 @@ namespace MODAMSWeb.Areas.Users.Controllers
             }
             return blnResult;
         }
-        private string GetTransferNumber(int currentStoreId)
+        private async Task<string> GetTransferNumber(int currentStoreId)
         {
             string sResult = "";
 
-            var transfers = _db.Transfers.Where(m => m.EmployeeId == _employeeId).ToList();
+            var transfers = await _db.Transfers.Where(m => m.EmployeeId == _employeeId).ToListAsync();
             var maxIdTransfer = transfers.OrderByDescending(m => m.Id).FirstOrDefault();
 
             int maxId = 0;
@@ -885,9 +885,9 @@ namespace MODAMSWeb.Areas.Users.Controllers
         }
         private async Task<int> GetCurrentStoreId()
         {
-            int currentStoreId = await _db.Stores.Where(m => m.DepartmentId == _func.GetDepartmentId(_employeeId))
-                .Select(m => m.Id).FirstOrDefaultAsync();
-            return currentStoreId;
+            int departmentId = await _func.GetDepartmentId(_employeeId);
+            return _func.GetStoreIdByDepartmentId(departmentId);
+
         }
 
         private async Task<decimal> GetTotalTransferValue(int storeId)

@@ -27,9 +27,18 @@
                     }
                     else
                     {
-                        <select asp-for="StoreId" asp-items="@Model.StoreList"
-                                class="form-control select2 form-select">
-                        </select>
+                        if (Model.StoreList.Any())
+                        {
+                            <select asp-for="StoreId" asp-items="@Model.StoreList"
+                                    class="form-control select2 form-select">
+                            </select>
+                        }
+                        else
+                        {
+                            <select class="form-control select2 form-select">
+                                <option disabled>-No Transfers Available-</option>
+                            </select>
+                        }
                     }
                 }
                 <div class="row">

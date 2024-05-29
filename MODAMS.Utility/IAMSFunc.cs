@@ -8,20 +8,20 @@ namespace MODAMS.Utility
     public interface IAMSFunc
     {
         public int GetEmployeeId();
-        public int GetEmployeeIdByEmail(string email);
-        public string GetEmployeeName();
-        public string GetEmployeeName(int nEmloyeeId);
+        public Task<int> GetEmployeeIdByEmail(string email);
+        public Task<string> GetEmployeeName();
+        public Task<string> GetEmployeeName(int nEmloyeeId);
         public string GetEmployeeEmail();
-        public int GetDepartmentId(int nEmployeeId);
+        public Task<int> GetDepartmentId(int nEmployeeId);
         public int GetDepartmentHead(int nDepartmentId);
         public List<Employee> GetDepartmentMembers(int nDepartmentId);
-        public string GetDepartmentName(int nEmployeeId);
+        public Task<string> GetDepartmentName(int nEmployeeId);
         public string GetDepartmentNameById(int nDepartmentId);
         public string GetRoleName(int nEmployeeId);
         public int GetSupervisorId(int nEmployeeId);
         public string GetSupervisorName(int nEmployeeId);
         public bool IsUserActive(string emailAddress);
-        public dtoRedirection GetRedirectionObject();
+        public Task<dtoRedirection> GetRedirectionObject();
         public int GetStoreIdByAssetId(int assetId);
         public int GetStoreIdByEmployeeId(int employeeId);
         public int GetStoreIdByDepartmentId(int departmentId);
@@ -38,8 +38,8 @@ namespace MODAMS.Utility
         public string GetStoreOwnerInfo(int storeId);
         public void LogNewsFeed(string description, string area, string controller, string action, int sourceRecordId);
         public string GetAssetName(int assetId);
-        public void RecordLogin(string userId);
-        public int GetEmployeeIdByUserId(string userId);
+        public Task RecordLogin(string userId);
+        public Task<int> GetEmployeeIdByUserId(string userId);
         public Task<Asset> AssetGlobalSearch(string search);
 
     }

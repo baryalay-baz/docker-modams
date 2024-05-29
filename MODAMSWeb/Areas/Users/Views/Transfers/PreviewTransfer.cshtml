@@ -154,15 +154,15 @@
                                                             {
                                                                 nCounter++;
                                                                 sCounter = (nCounter < 10) ? "0" + nCounter.ToString() + "." : nCounter.ToString() + ".";
-                                                                <tr>
-                                                                    <td>@sCounter</td>
-                                                                    <td>@asset.SubCategory</td>
-                                                                    <td>@asset.Make</td>
-                                                                    <td>@asset.Model</td>
-                                                                    <td>@asset.AssetName</td>
-                                                                    <td>@asset.SerialNumber</td>
-                                                                    <td>@asset.Condition</td>
-                                                                </tr>
+                                                                    <tr>
+                                                                        <td>@sCounter</td>
+                                                                        <td>@asset.SubCategory</td>
+                                                                        <td>@asset.Make</td>
+                                                                        <td>@asset.Model</td>
+                                                                        <td>@asset.AssetName</td>
+                                                                        <td>@asset.SerialNumber</td>
+                                                                        <td>@asset.Condition</td>
+                                                                    </tr>
                                                             }
                                                         }
 
@@ -175,15 +175,15 @@
                                                             @{
                                                                 if (Model.vwTransfer.TransferStatusId > SD.Transfer_Pending)
                                                                 {
-                                                                    <div class="barcode-container">
-                                                                        <div class="barcode-text">Transfer By</div>
-                                                                        <span style="font-family: Freestyle Script; font-size: 25pt;">
-                                                                            @Model.vwTransfer.SenderBarcode
-                                                                        </span>
-                                                                        <div class="barcode-text">
-                                                                            @Model.vwTransfer.SubmissionforAcknowledgementDate?.ToString("D")
+                                                                        <div class="barcode-container">
+                                                                            <div class="barcode-text">Transfer By</div>
+                                                                            <span style="font-family: Freestyle Script; font-size: 25pt;">
+                                                                                @Model.vwTransfer.SenderBarcode
+                                                                            </span>
+                                                                            <div class="barcode-text">
+                                                                                @Model.vwTransfer.SubmissionforAcknowledgementDate?.ToString("D")
+                                                                            </div>
                                                                         </div>
-                                                                    </div>
                                                                 }
                                                             }
                                                         </div>
@@ -191,20 +191,20 @@
                                                             @{
                                                                 if (Model.vwTransfer.TransferStatusId > SD.Transfer_SubmittedForAcknowledgement)
                                                                 {
-                                                                    <div class="barcode-container">
-                                                                        @{
+                                                                        <div class="barcode-container">
+                                                                            @{
                                                                             string barcodeText = "Received By";
                                                                             string sClass = "";
                                                                             if (sTransferStatus == "Rejected")
                                                                                 sClass = "text-danger";
-                                                                        }
+                                                                            }
 
-                                                                        <div class="barcode-text @sClass">@barcodeText</div>
-                                                                        <span class="@sClass" style="font-family: Freestyle Script; font-size: 25pt;">
-                                                                            @Model.vwTransfer.ReceiverBarcode
-                                                                        </span>
-                                                                        <div class="barcode-text @sClass">@Model.vwTransfer.AcknowledgementDate?.ToString("D")</div>
-                                                                    </div>
+                                                                            <div class="barcode-text @sClass">@barcodeText</div>
+                                                                            <span class="@sClass" style="font-family: Freestyle Script; font-size: 25pt;">
+                                                                                @Model.vwTransfer.ReceiverBarcode
+                                                                            </span>
+                                                                            <div class="barcode-text @sClass">@Model.vwTransfer.AcknowledgementDate?.ToString("D")</div>
+                                                                        </div>
                                                                 }
                                                             }
                                                         </div>
@@ -229,16 +229,16 @@
                                     {
                                         if (Model.IsSender)
                                         {
-                                            <form method="post" asp-action="SubmitForAcknowledgement" id="frmSubmitForAcknowledgement">
-                                                <input type="hidden" name="id" value="@Model.vwTransfer.Id" />
-                                                <button type="submit" class="btn btn-info-gradient " id="btnSubmit">
-                                                    <i class="fa fa-check-circle"></i><span class="loading">&nbsp;Submit for Acknowledgement</span>
-                                                </button>
-                                            </form>
+                                                <form method="post" asp-action="SubmitForAcknowledgement" id="frmSubmitForAcknowledgement">
+                                                    <input type="hidden" name="id" value="@Model.vwTransfer.Id" />
+                                                    <button type="submit" class="btn btn-info-gradient " id="btnSubmit">
+                                                        <i class="fa fa-check-circle"></i><span class="loading">&nbsp;Submit for Acknowledgement</span>
+                                                    </button>
+                                                </form>
                                         }
                                         else
                                         {
-                                            @Html.Raw("<span id=\"spnAction\">No action required</span>")
+                                                @Html.Raw("<span id=\"spnAction\">No action required</span>")
                                             ;
                                         }
                                     }
@@ -246,28 +246,28 @@
                                     {
                                         if (Model.IsReceiver)
                                         {
-                                            <form method="post" asp-action="AcknowledgeTransfer" id="frmAcknowledgeTransfer">
-                                                <input type="hidden" name="id" value="@Model.vwTransfer.Id" />
-                                                <button type="submit" class="btn btn-info-gradient " id="btnSubmit">
-                                                    <i class="fa fa-check-circle"></i>&nbsp;Acknowledge Transfer
-                                                </button>
-                                            </form>
-                                            @Html.Raw("&nbsp;&nbsp;")
-                                            <form method="post" asp-action="RejectTransfer" id="frmRejectTransfer">
-                                                <input type="hidden" name="id" value="@Model.vwTransfer.Id" />
-                                                <button type="submit" class="btn btn-secondary-gradient">
-                                                    <i class="fa fa-close"></i>&nbsp;Reject Transfer
-                                                </button>
-                                            </form>
+                                                <form method="post" asp-action="AcknowledgeTransfer" id="frmAcknowledgeTransfer">
+                                                    <input type="hidden" name="id" value="@Model.vwTransfer.Id" />
+                                                    <button type="submit" class="btn btn-info-gradient " id="btnSubmit">
+                                                        <i class="fa fa-check-circle"></i>&nbsp;Acknowledge Transfer
+                                                    </button>
+                                                </form>
+                                                @Html.Raw("&nbsp;&nbsp;")
+                                                <form method="post" asp-action="RejectTransfer" id="frmRejectTransfer">
+                                                    <input type="hidden" name="id" value="@Model.vwTransfer.Id" />
+                                                    <button type="submit" class="btn btn-secondary-gradient">
+                                                        <i class="fa fa-close"></i>&nbsp;Reject Transfer
+                                                    </button>
+                                                </form>
                                         }
                                         else
                                         {
-                                            @Html.Raw("<span id=\"spnAction\">No action required</span>")
+                                                @Html.Raw("<span id=\"spnAction\">No action required</span>")
                                         }
                                     }
                                     else
                                     {
-                                        @Html.Raw("<span id=\"spnAction\">No action required</span>")
+                                            @Html.Raw("<span id=\"spnAction\">No action required</span>")
                                     }
                                 }
                             </div>
@@ -275,12 +275,12 @@
                         <div class="card">
                             <div class="card-body divShadow center-align">
                                 @{
-                                    <form method="post" asp-action="PrintVoucher" id="frmPrintVoucher">
-                                        <input type="hidden" name="id" value="@Model.vwTransfer.Id" />
-                                        <button type="submit" class="btn btn-gray" id="btnSubmit">
-                                            <i class="fa fa-print"></i>&nbsp;<span class="loading">&nbsp;Print Transfer Voucher</span>
-                                        </button>
-                                    </form>
+                                        <form method="post" target="_blank" asp-action="PrintVoucher" id="frmPrintVoucher">
+                                            <input type="hidden" name="id" value="@Model.vwTransfer.Id" />
+                                            <button type="submit" class="btn btn-gray" id="btnSubmit">
+                                                <i class="fa fa-print"></i>&nbsp;<span class="loading">&nbsp;Print Transfer Voucher</span>
+                                            </button>
+                                        </form>
                                 }
                             </div>
                         </div>
@@ -302,14 +302,31 @@
     <script>
         $(document).ready(function () {
             hideMenu();
-            $("#btnSubmit").on("click", (e) => {
-                //e.preventDefault();
-                $("#btnSubmit").addClass("btn-loading btn-icon");
+            $('#btnSubmit').on('click', e => {
+                e.preventDefault(); // Prevent the default form submission
+
+                // Calculate screen dimensions
+                var width = screen.availWidth;
+                var height = screen.availHeight;
+
+                // Open a new window without window controls and set it to the screen size
+                var newWindow = window.open("", "PrintWindow", `toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,directories=no,status=no,width=${width},height=${height}`);
+                
+                //move window to top-left of the screen
+                newWindow.moveTo(0, 0);
+
+                // Set the form's target to the new window
+                $('#frmPrintVoucher').attr('target', 'PrintWindow');
+
+                // Submit the form
+                $('#frmPrintVoucher').submit();
             });
 
             checkForAction();
 
         });
+
+        
 
         const checkForAction = () => {
 

@@ -18,7 +18,7 @@
             <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Stores" asp-action="Index">Stores</a></li>
             <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Stores" asp-action="StoreDetails" asp-route-id="@TempData["storeId"]">@TempData["storeName"]</a></li>
             <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Assets" asp-action="Index" asp-route-id="@TempData["storeId"]">Assets</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Create Asset</li>
+            <li class="breadcrumb-item active" aria-current="page">Edit Asset</li>
         </ol>
     </div>
 </div>
@@ -27,8 +27,19 @@
 <div class="row">
     <div class="col-lg-12 col-md-12">
         <div class="card">
-            <div class="card-header border-bottom bg-info-gradient divShadow">
+            <div class="card-header border-bottom bg-info-gradient divShadow d-flex justify-content-between align-items-center">
                 <h4 class="mb-0 text-white">Asset Details</h4>
+                <div class="btn-group">
+                    <a asp-action="EditAsset" asp-controller="Assets" asp-route-id="@Model.Id" class="btn btn-info" data-bs-toggle="tooltip" data-bs-original-title="Edit Asset">
+                        <i class="fa fa-edit"></i>
+                    </a>
+                    <a asp-action="AssetDocuments" asp-controller="Assets" asp-route-id="@Model.Id" class="btn btn-outline-warning" data-bs-toggle="tooltip" data-bs-original-title="Asset Documents">
+                        <i class="fa fa-folder"></i>
+                    </a>
+                    <a asp-action="AssetPictures" asp-controller="Assets" asp-route-id="@Model.Id" class="btn btn-outline-primary" data-bs-toggle="tooltip" data-bs-original-title="Asset Pictures">
+                        <i class="fa fa-image"></i>
+                    </a>
+                </div>
             </div>
             <div class="card-body p-0">
                 <div class="row p-5 border-bottom">

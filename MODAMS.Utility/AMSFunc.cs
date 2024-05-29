@@ -4,20 +4,10 @@ using Microsoft.AspNetCore.Routing;
 using MODAMS.DataAccess.Data;
 using MODAMS.Models;
 using System.Text.Encodings.Web;
-using System.IO;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System;
-using System.Runtime.CompilerServices;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography.X509Certificates;
-using Microsoft.Extensions.Hosting;
 using MODAMS.Models.ViewModels.Dto;
-using System.Security.Claims;
-using System.ComponentModel;
 using MODAMS.Models.ViewModels;
-using DocumentFormat.OpenXml.Spreadsheet;
+
 
 namespace MODAMS.Utility
 {
@@ -57,36 +47,36 @@ namespace MODAMS.Utility
             return user?.EmployeeId ?? 0;
         }
 
-        public int GetEmployeeIdByUserId(string userId) {
+        public async Task<int> GetEmployeeIdByUserId(string userId) {
             int EmployeeId = 0;
 
-            EmployeeId = _db.ApplicationUsers.Where(m => m.Id == userId).Select(m => m.EmployeeId).FirstOrDefault();
+            EmployeeId = await _db.ApplicationUsers.Where(m => m.Id == userId).Select(m => m.EmployeeId).FirstOrDefaultAsync();
 
             return EmployeeId == 0 ? 0 : EmployeeId;
         }
-        public int GetEmployeeIdByEmail(string email)
+        public async Task<int> GetEmployeeIdByEmail(string email)
         {
-            int nEmployeeId = _db.Employees.Where(m => m.Email == email).Select(m => m.Id).FirstOrDefault();
+            int nEmployeeId = await _db.Employees.Where(m => m.Email == email).Select(m => m.Id).FirstOrDefaultAsync();
             return nEmployeeId;
         }
-        public string GetEmployeeName()
+        public async Task<string> GetEmployeeName()
         {
             int nEmployeeId = GetEmployeeId();
 
 
 
-            string? sEmployeeName = _db.Employees
+            string? sEmployeeName = await _db.Employees
              .Where(m => m.Id == nEmployeeId)
              .Select(m => m.FullName)
-             .FirstOrDefault();
-            if (sEmployeeName == null)
-                sEmployeeName = String.Empty;
+             .FirstOrDefaultAsync();
 
-            return sEmployeeName;
+            //if sEmployee==null it will return string.Empty else sEmployeeName
+            return sEmployeeName ?? string.Empty;
+
         }
-        public string GetEmployeeName(int employeeId)
+        public async Task<string> GetEmployeeName(int employeeId)
         {
-            var employeeName = _db.Employees.Where(m => m.Id == employeeId).Select(m => m.FullName).FirstOrDefault();
+            var employeeName = await _db.Employees.Where(m => m.Id == employeeId).Select(m => m.FullName).FirstOrDefaultAsync();
             if (employeeName != null)
             {
                 return employeeName;
@@ -106,10 +96,10 @@ namespace MODAMS.Utility
 
             return sEmployeeEmail;
         }
-        public bool IsInRole(string sRole, string email)
+        public async Task<bool> IsInRole(string sRole, string email)
         {
             bool blnResult = false;
-            int nEmployeeId = GetEmployeeIdByEmail(email);
+            int nEmployeeId = await GetEmployeeIdByEmail(email);
 
             var rec = _db.vwEmployees.Where(m => m.Id == nEmployeeId && m.RoleName == sRole).FirstOrDefault();
             if (rec != null)
@@ -118,12 +108,12 @@ namespace MODAMS.Utility
             }
             return blnResult;
         }
-        public string GetRoleName(string email)
+        public async Task<string> GetRoleName(string email)
         {
             string sResult = "-";
-            int nEmployeeId = GetEmployeeIdByEmail(email);
+            int nEmployeeId = await GetEmployeeIdByEmail(email);
 
-            var rec = _db.vwEmployees.Where(m => m.Id == nEmployeeId).Select(m => m.RoleName).FirstOrDefault();
+            var rec = await _db.vwEmployees.Where(m => m.Id == nEmployeeId).Select(m => m.RoleName).FirstOrDefaultAsync();
             if (rec != null)
             {
                 sResult = rec;
@@ -186,33 +176,21 @@ namespace MODAMS.Utility
             }
             return Convert.ToInt32(sEmployeeId);
         }
-        public dtoRedirection GetRedirectionObject()
+        public async Task<dtoRedirection> GetRedirectionObject()
         {
-
-            string sRoleName = GetRoleName(GetEmployeeEmail());
-            dtoRedirection dto = new dtoRedirection();
-            if (sRoleName == SD.Role_User)
+            string sRoleName = await GetRoleName(GetEmployeeEmail());
+            var dto = sRoleName switch
             {
-                dto = new dtoRedirection("Users", "Home", "Index");
-            }
-            else if (sRoleName == SD.Role_StoreOwner)
-            {
-                dto = new dtoRedirection("Admin", "Home", "Index");
-            }
-            else if (sRoleName == SD.Role_Administrator)
-            {
-                dto = new dtoRedirection("Security", "Home", "Index");
-            }
-            else //Senior Management
-            {
-                dto = new dtoRedirection("Driver", "Home", "Index");
-            }
-
+                SD.Role_User => new dtoRedirection("Users", "Home", "Index"),
+                SD.Role_StoreOwner => new dtoRedirection("Admin", "Home", "Index"),
+                SD.Role_Administrator => new dtoRedirection("Security", "Home", "Index"),
+                _ => new dtoRedirection("Driver", "Home", "Index")
+            };
             return dto;
         }
-        public int GetDepartmentId(int nEmployeeId)
+        public async Task<int> GetDepartmentId(int nEmployeeId)
         {
-            var employeeRole = _db.vwEmployees.Where(m => m.Id == nEmployeeId).Select(m => m.RoleName).FirstOrDefault();
+            var employeeRole = await _db.vwEmployees.Where(m => m.Id == nEmployeeId).Select(m => m.RoleName).FirstOrDefaultAsync();
 
             nEmployeeId = employeeRole == "User" ? GetSupervisorId(nEmployeeId) : nEmployeeId;
 
@@ -224,10 +202,10 @@ namespace MODAMS.Utility
             }
             return departmentId;
         }
-        public string GetDepartmentName(int nEmployeeId)
+        public async Task<string> GetDepartmentName(int nEmployeeId)
         {
             string sResult = "Department not available!";
-            int nDepartmentId = GetDepartmentId(nEmployeeId);
+            int nDepartmentId = await GetDepartmentId(nEmployeeId);
             var department = _db.Departments.Where(m => m.EmployeeId == nEmployeeId).FirstOrDefault();
             if (department != null)
             {
@@ -549,13 +527,13 @@ namespace MODAMS.Utility
             }
             return assetName;
         }
-        public void RecordLogin(string userId) {
+        public async Task RecordLogin(string userId) {
 
             string ipAddress = _contextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
 
             LoginHistory login = new LoginHistory()
             {
-                EmployeeId = GetEmployeeIdByUserId(userId),
+                EmployeeId = await GetEmployeeIdByUserId(userId),
                 IPAddress = ipAddress,
                 TimeStamp = DateTime.Now
             };

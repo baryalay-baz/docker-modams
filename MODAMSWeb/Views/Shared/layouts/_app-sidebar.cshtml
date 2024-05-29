@@ -39,12 +39,12 @@
                     if (User.IsInRole("User"))
                     {
                         <div class="pb-3 text-info">Store User</div>
-                        <div>@_func.GetDepartmentName(_func.GetSupervisorId(_func.GetEmployeeId()))</div>
+                        <div>@await _func.GetDepartmentName(_func.GetSupervisorId(_func.GetEmployeeId()))</div>
                     }
                     else if (User.IsInRole("StoreOwner"))
                     {
                         <div class="pb-3 text-info">Store Owner</div>
-                        <div>@_func.GetDepartmentName(_func.GetEmployeeId())</div>
+                        <div>@await _func.GetDepartmentName(_func.GetEmployeeId())</div>
                     }
                     else if (User.IsInRole("Administrator"))
                     {
