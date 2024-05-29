@@ -49,11 +49,11 @@
     .hover-effect {
         position: relative;
         left: 0;
+        transition: left 0.3s ease-in-out;
     }
 
         .hover-effect:hover {
             left: 10px;
-            
         }
 
     .pnlHeight {
@@ -317,8 +317,8 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-8">
-                                <h4>Total Assets</h4>
-                                <p>@Model.TotalAssets()</p>
+                                <h4 class="text-muted">Total Assets</h4>
+                                <p class="text-muted">@Model.TotalAssets()</p>
                             </div>
                             <div class="col-4">
                                 <div class="hpx-50 wpx-50 bg-primary br-5 d-flex align-items-center justify-content-center ms-auto">
@@ -334,8 +334,8 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-8">
-                                <h4>Total Cost</h4>
-                                <p>@Model.TotalCost().ToString("n2")</p>
+                                <h4 class="text-muted tw-semibold">Total Cost</h4>
+                                <p class="text-muted">@Model.TotalCost().ToString("n2")</p>
                             </div>
                             <div class="col-4">
                                 <div class="hpx-50 wpx-50 bg-secondary br-5 d-flex align-items-center justify-content-center ms-auto">
@@ -353,8 +353,8 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-8">
-                                <h4>Current Value</h4>
-                                <p>@Model.CurrentValue.ToString("n2")</p>
+                                <h4 class="text-muted">Current Value</h4>
+                                <p class="text-muted">@Model.CurrentValue.ToString("n2")</p>
                             </div>
                             <div class="col-4">
                                 <div class="hpx-50 wpx-50 bg-info br-5 d-flex align-items-center justify-content-center ms-auto">
@@ -370,8 +370,8 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-8">
-                                <h4>Total Stores</h4>
-                                <p>@Model.StoreCount</p>
+                                <h4 class="text-muted">Total Stores</h4>
+                                <p class="text-muted">@Model.StoreCount</p>
                             </div>
                             <div class="col-4">
                                 <div class="hpx-50 wpx-50 bg-warning br-5 d-flex align-items-center justify-content-center ms-auto">
