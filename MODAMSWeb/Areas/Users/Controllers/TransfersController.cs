@@ -66,6 +66,31 @@ namespace MODAMSWeb.Areas.Users.Controllers
                         dto.StoreList = storeList;
                         _storeId = firstStoreId;
                     }
+                    else {
+                        
+                        int firstStoreId = sl.Select(m => m.StoreFromId).FirstOrDefault();
+                        var storeList = sl.Select(m => new SelectListItem
+                        {
+                            Text = m.StoreFrom,
+                            Value = m.StoreFromId.ToString(),
+                            Selected = (m.StoreFromId == firstStoreId)
+                        }).ToList();
+
+                        if (!storeList.Any())
+                        {
+                            storeList.Add(new SelectListItem
+                            {
+                                Text = "No Transfer available",
+                                Value = "0",
+                                Selected = true // Select this item if there are no stores
+                            });
+                        }
+
+
+
+                        dto.StoreList = storeList;
+                        _storeId = firstStoreId;
+                    }
                 }
             }
             else
