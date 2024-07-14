@@ -86,8 +86,6 @@ namespace MODAMSWeb.Areas.Users.Controllers
                             });
                         }
 
-
-
                         dto.StoreList = storeList;
                         _storeId = firstStoreId;
                     }
@@ -914,7 +912,6 @@ namespace MODAMSWeb.Areas.Users.Controllers
             return _func.GetStoreIdByDepartmentId(departmentId);
 
         }
-
         private async Task<decimal> GetTotalTransferValue(int storeId)
         {
             var transferIds = await _db.Transfers

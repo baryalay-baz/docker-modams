@@ -277,7 +277,7 @@
                                 @{
                                         <form method="post" target="_blank" asp-action="PrintVoucher" id="frmPrintVoucher">
                                             <input type="hidden" name="id" value="@Model.vwTransfer.Id" />
-                                            <button type="submit" class="btn btn-gray" id="btnSubmit">
+                                        <button type="submit" class="btn btn-gray" id="btnPrintVoucher">
                                                 <i class="fa fa-print"></i>&nbsp;<span class="loading">&nbsp;Print Transfer Voucher</span>
                                             </button>
                                         </form>
@@ -302,7 +302,7 @@
     <script>
         $(document).ready(function () {
             hideMenu();
-            $('#btnSubmit').on('click', e => {
+            $('#btnPrintVoucher').on('click', e => {
                 e.preventDefault(); // Prevent the default form submission
 
                 // Calculate screen dimensions

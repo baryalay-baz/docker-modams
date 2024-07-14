@@ -580,6 +580,8 @@ namespace MODAMS.Utility
 
             return asset;
         }
+
+
         //Private methods
         private void Notify(int[] arrEmpIds, Notification notification)
         {
