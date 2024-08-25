@@ -29,6 +29,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             _supervisorId = _func.GetSupervisorId(_employeeId);
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index(int id = 0, int transferStatusId = 0)
         {
             _employeeId = (User.IsInRole("User")) ? _func.GetSupervisorId(_employeeId) : _employeeId;
@@ -66,8 +67,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
                         dto.StoreList = storeList;
                         _storeId = firstStoreId;
                     }
-                    else {
-                        
+                    else
+                    {
                         int firstStoreId = sl.Select(m => m.StoreFromId).FirstOrDefault();
                         var storeList = sl.Select(m => new SelectListItem
                         {
@@ -126,6 +127,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 .Where(m => m.StoreId == _storeId && m.TransferStatusId != SD.Transfer_Pending)
                 .OrderBy(m => m.TransferStatusId)
                 .ToListAsync();
+
             dto.IncomingTransfers = transfers;
 
             List<dtoTransferChart> outgoingChartData = await GetChartData(1);
@@ -152,7 +154,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
 
             TempData["storeFrom"] = await _func.GetDepartmentName(_employeeId);
-            
+
 
             if (assets.Count > 0)
             {
@@ -204,70 +206,70 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 TempData["error"] = "Please fill all the mandatory fields";
                 return RedirectToAction("CreateTransfer", "Transfers");
             }
-            var transfer = new Transfer()
-            {
-                TransferDate = transferDTO.Transfer.TransferDate,
-                EmployeeId = _employeeId,
-                StoreFromId = storeId,
-                StoreId = transferDTO.Transfer.StoreId,
-                TransferNumber = transferDTO.Transfer.TransferNumber,
-                TransferStatusId = 1,
-                Notes = transferDTO.Transfer.Notes == null ? "-" : transferDTO.Transfer.Notes,
-                SubmissionForAcknowledgementDate = DateTime.Now
-            };
 
-            try
+            using (var transaction = await _db.Database.BeginTransactionAsync())
             {
-                _db.Transfers.Add(transfer);
-                await _db.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                TempData["error"] = ex.Message;
-                return RedirectToAction("CreateTransfer", "Transfers");
-            }
-            string assetNamesForLog = "";
-            int prevStoreId = await GetCurrentStoreId();
-
-            if (!string.IsNullOrEmpty(selectedAssets))
-            {
-                var selectedIds = selectedAssets.Split(',').Select(id => int.Parse(id));
-
-                foreach (var asset in selectedIds)
+                try
                 {
-                    var transferDetail = new TransferDetail()
+                    var transfer = new Transfer()
                     {
-                        AssetId = asset,
-                        PrevStoreId = prevStoreId,
-                        TransferId = transfer.Id
+                        TransferDate = transferDTO.Transfer.TransferDate,
+                        EmployeeId = _employeeId,
+                        StoreFromId = storeId,
+                        StoreId = transferDTO.Transfer.StoreId,
+                        TransferNumber = transferDTO.Transfer.TransferNumber,
+                        TransferStatusId = 1,
+                        Notes = transferDTO.Transfer.Notes == null ? "-" : transferDTO.Transfer.Notes,
+                        SubmissionForAcknowledgementDate = DateTime.Now
                     };
-                    _db.TransferDetails.Add(transferDetail);
-                    assetNamesForLog += _func.GetAssetName(asset) + ", ";
+                    await _db.Transfers.AddAsync(transfer);
+                    await _db.SaveChangesAsync();
+
+                    string assetNamesForLog = "";
+                    int prevStoreId = await GetCurrentStoreId();
+
+                    if (!string.IsNullOrEmpty(selectedAssets))
+                    {
+                        var selectedIds = selectedAssets.Split(',').Select(id => int.Parse(id));
+                        List<TransferDetail> transferDetails = new List<TransferDetail>();
+
+                        foreach (var asset in selectedIds)
+                        {
+                            var transferDetail = new TransferDetail()
+                            {
+                                AssetId = asset,
+                                PrevStoreId = prevStoreId,
+                                TransferId = transfer.Id
+                            };
+                            transferDetails.Add(transferDetail);
+                            assetNamesForLog += _func.GetAssetName(asset) + ", ";
+                        }
+                        _db.TransferDetails.AddRange(transferDetails);
+                        await _db.SaveChangesAsync();
+                    }
+
+                    //Log NewsFeed
+                    string employeeName = await _func.GetEmployeeName();
+                    string assetName = assetNamesForLog;
+                    string storefrom = _func.GetStoreNameByStoreId(prevStoreId);
+                    string storeTo = _func.GetStoreNameByStoreId(transfer.StoreId);
+                    string message = $"{employeeName} transferred ({assetName}) from {storefrom} to {storeTo}";
+                    _func.LogNewsFeed(message, "Users", "Transfers", "PreviewTransfer", transfer.Id);
+
+                    await _db.Database.CommitTransactionAsync();
+
+                    //success
+                    TempData["success"] = "Transfer saved successfuly!";
+                    return RedirectToAction("PreviewTransfer", "Transfers", new { id = transfer.Id });
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    TempData["error"] = "Transaction failed: " + ex.Message;
+                    return RedirectToAction("CreateTransfer", "Transfers");
                 }
             }
-            try
-            {
-                await _db.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                TempData["error"] = ex.Message;
-                return RedirectToAction("CreateTransfer", "Transfers");
-            }
-
-            //Log NewsFeed
-            string employeeName = await _func.GetEmployeeName();
-            string assetName = assetNamesForLog;
-            string storefrom = _func.GetStoreNameByStoreId(prevStoreId);
-            string storeTo = _func.GetStoreNameByStoreId(transfer.StoreId);
-            string message = $"{employeeName} transferred ({assetName}) from {storefrom} to {storeTo}";
-            _func.LogNewsFeed(message, "Users", "Transfers", "PreviewTransfer", transfer.Id);
-
-
-            TempData["success"] = "Transfer saved successfuly!";
-            return RedirectToAction("PreviewTransfer", "Transfers", new { id = transfer.Id });
         }
-
 
         [Authorize(Roles = "StoreOwner, User")]
         [HttpGet]
@@ -327,8 +329,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
         }
 
         [Authorize(Roles = "StoreOwner, User")]
-        [HttpPost]
         [ValidateAntiForgeryToken]
+        [HttpPost]
         public async Task<IActionResult> EditTransfer(dtoEditTransfer transferDTO, string selectedAssets)
         {
             _employeeId = (User.IsInRole("User")) ? _func.GetSupervisorId(_employeeId) : _employeeId;
@@ -340,61 +342,63 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 return RedirectToAction("EditTransfer", "Transfers", new { id = transferDTO.Transfer.Id });
             }
 
-            var transfer = _db.Transfers.Where(m => m.Id == transferDTO.Transfer.Id).FirstOrDefault();
+            var transfer = await _db.Transfers.Where(m => m.Id == transferDTO.Transfer.Id).FirstOrDefaultAsync();
             if (transfer == null)
             {
                 TempData["error"] = "Record not found!";
                 return RedirectToAction("EditTransfer", "Transfers", new { id = transferDTO.Transfer.Id });
             }
-
-            try
+            using (var transaction = await _db.Database.BeginTransactionAsync())
             {
-                transfer.TransferDate = transferDTO.Transfer.TransferDate;
-                transfer.EmployeeId = _employeeId;
-                transfer.StoreFromId = storeId;
-                transfer.StoreId = transferDTO.Transfer.StoreId;
-                transfer.TransferNumber = transferDTO.Transfer.TransferNumber;
-                transfer.TransferStatusId = 1;
-                transfer.Notes = transferDTO.Transfer.Notes;
-                await _db.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                TempData["error"] = ex.Message;
-                return RedirectToAction("EditTransfer", "Transfers", new { id = transferDTO.Transfer.Id });
-            }
-            var transferDetails = _db.TransferDetails.Where(m => m.TransferId == transferDTO.Transfer.Id).ToList();
-            _db.RemoveRange(transferDetails);
-            await _db.SaveChangesAsync();
-
-            if (!string.IsNullOrEmpty(selectedAssets))
-            {
-                var selectedIds = selectedAssets.Split(',').Select(id => int.Parse(id));
-                foreach (var asset in selectedIds)
+                try
                 {
-                    var transferDetail = new TransferDetail()
+                    transfer.TransferDate = transferDTO.Transfer.TransferDate;
+                    transfer.EmployeeId = _employeeId;
+                    transfer.StoreFromId = storeId;
+                    transfer.StoreId = transferDTO.Transfer.StoreId;
+                    transfer.TransferNumber = transferDTO.Transfer.TransferNumber;
+                    transfer.TransferStatusId = 1;
+                    transfer.Notes = transferDTO.Transfer.Notes;
+                    await _db.SaveChangesAsync();
+
+                    var transferDetails = await _db.TransferDetails
+                        .Where(m => m.TransferId == transferDTO.Transfer.Id).ToListAsync();
+
+                    _db.RemoveRange(transferDetails);
+                    await _db.SaveChangesAsync();
+
+                    if (!string.IsNullOrEmpty(selectedAssets))
                     {
-                        AssetId = asset,
-                        PrevStoreId = GetCurrentStoreId().GetAwaiter().GetResult(),
-                        TransferId = transfer.Id
-                    };
-                    _db.TransferDetails.Add(transferDetail);
+                        var selectedIds = selectedAssets.Split(',').Select(id => int.Parse(id));
+                        transferDetails = new List<TransferDetail>();
+
+                        foreach (var asset in selectedIds)
+                        {
+                            var transferDetail = new TransferDetail()
+                            {
+                                AssetId = asset,
+                                PrevStoreId = GetCurrentStoreId().GetAwaiter().GetResult(),
+                                TransferId = transfer.Id
+                            };
+                            transferDetails.Add(transferDetail);
+                        }
+                        await _db.TransferDetails.AddRangeAsync(transferDetails);
+                        await _db.SaveChangesAsync();
+                    }
+                    await _db.Database.CommitTransactionAsync();
+
+                    //success
+                    TempData["success"] = "Transfer saved successfuly!";
+                    return RedirectToAction("PreviewTransfer", "Transfers", new { id = transfer.Id });
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    TempData["error"] = "Transaction failed: " + ex.Message;
+                    return RedirectToAction("EditTransfer", "Transfers", new { id = transferDTO.Transfer.Id });
                 }
             }
-            try
-            {
-                await _db.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                TempData["error"] = ex.Message;
-                return RedirectToAction("EditTransfer", "Transfers", new { id = transferDTO.Transfer.Id });
-            }
-
-            TempData["success"] = "Transfer saved successfully!";
-            return RedirectToAction("EditTransfer", "Transfers", new { id = transferDTO.Transfer.Id });
         }
-
 
         [HttpGet]
         public IActionResult PreviewTransfer(int id)
@@ -463,12 +467,11 @@ namespace MODAMSWeb.Areas.Users.Controllers
             if (transfer.SenderBarcode != "")
                 ViewBag.FromSignature = MODAMS.Utility.Barcode.GenerateBarCode(dto.TransferBy);
 
-            if (transfer.ReceiverBarcode!="")
+            if (transfer.ReceiverBarcode != "")
                 ViewBag.ToSignature = MODAMS.Utility.Barcode.GenerateBarCode(dto.ReceivedBy);
 
             return View(dto);
         }
-
 
         [Authorize(Roles = "StoreOwner, User")]
         public IActionResult DeleteTransfer(int id)

@@ -44,20 +44,21 @@ namespace MODAMSWeb.Areas.Users.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var categoryAssets = _db.vwCategoryAssets.ToList();
-            var newsFeed = _db.NewsFeed.OrderByDescending(m=>m.TimeStamp).Take(5).ToList();
-            
+            var categoryAssets = await _db.vwCategoryAssets.ToListAsync();
+            var newsFeed = await _db.NewsFeed.OrderByDescending(m => m.TimeStamp).Take(5).ToListAsync();
+
             var dto = new dtoDashboard()
             {
                 CategoryAssets = categoryAssets,
                 NewsFeed = newsFeed
             };
 
-            dto.StoreCount = _db.Stores.Count();
-            dto.UserCount = _db.Users.Count();
-            dto.CurrentValue = GetCurrentValue();
+            dto.StoreCount = await _db.Stores.CountAsync();
+            dto.UserCount = await _db.Users.CountAsync();
+            dto.CurrentValue = await GetCurrentValueAsync();
+
             return View(dto);
         }
 
@@ -101,7 +102,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 TempData["error"] = "Please complete all the mandatory fields!";
                 return RedirectToAction("Profile", "Employees");
             }
-            var rec = _db.Employees.Where(m => m.Id == form.Id).SingleOrDefault();
+            var rec = await _db.Employees.Where(m => m.Id == form.Id).SingleOrDefaultAsync();
             if (rec != null)
             {
                 rec.FullName = form.FullName;
@@ -301,7 +302,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 return RedirectToAction("PreviewTransfer", "Transfers", new { id = transfer.Id });
             }
 
-            
+
             var asset = await _func.AssetGlobalSearch(barcode.Trim());
             dtoGlobalSearch dto = new dtoGlobalSearch();
 
@@ -322,61 +323,55 @@ namespace MODAMSWeb.Areas.Users.Controllers
             return View();
         }
 
-        public IActionResult NotificationDirector(int id)
+        public async Task<IActionResult> NotificationDirector(int id)
         {
-            var notification = _db.Notifications.Where(m => m.Id == id)
+            var notification = await _db.Notifications.Where(m => m.Id == id)
                 .Include(m => m.NotificationSection)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
 
             if (notification == null)
             {
                 return View();
             }
             notification.IsViewed = true;
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
+
             return RedirectToAction(notification.NotificationSection.action,
                 notification.NotificationSection.controller,
                 new { area = notification.NotificationSection.area, id = notification.TargetRecordId });
-
         }
 
         [HttpGet]
-        public IActionResult AllNotifications(int id)
+        public async Task<IActionResult> AllNotifications(int id)
         {
-            var notifications = _db.Notifications.Where(m => m.EmployeeTo == _employeeId)
-                .Include(m => m.NotificationSection).OrderByDescending(m => m.DateTime).ToList();
-
-            var dto = new List<dtoNotification>();
-
-            if (notifications.Count > 0)
-            {
-                foreach (var notification in notifications)
+            var notifications = await _db.Notifications
+                .Where(m => m.EmployeeTo == _employeeId)
+                .Include(m => m.NotificationSection)
+                .OrderByDescending(m => m.DateTime)
+                .Select(notification => new dtoNotification
                 {
-                    var notif = new dtoNotification()
-                    {
-                        Id = notification.Id,
-                        DateTime = notification.DateTime,
-                        EmployeeFrom = notification.EmployeeFrom,
-                        EmployeeTo = notification.EmployeeTo,
-                        Subject = notification.Subject,
-                        Message = notification.Message,
-                        TargetRecordId = notification.TargetRecordId,
-                        IsViewed = notification.IsViewed,
-                        NotificationSectionId = notification.NotificationSectionId,
-                        Area = notification.NotificationSection.area,
-                        Controller = notification.NotificationSection.controller,
-                        Action = notification.NotificationSection.action,
-                        ImageUrl = _func.GetProfileImage(notification.EmployeeFrom)
-                    };
-                    dto.Add(notif);
-                }
-            }
-            return View(dto);
+                    Id = notification.Id,
+                    DateTime = notification.DateTime,
+                    EmployeeFrom = notification.EmployeeFrom,
+                    EmployeeTo = notification.EmployeeTo,
+                    Subject = notification.Subject,
+                    Message = notification.Message,
+                    TargetRecordId = notification.TargetRecordId,
+                    IsViewed = notification.IsViewed,
+                    NotificationSectionId = notification.NotificationSectionId,
+                    Area = notification.NotificationSection.area,
+                    Controller = notification.NotificationSection.controller,
+                    Action = notification.NotificationSection.action,
+                    ImageUrl = _func.GetProfileImage(notification.EmployeeFrom)
+                })
+                .ToListAsync();
+
+            return View(notifications);
         }
+
         public async Task<IActionResult> ClearNotifications()
         {
-
-            var notifications = _db.Notifications.Where(m => m.EmployeeTo == _employeeId).ToList();
+            var notifications = await _db.Notifications.Where(m => m.EmployeeTo == _employeeId).ToListAsync();
             _db.Notifications.RemoveRange(notifications);
             await _db.SaveChangesAsync();
 
@@ -384,22 +379,67 @@ namespace MODAMSWeb.Areas.Users.Controllers
         }
 
         [HttpGet]
-        public IActionResult Newsfeed() {
-            var newsFeed = _db.NewsFeed.OrderByDescending(m => m.TimeStamp).ToList();
+        public async Task<IActionResult> Newsfeed()
+        {
+            var newsFeed = await _db.NewsFeed.OrderByDescending(m => m.TimeStamp).ToListAsync();
             return View(newsFeed);
         }
-        private decimal GetCurrentValue()
+        
+        private async Task<decimal> GetCurrentValueAsync()
         {
-            var assets = _db.Assets.Select(m => new { m.Id }).ToList();
+            List<assetDto> assets = await _db.Assets.Select(m => new assetDto()
+            {    
+                Id = m.Id,
+                Cost = m.Cost,
+                LifeSpan = m.SubCategory.LifeSpan,
+                RecieptDate = m.RecieptDate
+            }).ToListAsync();
+
+
             decimal currentValue = 0;
-            if (assets != null)
+
+            foreach (var asset in assets)
             {
-                foreach (var asset in assets)
+                currentValue += CalculateDepreciatedCost(asset);
+            }
+
+            return currentValue;
+        }
+        
+        private decimal CalculateDepreciatedCost(assetDto asset)
+        {
+            //(Cost / LifeSpan_months) * (LifeSpan_months - Age)
+            decimal depreciatedCost = 0;
+
+            if (asset != null)
+            {
+                int nLifeSpan = asset.LifeSpan;
+                decimal cost = asset.Cost;
+
+                if (asset.RecieptDate != null)
                 {
-                    currentValue += _func.GetDepreciatedCost(asset.Id);
+                    DateTimeOffset date1 = (DateTimeOffset)asset.RecieptDate;
+                    DateTimeOffset date2 = DateTime.Now;
+
+                    // Find the difference between two dates in months
+                    int age = (date2.Year - date1.Year) * 12 + date2.Month - date1.Month;
+
+                    depreciatedCost = (cost / nLifeSpan) * (nLifeSpan - age);
                 }
             }
-            return currentValue;
+
+            if (depreciatedCost < 0)
+                depreciatedCost = 0;
+
+            return depreciatedCost;
+        }
+
+        private class assetDto
+        {
+            public int Id { get; set; }
+            public int LifeSpan { get; set; }
+            public decimal Cost { get; set; }
+            public DateTime? RecieptDate { get; set; }
         }
     }
 }

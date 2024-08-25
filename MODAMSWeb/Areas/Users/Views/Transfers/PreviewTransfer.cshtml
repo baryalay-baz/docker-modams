@@ -231,7 +231,7 @@
                                         {
                                                 <form method="post" asp-action="SubmitForAcknowledgement" id="frmSubmitForAcknowledgement">
                                                     <input type="hidden" name="id" value="@Model.vwTransfer.Id" />
-                                                    <button type="submit" class="btn btn-info-gradient " id="btnSubmit">
+                                                    <button type="submit" class="btn btn-info-gradient " id="btnSubmitTransfer">
                                                         <i class="fa fa-check-circle"></i><span class="loading">&nbsp;Submit for Acknowledgement</span>
                                                     </button>
                                                 </form>
@@ -239,7 +239,6 @@
                                         else
                                         {
                                                 @Html.Raw("<span id=\"spnAction\">No action required</span>")
-                                            ;
                                         }
                                     }
                                     else if (Model.vwTransfer.TransferStatusId == SD.Transfer_SubmittedForAcknowledgement)
@@ -248,7 +247,7 @@
                                         {
                                                 <form method="post" asp-action="AcknowledgeTransfer" id="frmAcknowledgeTransfer">
                                                     <input type="hidden" name="id" value="@Model.vwTransfer.Id" />
-                                                    <button type="submit" class="btn btn-info-gradient " id="btnSubmit">
+                                                    <button type="submit" class="btn btn-info-gradient" id="btnAcknowledgeTransfer">
                                                         <i class="fa fa-check-circle"></i>&nbsp;Acknowledge Transfer
                                                     </button>
                                                 </form>
