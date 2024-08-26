@@ -121,14 +121,14 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             if (User.IsInRole("User"))
             {
-                _employeeId = _func.GetSupervisorId(_employeeId);
+                _employeeId = await _func.GetSupervisorIdAsync(_employeeId);
             }
 
 
             if (User.IsInRole("StoreOwner") || User.IsInRole("User"))
             {
                 var allStores = _db.vwStores.ToList();
-                int DepartmentId = await _func.GetDepartmentId(_employeeId);
+                int DepartmentId = await _func.GetDepartmentIdAsync(_employeeId);
                 var storeFinder = new StoreFinder(DepartmentId, allStores);
 
                 var stores = storeFinder.GetStores();
@@ -143,7 +143,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             return alertList;
         }
         private async Task<List<vwAlert>> GetMissingDataAlerts() {
-            _employeeId = User.IsInRole("User") ? _func.GetSupervisorId(_employeeId) : _employeeId;
+            _employeeId = User.IsInRole("User") ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
 
             var assets = await _db.Assets
                 .Include(m => m.SubCategory.Category)
@@ -254,7 +254,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             if (User.IsInRole("StoreOwner") || User.IsInRole("User"))
             {
                 var allStores = _db.vwStores.ToList();
-                int DepartmentId = await _func.GetDepartmentId(_employeeId);
+                int DepartmentId = await _func.GetDepartmentIdAsync(_employeeId);
                 var storeFinder = new StoreFinder(DepartmentId, allStores);
 
                 var stores = storeFinder.GetStores();

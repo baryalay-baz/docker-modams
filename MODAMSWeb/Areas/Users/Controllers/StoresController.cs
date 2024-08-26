@@ -31,7 +31,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var stores = await _func.GetStoresByEmployeeId(_employeeId);
+            var stores = await _func.GetStoresByEmployeeIdAsync(_employeeId);
 
             var storeEmployees = new List<vwStoreEmployee>();
 
@@ -128,9 +128,9 @@ namespace MODAMSWeb.Areas.Users.Controllers
         }
 
         [HttpGet]
-        public IActionResult StoreDetails(int id)
+        public async Task<IActionResult> StoreDetails(int id)
         {
-            var vwStore = _db.vwStores.FirstOrDefault(m => m.Id == id);
+            var vwStore = await _db.vwStores.FirstOrDefaultAsync(m => m.Id == id);
 
             if (vwStore == null)
             {
@@ -141,43 +141,43 @@ namespace MODAMSWeb.Areas.Users.Controllers
             {
                 vwStore = vwStore,
                 employees = new List<Employee>(),
-                StoreOwnerInfo = _func.GetStoreOwnerInfo(id)
+                StoreOwnerInfo = await _func.GetStoreOwnerInfoAsync(id)
             };
 
             var storeOwnerId = vwStore.EmployeeId;
             if (storeOwnerId > 0)
             {
-                var storeOwner = _db.Employees.FirstOrDefault(e => e.Id == storeOwnerId);
+                var storeOwner = await _db.Employees.FirstOrDefaultAsync(e => e.Id == storeOwnerId);
                 if (storeOwner != null)
                 {
                     dto.employees.Add(storeOwner);
-                    dto.employees.AddRange(_db.Employees
+                    dto.employees.AddRange(await _db.Employees
                         .Where(e => e.SupervisorEmployeeId == storeOwnerId)
-                        .ToList());
+                        .ToListAsync());
                 }
             }
 
-            dto.storeAssets = _db.Assets
+            dto.storeAssets = await _db.Assets
                 .Where(a => a.AssetStatusId != SD.Asset_Deleted && a.StoreId == id)
                 .Include(a => a.SubCategory)
                 .Include(a => a.Condition)
                 .Include(a => a.AssetStatus)
-                .ToList();
+                .ToListAsync();
 
-            dto.StoreCategoryAssets = _db.vwStoreCategoryAssets
+            dto.StoreCategoryAssets = await _db.vwStoreCategoryAssets
                 .Where(sca => sca.StoreId == id).OrderBy(m => m.CategoryId)
-                .ToList();
+                .ToListAsync();
 
-            dto.TransferredAssets = _db.TransferDetails
+            dto.TransferredAssets = await _db.TransferDetails
                 .Include(td => td.Transfer)
-                .Count(td => td.Transfer.StoreFromId == id && td.Transfer.TransferStatusId == SD.Transfer_Completed);
+                .CountAsync(td => td.Transfer.StoreFromId == id && td.Transfer.TransferStatusId == SD.Transfer_Completed);
 
-            dto.ReceivedAssets = _db.TransferDetails
+            dto.ReceivedAssets = await _db.TransferDetails
                 .Include(td => td.Transfer)
-                .Count(td => td.Transfer.StoreId == id && td.Transfer.TransferStatusId == SD.Transfer_Completed);
+                .CountAsync(td => td.Transfer.StoreId == id && td.Transfer.TransferStatusId == SD.Transfer_Completed);
 
             dto.Handovers = 0;
-            dto.Disposals = _db.Assets.Where(m => m.StoreId == id && m.AssetStatusId == SD.Asset_Disposed).Count();
+            dto.Disposals = await _db.Assets.Where(m => m.StoreId == id && m.AssetStatusId == SD.Asset_Disposed).CountAsync();
 
             TempData["storeId"] = id;
             TempData["storeName"] = vwStore.Name;

@@ -7,29 +7,37 @@ using System.Text.Encodings.Web;
 using Microsoft.EntityFrameworkCore;
 using MODAMS.Models.ViewModels.Dto;
 using MODAMS.Models.ViewModels;
+using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 
 namespace MODAMS.Utility
 {
     public class AMSFunc : IAMSFunc
     {
-        public readonly ApplicationDbContext _db;
-        public readonly UserManager<IdentityUser> _userManager;
-        public readonly IHttpContextAccessor _contextAccessor;
-        public readonly LinkGenerator _linkGenerator;
-        public AMSFunc(ApplicationDbContext db, UserManager<IdentityUser> userManager, IHttpContextAccessor contextAccessor, LinkGenerator linkGenerator)
+        private readonly ApplicationDbContext _db;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly IHttpContextAccessor _contextAccessor;
+        private readonly LinkGenerator _linkGenerator;
+        private readonly ILogger<AMSFunc> _logger;
+        private readonly IEmailSender _emailSender;
+        public AMSFunc(ApplicationDbContext db, UserManager<IdentityUser> userManager, IHttpContextAccessor contextAccessor,
+            LinkGenerator linkGenerator, ILogger<AMSFunc> logger, IEmailSender emailSender)
         {
             _db = db;
             _userManager = userManager;
             _contextAccessor = contextAccessor;
             _linkGenerator = linkGenerator;
+            _logger = logger;
+            _emailSender = emailSender;
         }
         //public int GetEmployeeId()
         //{
         //    int EmployeeId = 0;
         //    // Get the current claims principal
         //    var user = _contextAccessor.HttpContext.User;
-            
+
         //    // Find the user's ID claim
         //    var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier);
         //    if (userIdClaim != null)
@@ -46,20 +54,27 @@ namespace MODAMS.Utility
             // Return the user's EmployeeId if user is found
             return user?.EmployeeId ?? 0;
         }
+        public async Task<int> GetEmployeeIdAsync() {
+            // Get the current user
+            var user = await _userManager.GetUserAsync(_contextAccessor.HttpContext.User) as ApplicationUser;
 
-        public async Task<int> GetEmployeeIdByUserId(string userId) {
+            // Return the user's EmployeeId if user is found
+            return user?.EmployeeId ?? 0;
+        }
+        public async Task<int> GetEmployeeIdByUserIdAsync(string userId)
+        {
             int EmployeeId = 0;
 
             EmployeeId = await _db.ApplicationUsers.Where(m => m.Id == userId).Select(m => m.EmployeeId).FirstOrDefaultAsync();
 
             return EmployeeId == 0 ? 0 : EmployeeId;
         }
-        public async Task<int> GetEmployeeIdByEmail(string email)
+        public async Task<int> GetEmployeeIdByEmailAsync(string email)
         {
             int nEmployeeId = await _db.Employees.Where(m => m.Email == email).Select(m => m.Id).FirstOrDefaultAsync();
             return nEmployeeId;
         }
-        public async Task<string> GetEmployeeName()
+        public async Task<string> GetEmployeeNameAsync()
         {
             int nEmployeeId = GetEmployeeId();
 
@@ -74,7 +89,7 @@ namespace MODAMS.Utility
             return sEmployeeName ?? string.Empty;
 
         }
-        public async Task<string> GetEmployeeName(int employeeId)
+        public async Task<string> GetEmployeeNameAsync(int employeeId)
         {
             var employeeName = await _db.Employees.Where(m => m.Id == employeeId).Select(m => m.FullName).FirstOrDefaultAsync();
             if (employeeName != null)
@@ -83,23 +98,23 @@ namespace MODAMS.Utility
             }
             return "";
         }
-        public string GetEmployeeEmail()
+        public async Task<string> GetEmployeeEmailAsync()
         {
-            int nEmployeeId = GetEmployeeId();
+            int nEmployeeId = await GetEmployeeIdAsync();
 
-            string? sEmployeeEmail = _db.Employees
+            string? sEmployeeEmail = await _db.Employees
              .Where(m => m.Id == nEmployeeId)
              .Select(m => m.Email)
-             .FirstOrDefault();
+             .FirstOrDefaultAsync();
             if (sEmployeeEmail == null)
                 sEmployeeEmail = String.Empty;
 
             return sEmployeeEmail;
         }
-        public async Task<bool> IsInRole(string sRole, string email)
+        public async Task<bool> IsInRoleAsync(string sRole, string email)
         {
             bool blnResult = false;
-            int nEmployeeId = await GetEmployeeIdByEmail(email);
+            int nEmployeeId = await GetEmployeeIdByEmailAsync(email);
 
             var rec = _db.vwEmployees.Where(m => m.Id == nEmployeeId && m.RoleName == sRole).FirstOrDefault();
             if (rec != null)
@@ -108,10 +123,10 @@ namespace MODAMS.Utility
             }
             return blnResult;
         }
-        public async Task<string> GetRoleName(string email)
+        public async Task<string> GetRoleNameAsync(string email)
         {
             string sResult = "-";
-            int nEmployeeId = await GetEmployeeIdByEmail(email);
+            int nEmployeeId = await GetEmployeeIdByEmailAsync(email);
 
             var rec = await _db.vwEmployees.Where(m => m.Id == nEmployeeId).Select(m => m.RoleName).FirstOrDefaultAsync();
             if (rec != null)
@@ -120,12 +135,12 @@ namespace MODAMS.Utility
             }
             return sResult;
         }
-        public int GetDepartmentHead(int departmentId)
+        public async Task<int> GetDepartmentHeadAsync(int departmentId)
         {
             int employeeId = 0;
-            var departmentHead = _db.DepartmentHeads
+            var departmentHead = await _db.DepartmentHeads
                 .Where(m => m.DepartmentId == departmentId && m.IsActive)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
 
             if (departmentHead != null)
             {
@@ -133,9 +148,9 @@ namespace MODAMS.Utility
             }
             return employeeId;
         }
-        public List<Employee> GetDepartmentMembers(int departmentId)
+        public async Task<List<Employee>> GetDepartmentMembersAsync(int departmentId)
         {
-            int employeeId = GetDepartmentHead(departmentId);
+            int employeeId = await GetDepartmentHeadAsync(departmentId);
             List<Employee> employees = _db.Employees.Where(m => m.SupervisorEmployeeId == employeeId).ToList();
 
             var employee = _db.Employees.Where(m => m.Id == employeeId).FirstOrDefault();
@@ -144,41 +159,41 @@ namespace MODAMS.Utility
 
             return employees;
         }
-        public void NotifyDepartment(int departmentId, Notification notification)
+        public async Task NotifyDepartmentAsync(int departmentId, Notification notification)
         {
-            var employees = GetDepartmentMembers(departmentId);
+            var employees = await GetDepartmentMembersAsync(departmentId);
             var ids = employees.Select(m => m.Id).ToList();
             int[] empArray = ids.ToArray();
-            Notify(empArray, notification);
+            await NotifyAsync(empArray, notification);
         }
-        public void NotifyUser(Notification notification)
+        public async Task NotifyUserAsync(Notification notification)
         {
             int[] empArray = { notification.EmployeeTo };
-            Notify(empArray, notification);
+            await NotifyAsync(empArray, notification);
         }
-        public void NotifyUsersInRole(Notification notification, string role)
+        public async Task NotifyUsersInRoleAsync(Notification notification, string role)
         {
-            int[] ids = _db.vwEmployees.Where(m => m.RoleName == role)
-             .Select(m => m.Id).ToArray();
+            int[] ids = await _db.vwEmployees.Where(m => m.RoleName == role)
+             .Select(m => m.Id).ToArrayAsync();
 
             if (ids.Length > 0)
             {
-                Notify(ids, notification);
+                await NotifyAsync(ids, notification);
             }
         }
-        public int IsEmailRegistered(string sEmail)
+        public async Task<int> IsEmailRegisteredAsync(string sEmail)
         {
             string sEmployeeId = "0";
-            var employeeInDb = _db.Employees.Where(m => m.Email == sEmail).FirstOrDefault();
+            var employeeInDb = await _db.Employees.Where(m => m.Email == sEmail).FirstOrDefaultAsync();
             if (employeeInDb != null)
             {
                 sEmployeeId = employeeInDb.Id.ToString();
             }
             return Convert.ToInt32(sEmployeeId);
         }
-        public async Task<dtoRedirection> GetRedirectionObject()
+        public async Task<dtoRedirection> GetRedirectionObjectAsync()
         {
-            string sRoleName = await GetRoleName(GetEmployeeEmail());
+            string sRoleName = await GetRoleNameAsync(await GetEmployeeEmailAsync());
             var dto = sRoleName switch
             {
                 SD.Role_User => new dtoRedirection("Users", "Home", "Index"),
@@ -188,7 +203,7 @@ namespace MODAMS.Utility
             };
             return dto;
         }
-        public async Task<int> GetDepartmentId(int nEmployeeId)
+        public async Task<int> GetDepartmentIdAsync(int nEmployeeId)
         {
             var employeeRole = await _db.vwEmployees.Where(m => m.Id == nEmployeeId).Select(m => m.RoleName).FirstOrDefaultAsync();
 
@@ -202,10 +217,10 @@ namespace MODAMS.Utility
             }
             return departmentId;
         }
-        public async Task<string> GetDepartmentName(int nEmployeeId)
+        public async Task<string> GetDepartmentNameAsync(int nEmployeeId)
         {
             string sResult = "Department not available!";
-            int nDepartmentId = await GetDepartmentId(nEmployeeId);
+            int nDepartmentId = await GetDepartmentIdAsync(nEmployeeId);
             var department = _db.Departments.Where(m => m.EmployeeId == nEmployeeId).FirstOrDefault();
             if (department != null)
             {
@@ -213,18 +228,19 @@ namespace MODAMS.Utility
             }
             return sResult;
         }
-        public string GetDepartmentNameById(int nDepartmentId) {
+        public async Task<string> GetDepartmentNameByIdAsync(int nDepartmentId)
+        {
             string sResult = "Department not available!";
-            var department = _db.Departments.Where(m => m.Id == nDepartmentId).FirstOrDefault();
+            var department = await _db.Departments.Where(m => m.Id == nDepartmentId).FirstOrDefaultAsync();
             if (department != null)
             {
                 sResult = department.Name;
             }
             return sResult;
         }
-        public string GetRoleName(int nEmployeeId)
+        public async Task<string> GetRoleNameAsync(int nEmployeeId)
         {
-            string? rolename = _db.vwEmployees.Where(m => m.Id == nEmployeeId).Select(m => m.RoleName).FirstOrDefault();
+            string? rolename = await _db.vwEmployees.Where(m => m.Id == nEmployeeId).Select(m => m.RoleName).FirstOrDefaultAsync();
             if (rolename == null)
             {
                 rolename = "No role assigned";
@@ -243,13 +259,25 @@ namespace MODAMS.Utility
                 return employee.SupervisorEmployeeId;
             }
         }
-        public string GetSupervisorName(int nEmployeeId)
+        public async Task<int> GetSupervisorIdAsync(int nEmployeeId)
         {
-            var employee = _db.vwEmployees.Where(m => m.Id == nEmployeeId).FirstOrDefault();
+            var employee = await _db.Employees.Where(m => m.Id == nEmployeeId).FirstOrDefaultAsync();
+            if (employee == null)
+            {
+                return 0;
+            }
+            else
+            {
+                return employee.SupervisorEmployeeId;
+            }
+        }
+        public async Task<string> GetSupervisorNameAsync(int nEmployeeId)
+        {
+            var employee = await _db.vwEmployees.Where(m => m.Id == nEmployeeId).FirstOrDefaultAsync();
             string? supervisorName = "Supervisor not available!";
             if (employee != null)
             {
-                var rec = _db.Employees.Where(m => m.Id == employee.SupervisorEmployeeId).SingleOrDefault();
+                var rec = await _db.Employees.Where(m => m.Id == employee.SupervisorEmployeeId).SingleOrDefaultAsync();
                 if (rec != null)
                 {
                     supervisorName = rec.FullName;
@@ -257,12 +285,12 @@ namespace MODAMS.Utility
             }
             return supervisorName;
         }
-        public int GetStoreIdByAssetId(int assetId)
+        public async Task<int> GetStoreIdByAssetIdAsync(int assetId)
         {
             int storeId = 0;
             if (assetId > 0)
             {
-                var asset = _db.Assets.Where(m => m.Id == assetId).FirstOrDefault();
+                var asset = await _db.Assets.Where(m => m.Id == assetId).FirstOrDefaultAsync();
                 if (asset != null)
                 {
                     storeId = asset.StoreId;
@@ -270,22 +298,36 @@ namespace MODAMS.Utility
             }
             return storeId;
         }
-        public int GetStoreIdByDepartmentId(int departmentId)
+        public async Task<int> GetStoreIdByEmployeeIdAsync(int employeeId)
         {
             int storeId = 0;
-            var store = _db.Stores.Where(m => m.DepartmentId == departmentId).FirstOrDefault();
+            var department = await _db.Departments.Where(m => m.EmployeeId == employeeId).FirstOrDefaultAsync();
+            if (department != null)
+            {
+                var store = await _db.Stores.Where(m => m.DepartmentId == department.Id).FirstOrDefaultAsync();
+                if (store != null)
+                {
+                    storeId = store.Id;
+                }
+            }
+            return storeId;
+        }
+        public async Task<int> GetStoreIdByDepartmentIdAsync(int departmentId)
+        {
+            int storeId = 0;
+            var store = await _db.Stores.Where(m => m.DepartmentId == departmentId).FirstOrDefaultAsync();
             if (store != null)
             {
                 storeId = store.Id;
             }
             return storeId;
         }
-        public string GetStoreNameByStoreId(int storeId)
+        public async Task<string> GetStoreNameByStoreIdAsync(int storeId)
         {
             string storeName = "";
             if (storeId > 0)
             {
-                var store = _db.Stores.Where(m => m.Id == storeId).Select(m => m.Name).FirstOrDefault();
+                var store = await _db.Stores.Where(m => m.Id == storeId).Select(m => m.Name).FirstOrDefaultAsync();
                 if (store != null)
                     storeName = store.ToString();
             }
@@ -322,10 +364,41 @@ namespace MODAMS.Utility
 
             return depreciatedCost;
         }
-        public decimal GetDepreciatedCostByStoreId(int storeId)
+        public async Task<decimal> GetDepreciatedCostAsync(int nAssetId)
         {
-            var assetList = _db.Assets.Where(m => m.StoreId == storeId)
-                .Select(m => new { m.Id }).ToList();
+            //(Cost / LifeSpan_months) * (LifeSpan_months - Age)
+            decimal depreciatedCost = 0;
+
+            if (nAssetId > 0)
+            {
+                var asset = await _db.Assets.Where(m => m.Id == nAssetId).Include(m => m.SubCategory).FirstOrDefaultAsync();
+                if (asset != null)
+                {
+                    int nLifeSpan = asset.SubCategory.LifeSpan;
+                    decimal cost = asset.Cost;
+
+                    if (asset.RecieptDate != null)
+                    {
+                        DateTimeOffset date1 = (DateTimeOffset)asset.RecieptDate;
+                        DateTimeOffset date2 = DateTime.Now;
+
+                        //find difference between two dates in months
+                        int age = (date2.Year - date1.Year) * 12 + date2.Month - date1.Month;
+
+                        depreciatedCost = (cost / nLifeSpan) * (nLifeSpan - age);
+                    }
+                }
+            }
+
+            if (depreciatedCost < 0)
+                depreciatedCost = 0;
+
+            return depreciatedCost;
+        }
+        public async Task<decimal> GetDepreciatedCostByStoreIdAsync(int storeId)
+        {
+            var assetList = await _db.Assets.Where(m => m.StoreId == storeId)
+                .Select(m => new { m.Id }).ToListAsync();
 
             decimal totalCost = 0;
 
@@ -335,9 +408,9 @@ namespace MODAMS.Utility
             }
             return Math.Round(totalCost, 0);
         }
-        public string GetProfileImage(int employeeId)
+        public async Task<string> GetProfileImageAsync(int employeeId)
         {
-            var employee = _db.Employees.FirstOrDefault(m => m.Id == employeeId);
+            var employee = await _db.Employees.FirstOrDefaultAsync(m => m.Id == employeeId);
             return employee?.ImageUrl ?? "";
         }
         public string FormatMessage(string title, string message, string email, string returnUrl, string btntext)
@@ -358,17 +431,17 @@ namespace MODAMS.Utility
 
             return emailMessage;
         }
-        public int GetStoreOwnerId(int storeId)
+        public async Task<int> GetStoreOwnerIdAsync(int storeId)
         {
             int departmentId = 0;
             int storeOwnerId = 0;
 
-            var store = _db.Stores.Where(m => m.Id == storeId).FirstOrDefault();
+            var store = await _db.Stores.Where(m => m.Id == storeId).FirstOrDefaultAsync();
             if (store != null)
             {
                 departmentId = store.DepartmentId;
-                var departmentHead = _db.DepartmentHeads
-                    .Where(m => m.DepartmentId == departmentId && m.IsActive == true).FirstOrDefault();
+                var departmentHead = await _db.DepartmentHeads
+                    .Where(m => m.DepartmentId == departmentId && m.IsActive == true).FirstOrDefaultAsync();
                 if (departmentHead != null)
                 {
                     storeOwnerId = departmentHead.EmployeeId;
@@ -376,28 +449,15 @@ namespace MODAMS.Utility
             }
             return storeOwnerId;
         }
-        public int GetStoreIdByEmployeeId(int employeeId)
+        public async Task<List<vwStore>> GetStoresByEmployeeIdAsync(int employeeId)
         {
-            int storeId = 0;
-            var department = _db.Departments.Where(m => m.EmployeeId == employeeId).FirstOrDefault();
-            if (department != null)
-            {
-                var store = _db.Stores.Where(m => m.DepartmentId == department.Id).FirstOrDefault();
-                if (store != null)
-                {
-                    storeId = store.Id;
-                }
-            }
-            return storeId;
-        }
-        public async Task<List<vwStore>> GetStoresByEmployeeId(int employeeId) { 
-            string sRoleName = GetRoleName(employeeId);
+            string sRoleName = await GetRoleNameAsync(employeeId);
             int supervisorEmployeeId = GetSupervisorId(employeeId);
 
             var stores = await _db.vwStores.OrderByDescending(m => m.TotalCount).ToListAsync();
             var allStores = stores;
 
-            if (sRoleName=="User")
+            if (sRoleName == "User")
             {
                 stores = stores.Where(m => m.EmployeeId == supervisorEmployeeId).ToList();
             }
@@ -422,10 +482,10 @@ namespace MODAMS.Utility
 
             return stores;
         }
-        public string GetEmployeeNameById(int employeeId)
+        public async Task<string> GetEmployeeNameByIdAsync(int employeeId)
         {
             string EmployeeName = "Not found!";
-            var employee = _db.Employees.Where(m => m.Id == employeeId).FirstOrDefault();
+            var employee = await _db.Employees.Where(m => m.Id == employeeId).FirstOrDefaultAsync();
             if (employee != null)
             {
                 EmployeeName = employee.FullName;
@@ -455,7 +515,7 @@ namespace MODAMS.Utility
             }
             return sResult;
         }
-        public string GetStoreOwnerInfo(int storeId)
+        public async Task<string> GetStoreOwnerInfoAsync(int storeId)
         {
             string sResult = "Vacant";
             string storeOwner = "";
@@ -463,8 +523,8 @@ namespace MODAMS.Utility
             string imageUrl = "";
             bool blnCheck = false;
 
-            var employeeId = GetStoreOwnerId(storeId);
-            var rec = _db.Employees.FirstOrDefault(m => m.Id == employeeId);
+            var employeeId = await GetStoreOwnerIdAsync(storeId);
+            var rec = await _db.Employees.FirstOrDefaultAsync(m => m.Id == employeeId);
             if (rec != null)
             {
                 storeOwner = rec.FullName;
@@ -488,10 +548,10 @@ namespace MODAMS.Utility
 
             return sResult;
         }
-        public bool IsUserActive(string emailAddress)
+        public async Task<bool> IsUserActiveAsync(string emailAddress)
         {
             var blnResult = false;
-            var employee = _db.Employees.Where(m => m.Email == emailAddress).FirstOrDefault();
+            var employee = await _db.Employees.Where(m => m.Email == emailAddress).FirstOrDefaultAsync();
             if (employee != null)
             {
                 if (employee.IsActive)
@@ -501,7 +561,7 @@ namespace MODAMS.Utility
             }
             return blnResult;
         }
-        public void LogNewsFeed(string description, string area, string controller, string action, int sourceRecordId)
+        public async Task LogNewsFeedAsync(string description, string area, string controller, string action, int sourceRecordId)
         {
             NewsFeed feed = new NewsFeed()
             {
@@ -513,12 +573,12 @@ namespace MODAMS.Utility
                 EmployeeId = GetEmployeeId(),
                 TimeStamp = DateTime.Now
             };
-            _db.NewsFeed.Add(feed);
-            _db.SaveChanges();
+            await _db.NewsFeed.AddAsync(feed);
+            await _db.SaveChangesAsync();
         }
-        public string GetAssetName(int assetId)
+        public async Task<string> GetAssetNameAsync(int assetId)
         {
-            var asset = _db.Assets.Where(m => m.Id == assetId).FirstOrDefault();
+            var asset = await _db.Assets.Where(m => m.Id == assetId).FirstOrDefaultAsync();
 
             string assetName = "";
             if (asset != null)
@@ -527,20 +587,23 @@ namespace MODAMS.Utility
             }
             return assetName;
         }
-        public async Task RecordLogin(string userId) {
+
+        public async Task RecordLoginAsync(string userId)
+        {
 
             string ipAddress = _contextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
 
             LoginHistory login = new LoginHistory()
             {
-                EmployeeId = await GetEmployeeIdByUserId(userId),
+                EmployeeId = await GetEmployeeIdByUserIdAsync(userId),
                 IPAddress = ipAddress,
                 TimeStamp = DateTime.Now
             };
             _db.LoginHistory.Add(login);
             _db.SaveChanges();
         }
-        public async Task<Asset> AssetGlobalSearch(string search)
+        
+        public async Task<Asset> AssetGlobalSearchAsync(string search)
         {
             var asset = await _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted && m.Barcode == search)
                 .Include(m => m.SubCategory).ThenInclude(m => m.Category)
@@ -582,8 +645,11 @@ namespace MODAMS.Utility
         }
 
 
+
+
+
         //Private methods
-        private void Notify(int[] arrEmpIds, Notification notification)
+        private async Task NotifyAsync(int[] arrEmpIds, Notification notification)
         {
             foreach (int id in arrEmpIds)
             {
@@ -599,16 +665,14 @@ namespace MODAMS.Utility
                     NotificationSectionId = notification.NotificationSectionId
                 };
                 newNotification.EmployeeTo = id;
-                _db.Notifications.Add(newNotification);
-                _db.SaveChanges();
+                await _db.Notifications.AddAsync(newNotification);
+                await _db.SaveChangesAsync();
 
-                SendEmail(id, notification.Subject, notification.Message, notification.TargetRecordId, notification.NotificationSectionId);
+                await SendEmailAsync(id, notification.Subject, notification.Message, notification.TargetRecordId, notification.NotificationSectionId);
             }
         }
-        private async void SendEmail(int empId, string subject, string message, int recordId, int sectionId)
-        {
-            EmailSender sender = new EmailSender();
-
+        private async Task SendEmailAsync(int empId, string subject, string message, int recordId, int sectionId)
+        {   
             var emp = _db.Employees.Where(m => m.Id == empId).FirstOrDefault();
             string sEmail = "";
             string sFullName = "";
@@ -624,17 +688,17 @@ namespace MODAMS.Utility
 
             try
             {
-                await sender.SendEmailAsync(
+                await _emailSender.SendEmailAsync(
                 sEmail,
                 subject,
                 sEmailMessage);
+
+                _logger.LogInformation($"Email sent to {sEmail} with subject '{subject}'.");
             }
             catch (Exception ex)
             {
-                throw ex;
+                _logger.LogError($"error sending email: {ex.Message}");
             }
-
-
         }
         private string GenerateUrl(int notificationSectionId, int targetRecordId)
         {
@@ -660,5 +724,43 @@ namespace MODAMS.Utility
 
             return HtmlEncoder.Default.Encode(callbackUrl);
         }
+
+
+        //Depreciation Calculation
+        private decimal CalculateDepreciatedCost(assetDto asset)
+        {
+            //(Cost / LifeSpan_months) * (LifeSpan_months - Age)
+            decimal depreciatedCost = 0;
+
+            if (asset != null)
+            {
+                int nLifeSpan = asset.LifeSpan;
+                decimal cost = asset.Cost;
+
+                if (asset.RecieptDate != null)
+                {
+                    DateTimeOffset date1 = (DateTimeOffset)asset.RecieptDate;
+                    DateTimeOffset date2 = DateTime.Now;
+
+                    // Find the difference between two dates in months
+                    int age = (date2.Year - date1.Year) * 12 + date2.Month - date1.Month;
+
+                    depreciatedCost = (cost / nLifeSpan) * (nLifeSpan - age);
+                }
+            }
+
+            if (depreciatedCost < 0)
+                depreciatedCost = 0;
+
+            return depreciatedCost;
+        }
+        private class assetDto
+        {
+            public int Id { get; set; }
+            public int LifeSpan { get; set; }
+            public decimal Cost { get; set; }
+            public DateTime? RecieptDate { get; set; }
+        }
     }
+
 }

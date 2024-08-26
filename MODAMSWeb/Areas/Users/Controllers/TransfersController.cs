@@ -32,7 +32,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(int id = 0, int transferStatusId = 0)
         {
-            _employeeId = (User.IsInRole("User")) ? _func.GetSupervisorId(_employeeId) : _employeeId;
+            _employeeId = (User.IsInRole("User")) ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
             transferStatusId = 0;
             var stores = await _db.Stores.ToListAsync();
             var dto = new dtoTransfer();
@@ -42,7 +42,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             {
                 if (User.IsInRole("User") || User.IsInRole("StoreOwner"))
                 {
-                    _storeId = _func.GetStoreIdByEmployeeId(_employeeId);
+                    _storeId = await _func.GetStoreIdByEmployeeIdAsync(_employeeId);
                     var storeList = stores.ToList().Select(m => new SelectListItem
                     {
                         Text = m.Name,
@@ -109,7 +109,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     dto.StoreList = storeList;
                 }
             }
-            if (_employeeId == _func.GetStoreOwnerId(_storeId))
+            if (_employeeId == await _func.GetStoreOwnerIdAsync(_storeId))
                 dto.IsAuthorized = true;
 
             var transfers = await _db.vwTransfers.Where(m => m.StoreFromId == _storeId)
@@ -146,14 +146,14 @@ namespace MODAMSWeb.Areas.Users.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateTransfer()
         {
-            _employeeId = (User.IsInRole("User")) ? _func.GetSupervisorId(_employeeId) : _employeeId;
+            _employeeId = (User.IsInRole("User")) ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
 
             var dto = new dtoCreateTransfer();
             List<MODAMS.Models.Asset> assets = await GetAssets();
             List<dtoTransferAsset> transferAssets = new List<dtoTransferAsset>();
 
 
-            TempData["storeFrom"] = await _func.GetDepartmentName(_employeeId);
+            TempData["storeFrom"] = await _func.GetDepartmentNameAsync(_employeeId);
 
 
             if (assets.Count > 0)
@@ -197,8 +197,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateTransfer(dtoCreateTransfer transferDTO, string selectedAssets)
         {
-            _employeeId = (User.IsInRole("User")) ? _func.GetSupervisorId(_employeeId) : _employeeId;
-            var storeId = _func.GetStoreIdByEmployeeId(_employeeId);
+            _employeeId = (User.IsInRole("User")) ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
+            var storeId = await _func.GetStoreIdByEmployeeIdAsync(_employeeId);
 
 
             if (!ModelState.IsValid)
@@ -242,19 +242,19 @@ namespace MODAMSWeb.Areas.Users.Controllers
                                 TransferId = transfer.Id
                             };
                             transferDetails.Add(transferDetail);
-                            assetNamesForLog += _func.GetAssetName(asset) + ", ";
+                            assetNamesForLog += await _func.GetAssetNameAsync(asset) + ", ";
                         }
                         _db.TransferDetails.AddRange(transferDetails);
                         await _db.SaveChangesAsync();
                     }
 
                     //Log NewsFeed
-                    string employeeName = await _func.GetEmployeeName();
+                    string employeeName = await _func.GetEmployeeNameAsync();
                     string assetName = assetNamesForLog;
-                    string storefrom = _func.GetStoreNameByStoreId(prevStoreId);
-                    string storeTo = _func.GetStoreNameByStoreId(transfer.StoreId);
+                    string storefrom = await _func.GetStoreNameByStoreIdAsync(prevStoreId);
+                    string storeTo = await _func.GetStoreNameByStoreIdAsync(transfer.StoreId);
                     string message = $"{employeeName} transferred ({assetName}) from {storefrom} to {storeTo}";
-                    _func.LogNewsFeed(message, "Users", "Transfers", "PreviewTransfer", transfer.Id);
+                    await _func.LogNewsFeedAsync(message, "Users", "Transfers", "PreviewTransfer", transfer.Id);
 
                     await _db.Database.CommitTransactionAsync();
 
@@ -275,8 +275,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
         [HttpGet]
         public async Task<IActionResult> EditTransfer(int id)
         {
-            _employeeId = (User.IsInRole("User")) ? _func.GetSupervisorId(_employeeId) : _employeeId;
-            TempData["storeFrom"] = await _func.GetDepartmentName(_employeeId);
+            _employeeId = (User.IsInRole("User")) ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
+            TempData["storeFrom"] = await _func.GetDepartmentNameAsync(_employeeId);
 
             var transfer = await _db.Transfers.FirstOrDefaultAsync(m => m.Id == id);
             if (transfer == null)
@@ -333,8 +333,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
         [HttpPost]
         public async Task<IActionResult> EditTransfer(dtoEditTransfer transferDTO, string selectedAssets)
         {
-            _employeeId = (User.IsInRole("User")) ? _func.GetSupervisorId(_employeeId) : _employeeId;
-            var storeId = _func.GetStoreIdByEmployeeId(_employeeId);
+            _employeeId = (User.IsInRole("User")) ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
+            var storeId = await _func.GetStoreIdByEmployeeIdAsync(_employeeId);
 
             if (!ModelState.IsValid)
             {
@@ -401,9 +401,9 @@ namespace MODAMSWeb.Areas.Users.Controllers
         }
 
         [HttpGet]
-        public IActionResult PreviewTransfer(int id)
+        public async Task<IActionResult> PreviewTransfer(int id)
         {
-            _employeeId = (User.IsInRole("User")) ? _func.GetSupervisorId(_employeeId) : _employeeId;
+            _employeeId = (User.IsInRole("User")) ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
 
             var transfer = _db.vwTransfers.Where(m => m.Id == id).FirstOrDefault();
             if (transfer == null)
@@ -455,8 +455,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
             }
             dto.transferAssets = transferAssets;
 
-            int senderId = _func.GetStoreOwnerId(transfer.StoreFromId);
-            int receiverId = _func.GetStoreOwnerId(transfer.StoreId);
+            int senderId = await _func.GetStoreOwnerIdAsync(transfer.StoreFromId);
+            int receiverId = await _func.GetStoreOwnerIdAsync(transfer.StoreId);
 
             dto.IsSender = (senderId == _employeeId) ? true : false;
             dto.IsReceiver = (receiverId == _employeeId) ? true : false;
@@ -503,38 +503,38 @@ namespace MODAMSWeb.Areas.Users.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SubmitForAcknowledgement(int id)
         {
-            _employeeId = (User.IsInRole("User")) ? _func.GetSupervisorId(_employeeId) : _employeeId;
+            _employeeId = (User.IsInRole("User")) ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
 
-            var transfer = _db.Transfers.Where(m => m.Id == id).FirstOrDefault();
+            var transfer = await _db.Transfers.Where(m => m.Id == id).FirstOrDefaultAsync();
             if (transfer != null)
             {
-                int nEmployeeId = _func.GetEmployeeId();
+                int nEmployeeId = await _func.GetEmployeeIdAsync();
                 transfer.TransferStatusId = SD.Transfer_SubmittedForAcknowledgement;
-                transfer.SenderBarcode = await _func.GetEmployeeName(nEmployeeId);
+                transfer.SenderBarcode = await _func.GetEmployeeNameAsync(nEmployeeId);
 
                 await _db.SaveChangesAsync();
 
                 Notification notification = new Notification()
                 {
                     EmployeeFrom = _employeeId,
-                    EmployeeTo = _func.GetStoreOwnerId(transfer.StoreId),
+                    EmployeeTo = await _func.GetStoreOwnerIdAsync(transfer.StoreId),
                     Subject = "Transfer awaiting acknowledgement",
                     Message = "A new transfer has been submitted by "
-                       + _func.GetEmployeeNameById(_employeeId) +
+                       + await _func.GetEmployeeNameByIdAsync(_employeeId) +
                        " for your acknowledgement, please click the following link and follow the instructions",
                     DateTime = DateTime.Now,
                     IsViewed = false,
                     TargetRecordId = transfer.Id,
                     NotificationSectionId = SD.NS_Transfer
                 };
-                int departmentId = await _func.GetDepartmentId(notification.EmployeeTo);
+                int departmentId = await _func.GetDepartmentIdAsync(notification.EmployeeTo);
 
-                _func.NotifyDepartment(departmentId, notification);
+                await _func.NotifyDepartmentAsync(departmentId, notification);
 
                 //Log NewsFeed
-                string employeeName = await _func.GetEmployeeName();
+                string employeeName = await _func.GetEmployeeNameAsync();
                 string message = $"{employeeName} submitted the transfer ({transfer.TransferNumber}) for acknowledgement";
-                _func.LogNewsFeed(message, "Users", "Transfers", "PreviewTransfer", transfer.Id);
+                await _func.LogNewsFeedAsync(message, "Users", "Transfers", "PreviewTransfer", transfer.Id);
 
 
                 TempData["success"] = "Transfer Submitted for Acknowledgement";
@@ -553,9 +553,9 @@ namespace MODAMSWeb.Areas.Users.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AcknowledgeTransfer(int id)
         {
-            _employeeId = (User.IsInRole("User")) ? _func.GetSupervisorId(_employeeId) : _employeeId;
+            _employeeId = (User.IsInRole("User")) ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
 
-            var transfer = _db.Transfers.FirstOrDefault(m => m.Id == id);
+            var transfer = await _db.Transfers.FirstOrDefaultAsync(m => m.Id == id);
 
             if (transfer == null)
             {
@@ -563,9 +563,9 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 return RedirectToAction("PreviewTransfer", "Transfers", new { id = id });
             }
 
-            var transferDetails = _db.TransferDetails
+            var transferDetails = await _db.TransferDetails
                 .Where(m => m.TransferId == id)
-                .ToList();
+                .ToListAsync();
 
             foreach (var item in transferDetails)
             {
@@ -575,8 +575,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     continue;
                 try
                 {
-                    var fromStoreName = _func.GetStoreNameByStoreId(item.Transfer.StoreFromId);
-                    var toStoreName = _func.GetStoreNameByStoreId(item.Transfer.StoreId);
+                    var fromStoreName = await _func.GetStoreNameByStoreIdAsync(item.Transfer.StoreFromId);
+                    var toStoreName = await _func.GetStoreNameByStoreIdAsync(item.Transfer.StoreId);
 
                     var assetHistory = new AssetHistory()
                     {
@@ -597,16 +597,16 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     return RedirectToAction("PreviewTransfer", "Transfers", new { id = id });
                 }
             }
-            int nEmployeeId = _func.GetEmployeeId();
+            int nEmployeeId = await _func.GetEmployeeIdAsync();
 
             transfer.TransferStatusId = SD.Transfer_Completed;
-            transfer.ReceiverBarcode = await _func.GetEmployeeName(nEmployeeId);
+            transfer.ReceiverBarcode = await _func.GetEmployeeNameAsync(nEmployeeId);
             transfer.AcknowledgementDate = DateTime.Now;
 
             await _db.SaveChangesAsync();
 
-            var ownerId = _func.GetStoreOwnerId(transfer.StoreFromId);
-            var employeeName = _func.GetEmployeeNameById(_employeeId);
+            var ownerId = await _func.GetStoreOwnerIdAsync(transfer.StoreFromId);
+            var employeeName = await _func.GetEmployeeNameByIdAsync(_employeeId);
 
             var notification = new Notification()
             {
@@ -620,13 +620,13 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 NotificationSectionId = SD.NS_Transfer
             };
 
-            var departmentId = await _func.GetDepartmentId(notification.EmployeeTo);
-            _func.NotifyDepartment(departmentId, notification);
+            var departmentId = await _func.GetDepartmentIdAsync(notification.EmployeeTo);
+            await _func.NotifyDepartmentAsync(departmentId, notification);
 
 
             //Log NewsFeed
             string message = $"{employeeName} acknowledged the transfer ({transfer.TransferNumber})";
-            _func.LogNewsFeed(message, "Users", "Transfers", "PreviewTransfer", transfer.Id);
+            await _func.LogNewsFeedAsync(message, "Users", "Transfers", "PreviewTransfer", transfer.Id);
 
 
             TempData["success"] = "Transfer Acknowledged";
@@ -638,7 +638,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RejectTransfer(int id)
         {
-            _employeeId = (User.IsInRole("User")) ? _func.GetSupervisorId(_employeeId) : _employeeId;
+            _employeeId = (User.IsInRole("User")) ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
             var transfer = _db.Transfers.FirstOrDefault(m => m.Id == id);
 
             if (transfer == null)
@@ -649,12 +649,12 @@ namespace MODAMSWeb.Areas.Users.Controllers
             {
                 transfer.TransferStatusId = SD.Transfer_Rejected;
                 transfer.AcknowledgementDate = DateTime.Now;
-                transfer.ReceiverBarcode = await _func.GetEmployeeName(_employeeId);
+                transfer.ReceiverBarcode = await _func.GetEmployeeNameAsync(_employeeId);
 
                 await _db.SaveChangesAsync();
 
-                var ownerId = _func.GetStoreOwnerId(transfer.StoreFromId);
-                var employeeName = _func.GetEmployeeNameById(_employeeId);
+                var ownerId = await _func.GetStoreOwnerIdAsync(transfer.StoreFromId);
+                var employeeName = await _func.GetEmployeeNameByIdAsync(_employeeId);
 
                 var notification = new Notification
                 {
@@ -668,12 +668,12 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     NotificationSectionId = SD.NS_Transfer
                 };
 
-                var departmentId = await _func.GetDepartmentId(notification.EmployeeTo);
-                _func.NotifyDepartment(departmentId, notification);
+                var departmentId = await _func.GetDepartmentIdAsync(notification.EmployeeTo);
+                await _func.NotifyDepartmentAsync(departmentId, notification);
 
                 //Log NewsFeed
                 string message = $"{employeeName} rejected the transfer ({transfer.TransferNumber})";
-                _func.LogNewsFeed(message, "Users", "Transfers", "PreviewTransfer", transfer.Id);
+                await _func.LogNewsFeedAsync(message, "Users", "Transfers", "PreviewTransfer", transfer.Id);
 
                 TempData["success"] = "Transfer Rejected";
             }
@@ -732,19 +732,19 @@ namespace MODAMSWeb.Areas.Users.Controllers
         }
 
         [HttpGet]
-        public IActionResult TransferredAssets(int id)
+        public async Task<IActionResult> TransferredAssets(int id)
         {
-            var transferDetails = _db.TransferDetails
+            var transferDetails = await _db.TransferDetails
                 .Include(td => td.Transfer)
                 .Where(td => td.Transfer.StoreFromId == id && td.Transfer.TransferStatusId == 3)
-                .ToList();
+                .ToListAsync();
 
             var assetIds = transferDetails.Select(td => td.AssetId).ToList();
 
-            var assets = _db.Assets
+            var assets = await _db.Assets
                 .Include(asset => asset.SubCategory.Category)
                 .Where(asset => assetIds.Contains(asset.Id))
-                .ToList();
+                .ToListAsync();
 
             var dto = new List<dtoTransfersOutgoingAsset>();
 
@@ -757,8 +757,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     var outgoingAsset = new dtoTransfersOutgoingAsset
                     {
                         TransferDate = td.Transfer.TransferDate,
-                        StoreFrom = _func.GetStoreNameByStoreId(td.Transfer.StoreFromId),
-                        StoreTo = _func.GetStoreNameByStoreId(td.Transfer.StoreId),
+                        StoreFrom = await _func.GetStoreNameByStoreIdAsync(td.Transfer.StoreFromId),
+                        StoreTo = await _func.GetStoreNameByStoreIdAsync(td.Transfer.StoreId),
                         AssetId = td.AssetId,
                         Category = transferAsset.SubCategory?.Category?.CategoryName,
                         SubCategory = transferAsset.SubCategory?.SubCategoryName,
@@ -769,7 +769,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                         Condition = transferAsset.Condition?.ToString(),
                         SerialNumber = transferAsset.SerialNo,
                         Cost = transferAsset.Cost,
-                        CurrentValue = _func.GetDepreciatedCost(td.AssetId)
+                        CurrentValue = await _func.GetDepreciatedCostAsync(td.AssetId)
                     };
 
                     dto.Add(outgoingAsset);
@@ -780,7 +780,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
         }
 
         [HttpGet]
-        public IActionResult ReceivedAssets(int id)
+        public async Task<IActionResult> ReceivedAssets(int id)
         {
             var transferDetails = _db.TransferDetails
                 .Include(td => td.Transfer)
@@ -805,8 +805,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     var incomingAssets = new dtoTransfersIncomingAsset
                     {
                         TransferDate = td.Transfer.TransferDate,
-                        StoreFrom = _func.GetStoreNameByStoreId(td.Transfer.StoreFromId),
-                        StoreTo = _func.GetStoreNameByStoreId(td.Transfer.StoreId),
+                        StoreFrom = await _func.GetStoreNameByStoreIdAsync(td.Transfer.StoreFromId),
+                        StoreTo = await _func.GetStoreNameByStoreIdAsync(td.Transfer.StoreId),
                         AssetId = td.AssetId,
                         Category = transferAsset.SubCategory?.Category?.CategoryName,
                         SubCategory = transferAsset.SubCategory?.SubCategoryName,
@@ -817,7 +817,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                         Condition = transferAsset.Condition?.ToString(),
                         SerialNumber = transferAsset.SerialNo,
                         Cost = transferAsset.Cost,
-                        CurrentValue = _func.GetDepreciatedCost(td.AssetId)
+                        CurrentValue = await _func.GetDepreciatedCostAsync(td.AssetId)
                     };
 
                     dto.Add(incomingAssets);
@@ -911,8 +911,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
         }
         private async Task<int> GetCurrentStoreId()
         {
-            int departmentId = await _func.GetDepartmentId(_employeeId);
-            return _func.GetStoreIdByDepartmentId(departmentId);
+            int departmentId = await _func.GetDepartmentIdAsync(_employeeId);
+            return await _func.GetStoreIdByDepartmentIdAsync(departmentId);
 
         }
         private async Task<decimal> GetTotalTransferValue(int storeId)

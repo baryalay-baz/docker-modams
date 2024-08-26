@@ -133,7 +133,7 @@ namespace MODAMSWeb.Areas.Identity.Pages.Account
             returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
-            int nEmployeeId = await _func.GetEmployeeIdByEmail(Input.Email);
+            int nEmployeeId = await _func.GetEmployeeIdByEmailAsync(Input.Email);
 
             if (EmailHasAccount(Input.Email))
                 ModelState.AddModelError(string.Empty, Input.Email + " already has an associated account!");

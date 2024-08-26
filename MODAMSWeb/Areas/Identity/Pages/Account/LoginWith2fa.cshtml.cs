@@ -115,7 +115,7 @@ namespace MODAMSWeb.Areas.Identity.Pages.Account
             if (result.Succeeded)
             {
                 _logger.LogInformation("User with ID '{UserId}' logged in with 2fa.", user.Id);
-                await _func.RecordLogin(user.Id);
+                await _func.RecordLoginAsync(user.Id);
 
                 return LocalRedirect(returnUrl);
             }

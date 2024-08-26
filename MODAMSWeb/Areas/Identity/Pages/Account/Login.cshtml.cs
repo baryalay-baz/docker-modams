@@ -85,7 +85,7 @@ namespace MODAMSWeb.Areas.Identity.Pages.Account
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
 
-                if (!_func.IsUserActive(Input.Email))
+                if (!await _func.IsUserActiveAsync(Input.Email))
                 {
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                     return Page();
@@ -99,7 +99,7 @@ namespace MODAMSWeb.Areas.Identity.Pages.Account
                     if (user != null)
                     {
                         var userId = user.Id;
-                        await _func.RecordLogin(userId);
+                        await _func.RecordLoginAsync(userId);
                     }
 
                     return LocalRedirect(returnUrl);

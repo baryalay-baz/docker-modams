@@ -121,7 +121,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
 
         [Authorize(Roles = "StoreOwner, Administrator")]
         [HttpGet]
-        public IActionResult EditEmployee(int id)
+        public async Task<IActionResult> EditEmployee(int id)
         {
             if (id == 0)
             {
@@ -129,27 +129,28 @@ namespace MODAMSWeb.Areas.Admin.Controllers
                 return RedirectToAction("Index", "Employees");
             }
             var employeeDto = new dtoEmployee();
-            var employee = _db.Employees.Where(m => m.Id == id).FirstOrDefault();
+            var employee = await _db.Employees.Where(m => m.Id == id).FirstOrDefaultAsync();
 
             if (employee != null)
             {
                 employeeDto.Employee = employee;
 
-                var currentRole = _func.GetRoleName(id);
-                var roleList = _db.Roles.ToList().Select(m => new SelectListItem
+                var currentRole = await _func.GetRoleNameAsync(id);
+                var roleList = await _db.Roles.Select(m => new SelectListItem
                 {
                     Text = m.Name,
                     Value = m.Name
-                });
-                var employeeList = _db.Employees.ToList().Select(m => new SelectListItem
+                }).ToListAsync();
+
+                var employeeList = await _db.Employees.Select(m => new SelectListItem
                 {
                     Text = m.FullName,
                     Value = m.Id.ToString()
-                });
+                }).ToListAsync();
 
                 if (User.IsInRole("StoreOwner"))
                 {
-                    roleList = roleList.Where(m => m.Text == "User");
+                    roleList = (List<SelectListItem>)roleList.Where(m => m.Text == "User");
                 }
 
                 employeeDto.Employee = employee;

@@ -253,7 +253,7 @@ namespace MODAMS.Utility
 
             if (storeId == 0)
             {
-                var storeList = await _func.GetStoresByEmployeeId(_employeeId);
+                var storeList = await _func.GetStoresByEmployeeIdAsync(_employeeId);
 
                 var storeIds = storeList.Select(s => s.Id).ToList();
                 query = query.Where(asset => storeIds.Contains(asset.StoreId));

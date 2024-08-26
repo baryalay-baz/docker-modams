@@ -65,10 +65,10 @@
                                         <h4 class="mb-1">
                                             @Model.Asset.Make - @Model.Asset.Model - @Model.Asset.Year
                                             @{
-                                                var employeeId = _func.GetEmployeeId();
+                                                var employeeId = await _func.GetEmployeeIdAsync();
 
-                                                employeeId = (User.IsInRole("User")) ? _func.GetSupervisorId(employeeId) : employeeId;
-                                                if (employeeId == _func.GetStoreOwnerId(_func.GetStoreIdByAssetId(Model.Asset.Id)))
+                                                employeeId = (User.IsInRole("User")) ? await _func.GetSupervisorIdAsync(employeeId) : employeeId;
+                                                if (employeeId == await _func.GetStoreOwnerIdAsync(await _func.GetStoreIdByAssetIdAsync(Model.Asset.Id)))
                                                 {
                                                     <a asp-action="EditAsset" asp-controller="Assets" asp-route-id="@Model.Asset.Id" class="ms-1" id="checkElement"><i class="fe fe-edit"></i></a>
                                                 }
@@ -199,7 +199,7 @@
 
                                         if (cost > 0)
                                         {
-                                            depCost = _func.GetDepreciatedCost(Model.Asset.Id);
+                                            depCost = await _func.GetDepreciatedCostAsync(Model.Asset.Id);
                                             difference = cost - depCost;
 
                                             usePercentage = ((difference * 100) / cost).ToString("N0");
@@ -290,7 +290,7 @@
                                 </div>
                                 <div class="float-end">
                                     @{
-                                        if (employeeId == _func.GetStoreOwnerId(_func.GetStoreIdByAssetId(Model.Asset.Id)))
+                                        if (employeeId == await _func.GetStoreOwnerIdAsync(await _func.GetStoreIdByAssetIdAsync(Model.Asset.Id)))
                                         {
                                             <a class="btn btn-outline-primary btn-sm" asp-action="AssetDocuments" asp-controller="Assets" asp-route-id="@Model.Asset.Id" id="checkElement"><i class="fa fa-edit"></i>&nbsp;Edit Documents</a>
                                         }
@@ -352,7 +352,7 @@
                                 </div>
                                 <div class="float-end">
                                     @{
-                                        if (employeeId == _func.GetStoreOwnerId(_func.GetStoreIdByAssetId(Model.Asset.Id)))
+                                        if (employeeId == await _func.GetStoreOwnerIdAsync(await _func.GetStoreIdByAssetIdAsync(Model.Asset.Id)))
                                         {
                                             <a class="btn btn-outline-primary btn-sm" asp-action="AssetPictures" asp-controller="Assets" asp-route-id="@Model.Asset.Id" id="checkElement"><i class="fa fa-edit"></i>&nbsp;Edit Pictures</a>
                                         }

@@ -31,20 +31,21 @@ namespace MODAMSWeb.Areas.Users.Controllers
             _webHostEnvironment = webHostEnvironment;
 
         }
-        public IActionResult Index()
+        [HttpGet]
+        public async Task<IActionResult> Index()
         {
-            _employeeId = User.IsInRole("User") ? _func.GetSupervisorId(_employeeId) : _employeeId;
-            _storeId = _func.GetStoreIdByEmployeeId(_employeeId);
+            _employeeId = User.IsInRole("User") ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
+            _storeId = await _func.GetStoreIdByEmployeeIdAsync(_employeeId);
 
             var dto = new dtoDisposal();
 
-            if (_employeeId == _func.GetStoreOwnerId(_employeeId))
+            if (_employeeId == await _func.GetStoreOwnerIdAsync(_employeeId))
                 dto.IsAuthorized = true;
 
-            var disposals = _db.Disposals
+            var disposals = await _db.Disposals
                 .Include(m => m.DisposalType).Include(m => m.Asset).Include(m => m.Asset.Store)
                 .Include(m => m.Asset.SubCategory).Include(m => m.Asset.SubCategory.Category)
-                .ToList();
+                .ToListAsync();
 
             if (User.IsInRole("User") || User.IsInRole("StoreOwner"))
             {
@@ -53,7 +54,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             dto.Disposals = disposals;
             dto.StoreId = _storeId;
-            if (_func.GetStoreOwnerId(_storeId) == _employeeId)
+            if (await _func.GetStoreOwnerIdAsync(_storeId) == _employeeId)
             {
                 dto.IsAuthorized = true;
             }
@@ -61,7 +62,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 dto.IsAuthorized = false;
             }
 
-            var disposalChart = _db.Disposals
+            var disposalChart = await _db.Disposals
                 .Join(
                     _db.DisposalTypes,
                     disposal => disposal.DisposalTypeId,
@@ -77,7 +78,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                         Count = grouped.Count()
                     }
                 )
-                .ToList();
+                .ToListAsync();
 
             if (User.IsInRole("User") || User.IsInRole("StoreOwner"))
             {
@@ -89,11 +90,11 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
         [HttpGet]
         [Authorize(Roles = "StoreOwner, User")]
-        public IActionResult CreateDisposal()
+        public async Task<IActionResult> CreateDisposal()
         {
             var dto = new dtoCreateDisposal();
-            _employeeId = User.IsInRole("User") ? _func.GetSupervisorId(_employeeId) : _employeeId;
-            _storeId = _func.GetStoreIdByEmployeeId(_employeeId);
+            _employeeId = User.IsInRole("User") ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
+            _storeId = await _func.GetStoreIdByEmployeeIdAsync(_employeeId);
 
             var assetList = _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted && m.StoreId == _storeId)
                 .Include(m => m.SubCategory).Include(m => m.SubCategory.Category)
@@ -101,10 +102,10 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             dto.Assets = assetList;
 
-            dto.IsAuthorized = _func.GetStoreOwnerId(_storeId) == _employeeId ? true : false;
+            dto.IsAuthorized = await _func.GetStoreOwnerIdAsync(_storeId) == _employeeId ? true : false;
 
-            dto.StoreName = _func.GetStoreNameByStoreId(_storeId);
-            dto.StoreOwner = _func.GetEmployeeNameById(_func.GetStoreOwnerId(_storeId));
+            dto.StoreName = await _func.GetStoreNameByStoreIdAsync(_storeId);
+            dto.StoreOwner = await _func.GetEmployeeNameByIdAsync(await _func.GetStoreOwnerIdAsync(_storeId));
 
             var disposalTypeList = _db.DisposalTypes.ToList().Select(m => new SelectListItem
             {
@@ -125,7 +126,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             // Get the supervisor ID if the user is in the "User" role
             if (User.IsInRole("User"))
             {
-                _employeeId = _func.GetSupervisorId(_employeeId);
+                _employeeId = await _func.GetSupervisorIdAsync(_employeeId);
             }
 
             if (!ModelState.IsValid)
@@ -164,7 +165,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             await _db.SaveChangesAsync();
 
             // Update asset status if an asset is associated with the disposal
-            var asset = _db.Assets.FirstOrDefault(m => m.Id == disposal.AssetId);
+            var asset = await _db.Assets.FirstOrDefaultAsync(m => m.Id == disposal.AssetId);
             if (asset != null)
             {
                 asset.AssetStatusId = SD.Asset_Disposed;
@@ -177,17 +178,17 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 AssetId = disposal.AssetId,
                 TransactionRecordId = disposal.AssetId,
                 TransactionTypeId = SD.Transaction_Disposal,
-                Description = "Asset disposed by " + await _func.GetEmployeeName(_employeeId)
+                Description = "Asset disposed by " + await _func.GetEmployeeNameAsync()
             };
-            _db.AssetHistory.Add(assetHistory);
+            await _db.AssetHistory.AddAsync(assetHistory);
             await _db.SaveChangesAsync();
 
             //Log NewsFeed
-            string employeeName = await _func.GetEmployeeName();
-            string assetName = _func.GetAssetName(disposal.AssetId);
-            string storeName = _func.GetStoreNameByStoreId(_func.GetStoreIdByAssetId(disposal.AssetId));
+            string employeeName = await _func.GetEmployeeNameAsync();
+            string assetName = await _func.GetAssetNameAsync(disposal.AssetId);
+            string storeName = await _func.GetStoreNameByStoreIdAsync(await _func.GetStoreIdByAssetIdAsync(disposal.AssetId));
             string message = $"{employeeName} dipsosed an asset ({assetName}) in {storeName}";
-            _func.LogNewsFeed(message, "Users", "Disposals", "EditDiposal", disposal.AssetId);
+            await _func.LogNewsFeedAsync(message, "Users", "Disposals", "EditDiposal", disposal.AssetId);
 
             TempData["success"] = "Disposal added successfully!";
             return RedirectToAction("Index");
@@ -195,25 +196,25 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
         [HttpGet]
         [Authorize(Roles = "StoreOwner, User")]
-        public IActionResult EditDisposal(int id)
+        public async Task<IActionResult> EditDisposal(int id)
         {
             var employeeId = _employeeId;
 
             if (User.IsInRole("User"))
             {
-                employeeId = _func.GetSupervisorId(employeeId);
+                employeeId = await _func.GetSupervisorIdAsync(_employeeId);
             }
 
-            var storeId = _func.GetStoreIdByEmployeeId(employeeId);
+            var storeId = await _func.GetStoreIdByEmployeeIdAsync(employeeId);
 
-            var disposal = _db.Disposals
+            var disposal = await _db.Disposals
                 .Where(m => m.Id == id)
                 .Include(m => m.DisposalType)
                 .Include(m => m.Asset)
                     .ThenInclude(a => a.Store)
                 .Include(m => m.Asset.SubCategory)
                     .ThenInclude(s => s.Category)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
 
             if (disposal == null)
             {
@@ -224,23 +225,22 @@ namespace MODAMSWeb.Areas.Users.Controllers
             var dto = new dtoEditDisposal
             {
                 Disposal = disposal,
-                Assets = _db.Assets.Where(a => a.StoreId == storeId && a.AssetStatusId != SD.Asset_Deleted && a.AssetStatusId != SD.Asset_Disposed)
-                    .Include(a => a.SubCategory).ThenInclude(s => s.Category).ToList(),
+                Assets = await _db.Assets.Where(a => a.StoreId == storeId && a.AssetStatusId != SD.Asset_Deleted && a.AssetStatusId != SD.Asset_Disposed)
+                    .Include(a => a.SubCategory).ThenInclude(s => s.Category).ToListAsync(),
 
-                IsAuthorized = _func.GetStoreOwnerId(storeId) == employeeId,
-                StoreName = _func.GetStoreNameByStoreId(storeId),
-                StoreOwner = _func.GetEmployeeNameById(_func.GetStoreOwnerId(storeId)),
-                DisposalTypeList = _db.DisposalTypes
-                    .ToList()
+                IsAuthorized = await _func.GetStoreOwnerIdAsync(storeId) == employeeId,
+                StoreName = await _func.GetStoreNameByStoreIdAsync(storeId),
+                StoreOwner = await _func.GetEmployeeNameByIdAsync(await _func.GetStoreOwnerIdAsync(storeId)),
+                DisposalTypeList = await _db.DisposalTypes
                     .Select(dt => new SelectListItem
                     {
                         Text = dt.Type,
                         Value = dt.Id.ToString()
-                    }),
+                    }).ToListAsync()
             };
-            var currentDisposedAsset = _db.Assets
+            var currentDisposedAsset = await _db.Assets
                 .Include(m => m.SubCategory).ThenInclude(m => m.Category)
-                .FirstOrDefault(m => m.Id == disposal.AssetId);
+                .FirstOrDefaultAsync(m => m.Id == disposal.AssetId);
 
             if (currentDisposedAsset != null)
             {
@@ -260,7 +260,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             // Get the supervisor ID if the user is in the "User" role
             if (User.IsInRole("User"))
             {
-                _employeeId = _func.GetSupervisorId(_employeeId);
+                _employeeId = await _func.GetSupervisorIdAsync(_employeeId);
             }
 
             if (!ModelState.IsValid)
@@ -332,7 +332,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     AssetId = prevAssetId,
                     TransactionRecordId = prevAssetId,
                     TransactionTypeId = SD.Transaction_Disposal,
-                    Description = "Asset un-disposed by " + await _func.GetEmployeeName(_employeeId)
+                    Description = "Asset un-disposed by " + await _func.GetEmployeeNameAsync()
                 };
                 _db.AssetHistory.Add(assetHistory);
 
@@ -343,7 +343,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     AssetId = disposal.AssetId,
                     TransactionRecordId = disposal.AssetId,
                     TransactionTypeId = SD.Transaction_Disposal,
-                    Description = "Asset disposed by " + await _func.GetEmployeeName(_employeeId)
+                    Description = "Asset disposed by " + await _func.GetEmployeeNameAsync()
                 };
                 _db.AssetHistory.Add(newAssetHistory);
                 _db.SaveChanges();
@@ -358,11 +358,11 @@ namespace MODAMSWeb.Areas.Users.Controllers
             }
 
             //Log NewsFeed
-            string employeeName = await _func.GetEmployeeName();
-            string assetName = _func.GetAssetName(disposal.AssetId);
-            string storeName = _func.GetStoreNameByStoreId(_func.GetStoreIdByAssetId(disposal.AssetId));
+            string employeeName = await _func.GetEmployeeNameAsync();
+            string assetName = await _func.GetAssetNameAsync(disposal.AssetId);
+            string storeName = await _func.GetStoreNameByStoreIdAsync(await _func.GetStoreIdByAssetIdAsync(disposal.AssetId));
             string message = $"{employeeName} modified disposal record for an asset ({assetName}) in {storeName}";
-            _func.LogNewsFeed(message, "Users", "Disposals", "EditDisposal", disposal.Id);
+            await _func.LogNewsFeedAsync(message, "Users", "Disposals", "EditDisposal", disposal.Id);
 
             TempData["success"] = "Disposal updated successfully!";
             return RedirectToAction("EditDisposal", "Disposals", new { disposal.Id });

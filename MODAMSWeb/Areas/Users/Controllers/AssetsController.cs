@@ -35,12 +35,13 @@ namespace MODAMSWeb.Areas.Users.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
-        public IActionResult Index(int id, int subCategoryId = 0)
+        [HttpGet]
+        public async Task<IActionResult> Index(int id, int subCategoryId = 0)
         {
-            var assets = _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted && m.StoreId == id).Include(m => m.AssetStatus)
+            var assets = await _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted && m.StoreId == id).Include(m => m.AssetStatus)
                 .Include(m => m.SubCategory).ThenInclude(m => m.Category)
                 .Include(m => m.Condition).Include(m => m.Donor)
-                .Include(m => m.Store).ToList();
+                .Include(m => m.Store).ToListAsync();
 
             if (subCategoryId > 0)
             {
@@ -53,20 +54,20 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 Selected = (m.SubCategoryId == subCategoryId)
             });
 
-            var empId = User.IsInRole("User") ? _func.GetSupervisorId(_employeeId) : _employeeId;
+            var empId = User.IsInRole("User") ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
 
             var dto = new dtoAssets()
             {
                 assets = assets,
-                StoreOwnerId = _func.GetStoreOwnerId(id),
-                StoreOwnerInfo = _func.GetStoreOwnerInfo(id),
+                StoreOwnerId = await _func.GetStoreOwnerIdAsync(id),
+                StoreOwnerInfo = await _func.GetStoreOwnerInfoAsync(id),
                 CategorySelectList = categories
             };
 
-            if (empId == _func.GetStoreOwnerId(id))
+            if (empId == await _func.GetStoreOwnerIdAsync(id))
                 dto.IsAuthorized = true;
 
-            var subCategory = _db.SubCategories.Where(m => m.Id == subCategoryId).FirstOrDefault();
+            var subCategory = await _db.SubCategories.Where(m => m.Id == subCategoryId).FirstOrDefaultAsync();
 
             TempData["SubCategoryId"] = 0;
             TempData["SubCategoryName"] = "All Assets";
@@ -78,16 +79,16 @@ namespace MODAMSWeb.Areas.Users.Controllers
             }
 
             TempData["storeId"] = id;
-            TempData["storeName"] = _func.GetStoreNameByStoreId(id);
+            TempData["storeName"] = await _func.GetStoreNameByStoreIdAsync(id);
             return View(dto);
         }
 
-        public IActionResult AssetList(int id)
+        public async Task<IActionResult> AssetList(int id)
         {
 
-            var assets = _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted).Include(m => m.AssetStatus)
+            var assets = await _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted).Include(m => m.AssetStatus)
                 .Include(m => m.SubCategory).Include(m => m.Condition).Include(m => m.Donor)
-                .Include(m => m.Store).ToList();
+                .Include(m => m.Store).ToListAsync();
 
             if (id > 0)
             {
@@ -106,7 +107,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 AssetList = assets,
                 CategorySelectList = categories,
             };
-            var category = _db.Categories.Where(m => m.Id == id).FirstOrDefault();
+            var category = await _db.Categories.Where(m => m.Id == id).FirstOrDefaultAsync();
             TempData["categoryId"] = 0;
             TempData["categoryName"] = "All Assets";
 
@@ -121,20 +122,20 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
         [Authorize(Roles = "StoreOwner, User")]
         [HttpGet]
-        public IActionResult CreateAsset(int id)
+        public async Task<IActionResult> CreateAsset(int id)
         {
-            var empId = User.IsInRole("User") ? _func.GetSupervisorId(_employeeId) : _employeeId;
-            if (_func.GetStoreOwnerId(id) != empId)
+            var empId = User.IsInRole("User") ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
+            if (await _func.GetStoreOwnerIdAsync(id) != empId)
             {
                 TempData["error"] = "You are not authorized to perform this action!";
                 return RedirectToAction("Index", "Assets", new { area = "Users", id = id });
             }
 
             var dto = new dtoAsset();
-            dto = PopulateDtoAsset(dto);
+            dto = await PopulateDtoAssetAsync(dto);
 
             TempData["storeId"] = id;
-            TempData["storeName"] = _func.GetStoreNameByStoreId(id);
+            TempData["storeName"] = await _func.GetStoreNameByStoreIdAsync(id);
 
 
 
@@ -146,8 +147,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateAsset(dtoAsset dto)
         {
-            var empId = User.IsInRole("User") ? _func.GetSupervisorId(_employeeId) : _employeeId;
-            if (_func.GetStoreOwnerId(dto.StoreId) != empId)
+            var empId = User.IsInRole("User") ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
+            if (await _func.GetStoreOwnerIdAsync(dto.StoreId) != empId)
             {
                 TempData["error"] = "You are not authorized to perform this action!";
                 return RedirectToAction("Index", "Assets", new { area = "Users", id = dto.StoreId });
@@ -155,7 +156,9 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             if (ModelState.IsValid)
             {
-                var asset = _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted && m.SerialNo == dto.SerialNo).FirstOrDefault();
+                var asset = await _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted && m.SerialNo == dto.SerialNo)
+                    .FirstOrDefaultAsync();
+
                 if (asset == null)
                 {
                     try
@@ -190,11 +193,11 @@ namespace MODAMSWeb.Areas.Users.Controllers
                         await _db.SaveChangesAsync();
 
                         //Log Newsfeed
-                        string employeeName = await _func.GetEmployeeName();
+                        string employeeName = await _func.GetEmployeeNameAsync();
                         string assetName = newAsset.Name;
-                        string storeName = _func.GetStoreNameByStoreId(newAsset.StoreId);
+                        string storeName = await _func.GetStoreNameByStoreIdAsync(newAsset.StoreId);
                         string message = $"{employeeName} registered a new asset ({assetName}) in {storeName}";
-                        _func.LogNewsFeed(message, "Users", "Assets", "AssetInfo", newAsset.Id);
+                        await _func.LogNewsFeedAsync(message, "Users", "Assets", "AssetInfo", newAsset.Id);
 
                         var ah = new AssetHistory()
                         {
@@ -214,8 +217,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     {
                         TempData["error"] = ex.Message;
                         TempData["storeId"] = dto.StoreId;
-                        TempData["storeName"] = _func.GetStoreNameByStoreId(dto.StoreId);
-                        dto = PopulateDtoAsset(dto);
+                        TempData["storeName"] = await _func.GetStoreNameByStoreIdAsync(dto.StoreId);
+                        dto = await PopulateDtoAssetAsync(dto);
                         return View(dto);
                     }
 
@@ -225,8 +228,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     TempData["error"] = "Serial Number already in use";
 
                     TempData["storeId"] = dto.StoreId;
-                    TempData["storeName"] = _func.GetStoreNameByStoreId(dto.StoreId);
-                    dto = PopulateDtoAsset(dto);
+                    TempData["storeName"] = await _func.GetStoreNameByStoreIdAsync(dto.StoreId);
+                    dto = await PopulateDtoAssetAsync(dto);
 
                     return View(dto);
                 }
@@ -236,9 +239,9 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 TempData["error"] = "Please fill all the mandatory fields!";
 
                 TempData["storeId"] = dto.StoreId;
-                TempData["storeName"] = _func.GetStoreNameByStoreId(dto.StoreId);
+                TempData["storeName"] = await _func.GetStoreNameByStoreIdAsync(dto.StoreId);
 
-                dto = PopulateDtoAsset(dto);
+                dto = await PopulateDtoAssetAsync(dto);
                 return View(dto);
                 //return RedirectToAction("CreateAsset", "Assets", new { area = "Users", id = dto.StoreId });
             }
@@ -246,14 +249,16 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
         [Authorize(Roles = "StoreOwner, User")]
         [HttpGet]
-        public IActionResult EditAsset(int id)
+        public async Task<IActionResult> EditAsset(int id)
         {
             var dto = new dtoAsset();
-            dto = PopulateDtoAsset(dto);
+            dto = await PopulateDtoAssetAsync(dto);
+
+
 
             if (id > 0)
             {
-                var assetInDb = _db.Assets.Where(m => m.Id == id).FirstOrDefault();
+                var assetInDb = await _db.Assets.FirstOrDefaultAsync(m => m.Id == id);
                 if (assetInDb != null)
                 {
                     dto.Id = assetInDb.Id;
@@ -289,7 +294,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     dto.StoreId = assetInDb.StoreId;
 
                     TempData["storeId"] = assetInDb.StoreId;
-                    TempData["storeName"] = _func.GetStoreNameByStoreId(assetInDb.StoreId);
+                    TempData["storeName"] = await _func.GetStoreNameByStoreIdAsync(assetInDb.StoreId);
 
                 }
             }
@@ -302,8 +307,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditAsset(dtoAsset dto)
         {
-            var empId = User.IsInRole("User") ? _func.GetSupervisorId(_employeeId) : _employeeId;
-            if (_func.GetStoreOwnerId(dto.StoreId) != empId)
+            var empId = User.IsInRole("User") ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
+            if (await _func.GetStoreOwnerIdAsync(dto.StoreId) != empId)
             {
                 TempData["error"] = "You are not authorized to perform this action!";
                 return RedirectToAction("Index", "Assets", new { area = "Users", id = dto.StoreId });
@@ -347,49 +352,49 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
 
                     //Log Newsfeed
-                    string employeeName = await _func.GetEmployeeName();
+                    string employeeName = await _func.GetEmployeeNameAsync();
                     string assetName = assetInDb.Name;
-                    string storeName = _func.GetStoreNameByStoreId(assetInDb.StoreId);
+                    string storeName = await _func.GetStoreNameByStoreIdAsync(assetInDb.StoreId);
                     string message = $"{employeeName} modified an asset ({assetName}) in {storeName}";
-                    _func.LogNewsFeed(message, "Users", "Assets", "AssetInfo", assetInDb.Id);
+                    await _func.LogNewsFeedAsync(message, "Users", "Assets", "AssetInfo", assetInDb.Id);
 
                     TempData["success"] = "Changes saved succesfuly!";
                     return RedirectToAction("EditAsset", "Assets", new { area = "Users", id = dto.Id });
                 }
                 else
                 {
-                    dto = PopulateDtoAsset(dto);
+                    dto = await PopulateDtoAssetAsync(dto);
                     TempData["error"] = "Record not found!";
                     TempData["storeId"] = dto.StoreId;
-                    TempData["storeName"] = _func.GetStoreNameByStoreId(dto.StoreId);
+                    TempData["storeName"] = await _func.GetStoreNameByStoreIdAsync(dto.StoreId);
                     return View(dto);
                 }
             }
             else
             {
-                dto = PopulateDtoAsset(dto);
+                dto = await PopulateDtoAssetAsync(dto);
                 TempData["error"] = "All fields are mandatory!";
                 TempData["storeId"] = dto.StoreId;
-                TempData["storeName"] = _func.GetStoreNameByStoreId(dto.StoreId);
+                TempData["storeName"] = await _func.GetStoreNameByStoreIdAsync(dto.StoreId);
                 return View(dto);
             }
         }
 
         [Authorize(Roles = "Administrator, StoreOwner, User")]
         [HttpGet]
-        public IActionResult AssetDocuments(int id)
+        public async Task<IActionResult> AssetDocuments(int id)
         {
             var dto = new dtoAssetDocument();
             dto = PopulateDtoAssetDocument(dto, id);
 
-            var asset = _db.Assets.Where(m => m.Id == id).FirstOrDefault();
+            var asset = await _db.Assets.Where(m => m.Id == id).FirstOrDefaultAsync();
             if (asset != null)
             {
                 TempData["assetInfo"] = asset.Name + " - " + asset.Model + " - " + asset.Year;
             }
 
-            int nStoreId = _func.GetStoreIdByAssetId(id);
-            string sStoreName = _func.GetStoreNameByStoreId(nStoreId);
+            int nStoreId = await _func.GetStoreIdByAssetIdAsync(id);
+            string sStoreName = await _func.GetStoreNameByStoreIdAsync(nStoreId);
 
             TempData["storeId"] = nStoreId;
             TempData["storeName"] = sStoreName;
@@ -443,11 +448,11 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     await _db.SaveChangesAsync();
 
                     //Log News feed
-                    string employeeName = await _func.GetEmployeeName();
-                    string assetName = _func.GetAssetName(Id);
-                    string storeName = _func.GetStoreNameByStoreId(_func.GetStoreIdByAssetId(Id));
+                    string employeeName = await _func.GetEmployeeNameAsync();
+                    string assetName = await _func.GetAssetNameAsync(Id);
+                    string storeName = await _func.GetStoreNameByStoreIdAsync(await _func.GetStoreIdByAssetIdAsync(Id));
                     string message = $"{employeeName} uploaded {sFileName} for ({assetName}) in {storeName}";
-                    _func.LogNewsFeed(message, "Users", "Assets", "AssetInfo", Id);
+                    await _func.LogNewsFeedAsync(message, "Users", "Assets", "AssetInfo", Id);
                 }
                 catch (Exception ex)
                 {
@@ -530,11 +535,11 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     await _db.SaveChangesAsync();
 
                     int nAssetId = assetDocument.AssetId;
-                    int nStoreId = _func.GetStoreIdByAssetId(nAssetId);
+                    int nStoreId = await _func.GetStoreIdByAssetIdAsync(nAssetId);
 
 
-                    TempData["storeId"] = _func.GetStoreIdByAssetId(nAssetId);
-                    TempData["storeName"] = _func.GetStoreNameByStoreId(nStoreId);
+                    TempData["storeId"] = await _func.GetStoreIdByAssetIdAsync(nAssetId);
+                    TempData["storeName"] = await _func.GetStoreNameByStoreIdAsync(nStoreId);
 
                     return RedirectToAction("AssetDocuments", "Assets", new { id = nAssetId });
 
@@ -553,14 +558,14 @@ namespace MODAMSWeb.Areas.Users.Controllers
         }
 
         [HttpGet]
-        public IActionResult AssetPictures(int id)
+        public async Task<IActionResult> AssetPictures(int id)
         {
-            var assetPictures = _db.AssetPictures.Where(m => m.AssetId == id).ToList();
+            var assetPictures = await _db.AssetPictures.Where(m => m.AssetId == id).ToListAsync();
 
-            var storeId = _func.GetStoreIdByAssetId(id);
-            var storeName = _func.GetStoreNameByStoreId(storeId);
+            var storeId = await _func.GetStoreIdByAssetIdAsync(id);
+            var storeName = await _func.GetStoreNameByStoreIdAsync(storeId);
 
-            var asset = _db.Assets.Where(m => m.Id == id).FirstOrDefault();
+            var asset = await _db.Assets.Where(m => m.Id == id).FirstOrDefaultAsync();
             if (asset != null)
             {
                 TempData["assetInfo"] = asset.Name + " - " + asset.Model + " - " + asset.Year;
@@ -602,11 +607,11 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     await _db.SaveChangesAsync();
 
                     //Log NewsFeed
-                    string employeeName = await _func.GetEmployeeName();
-                    string assetName = _func.GetAssetName(AssetId);
-                    string storeName = _func.GetStoreNameByStoreId(_func.GetStoreIdByAssetId(AssetId));
+                    string employeeName = await _func.GetEmployeeNameAsync();
+                    string assetName = await _func.GetAssetNameAsync(AssetId);
+                    string storeName = await _func.GetStoreNameByStoreIdAsync(await _func.GetStoreIdByAssetIdAsync(AssetId));
                     string message = $"{employeeName} uploaded a picture for ({assetName}) in {storeName}";
-                    _func.LogNewsFeed(message, "Users", "Assets", "AssetInfo", AssetId);
+                    await _func.LogNewsFeedAsync(message, "Users", "Assets", "AssetInfo", AssetId);
 
                 }
                 catch (Exception ex)
@@ -688,14 +693,14 @@ namespace MODAMSWeb.Areas.Users.Controllers
             else
             {
                 assetInDb.AssetStatusId = 4;
-                assetInDb.Remarks = $"Asset Deleted by {await _func.GetEmployeeName()}";
+                assetInDb.Remarks = $"Asset Deleted by {await _func.GetEmployeeNameAsync()}";
             }
             await _db.SaveChangesAsync();
 
             var assetHistory = new AssetHistory()
             {
                 AssetId = id,
-                Description = $"Asset Deleted by {await _func.GetEmployeeName()}",
+                Description = $"Asset Deleted by {await _func.GetEmployeeNameAsync()}",
                 TimeStamp = DateTime.Now,
                 TransactionRecordId = id,
                 TransactionTypeId = SD.Transaction_Delete
@@ -703,7 +708,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             _db.AssetHistory.Add(assetHistory);
             await _db.SaveChangesAsync();
 
-            int storeId = _func.GetStoreIdByAssetId(id);
+            int storeId = await _func.GetStoreIdByAssetIdAsync(id);
 
             TempData["success"] = "Asset deleted successfuly!";
             return RedirectToAction("Index", "Assets", new { id = storeId });
@@ -727,14 +732,14 @@ namespace MODAMSWeb.Areas.Users.Controllers
             else
             {
                 assetInDb.AssetStatusId = 1;
-                assetInDb.Remarks = $"Asset Recovered by {await _func.GetEmployeeName()}";
+                assetInDb.Remarks = $"Asset Recovered by {await _func.GetEmployeeNameAsync()}";
             }
             await _db.SaveChangesAsync();
 
             var assetHistory = new AssetHistory()
             {
                 AssetId = id,
-                Description = $"Asset Recovered by {await _func.GetEmployeeName()}",
+                Description = $"Asset Recovered by {await _func.GetEmployeeNameAsync()}",
                 TimeStamp = DateTime.Now,
                 TransactionRecordId = id,
                 TransactionTypeId = SD.Transaction_Recover
@@ -795,33 +800,47 @@ namespace MODAMSWeb.Areas.Users.Controllers
         //API Calls End
 
         //Private functions
-        private dtoAsset PopulateDtoAsset(dtoAsset dto)
+        private async Task<dtoAsset> PopulateDtoAssetAsync(dtoAsset dto)
         {
-            var categories = _db.Categories.ToList().Select(m => new SelectListItem
-            {
-                Text = m.CategoryName,
-                Value = m.Id.ToString()
-            });
-            var subCategories = _db.SubCategories.ToList().Select(m => new SelectListItem
-            {
-                Text = m.SubCategoryName,
-                Value = m.Id.ToString()
-            });
-            var donors = _db.Donors.ToList().Select(m => new SelectListItem
-            {
-                Text = m.Name,
-                Value = m.Id.ToString()
-            });
-            var statuses = _db.AssetStatuses.ToList().Select(m => new SelectListItem
-            {
-                Text = m.StatusName,
-                Value = m.Id.ToString()
-            });
-            var conditions = _db.Conditions.ToList().Select(m => new SelectListItem
-            {
-                Text = m.ConditionName,
-                Value = m.Id.ToString()
-            });
+            var categories = await _db.Categories
+                .Select(m => new SelectListItem
+                {
+                    Text = m.CategoryName,
+                    Value = m.Id.ToString()
+                })
+                .ToListAsync();
+
+            var subCategories = await _db.SubCategories
+                .Select(m => new SelectListItem
+                {
+                    Text = m.SubCategoryName,
+                    Value = m.Id.ToString()
+                })
+                .ToListAsync();
+
+            var donors = await _db.Donors
+                .Select(m => new SelectListItem
+                {
+                    Text = m.Name,
+                    Value = m.Id.ToString()
+                })
+                .ToListAsync();
+
+            var statuses = await _db.AssetStatuses
+                .Select(m => new SelectListItem
+                {
+                    Text = m.StatusName,
+                    Value = m.Id.ToString()
+                })
+                .ToListAsync();
+
+            var conditions = await _db.Conditions
+                .Select(m => new SelectListItem
+                {
+                    Text = m.ConditionName,
+                    Value = m.Id.ToString()
+                })
+                .ToListAsync();
 
             dto.Categories = categories;
             dto.SubCategories = subCategories;
@@ -830,8 +849,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
             dto.Conditions = conditions;
 
             return dto;
-
         }
+
         private dtoAssetDocument PopulateDtoAssetDocument(dtoAssetDocument dto, int AssetId)
         {
 

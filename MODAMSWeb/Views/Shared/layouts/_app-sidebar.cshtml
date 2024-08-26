@@ -38,13 +38,20 @@
                 @{
                     if (User.IsInRole("User"))
                     {
+                        int employeeId = await _func.GetEmployeeIdAsync();
+                        int supervisorId = await _func.GetSupervisorIdAsync(employeeId);
+                        string departmentName = await _func.GetDepartmentNameAsync(supervisorId);
+
                         <div class="pb-3 text-info">Store User</div>
-                        <div>@await _func.GetDepartmentName(_func.GetSupervisorId(_func.GetEmployeeId()))</div>
+                        <div>@departmentName</div>
                     }
                     else if (User.IsInRole("StoreOwner"))
                     {
+                        int employeeId = await _func.GetEmployeeIdAsync();
+                        string departmentName = await _func.GetDepartmentNameAsync(employeeId);
+
                         <div class="pb-3 text-info">Store Owner</div>
-                        <div>@await _func.GetDepartmentName(_func.GetEmployeeId())</div>
+                        <div>@departmentName)</div>
                     }
                     else if (User.IsInRole("Administrator"))
                     {

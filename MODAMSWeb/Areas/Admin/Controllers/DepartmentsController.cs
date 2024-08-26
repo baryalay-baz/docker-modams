@@ -100,7 +100,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Administrator")]
-        public IActionResult EditDepartment(int id)
+        public async Task<IActionResult> EditDepartment(int id)
         {
             if (id == 0)
             {
@@ -108,7 +108,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
                 return RedirectToAction("Index", "Departments");
             }
 
-            var department = _db.Departments.Where(m => m.Id == id).FirstOrDefault();
+            var department = await _db.Departments.Where(m => m.Id == id).FirstOrDefaultAsync();
             string departmentOwner = "";
 
             if (department == null)
@@ -118,20 +118,20 @@ namespace MODAMSWeb.Areas.Admin.Controllers
             }
             else
             {
-                departmentOwner = _func.GetEmployeeNameById(department.EmployeeId == 0 || department.EmployeeId == null ? 0 : (int)department.EmployeeId);
+                departmentOwner = await _func.GetEmployeeNameByIdAsync(department.EmployeeId == 0 || department.EmployeeId == null ? 0 : (int)department.EmployeeId);
             }
 
-            var employeeList = _db.Employees.ToList().Select(m => new SelectListItem
+            var employeeList = await _db.Employees.Select(m => new SelectListItem
             {
                 Text = m.FullName,
                 Value = m.Id.ToString()
-            });
+            }).ToListAsync();
 
-            var departmentList = _db.vwDepartments.ToList().Select(m => new SelectListItem
+            var departmentList = await _db.vwDepartments.Select(m => new SelectListItem
             {
                 Text = m.Name,
                 Value = m.Id.ToString()
-            });
+            }).ToListAsync();
 
             var dto = new dtoDepartment()
             {
@@ -240,29 +240,31 @@ namespace MODAMSWeb.Areas.Admin.Controllers
 
         [HttpGet]
         [Authorize(Roles = "SeniorManagement, Administrator, StoreOwner")]
-        public IActionResult DepartmentHeads(int id)
+        public async Task<IActionResult> DepartmentHeads(int id)
         {
 
-            List<DepartmentHead> departmentHeads = _db.DepartmentHeads.Where(m => m.DepartmentId == id)
-                .Include(m => m.Employee).Include(m => m.Department).OrderByDescending(m => m.StartDate).ToList();
+            List<DepartmentHead> departmentHeads = await _db.DepartmentHeads.Where(m => m.DepartmentId == id)
+                .Include(m => m.Employee).Include(m => m.Department).OrderByDescending(m => m.StartDate).ToListAsync();
 
-            var availableEmployeesList = _db.vwAvailableEmployees.Where(m => m.RoleName == "StoreOwner").ToList().Select(m => new SelectListItem
+            var availableEmployeesList = await _db.vwAvailableEmployees.Where(m => m.RoleName == "StoreOwner").Select(m => new SelectListItem
             {
                 Text = m.FullName,
                 Value = m.Id.ToString()
-            });
+            }).ToListAsync();
 
-            var storeOwner = _func.GetEmployeeNameById(_func.GetDepartmentHead(id));
+            int departmentHeadId = await _func.GetDepartmentHeadAsync(id);
+            var storeOwner = await _func.GetEmployeeNameByIdAsync(departmentHeadId);
+
             storeOwner = storeOwner == "Not found!" ? "Vacant" : storeOwner;
-
-            var users = _db.vwEmployees.Where(m => m.SupervisorEmployeeId == _func.GetDepartmentHead(id) & m.RoleName == "User").ToList();
+            
+            var users = await _db.vwEmployees.Where(m => m.SupervisorEmployeeId == departmentHeadId & m.RoleName == "User").ToListAsync();
 
             var dto = new dtoDepartmentHeads()
             {
                 DepartmentHeads = departmentHeads,
                 Employees = availableEmployeesList,
                 DepartmentId = id,
-                DepartmentName = _func.GetDepartmentNameById(id),
+                DepartmentName = await _func.GetDepartmentNameByIdAsync(id),
                 Owner = storeOwner,
                 DepartmentUsers = users
             };

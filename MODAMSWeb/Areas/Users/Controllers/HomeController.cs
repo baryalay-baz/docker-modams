@@ -13,6 +13,7 @@ using System.Text;
 using MODAMS.Models.ViewModels.Dto;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+using Kendo.Mvc.UI;
 
 
 namespace MODAMSWeb.Areas.Users.Controllers
@@ -44,6 +45,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             var categoryAssets = await _db.vwCategoryAssets.ToListAsync();
@@ -82,10 +84,10 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     Email = employeeInDb.Email,
                     Phone = employeeInDb.Phone,
                     ImageUrl = employeeInDb.ImageUrl,
-                    Department = await _func.GetDepartmentName(_employeeId),
-                    RoleName = _func.GetRoleName(_employeeId),
+                    Department = await _func.GetDepartmentNameAsync(_employeeId),
+                    RoleName = await _func.GetRoleNameAsync(_employeeId),
                     SupervisorEmployeeId = employeeInDb.SupervisorEmployeeId,
-                    SupervisorName = _func.GetSupervisorName(_employeeId),
+                    SupervisorName = await _func.GetSupervisorNameAsync(_employeeId),
                     CardNumber = employeeInDb.CardNumber
                 };
             }
@@ -111,7 +113,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 rec.CardNumber = form.CardNumber;
                 await _db.SaveChangesAsync();
 
-                _func.LogNewsFeed(await _func.GetEmployeeName() + " updated his profile", "Users", "Home", "Profile", rec.Id);
+                await _func.LogNewsFeedAsync(await _func.GetEmployeeNameAsync() + " updated his profile", "Users", "Home", "Profile", rec.Id);
             }
             else
             {
@@ -124,7 +126,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
         public async Task<IActionResult> ResetPassword(int id = 0)
         {
-            string emailAddress = _func.GetEmployeeEmail();
+            string emailAddress = await _func.GetEmployeeEmailAsync();
             var user = await _userManager.FindByEmailAsync(emailAddress);
             if (user == null)
             {
@@ -211,7 +213,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     employee.ImageUrl = "/assets/images/faces/" + fileName;
                     await _db.SaveChangesAsync();
 
-                    _func.LogNewsFeed(await _func.GetEmployeeName() + " uploaded a profile picture", "Users", "Home", "Profile", employee.Id);
+                    await _func.LogNewsFeedAsync(await _func.GetEmployeeNameAsync() + " uploaded a profile picture", "Users", "Home", "Profile", employee.Id);
                 }
             }
             catch (Exception ex)
@@ -222,13 +224,13 @@ namespace MODAMSWeb.Areas.Users.Controllers
             return RedirectToAction("Profile", "Home");
 
         }
-        public string GetProfileData()
+        public async Task<string> GetProfileData()
         {
             string sResult = "No Records Found";
             var profileData = new List<dtoProfileData>();
-            string sEmail = _func.GetEmployeeEmail();
+            string sEmail = await _func.GetEmployeeEmailAsync();
 
-            var employeeInDb = _db.Employees.Where(m => m.Email == sEmail).SingleOrDefault();
+            var employeeInDb = await _db.Employees.Where(m => m.Email == sEmail).SingleOrDefaultAsync();
             if (employeeInDb != null)
             {
                 var profile = new dtoProfileData()
@@ -251,43 +253,55 @@ namespace MODAMSWeb.Areas.Users.Controllers
             return sResult;
         }
 
-        public string GetNotifications()
+        public async Task<string> GetNotifications()
         {
             string sResult = "No Records Found";
+
+            // Check roles and return early if necessary
             if (User.IsInRole("Administrator") || User.IsInRole("SeniorManagement"))
                 return "No Records Found";
 
-            var notifications = _db.Notifications.Where(m => m.EmployeeTo == _employeeId)
-                .Include(m => m.NotificationSection).OrderByDescending(m => m.DateTime).ToList();
+            // Retrieve the notifications from the database
+            var notifications = await _db.Notifications
+                .Where(m => m.EmployeeTo == _employeeId)
+                .Include(m => m.NotificationSection)
+                .OrderByDescending(m => m.DateTime)
+                .ToListAsync();
 
-            var dto = new List<dtoNotification>();
-
+            // If there are notifications, process them
             if (notifications.Count > 0)
             {
-                foreach (var notification in notifications)
+                // Create a list of dtoNotification without the ImageUrl
+                var dto = notifications.Select(m => new dtoNotification()
                 {
-                    var notif = new dtoNotification()
-                    {
-                        Id = notification.Id,
-                        DateTime = notification.DateTime,
-                        EmployeeFrom = notification.EmployeeFrom,
-                        EmployeeTo = notification.EmployeeTo,
-                        Subject = notification.Subject,
-                        Message = notification.Message,
-                        TargetRecordId = notification.TargetRecordId,
-                        IsViewed = notification.IsViewed,
-                        NotificationSectionId = notification.NotificationSectionId,
-                        Area = notification.NotificationSection.area,
-                        Controller = notification.NotificationSection.controller,
-                        Action = notification.NotificationSection.action,
-                        ImageUrl = _func.GetProfileImage(notification.EmployeeFrom)
-                    };
-                    dto.Add(notif);
+                    Id = m.Id,
+                    DateTime = m.DateTime,
+                    EmployeeFrom = m.EmployeeFrom,
+                    EmployeeTo = m.EmployeeTo,
+                    Subject = m.Subject,
+                    Message = m.Message,
+                    TargetRecordId = m.TargetRecordId,
+                    IsViewed = m.IsViewed,
+                    NotificationSectionId = m.NotificationSectionId,
+                    Area = m.NotificationSection.area,
+                    Controller = m.NotificationSection.controller,
+                    Action = m.NotificationSection.action
+                    // ImageUrl will be set later
+                }).ToList();
+
+                // Asynchronously fetch the ImageUrl for each dtoNotification
+                foreach (var notification in dto)
+                {
+                    notification.ImageUrl = await _func.GetProfileImageAsync(notification.EmployeeFrom);
                 }
+
+                // Serialize the dto list to JSON
                 sResult = JsonConvert.SerializeObject(dto);
             }
+
             return sResult;
         }
+
 
         public IActionResult Settings()
         {
@@ -303,7 +317,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             }
 
 
-            var asset = await _func.AssetGlobalSearch(barcode.Trim());
+            var asset = await _func.AssetGlobalSearchAsync(barcode.Trim());
             dtoGlobalSearch dto = new dtoGlobalSearch();
 
             if (asset != null)
@@ -361,13 +375,20 @@ namespace MODAMSWeb.Areas.Users.Controllers
                     NotificationSectionId = notification.NotificationSectionId,
                     Area = notification.NotificationSection.area,
                     Controller = notification.NotificationSection.controller,
-                    Action = notification.NotificationSection.action,
-                    ImageUrl = _func.GetProfileImage(notification.EmployeeFrom)
+                    Action = notification.NotificationSection.action
+                    // ImageUrl will be set later
                 })
                 .ToListAsync();
 
+            // Now, asynchronously set the ImageUrl for each notification
+            foreach (var notification in notifications)
+            {
+                notification.ImageUrl = await _func.GetProfileImageAsync(notification.EmployeeFrom);
+            }
+
             return View(notifications);
         }
+
 
         public async Task<IActionResult> ClearNotifications()
         {
