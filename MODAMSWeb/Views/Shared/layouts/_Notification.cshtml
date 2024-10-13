@@ -1,0 +1,38 @@
+﻿
+@{
+    var errorMessage = TempData["error"] as string;
+    var successMessage = TempData["success"] as string;
+}
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="notification-container">
+        <div class="alert alert-danger alert-dismissible fade show p-0 mb-0" role="alert">
+            <p class="py-3 px-5 mb-0 border-bottom border-bottom-danger-light">
+                <span class="alert-inner--icon me-2"><i class="fe fe-slash"></i></span>
+                <strong>Error Message</strong>
+            </p>
+            <p class="py-3 px-5">@errorMessage</p>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+        </div>
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(successMessage))
+{
+    <div class="notification-container">
+        <div class="alert alert-success alert-dismissible fade show p-0 mb-4 notification-message" role="alert">
+            <p class="py-3 px-5 mb-0 border-bottom border-bottom-success-light">
+                <span class="alert-inner--icon me-2"><i class="fe fe-thumbs-up"></i></span>
+                <strong>Success Message</strong>
+            </p>
+            <p class="py-3 px-5">@successMessage</p>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+        </div>
+    </div>
+}
+

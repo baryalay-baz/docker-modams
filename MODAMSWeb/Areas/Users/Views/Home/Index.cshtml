@@ -1,4 +1,4 @@
-﻿@model MODAMS.Models.ViewModels.Dto.dtoDashboard
+﻿@model MODAMS.Models.ViewModels.Dto.DashboardDTO
 <link href="~/assets/plugins/c3-0.7.20/c3.min.css" rel="stylesheet" />
 <style>
     body {
@@ -97,35 +97,35 @@
                 @{
                     foreach (var newsfeed in Model.NewsFeed)
                     {
-                        <span class="news-item text-muted p-2 text-info">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512">
-                                <style>
-                                    svg {
-                                        fill: lightblue
-                                    }
-                                </style>
-                                <path d="M0 256L28.5 28c2-16 15.6-28 31.8-28H228.9c15 0 27.1 12.1 27.1 27.1c0 3.2-.6 6.5-1.7 9.5L208 160H347.3c20.2 0 36.7 16.4 36.7 36.7c0 7.4-2.2 14.6-6.4 20.7l-192.2 281c-5.9 8.6-15.6 13.7-25.9 13.7h-2.9c-15.7 0-28.5-12.8-28.5-28.5c0-2.3 .3-4.6 .9-6.9L176 288H32c-17.7 0-32-14.3-32-32z" />
-                            </svg>
-                            @newsfeed.Description
-                        </span>
+                                    <span class="news-item text-muted p-2 text-info">
+                                        <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512">
+                                            <style>
+                                                svg {
+                                                    fill: lightblue
+                                                }
+                                            </style>
+                                            <path d="M0 256L28.5 28c2-16 15.6-28 31.8-28H228.9c15 0 27.1 12.1 27.1 27.1c0 3.2-.6 6.5-1.7 9.5L208 160H347.3c20.2 0 36.7 16.4 36.7 36.7c0 7.4-2.2 14.6-6.4 20.7l-192.2 281c-5.9 8.6-15.6 13.7-25.9 13.7h-2.9c-15.7 0-28.5-12.8-28.5-28.5c0-2.3 .3-4.6 .9-6.9L176 288H32c-17.7 0-32-14.3-32-32z" />
+                                        </svg>
+                                        @newsfeed.Description
+                                    </span>
 
-                        @Html.Raw("&nbsp; &nbsp; &nbsp;")
+                                    @Html.Raw("&nbsp; &nbsp; &nbsp;")
                     }
-                    @if (Model.NewsFeed.Count > 0)
+                                @if (Model.NewsFeed.Count > 0)
                     {
-                        <a asp-area="Users" asp-controller="Home" asp-action="Newsfeed">
-                            <span class="news-item text-muted p-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512">
-                                    <style>
-                                        svg {
-                                            fill: lightblue
-                                        }
-                                    </style>
-                                    <path d="M0 256L28.5 28c2-16 15.6-28 31.8-28H228.9c15 0 27.1 12.1 27.1 27.1c0 3.2-.6 6.5-1.7 9.5L208 160H347.3c20.2 0 36.7 16.4 36.7 36.7c0 7.4-2.2 14.6-6.4 20.7l-192.2 281c-5.9 8.6-15.6 13.7-25.9 13.7h-2.9c-15.7 0-28.5-12.8-28.5-28.5c0-2.3 .3-4.6 .9-6.9L176 288H32c-17.7 0-32-14.3-32-32z" />
-                                </svg>
-                                more...
-                            </span>
-                        </a>
+                                    <a asp-area="Users" asp-controller="Home" asp-action="Newsfeed">
+                                        <span class="news-item text-muted p-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512">
+                                                <style>
+                                                    svg {
+                                                        fill: lightblue
+                                                    }
+                                                </style>
+                                                <path d="M0 256L28.5 28c2-16 15.6-28 31.8-28H228.9c15 0 27.1 12.1 27.1 27.1c0 3.2-.6 6.5-1.7 9.5L208 160H347.3c20.2 0 36.7 16.4 36.7 36.7c0 7.4-2.2 14.6-6.4 20.7l-192.2 281c-5.9 8.6-15.6 13.7-25.9 13.7h-2.9c-15.7 0-28.5-12.8-28.5-28.5c0-2.3 .3-4.6 .9-6.9L176 288H32c-17.7 0-32-14.3-32-32z" />
+                                            </svg>
+                                            more...
+                                        </span>
+                                    </a>
                     }
 
                 }
@@ -275,17 +275,17 @@
                                     {
                                         foreach (var sca in Model.CategoryAssets)
                                         {
-                                            <tr>
-                                                <td class="text-muted fs-15 fw-semibold">
-                                                    <a asp-action="AssetList" asp-controller="Assets"
-                                                       asp-route-id="@sca.Id"
-                                                       class="text-muted hover-effect">
-                                                        @sca.CategoryName
-                                                    </a>
-                                                </td>
-                                                <td class="text-muted fs-15 fw-semibold">@sca.TotalAssets</td>
-                                                <td class="text-muted fs-15 fw-semibold text-end">@sca.TotalCost.ToString("N2")</td>
-                                            </tr>
+                                                        <tr>
+                                                            <td class="text-muted fs-15 fw-semibold">
+                                                                <a asp-action="AssetList" asp-controller="Assets"
+                                                                   asp-route-id="@sca.Id"
+                                                                   class="text-muted hover-effect">
+                                                                    @sca.CategoryName
+                                                                </a>
+                                                            </td>
+                                                            <td class="text-muted fs-15 fw-semibold">@sca.TotalAssets</td>
+                                                            <td class="text-muted fs-15 fw-semibold text-end">@sca.TotalCost.ToString("N2")</td>
+                                                        </tr>
                                         }
                                         //<tr>
                                         //    <td class="text-muted fs-15 fw-semibold"><span class="text-bold float-end">Total Assets Registered:</span></td>
@@ -294,9 +294,9 @@
                                     }
                                     else
                                     {
-                                        <tr>
-                                            <td colspan="2">No Assets available!</td>
-                                        </tr>
+                                                    <tr>
+                                                        <td colspan="2">No Assets available!</td>
+                                                    </tr>
                                     }
                                 }
 
@@ -392,7 +392,7 @@
 
     <script>
         $(document).ready(function () {
-            makeDataTable('#tblCategories', '1', 1);
+            makeDataTable('#tblCategories', '1', 5);
             pieChart();
 
             const marqueeContainer = document.getElementById("marquee-container");
@@ -417,56 +417,58 @@
 
         const pieChart = () => {
             var sData = '@Html.Raw(Json.Serialize(Model.CategoryAssets))';
-
-            if (sData == "No Records Found" || sData == "") {
-            } else {
-                var Data = JSON.parse(sData);
-                var data = {};
-                var labels = [];
-
-                Data.forEach(function (e) {
-                    labels.push(e.categoryName);
-                    data[e.categoryName] = e.totalAssets;
-                    //console.log(e.subCategoryName + ' -> ' + e.totalAssets);
-                });
-                chart = c3.generate({
-                    pie: {
-                        label: {
-                            show: true
-                        }
-                    },
-                    data: {
-                        json: [data],
-                        keys: {
-                            value: labels,
-                        },
-                        type: 'pie'
-                    },
-                    legend: {
-                        show: false
-                    },
-                    color: {
-                        pattern: ['#1f77b4', '#aec7e8', '#ff7f0e', '#ffbb78', '#2ca02c', '#98df8a', '#d62728', '#ff9896', '#9467bd', '#c5b0d5', '#8c564b', '#c49c94', '#e377c2', '#f7b6d2', '#7f7f7f', '#c7c7c7', '#bcbd22', '#dbdb8d', '#17becf', '#9edae5']
-                    }
-                });
-                d3.select('.container').insert('div', '.chart').attr('class', 'legend w-100 text-center p-2').selectAll('span')
-                    .data(labels)
-                    .enter().append('span')
-                    .attr('data-id', function (id) { return id; })
-                    .html(function (id) { return id; })
-                    .each(function (id) {
-                        d3.select(this).style('background-color', chart.color(id));
-                    })
-                    .on('mouseover', function (id) {
-                        chart.focus(id);
-                    })
-                    .on('mouseout', function (id) {
-                        chart.revert();
-                    })
-                    .on('click', function (id) {
-                        chart.toggle(id);
-                    });
+            var result = tryParseJson(sData, "Chart Data");
+            
+            if (result.status === "error") {
+                showErrorMessageJs(result.message);
+                return;
             }
+            var Data = result.data;
+            var data = {};
+            var labels = [];
+
+            Data.forEach(function (e) {
+                labels.push(e.categoryName);
+                data[e.categoryName] = e.totalAssets;
+                //console.log(e.subCategoryName + ' -> ' + e.totalAssets);
+            });
+            chart = c3.generate({
+                pie: {
+                    label: {
+                        show: true
+                    }
+                },
+                data: {
+                    json: [data],
+                    keys: {
+                        value: labels,
+                    },
+                    type: 'pie'
+                },
+                legend: {
+                    show: false
+                },
+                color: {
+                    pattern: ['#1f77b4', '#aec7e8', '#ff7f0e', '#ffbb78', '#2ca02c', '#98df8a', '#d62728', '#ff9896', '#9467bd', '#c5b0d5', '#8c564b', '#c49c94', '#e377c2', '#f7b6d2', '#7f7f7f', '#c7c7c7', '#bcbd22', '#dbdb8d', '#17becf', '#9edae5']
+                }
+            });
+            d3.select('.container').insert('div', '.chart').attr('class', 'legend w-100 text-center p-2').selectAll('span')
+                .data(labels)
+                .enter().append('span')
+                .attr('data-id', function (id) { return id; })
+                .html(function (id) { return id; })
+                .each(function (id) {
+                    d3.select(this).style('background-color', chart.color(id));
+                })
+                .on('mouseover', function (id) {
+                    chart.focus(id);
+                })
+                .on('mouseout', function (id) {
+                    chart.revert();
+                })
+                .on('click', function (id) {
+                    chart.toggle(id);
+                });
         }
 
         function toggle(id) {

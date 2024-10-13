@@ -1,19 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using MODAMS.DataAccess.Data;
 using MODAMS.Models;
 using MODAMS.Utility;
-using Newtonsoft.Json;
 using System.Diagnostics;
-using System.Text.Encodings.Web;
 using System.Text;
 using MODAMS.Models.ViewModels.Dto;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
-using Kendo.Mvc.UI;
+using MODAMS.ApplicationServices;
+
 
 
 namespace MODAMSWeb.Areas.Users.Controllers
@@ -25,15 +21,17 @@ namespace MODAMSWeb.Areas.Users.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly ApplicationDbContext _db;
         private readonly IAMSFunc _func;
-        private int _employeeId;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly IEmailSender _emailSender;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
+        private int _employeeId;
+
+        public readonly IHomeService _homeService;
+
         public HomeController(ILogger<HomeController> logger, ApplicationDbContext db, IAMSFunc func,
-            UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IEmailSender emailSender,
-            IWebHostEnvironment webHostEnvironment)
+            UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager,
+            IWebHostEnvironment webHostEnvironment, IHomeService homeService)
         {
             _logger = logger;
             _db = db;
@@ -41,29 +39,28 @@ namespace MODAMSWeb.Areas.Users.Controllers
             _employeeId = _func.GetEmployeeId();
             _userManager = userManager;
             _roleManager = roleManager;
-            _emailSender = emailSender;
             _webHostEnvironment = webHostEnvironment;
+
+            _homeService = homeService;
+
         }
 
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var categoryAssets = await _db.vwCategoryAssets.ToListAsync();
-            var newsFeed = await _db.NewsFeed.OrderByDescending(m => m.TimeStamp).Take(5).ToListAsync();
+            var result = await _homeService.GetIndexAsync();
+            var dto = result.Value;
 
-            var dto = new dtoDashboard()
+            if (result.IsSuccess)
             {
-                CategoryAssets = categoryAssets,
-                NewsFeed = newsFeed
-            };
-
-            dto.StoreCount = await _db.Stores.CountAsync();
-            dto.UserCount = await _db.Users.CountAsync();
-            dto.CurrentValue = await GetCurrentValueAsync();
-
-            return View(dto);
+                return View(dto);
+            }
+            else
+            {
+                TempData["error"] = $"Error occured: {result.ErrorMessage}";
+                return View(new DashboardDTO());
+            }
         }
-
         [HttpGet]
         public async Task<IActionResult> Profile(int? id)
         {
@@ -71,60 +68,45 @@ namespace MODAMSWeb.Areas.Users.Controllers
             {
                 _employeeId = (int)id;
             }
-            var profile = new dtoProfileData();
 
-            var employeeInDb = await _db.Employees.Where(m => m.Id == _employeeId).SingleOrDefaultAsync();
-            if (employeeInDb != null)
+            var result = await _homeService.GetProfileAsync(_employeeId);
+            var dto = result.Value;
+
+            if (result.IsSuccess)
             {
-                profile = new dtoProfileData()
-                {
-                    Id = employeeInDb.Id,
-                    FullName = employeeInDb.FullName,
-                    JobTitle = employeeInDb.JobTitle,
-                    Email = employeeInDb.Email,
-                    Phone = employeeInDb.Phone,
-                    ImageUrl = employeeInDb.ImageUrl,
-                    Department = await _func.GetDepartmentNameAsync(_employeeId),
-                    RoleName = await _func.GetRoleNameAsync(_employeeId),
-                    SupervisorEmployeeId = employeeInDb.SupervisorEmployeeId,
-                    SupervisorName = await _func.GetSupervisorNameAsync(_employeeId),
-                    CardNumber = employeeInDb.CardNumber
-                };
+                return View(dto);
             }
-
-            return View(profile);
+            else
+            {
+                TempData["error"] = result.ErrorMessage;
+                return View(new ProfileDataDTO());
+            }
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SaveProfile(dtoProfileData form)
+        public async Task<IActionResult> SaveProfile(ProfileDataDTO form)
         {
             if (!ModelState.IsValid)
             {
                 TempData["error"] = "Please complete all the mandatory fields!";
                 return RedirectToAction("Profile", "Employees");
             }
-            var rec = await _db.Employees.Where(m => m.Id == form.Id).SingleOrDefaultAsync();
-            if (rec != null)
-            {
-                rec.FullName = form.FullName;
-                rec.JobTitle = form.JobTitle;
-                rec.Phone = form.Phone;
-                rec.CardNumber = form.CardNumber;
-                await _db.SaveChangesAsync();
 
-                await _func.LogNewsFeedAsync(await _func.GetEmployeeNameAsync() + " updated his profile", "Users", "Home", "Profile", rec.Id);
+            var result = await _homeService.SaveProfileAsync(form);
+            var dto = result.Value;
+
+            if (result.IsSuccess)
+            {
+                TempData["success"] = "Profile updated successfuly!";
+                return RedirectToAction("Profile", "Home", new { id = dto.Id });
             }
             else
             {
-                TempData["error"] = "Record not found!";
-                return RedirectToAction("Profile", "Home");
+                TempData["error"] = result.ErrorMessage;
+                return RedirectToAction("Profile", "Home", new { id = dto.Id });
             }
-            TempData["success"] = "Profile updated successfuly!";
-            return RedirectToAction("Profile", "Home");
         }
-
-        public async Task<IActionResult> ResetPassword(int id = 0)
+        public async Task<IActionResult> ResetPassword()
         {
             string emailAddress = await _func.GetEmployeeEmailAsync();
             var user = await _userManager.FindByEmailAsync(emailAddress);
@@ -137,330 +119,167 @@ namespace MODAMSWeb.Areas.Users.Controllers
             var code = await _userManager.GeneratePasswordResetTokenAsync(user);
             code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
 
+            // Generate the callback URL in the controller
             var callbackUrl = Url.Page(
-            "/Account/ResetPassword",
+                "/Account/ResetPassword",
                 pageHandler: null,
                 values: new { area = "Identity", code },
-                protocol: Request.Scheme);
+                protocol: Request.Scheme
+            );
 
-            string shortmessage = "Password reset instructions have been received for your account, " +
-                "click the button below to follow the instructions!";
+            var result = await _homeService.ResetPasswordAsync(emailAddress, callbackUrl);
 
-            string message = "";
-
-            if (callbackUrl != null)
+            if (!result.IsSuccess)
             {
-                message = _func.FormatMessage("Reset Password", shortmessage,
-                    emailAddress, HtmlEncoder.Default.Encode(callbackUrl), "Reset Password");
+                TempData["error"] = result.ErrorMessage ?? "An error occurred while resetting the password.";
+                return RedirectToAction("Profile", "Employees");
             }
-            else
-            {
-                message = _func.FormatMessage("Reset Password", shortmessage,
-                    emailAddress, HtmlEncoder.Default.Encode("./"), "Reset Password");
-            }
-
-
-            await _emailSender.SendEmailAsync(
-                emailAddress,
-                "Reset Password",
-                message);
 
             TempData["success"] = "Password reset instructions sent!";
-
-            if (id > 0)
-            {
-                return RedirectToAction("Settings", "Home");
-            }
-            else
-            {
-                return RedirectToAction("Profile", "Home");
-            }
-
-
+            return RedirectToAction("Profile", "Home");
         }
-
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UploadPicture(IFormFile? file)
         {
             string wwwRootPath = _webHostEnvironment.WebRootPath;
 
-            if (file == null || file.Length == 0)
+            var result = await _homeService.UploadPictureAsync(_employeeId, file, wwwRootPath);
+
+            if (!result.IsSuccess)
             {
-                TempData["error"] = "Please select a file to upload!";
+                TempData["error"] = result.ErrorMessage ?? "An error occurred while uploading the file.";
                 return RedirectToAction("Profile", "Home");
             }
 
-            string fileName = _employeeId.ToString() + Path.GetExtension(file.FileName);
-            string facesPath = Path.Combine(wwwRootPath, @"assets\images\faces");
-
-            try
-            {
-                using (var fileStream = new FileStream(Path.Combine(facesPath, fileName), FileMode.Create))
-                {
-                    await file.CopyToAsync(fileStream);
-                }
-                var employee = _db.Employees.Where(m => m.Id == _employeeId).FirstOrDefault();
-
-                if (employee != null)
-                {
-                    employee.ImageUrl = "/assets/images/faces/" + fileName;
-                    await _db.SaveChangesAsync();
-
-                    await _func.LogNewsFeedAsync(await _func.GetEmployeeNameAsync() + " uploaded a profile picture", "Users", "Home", "Profile", employee.Id);
-                }
-            }
-            catch (Exception ex)
-            {
-                TempData["error"] = $"An error occurred while uploading the file: {ex.Message}";
-                return RedirectToAction("Profile", "Home");
-            }
+            TempData["success"] = "Profile picture uploaded successfully!";
             return RedirectToAction("Profile", "Home");
-
         }
-        public async Task<string> GetProfileData()
+        [HttpGet]
+        public async Task<IActionResult> GetProfileData()
         {
-            string sResult = "No Records Found";
-            var profileData = new List<dtoProfileData>();
-            string sEmail = await _func.GetEmployeeEmailAsync();
+            var result = await _homeService.GetProfileDataAsync();
 
-            var employeeInDb = await _db.Employees.Where(m => m.Email == sEmail).SingleOrDefaultAsync();
-            if (employeeInDb != null)
+            if (!result.IsSuccess)
             {
-                var profile = new dtoProfileData()
-                {
-                    Id = employeeInDb.Id,
-                    FullName = employeeInDb.FullName,
-                    JobTitle = employeeInDb.JobTitle,
-                    Email = employeeInDb.Email,
-                    Phone = employeeInDb.Phone,
-                    ImageUrl = employeeInDb.ImageUrl,
-                };
-                profileData.Add(profile);
+                return Json(new { status = "error", message = result.ErrorMessage });
+            }
 
-                sResult = JsonConvert.SerializeObject(profileData);
-            }
-            else
+            if (result.Value == null)
             {
-                TempData["error"] = "Record not found!";
+                return Json(new { status = "empty", message = "Profile not available." });
             }
-            return sResult;
+
+            return Json(new { status = "success", data = result.Value });
         }
-
-        public async Task<string> GetNotifications()
+        [HttpGet]
+        public async Task<IActionResult> GetNotifications()
         {
-            string sResult = "No Records Found";
+            var result = await _homeService.GetNotificationsAsync();
 
-            // Check roles and return early if necessary
-            if (User.IsInRole("Administrator") || User.IsInRole("SeniorManagement"))
-                return "No Records Found";
-
-            // Retrieve the notifications from the database
-            var notifications = await _db.Notifications
-                .Where(m => m.EmployeeTo == _employeeId)
-                .Include(m => m.NotificationSection)
-                .OrderByDescending(m => m.DateTime)
-                .ToListAsync();
-
-            // If there are notifications, process them
-            if (notifications.Count > 0)
+            if (!result.IsSuccess)
             {
-                // Create a list of dtoNotification without the ImageUrl
-                var dto = notifications.Select(m => new dtoNotification()
-                {
-                    Id = m.Id,
-                    DateTime = m.DateTime,
-                    EmployeeFrom = m.EmployeeFrom,
-                    EmployeeTo = m.EmployeeTo,
-                    Subject = m.Subject,
-                    Message = m.Message,
-                    TargetRecordId = m.TargetRecordId,
-                    IsViewed = m.IsViewed,
-                    NotificationSectionId = m.NotificationSectionId,
-                    Area = m.NotificationSection.area,
-                    Controller = m.NotificationSection.controller,
-                    Action = m.NotificationSection.action
-                    // ImageUrl will be set later
-                }).ToList();
-
-                // Asynchronously fetch the ImageUrl for each dtoNotification
-                foreach (var notification in dto)
-                {
-                    notification.ImageUrl = await _func.GetProfileImageAsync(notification.EmployeeFrom);
-                }
-
-                // Serialize the dto list to JSON
-                sResult = JsonConvert.SerializeObject(dto);
+                return Json(new { status = "error", message = result.ErrorMessage });
             }
 
-            return sResult;
+            if (result.Value == null || !result.Value.Any())
+            {
+                return Json(new { status = "empty", message = "No notifications available." });
+            }
+
+            return Json(new { status = "success", data = result.Value });
         }
-
-
         public IActionResult Settings()
         {
             return View();
         }
-
         public async Task<IActionResult> GlobalSearch(string barcode)
         {
-            var transfer = await _db.Transfers.FirstOrDefaultAsync(m => m.TransferNumber == barcode);
-            if (transfer != null)
+            // Call the service to perform the search
+            var result = await _homeService.SearchTransferOrAssetAsync(barcode);
+
+            if (!result.IsSuccess)
             {
-                return RedirectToAction("PreviewTransfer", "Transfers", new { id = transfer.Id });
+                TempData["error"] = result.ErrorMessage ?? "An error occurred while searching.";
+                return View(new GlobalSearchDTO());
             }
 
-
-            var asset = await _func.AssetGlobalSearchAsync(barcode.Trim());
-            dtoGlobalSearch dto = new dtoGlobalSearch();
-
-            if (asset != null)
+            // Check if the transfer was found and redirect to PreviewTransfer
+            if (result.Value.TransferId > 0)
             {
-                var assetPicture = _db.AssetPictures.Where(m => m.AssetId == asset.Id).FirstOrDefault();
-                dto.Asset = asset;
-                if (assetPicture != null)
-                {
-                    dto.AssetPicture = assetPicture;
-                }
+                return RedirectToAction("PreviewTransfer", "Transfers", new { id = result.Value.TransferId });
             }
-            return View(dto);
+
+            // Otherwise, return the view with the asset search result
+            return View(result.Value);
         }
-
         public IActionResult UnderConstruction()
         {
             return View();
         }
-
         public async Task<IActionResult> NotificationDirector(int id)
         {
-            var notification = await _db.Notifications.Where(m => m.Id == id)
-                .Include(m => m.NotificationSection)
-                .FirstOrDefaultAsync();
+            // Call the service to handle the notification
+            var result = await _homeService.HandleNotificationAsync(id);
+            var dto = result.Value;
 
-            if (notification == null)
+            if (!result.IsSuccess)
             {
+                TempData["error"] = result.ErrorMessage ?? "An error occurred while processing the notification.";
                 return View();
             }
-            notification.IsViewed = true;
-            await _db.SaveChangesAsync();
 
-            return RedirectToAction(notification.NotificationSection.action,
-                notification.NotificationSection.controller,
-                new { area = notification.NotificationSection.area, id = notification.TargetRecordId });
+            // Redirect based on the DTO from the service
+            return RedirectToAction(dto.Action, dto.Controller, new { area = dto.Area, id = dto.TargetRecordId });
         }
-
         [HttpGet]
         public async Task<IActionResult> AllNotifications(int id)
         {
-            var notifications = await _db.Notifications
-                .Where(m => m.EmployeeTo == _employeeId)
-                .Include(m => m.NotificationSection)
-                .OrderByDescending(m => m.DateTime)
-                .Select(notification => new dtoNotification
-                {
-                    Id = notification.Id,
-                    DateTime = notification.DateTime,
-                    EmployeeFrom = notification.EmployeeFrom,
-                    EmployeeTo = notification.EmployeeTo,
-                    Subject = notification.Subject,
-                    Message = notification.Message,
-                    TargetRecordId = notification.TargetRecordId,
-                    IsViewed = notification.IsViewed,
-                    NotificationSectionId = notification.NotificationSectionId,
-                    Area = notification.NotificationSection.area,
-                    Controller = notification.NotificationSection.controller,
-                    Action = notification.NotificationSection.action
-                    // ImageUrl will be set later
-                })
-                .ToListAsync();
+            var result = await _homeService.GetAllNotificationsAsync(id);
+            var dto = result.Value;
 
-            // Now, asynchronously set the ImageUrl for each notification
-            foreach (var notification in notifications)
+            if (!result.IsSuccess)
             {
-                notification.ImageUrl = await _func.GetProfileImageAsync(notification.EmployeeFrom);
+                TempData["error"] = result.ErrorMessage;
+                return View(new List<NotificationDTO>());
             }
-
-            return View(notifications);
+            else {
+                return View(dto);
+            }
         }
-
-
         public async Task<IActionResult> ClearNotifications()
         {
-            var notifications = await _db.Notifications.Where(m => m.EmployeeTo == _employeeId).ToListAsync();
-            _db.Notifications.RemoveRange(notifications);
-            await _db.SaveChangesAsync();
+            var result = await _homeService.ClearAllNotificationsAsync();
+            var dto = result.Value;
+
+            if (!result.IsSuccess)
+            {
+                TempData["error"] = result.ErrorMessage;
+            }
+            else {
+                TempData["success"] = "All Notifications cleared successfuly!";
+            }
 
             return RedirectToAction("Index", "Home");
         }
-
         [HttpGet]
         public async Task<IActionResult> Newsfeed()
         {
-            var newsFeed = await _db.NewsFeed.OrderByDescending(m => m.TimeStamp).ToListAsync();
-            return View(newsFeed);
-        }
-        
-        private async Task<decimal> GetCurrentValueAsync()
-        {
-            List<assetDto> assets = await _db.Assets.Select(m => new assetDto()
-            {    
-                Id = m.Id,
-                Cost = m.Cost,
-                LifeSpan = m.SubCategory.LifeSpan,
-                RecieptDate = m.RecieptDate
-            }).ToListAsync();
-
-
-            decimal currentValue = 0;
-
-            foreach (var asset in assets)
+            var result = await _homeService.GetListOfNewsfeedAsync();
+            var dto = result.Value;
+            if (result.IsSuccess)
             {
-                currentValue += CalculateDepreciatedCost(asset);
+                return View(dto);
             }
-
-            return currentValue;
-        }
-        
-        private decimal CalculateDepreciatedCost(assetDto asset)
-        {
-            //(Cost / LifeSpan_months) * (LifeSpan_months - Age)
-            decimal depreciatedCost = 0;
-
-            if (asset != null)
-            {
-                int nLifeSpan = asset.LifeSpan;
-                decimal cost = asset.Cost;
-
-                if (asset.RecieptDate != null)
-                {
-                    DateTimeOffset date1 = (DateTimeOffset)asset.RecieptDate;
-                    DateTimeOffset date2 = DateTime.Now;
-
-                    // Find the difference between two dates in months
-                    int age = (date2.Year - date1.Year) * 12 + date2.Month - date1.Month;
-
-                    depreciatedCost = (cost / nLifeSpan) * (nLifeSpan - age);
-                }
+            else {
+                return View(new List<NewsFeed>());
             }
-
-            if (depreciatedCost < 0)
-                depreciatedCost = 0;
-
-            return depreciatedCost;
-        }
-
-        private class assetDto
-        {
-            public int Id { get; set; }
-            public int LifeSpan { get; set; }
-            public decimal Cost { get; set; }
-            public DateTime? RecieptDate { get; set; }
+            
         }
     }
 }

@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Telerik.Reporting.Services;
 using Telerik.Reporting.Cache.File;
 using System.Runtime.InteropServices;
+using MODAMS.ApplicationServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -102,6 +103,8 @@ builder.Services.AddRazorPages();
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddSingleton<IEmailSender, EmailSender>();
 builder.Services.AddScoped<IAMSFunc, AMSFunc>();
+builder.Services.AddScoped<IHomeService, HomeService>();
+
 builder.Services.AddHttpContextAccessor();
 
 // Add Controllers with Views and configure JSON serialization

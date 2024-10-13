@@ -587,7 +587,6 @@ namespace MODAMS.Utility
             }
             return assetName;
         }
-
         public async Task RecordLoginAsync(string userId)
         {
 
@@ -602,7 +601,6 @@ namespace MODAMS.Utility
             _db.LoginHistory.Add(login);
             _db.SaveChanges();
         }
-        
         public async Task<Asset> AssetGlobalSearchAsync(string search)
         {
             var asset = await _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted && m.Barcode == search)
@@ -643,9 +641,40 @@ namespace MODAMS.Utility
 
             return asset;
         }
+        public async Task<List<vwCategoryAsset>> GetvwCategoryAssetsAsync()
+        {
+            var result = await _db.Assets
+                .Include(m => m.Store)
+                .Include(m => m.SubCategory).ThenInclude(m => m.Category)
+                .Where(a => a.AssetStatusId != 4)
+                .GroupBy(a => new
+                {
+                    a.SubCategory.Category.Id,
+                    a.SubCategory.Category.CategoryName
+                })
+                .Select(g => new vwCategoryAsset
+                {
+                    Id = g.Key.Id,
+                    CategoryName = g.Key.CategoryName,
+                    TotalAssets = g.Count(),
+                    TotalCost = g.Sum(a => a.Cost)
+                })
+                .ToListAsync();
 
+            return result;
+        }
 
-
+        public void LogException(ILogger logger, Exception ex)
+        {
+            if (ex.InnerException != null)
+            {
+                logger.LogError($"Error: {ex.Message} | Inner Exception: {ex.InnerException.Message}");
+            }
+            else
+            {
+                logger.LogError($"Error: {ex.Message}");
+            }
+        }
 
 
         //Private methods

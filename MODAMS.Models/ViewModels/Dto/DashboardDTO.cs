@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MODAMS.Models.ViewModels.Dto
 {
-    public class dtoDashboard
+    public class DashboardDTO
     {
         public int StoreCount { get; set; }
         public int UserCount { get; set; }

@@ -38,6 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MODAMS.ApplicationServices\MODAMS.ApplicationServices.csproj" />
     <ProjectReference Include="..\MODAMS.DataAccess\MODAMS.DataAccess.csproj" />
     <ProjectReference Include="..\MODAMS.Models\MODAMS.Models.csproj" />
     <ProjectReference Include="..\MODAMS.Utility\MODAMS.Utility.csproj" />

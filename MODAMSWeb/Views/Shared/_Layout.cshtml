@@ -6,11 +6,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.bundle.min.js"></script>
     <script src="~/assets/plugins/chart/chartjs-plugin-labels.js"></script>
-    <style>
-        .card {
-            background-color: #f0f0f0; /* Light gray background color */
-        }
-    </style>
+    
     <!-- FAVICON -->
     <link rel="shortcut icon" type="image/x-icon" href="~/assets/images/brand/favicon.ico" />
 
@@ -35,47 +31,8 @@
 
     <!--- FONT-ICONS CSS -->
     <link href="~/assets/css/icons.css" rel="stylesheet" asp-append-version="true" />
+    <link href="~/css/customc_css_layout.css" rel="stylesheet" />
 
-    <!-- TELERIK THEME -->
-    <style>
-        /* Gradient transparent - color - transparent */
-        hr.customHR {
-            border: 0;
-            height: 1px;
-            background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));
-        }
-
-        .trShadow {
-            border: 1px solid lightblue;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2), 0px 6px 20px 0px rgba(0,0,0,0.19);
-        }
-
-        .divShadow {
-            border: 1px solid lightblue;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2), 0px 6px 20px 0px rgba(0,0,0,0.19);
-        }
-
-        .form-control {
-            border-color: #ced4da;
-        }
-
-            .form-control:focus {
-                border-color: green;
-                border: 1px solid lightblue;
-                box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2), 0px 6px 20px 0px rgba(0,0,0,0.19);
-            }
-
-        .select2:focus {
-            border-color: green;
-            border: 1px solid lightblue;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2), 0px 6px 20px 0px rgba(0,0,0,0.19);
-        }
-
-        .form-control:disabled {
-            background-color: #e9ecef;
-            opacity: 1;
-        }
-    </style>
     @* Add the Kendo UI scripts: *@
 
     <link href="https://kendo.cdn.telerik.com/themes/7.0.2/bootstrap/bootstrap-main.css" rel="stylesheet" type="text/css" />
@@ -85,6 +42,7 @@
     <script src="https://cdn.kendostatic.com/2023.2.606/js/jszip.min.js"></script>
     <script src="https://cdn.kendostatic.com/2023.2.606/js/kendo.all.min.js"></script>
     <script src="https://cdn.kendostatic.com/2023.2.606/js/kendo.aspnetmvc.min.js"></script>
+    <script src="~/js/utils.js"></script>
 </head>
 <body class="app sidebar-mini ltr">
 
@@ -108,6 +66,7 @@
 
                     <!-- CONTAINER -->
                     <div class="main-container container-fluid">
+                        <div class="js-notification"></div>
                         @RenderBody()
                     </div>
                 </div>
@@ -131,10 +90,6 @@
 
     <!-- Bootstrap Datepicker JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.9.0/dist/js/bootstrap-datepicker.min.js"></script>
-
-
-
-
 
     <!-- SIDE-MENU JS -->
     <script src="~/assets/plugins/sidemenu/sidemenu.js"></script>
@@ -192,302 +147,7 @@
 
     @* <script src="~/assets/plugins/bootstrap/js/popper.min.js"></script> *@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/umd/popper.min.js" integrity="sha512-TPh2Oxlg1zp+kz3nFA0C5vVC6leG/6mm1z9+mA81MI5eaUVqasPLO8Cuk4gMF4gUfP5etR73rgU/8PNMsSesoQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-    <script>
-        $(document).ready(() => {
-            setMode();
-            loadProfileData();
-            formatTables();
-
-            $("#txtGlobalSearch").on("change", () => {
-                window.location.href = "/Users/Home/GlobalSearch/?barcode=" + $("#txtGlobalSearch").val();
-            });
-
-            $("#btnGlobalSearch").on("click", () => {
-                window.location.href = "/Users/Home/GlobalSearch/?barcode=" + $("#txtGlobalSearch").val();
-            });
-            loadNotificationsData();
-        });
-        const formatTables = () => {
-
-            $('thead').addClass("bg-info-gradient ms-auto divShadow");
-            $('th').addClass("text-white");
-
-            //$('.even').addClass("bg-light-transparent");
-            //$('.odd').removeClass("bg-light-transparent");
-
-
-        }
-        const setMode = () => {
-            if (localStorage.getItem("displayMode") == "dark-mode") {
-                $('body').addClass('dark-mode');
-                $('body').removeClass('light-mode');
-                //$('body').removeClass('bg-img1');
-                //$('body').removeClass('bg-img2');
-                //$('body').removeClass('bg-img3');
-                //$('body').removeClass('bg-img4');
-                $("#footerImgEU").html("").html('<img src="/assets/images/brand/EU_Horizontal3_small.png">');
-
-
-                localStorage.setItem('darkMode', true);
-                localStorage.removeItem('lightMode');
-                localStorage.setItem('displayMode', "dark-mode")
-            } else {
-                $('body').removeClass('dark-mode');
-                $('body').addClass('light-mode');
-                //$('body').removeClass('bg-img1');
-                //$('body').removeClass('bg-img2');
-                //$('body').removeClass('bg-img3');
-                //$('body').removeClass('bg-img4');
-                $("#footerImgEU").html("").html('<img src="/assets/images/brand/EU_Horizontal2_small.png">');
-
-                localStorage.setItem('lightMode', true);
-                localStorage.removeItem('darkMode');
-
-            }
-        }
-        const loadProfileData = () => {
-            var sHTML = '';
-
-            var postData = {};
-            $.ajax({
-                url: '/Users/Home/GetProfileData',
-                datatype: "json",
-                data: postData,
-                beforeSend: function () {
-                },
-                success: function (e) {
-                    $("#dvProfileData").html("").html(e);
-                },
-                complete: function () {
-                    loadProfile();
-                }
-            });
-        }
-        const getAlertCount = () => {
-            var postData = {};
-            $.ajax({
-                url: '/Users/Alerts/GetAlertCount',
-                datatype: "json",
-                data: postData,
-                beforeSend: function () {
-                },
-                success: function (e) {
-                    $("#alertCount").html(e);
-                },
-                complete: function () {
-                    //loadProfile();
-                }
-            });
-        }
-        const loadProfile = () => {
-            var sData = $("#dvProfileData").html();
-            if (sData != "No Records Found") {
-                var Data = JSON.parse(sData);
-                var sHtml = '';
-
-                Data.forEach(function (e) {
-                    sHtml = '<img src="' + e.ImageUrl + '" alt="profile-user" class="avatar profile-user brround cover-image">';
-                    $("#profileImage").html("").html(sHtml);
-
-                    sHtml = e.FullName + '<i class="user-angle ms-1 fa fa-angle-down "></i>'
-                    $("#profile-heading").html("").html(sHtml);
-                });
-            }
-        }
-        const loadNotificationsData = () => {
-            var postData = {};
-            $.ajax({
-                url: '/Users/Home/GetNotifications',
-                datatype: "json",
-                data: postData,
-                beforeSend: function () {
-                },
-                success: function (e) {
-                    $("#dvNotificationsData").html("").html(e);
-                },
-                complete: function () {
-                    loadNotifications();
-                }
-            });
-        };
-        const loadNotifications = () => {
-            const sData = $("#dvNotificationsData").html();
-            if (sData != "No Records Found") {
-                const Data = JSON.parse(sData);
-                let isNewNotification = false;
-                let nCounter = 0;
-                let sHtml = "";
-                let sbgClass = "";
-
-                for (const e of Data) {
-                    nCounter++;
-                    const sPulse = e.IsViewed ? '' : '<span class="pulse rounded-pill bg-success"></span>';
-                    if (!e.IsViewed) {
-                        sbgClass = "bg-light-transparent"
-                        isNewNotification = true;
-                    } else {
-                        sbgClass = "";
-                    }
-
-                    if (nCounter > 4) {
-                        break; // Exit the loop once nCounter exceeds 4
-                    }
-                    sHtml += `
-                                <a class="dropdown-item ${sbgClass}" href="/Users/Home/NotificationDirector/${e.Id}">
-                                    <div class="notification-each d-flex ">
-                                        <div class="avatar-container avatar-md me-2">
-                                            <img alt="avatar" class="rounded-circle" src="${e.ImageUrl}">
-                                        </div>
-                                        <div>
-                                            <span class="notification-label mb-1">${shortenMessage(e.Message)}</span>
-                                                    ${sPulse}
-                                            <span class="notification-subtext text-muted">${formattedDate(e.DateTime)}</span>
-                                        </div>
-                                    </div>
-                                </a>`;
-                }
-
-                $("#dvNotifications").html(sHtml);
-
-                const notificationPulse = $("#notification-pulse");
-                if (nCounter > 0) {
-                    if (isNewNotification) {
-                        notificationPulse.show();
-                    } else {
-                        notificationPulse.hide();
-                    }
-                } else {
-                    notificationPulse.hide();
-                    sHtml = `<a class="dropdown-item" href="#">
-                                        <div class="notification-each d-flex">
-                                            <div class="me-3 notifyimg brround">
-                                            </div>
-                                            <div>
-                                                <span class="notification-label mb-1">No notification available</span>
-                                            </div>
-                                        </div>
-                                    </a>`;
-                    $("#dvNotifications").html(sHtml);
-                }
-            } else {
-                $("#notification-pulse").hide();
-            }
-        };
-        const clearNotifications = () => {
-            var postData = {};
-            $.ajax({
-                url: '/Users/Home/ClearNotifications',
-                datatype: "json",
-                data: postData,
-                beforeSend: function () {
-                },
-                success: function (e) {
-                    $("#dvNotifications").html(`<a class="dropdown-item" href="#">
-                                                <div class="notification-each d-flex">
-                                                    <div class="me-3 notifyimg brround">
-                                                    </div>
-                                                    <div>
-                                                        <span class="notification-label mb-1">No notification available</span>
-                                                    </div>
-                                                </div>
-                                            </a>`);
-                },
-                complete: function () {
-                    //loadNotificationsData();
-                }
-            });
-        }
-        const makeDataTable = (tableName, type) => {
-            var table = $(tableName).DataTable({
-                buttons: ['copy', 'excel', 'pdf', 'colvis'],
-                responsive: false,
-                language: {
-                    searchPlaceholder: 'Search...',
-                    sSearch: '',
-                },
-                initComplete: function (settings, json) {
-                    // Change color of specific buttons
-                    $(tableName + '_wrapper .btn-primary')
-                        .removeClass('btn-primary')
-                        .addClass('bg-info')
-                        .css('color', 'white');
-
-                    // Change color of pagination buttons
-                    $(tableName + '_wrapper .paginate_button')
-                        .removeClass('paginate_button')
-                        .addClass('bg-info')
-                        .css('color', 'white');
-                }
-            });
-
-            $('.even').addClass("bg-light-transparent");
-            $('.odd').removeClass("bg-light-transparent");
-
-            table.on('page.dt', function () {
-                table.rows().invalidate().draw(false);
-                $('.even').addClass("bg-light-transparent");
-                $('.odd').removeClass("bg-light-transparent");
-            });
-
-            table.on('order.dt', function () {
-                $('.even').addClass("bg-light-transparent");
-                $('.odd').removeClass("bg-light-transparent");
-            });
-
-            if (type == "2") {
-                table.buttons().container()
-                    .appendTo(tableName + '_wrapper .col-md-6:eq(0)');
-            }
-
-            $(tableName + '_wrapper .btn-primary')
-                .removeClass('btn-primary')
-                .addClass('bg-info')
-                .css('color', 'white');
-
-            $(tableName + '_wrapper .paginate_button')
-                .removeClass('btn-primary')
-                .addClass('bg-info');
-
-        }
-        const formattedDate = (date) => {
-            var dateObject = moment(date);
-
-            // Format the date to dd-MMMM-yyyy
-            var formattedDate = dateObject.format('DD-MMM-YYYY');
-            return formattedDate;
-        }
-        const hideMenu = () => {
-            $("#hideMenu").click();
-        }
-        const shortenMessage = (message) => {
-            const index = message.indexOf(',');
-            if (index !== -1) {
-                message = message.substring(0, index);
-            }
-            return message;
-        }
-        const Notify = (type, message) => {
-            if (type == "success") {
-                notif({
-                    type: "primary",
-                    msg: "<b>Success: </b> " + message,
-                    position: "center",
-                    width: 500,
-                    height: 60,
-                    autohide: true
-                });
-            } else {
-                notif({
-                    type: "error",
-                    msg: "<b>Error: </b> " + message,
-                    position: "center",
-                    width: 500,
-                    height: 60,
-                    autohide: true
-                });
-            }
-        }
-    </script>
+    <script src="~/js/custom_script_layout.js"></script>
+    
 </body>
 </html>

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MODAMS.Models.ViewModels.Dto
 {
-    public class dtoProfileData
+    public class ProfileDataDTO
     {
         public int Id { get; set; }
 

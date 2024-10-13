@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MODAMS.DataAccess\MODAMS.DataAccess.csproj" />
+    <ProjectReference Include="..\MODAMS.Models\MODAMS.Models.csproj" />
+    <ProjectReference Include="..\MODAMS.Utility\MODAMS.Utility.csproj" />
+  </ItemGroup>
+
+</Project>

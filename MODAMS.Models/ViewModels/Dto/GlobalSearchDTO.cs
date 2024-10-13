@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace MODAMS.Models.ViewModels.Dto
 {
-    public class dtoGlobalSearch
+    public class GlobalSearchDTO
     {
+        public int TransferId {  get; set; }
         public Asset Asset { get; set; } = new Asset();
         public AssetPicture AssetPicture { get; set; } = new AssetPicture();
     }

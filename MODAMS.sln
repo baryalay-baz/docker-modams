@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MODAMS.Models", "MODAMS.Mod
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MODAMS.Utility", "MODAMS.Utility\MODAMS.Utility.csproj", "{3313D73D-C14E-4E50-87E3-293F2E1ED08C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MODAMS.ApplicationServices", "MODAMS.ApplicationServices\MODAMS.ApplicationServices.csproj", "{4B77EA9C-BA7A-48D5-8696-7314A8B557BB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{3313D73D-C14E-4E50-87E3-293F2E1ED08C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3313D73D-C14E-4E50-87E3-293F2E1ED08C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3313D73D-C14E-4E50-87E3-293F2E1ED08C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B77EA9C-BA7A-48D5-8696-7314A8B557BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B77EA9C-BA7A-48D5-8696-7314A8B557BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B77EA9C-BA7A-48D5-8696-7314A8B557BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B77EA9C-BA7A-48D5-8696-7314A8B557BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -26,7 +26,6 @@ namespace MODAMSWeb.Areas.Users.Controllers
         private readonly IAMSFunc _func;
         private int _employeeId;
         private readonly IWebHostEnvironment _webHostEnvironment;
-
         public AssetsController(ApplicationDbContext db, IAMSFunc func, IWebHostEnvironment webHostEnvironment)
         {
             _db = db;

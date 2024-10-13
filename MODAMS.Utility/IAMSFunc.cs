@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using MODAMS.Models;
 using MODAMS.Models.ViewModels;
 using MODAMS.Models.ViewModels.Dto;
@@ -49,6 +50,9 @@ namespace MODAMS.Utility
         public Task RecordLoginAsync(string userId);
         public Task<int> GetEmployeeIdByUserIdAsync(string userId);
         public Task<Asset> AssetGlobalSearchAsync(string search);
+        public Task<List<vwCategoryAsset>> GetvwCategoryAssetsAsync();
+
+        public void LogException(ILogger logger, Exception ex);
 
     }
 }

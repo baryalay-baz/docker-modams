@@ -119,7 +119,6 @@ namespace MODAMS.DataAccess.Data
 
             return base.SaveChanges();
         }
-
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             var auditLogs = new List<AuditLog>();
@@ -189,7 +188,6 @@ namespace MODAMS.DataAccess.Data
             AuditLog.AddRange(auditLogs);
             return await base.SaveChangesAsync(cancellationToken);
         }
-
         private int? GetCurrentUserId()
         {
             int? EmployeeId = null;

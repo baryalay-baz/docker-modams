@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MODAMS.Models.ViewModels.Dto
 {
-    public class dtoNotification
+    public class NotificationDTO
     {
         public int Id { get; set; }
         public DateTime DateTime { get; set; } = DateTime.Now;
