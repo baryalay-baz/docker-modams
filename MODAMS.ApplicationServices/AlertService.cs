@@ -153,7 +153,7 @@ namespace MODAMS.ApplicationServices
             }
 
 
-            if (IsInRole("StoreOwner") || User.IsInRole("User"))
+            if (IsInRole("StoreOwner") || IsInRole("User"))
             {
                 var allStores = _db.vwStores.ToList();
                 int DepartmentId = await _func.GetDepartmentIdAsync(_employeeId);

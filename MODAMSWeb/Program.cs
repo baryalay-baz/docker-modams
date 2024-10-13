@@ -101,9 +101,15 @@ builder.Services.Configure<IISServerOptions>(options =>
 // Add Razor Pages and other required services
 builder.Services.AddRazorPages();
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+
+//Add custom services
 builder.Services.AddSingleton<IEmailSender, EmailSender>();
 builder.Services.AddScoped<IAMSFunc, AMSFunc>();
 builder.Services.AddScoped<IHomeService, HomeService>();
+builder.Services.AddScoped<IAlertService, AlertService>();
+
+
 
 builder.Services.AddHttpContextAccessor();
 

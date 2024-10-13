@@ -1,13 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MODAMS.Models.ViewModels.Dto;
-using MODAMS.Models.ViewModels;
-using MODAMS.DataAccess.Data;
-using MODAMS.Utility;
-using NuGet.ContentModel;
-using MODAMS.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using MODAMS.ApplicationServices;
 
 
@@ -20,7 +13,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
         
         private readonly IAlertService _alertService;
         
-        public AlertsController(ApplicationDbContext db, IAMSFunc func, IAlertService alertService)
+        public AlertsController(IAlertService alertService)
         {
             _alertService = alertService;
         }
