@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace MODAMS.Models.ViewModels.Dto
 {
-    public class dtoAlerts
+    public class AlertsDTO
     {
         public int DepartmentId { get; set; }
         public List<vwAlert> Alerts { get; set; } = new List<vwAlert>();
