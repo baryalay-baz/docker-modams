@@ -108,6 +108,7 @@ builder.Services.AddSingleton<IEmailSender, EmailSender>();
 builder.Services.AddScoped<IAMSFunc, AMSFunc>();
 builder.Services.AddScoped<IHomeService, HomeService>();
 builder.Services.AddScoped<IAlertService, AlertService>();
+builder.Services.AddScoped<IAssetService, AssetService>();
 
 
 

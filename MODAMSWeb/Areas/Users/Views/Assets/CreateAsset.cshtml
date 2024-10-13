@@ -1,4 +1,4 @@
-﻿@model MODAMS.Models.ViewModels.Dto.dtoAsset
+﻿@model MODAMS.Models.ViewModels.Dto.AssetCreateDTO
 
 
 <style>
@@ -16,8 +16,8 @@
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">Dashboard</a></li>
             <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Stores" asp-action="Index">Stores</a></li>
-            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Stores" asp-action="StoreDetails" asp-route-id="@TempData["storeId"]">@TempData["storeName"]</a></li>
-            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Assets" asp-action="Index" asp-route-id="@TempData["storeId"]">Assets</a></li>
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Stores" asp-action="StoreDetails" asp-route-id="@Model.StoreId">@Model.StoreName</a></li>
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Assets" asp-action="Index" asp-route-id="@Model.StoreId">Assets</a></li>
             <li class="breadcrumb-item active" aria-current="page">Create Asset</li>
         </ol>
     </div>
@@ -37,7 +37,7 @@
                             <div class="card-body">
                                 <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
                                 <input asp-for="Id" hidden />
-                                <input asp-for="StoreId" hidden value="@TempData["storeId"]" />
+                                <input asp-for="StoreId" hidden value="@Model.StoreId" />
 
                                 @*<input asp-for="Employee.RoleName" hidden />*@
                                 <div class="row">
@@ -46,7 +46,7 @@
                                             <label asp-for="CategoryId"></label>
                                             <select asp-for="CategoryId" asp-items="@Model.Categories"
                                                     class="form-control select2 form-select">
-                                                <option disabled selected>-Select Sub-Category-</option>
+                                                <option disabled selected>-Select Category-</option>
                                             </select>
                                             <span asp-validation-for="CategoryId" class="text-danger"></span>
                                         </div>
@@ -138,7 +138,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="row">
                                     <div class="col-sm-12">
                                         <div class="mb-3 form-group">
@@ -227,7 +227,7 @@
                 <div class="row p-5">
                     <div class="btn-list">
                         <button id="btnSubmit" class="btn btn-info-gradient"> Save Asset</button>
-                        <a asp-action="Index" asp-controller="Assets" asp-route-id="@TempData["storeId"]" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
+                        <a asp-action="Index" asp-controller="Assets" asp-route-id="@Model.StoreId" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
                     </div>
                 </div>
             </div>
@@ -268,7 +268,7 @@
                 $("#Engine").val("@Model.Engine");
                 $("#Chasis").val("@Model.Chasis");
                 $("#Plate").val("@Model.Plate");
-            }else{
+            } else {
                 $("#Engine").val("-");
                 $("#Chasis").val("-");
                 $("#Plate").val("-");
@@ -285,8 +285,15 @@
                 beforeSend: function () {
 
                 },
-                success: function (e) {
-                    $("#dvCategoryData").html("").html(e);
+                success: function (response) {
+                    if (response.success) {
+                        $("#dvCategoryData").html(response.data);
+                    } else {
+                        showErrorMessageJs(response.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    showErrorMessageJs(`Error loading categories data: ${error}`);
                 },
                 complete: function () {
                     loadSubCategories();
@@ -304,8 +311,12 @@
                 data: postData,
                 beforeSend: function () {
                 },
-                success: function (e) {
-                    $("#dvSubCategoryData").html("").html(e);
+                success: function (response) {
+                    if (response.success) {
+                        $("#dvSubCategoryData").html(response.data);
+                    } else {
+                        showErrorMessageJs(response.message);
+                    }
                 },
                 complete: function () {
                     populateCmbCategory();
@@ -314,31 +325,37 @@
         }
         const populateCmbCategory = () => {
             var sData = $("#dvCategoryData").html();
+            var result = tryParseJson(sData, "Categories");
 
-            if (sData != "No Records Found") {
-                var Data = JSON.parse(sData);
+            if (result.status === "success") {
+                const data = result.data;
+
                 var sHtml = '<option selected disabled>-Select Category-</option>';
-                Data.forEach((e) => {
+                data.forEach((e) => {
                     sHtml += '<option value="' + e.Id + '">' + e.CategoryName + '</option>';
                 })
 
                 $("#CategoryId").html("").html(sHtml);
+            } else {
+                showErrorMessageJs(result.message);
             }
         }
-
         const populateCmbSubCategory = () => {
             var id = $("#CategoryId").val();
-
             var sData = $("#dvSubCategoryData").html();
-            if (sData != "No Records Found") {
-                var Data = JSON.parse(sData);
-                var sHtml = '<option disabled value="0">-Select Sub-Category-</option>';
 
-                Data.forEach((e) => {
+            var result = tryParseJson(sData, "Sub Categories");
+            var sHtml = '<option disabled value="0">-Select Sub-Category-</option>';
+
+            if (result.status === "success") {
+                const data = result.data;
+                data.forEach((e) => {
                     if (e.CategoryId == id)
                         sHtml += '<option value="' + e.Id + '">' + e.SubCategoryName + '</option>';
                 });
                 $("#SubCategoryId").html("").html(sHtml);
+            }else{
+                showErrorMessageJs(result.message);
             }
         }
 

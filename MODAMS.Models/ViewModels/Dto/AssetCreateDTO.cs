@@ -11,7 +11,7 @@ using System.Xml.Linq;
 
 namespace MODAMS.Models.ViewModels.Dto
 {
-    public class dtoAsset
+    public class AssetCreateDTO
     {
         [Key]
         public int Id { get; set; }
@@ -129,6 +129,12 @@ namespace MODAMS.Models.ViewModels.Dto
 
         [ValidateNever]
         public IEnumerable<SelectListItem> Conditions { get; set; }
+
+        [ValidateNever]
+        public string StoreName { get; set; }
+
+        [ValidateNever]
+        public bool IsAuthorized { get; set; } = false;
 
     }
 }

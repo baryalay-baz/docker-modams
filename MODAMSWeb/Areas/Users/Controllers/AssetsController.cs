@@ -1,10 +1,12 @@
-﻿using Kendo.Mvc.UI;
+﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis.Elfie.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGeneration.EntityFrameworkCore;
+using MODAMS.ApplicationServices;
 using MODAMS.DataAccess.Data;
 using MODAMS.Models;
 using MODAMS.Models.ViewModels;
@@ -24,12 +26,16 @@ namespace MODAMSWeb.Areas.Users.Controllers
     {
         private readonly ApplicationDbContext _db;
         private readonly IAMSFunc _func;
+        private readonly IAssetService _assetService;
+
         private int _employeeId;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        public AssetsController(ApplicationDbContext db, IAMSFunc func, IWebHostEnvironment webHostEnvironment)
+        public AssetsController(ApplicationDbContext db, IAMSFunc func, IWebHostEnvironment webHostEnvironment, IAssetService assetService)
         {
             _db = db;
             _func = func;
+            _assetService = assetService;
+
             _employeeId = _func.GetEmployeeId();
             _webHostEnvironment = webHostEnvironment;
         }
@@ -37,88 +43,35 @@ namespace MODAMSWeb.Areas.Users.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(int id, int subCategoryId = 0)
         {
-            var assets = await _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted && m.StoreId == id).Include(m => m.AssetStatus)
-                .Include(m => m.SubCategory).ThenInclude(m => m.Category)
-                .Include(m => m.Condition).Include(m => m.Donor)
-                .Include(m => m.Store).ToListAsync();
+            var result = await _assetService.GetIndexAsync(id, subCategoryId);
+            var dto = result.Value;
 
-            if (subCategoryId > 0)
+            if (result.IsSuccess)
             {
-                assets = assets.Where(m => m.SubCategoryId == subCategoryId).ToList();
+                return View(dto);
             }
-            var categories = _db.vwStoreCategoryAssets.Where(m => m.StoreId == id).ToList().Select(m => new SelectListItem
+            else
             {
-                Text = m.SubCategoryName,
-                Value = m.SubCategoryId.ToString(),
-                Selected = (m.SubCategoryId == subCategoryId)
-            });
-
-            var empId = User.IsInRole("User") ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
-
-            var dto = new dtoAssets()
-            {
-                assets = assets,
-                StoreOwnerId = await _func.GetStoreOwnerIdAsync(id),
-                StoreOwnerInfo = await _func.GetStoreOwnerInfoAsync(id),
-                CategorySelectList = categories
-            };
-
-            if (empId == await _func.GetStoreOwnerIdAsync(id))
-                dto.IsAuthorized = true;
-
-            var subCategory = await _db.SubCategories.Where(m => m.Id == subCategoryId).FirstOrDefaultAsync();
-
-            TempData["SubCategoryId"] = 0;
-            TempData["SubCategoryName"] = "All Assets";
-
-            if (subCategory != null)
-            {
-                TempData["SubCategoryId"] = subCategory.Id;
-                TempData["SubCategoryName"] = subCategory.SubCategoryName;
+                TempData["error"] = result.ErrorMessage;
+                return View(new AssetsDTO());
             }
-
-            TempData["storeId"] = id;
-            TempData["storeName"] = await _func.GetStoreNameByStoreIdAsync(id);
-            return View(dto);
         }
-
+        [HttpGet]
         public async Task<IActionResult> AssetList(int id)
         {
+            var result = await _assetService.GetAssetListAsync(id);
+            var dto = result.Value;
 
-            var assets = await _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted).Include(m => m.AssetStatus)
-                .Include(m => m.SubCategory).Include(m => m.Condition).Include(m => m.Donor)
-                .Include(m => m.Store).ToListAsync();
-
-            if (id > 0)
+            if (result.IsSuccess)
             {
-                assets = assets.Where(m => m.SubCategory.CategoryId == id).ToList();
+                return View(dto);
             }
-            var categories = _db.Categories.ToList().Select(m => new SelectListItem
+            else
             {
-                Text = m.CategoryName,
-                Value = m.Id.ToString(),
-                Selected = (m.Id == id)
-            });
-
-            var dto = new dtoAssetList()
-            {
-                CategoryId = id,
-                AssetList = assets,
-                CategorySelectList = categories,
-            };
-            var category = await _db.Categories.Where(m => m.Id == id).FirstOrDefaultAsync();
-            TempData["categoryId"] = 0;
-            TempData["categoryName"] = "All Assets";
-
-            if (category != null)
-            {
-                TempData["categoryId"] = category.Id;
-                TempData["categoryName"] = category.CategoryName;
+                TempData["error"] = result.ErrorMessage;
+                return View(new AssetListDTO());
             }
-
-            return View(dto);
         }
-
         [Authorize(Roles = "StoreOwner, User")]
         [HttpGet]
         public async Task<IActionResult> CreateAsset(int id)
@@ -130,181 +83,59 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 return RedirectToAction("Index", "Assets", new { area = "Users", id = id });
             }
 
-            var dto = new dtoAsset();
-            dto = await PopulateDtoAssetAsync(dto);
+            var result = await _assetService.GetCreateAssetAsync(id);
+            var dto = result.Value;
 
-            TempData["storeId"] = id;
-            TempData["storeName"] = await _func.GetStoreNameByStoreIdAsync(id);
-
-
-
-            return View(dto);
-        }
-
-        [Authorize(Roles = "StoreOwner, User")]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateAsset(dtoAsset dto)
-        {
-            var empId = User.IsInRole("User") ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
-            if (await _func.GetStoreOwnerIdAsync(dto.StoreId) != empId)
+            if (result.IsSuccess)
             {
-                TempData["error"] = "You are not authorized to perform this action!";
-                return RedirectToAction("Index", "Assets", new { area = "Users", id = dto.StoreId });
-            }
-
-            if (ModelState.IsValid)
-            {
-                var asset = await _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted && m.SerialNo == dto.SerialNo)
-                    .FirstOrDefaultAsync();
-
-                if (asset == null)
-                {
-                    try
-                    {
-                        var newAsset = new MODAMS.Models.Asset()
-                        {
-                            Name = dto.Name,
-                            Make = dto.Make,
-                            Model = dto.Model,
-                            Year = dto.Year,
-                            ManufacturingCountry = dto.ManufacturingCountry,
-                            SerialNo = dto.SerialNo,
-                            Barcode = dto.Barcode,
-                            Engine = dto.Engine,
-                            Chasis = dto.Chasis,
-                            Plate = dto.Plate,
-                            Specifications = dto.Specifications,
-                            Cost = dto.Cost,
-                            PurchaseDate = dto.PurchaseDate,
-                            PONumber = dto.PONumber,
-                            RecieptDate = dto.RecieptDate,
-                            ProcuredBy = dto.ProcuredBy,
-                            Remarks = dto.Remarks,
-                            SubCategoryId = dto.SubCategoryId,
-                            ConditionId = dto.ConditionId,
-                            StoreId = dto.StoreId,
-                            DonorId = dto.DonorId,
-                            AssetStatusId = 1
-                        };
-
-                        await _db.Assets.AddAsync(newAsset);
-                        await _db.SaveChangesAsync();
-
-                        //Log Newsfeed
-                        string employeeName = await _func.GetEmployeeNameAsync();
-                        string assetName = newAsset.Name;
-                        string storeName = await _func.GetStoreNameByStoreIdAsync(newAsset.StoreId);
-                        string message = $"{employeeName} registered a new asset ({assetName}) in {storeName}";
-                        await _func.LogNewsFeedAsync(message, "Users", "Assets", "AssetInfo", newAsset.Id);
-
-                        var ah = new AssetHistory()
-                        {
-                            AssetId = newAsset.Id,
-                            Description = "Asset Registered by " + employeeName,
-                            TimeStamp = DateTime.Now,
-                            TransactionRecordId = newAsset.Id,
-                            TransactionTypeId = SD.Transaction_Registration
-                        };
-                        await _db.AssetHistory.AddAsync(ah);
-                        await _db.SaveChangesAsync();
-
-                        TempData["success"] = "Asset registered successfuly!";
-                        return RedirectToAction("EditAsset", "Assets", new { id = newAsset.Id });
-                    }
-                    catch (Exception ex)
-                    {
-                        TempData["error"] = ex.Message;
-                        TempData["storeId"] = dto.StoreId;
-                        TempData["storeName"] = await _func.GetStoreNameByStoreIdAsync(dto.StoreId);
-                        dto = await PopulateDtoAssetAsync(dto);
-                        return View(dto);
-                    }
-
-                }
-                else
-                {
-                    TempData["error"] = "Serial Number already in use";
-
-                    TempData["storeId"] = dto.StoreId;
-                    TempData["storeName"] = await _func.GetStoreNameByStoreIdAsync(dto.StoreId);
-                    dto = await PopulateDtoAssetAsync(dto);
-
-                    return View(dto);
-                }
+                return View(dto);
             }
             else
             {
-                TempData["error"] = "Please fill all the mandatory fields!";
+                TempData["error"] = result.ErrorMessage;
+                return RedirectToAction("Index", "Assets", new { area = "Users", id = id });
+            }
+        }
+        [Authorize(Roles = "StoreOwner, User")]
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public async Task<IActionResult> CreateAsset(AssetCreateDTO dto)
+        {
+            var result = await _assetService.CreateAssetAsync(dto);
 
+            if (!result.IsSuccess)
+            {
+                TempData["error"] = result.ErrorMessage;
                 TempData["storeId"] = dto.StoreId;
                 TempData["storeName"] = await _func.GetStoreNameByStoreIdAsync(dto.StoreId);
 
-                dto = await PopulateDtoAssetAsync(dto);
+                // If the service returns the DTO (in case of validation errors), repopulate the form
+                dto = result.Value;
                 return View(dto);
-                //return RedirectToAction("CreateAsset", "Assets", new { area = "Users", id = dto.StoreId });
             }
-        }
 
+            TempData["success"] = "Asset registered successfully!";
+            return RedirectToAction("EditAsset", "Assets", new { id = dto.Id });
+        }
         [Authorize(Roles = "StoreOwner, User")]
         [HttpGet]
         public async Task<IActionResult> EditAsset(int id)
         {
-            var dto = new dtoAsset();
-            dto = await PopulateDtoAssetAsync(dto);
+            var result = await _assetService.GetEditAssetAsync(id);
+            var dto = result.Value;
 
-
-
-            if (id > 0)
+            if (!result.IsSuccess)
             {
-                var assetInDb = await _db.Assets.FirstOrDefaultAsync(m => m.Id == id);
-                if (assetInDb != null)
-                {
-                    dto.Id = assetInDb.Id;
-                    dto.SubCategoryId = assetInDb.SubCategoryId;
-                    dto.Name = assetInDb.Name;
-
-                    dto.Make = assetInDb.Make;
-                    dto.Model = assetInDb.Model;
-                    dto.Year = assetInDb.Year;
-
-                    dto.Engine = assetInDb.Engine;
-                    dto.Chasis = assetInDb.Chasis;
-                    dto.Plate = assetInDb.Plate;
-
-                    dto.ManufacturingCountry = assetInDb.ManufacturingCountry;
-                    dto.SerialNo = assetInDb.SerialNo;
-                    dto.Barcode = assetInDb.Barcode;
-
-                    dto.Specifications = assetInDb.Specifications;
-
-                    dto.Cost = assetInDb.Cost;
-                    dto.PurchaseDate = assetInDb.PurchaseDate;
-                    dto.RecieptDate = assetInDb.RecieptDate;
-
-                    dto.PONumber = assetInDb.PONumber;
-                    dto.ProcuredBy = assetInDb.ProcuredBy;
-                    dto.DonorId = assetInDb.DonorId;
-
-                    dto.ConditionId = assetInDb.ConditionId;
-                    dto.Remarks = assetInDb.Remarks;
-                    dto.AssetStatusId = assetInDb.AssetStatusId;
-
-                    dto.StoreId = assetInDb.StoreId;
-
-                    TempData["storeId"] = assetInDb.StoreId;
-                    TempData["storeName"] = await _func.GetStoreNameByStoreIdAsync(assetInDb.StoreId);
-
-                }
+                TempData["error"] = result.ErrorMessage;
+                return View(dto);
             }
 
             return View(dto);
         }
-
         [Authorize(Roles = "StoreOwner, User")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditAsset(dtoAsset dto)
+        public async Task<IActionResult> EditAsset(AssetEditDTO dto)
         {
             var empId = User.IsInRole("User") ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
             if (await _func.GetStoreOwnerIdAsync(dto.StoreId) != empId)
@@ -315,246 +146,101 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             if (ModelState.IsValid)
             {
-                var assetInDb = await _db.Assets.Where(m => m.Id == dto.Id).FirstOrDefaultAsync();
-                if (assetInDb != null)
+                var result = await _assetService.EditAssetAsync(dto);
+
+                if (result.IsSuccess)
                 {
-                    assetInDb.SubCategoryId = dto.SubCategoryId;
-                    assetInDb.Name = dto.Name;
-
-                    assetInDb.Make = dto.Make;
-                    assetInDb.Model = dto.Model;
-                    assetInDb.Year = dto.Year;
-
-                    assetInDb.Engine = dto.Engine;
-                    assetInDb.Chasis = dto.Chasis;
-                    assetInDb.Plate = dto.Plate;
-
-                    assetInDb.ManufacturingCountry = dto.ManufacturingCountry;
-                    assetInDb.SerialNo = dto.SerialNo;
-                    assetInDb.Barcode = dto.Barcode;
-
-                    assetInDb.Specifications = dto.Specifications;
-
-                    assetInDb.Cost = dto.Cost;
-                    assetInDb.PurchaseDate = dto.PurchaseDate;
-                    assetInDb.RecieptDate = dto.RecieptDate;
-
-                    assetInDb.PONumber = dto.PONumber;
-                    assetInDb.ProcuredBy = dto.ProcuredBy;
-                    assetInDb.DonorId = dto.DonorId;
-
-                    assetInDb.ConditionId = dto.ConditionId;
-                    assetInDb.Remarks = dto.Remarks;
-                    assetInDb.AssetStatusId = dto.AssetStatusId;
-
-                    await _db.SaveChangesAsync();
-
-
-                    //Log Newsfeed
-                    string employeeName = await _func.GetEmployeeNameAsync();
-                    string assetName = assetInDb.Name;
-                    string storeName = await _func.GetStoreNameByStoreIdAsync(assetInDb.StoreId);
-                    string message = $"{employeeName} modified an asset ({assetName}) in {storeName}";
-                    await _func.LogNewsFeedAsync(message, "Users", "Assets", "AssetInfo", assetInDb.Id);
-
-                    TempData["success"] = "Changes saved succesfuly!";
-                    return RedirectToAction("EditAsset", "Assets", new { area = "Users", id = dto.Id });
+                    TempData["success"] = "Changes saved successfully!";
+                    return RedirectToAction("EditAsset", "Assets", new { id = dto.Id });
                 }
                 else
                 {
-                    dto = await PopulateDtoAssetAsync(dto);
-                    TempData["error"] = "Record not found!";
-                    TempData["storeId"] = dto.StoreId;
-                    TempData["storeName"] = await _func.GetStoreNameByStoreIdAsync(dto.StoreId);
+                    TempData["error"] = result.ErrorMessage;
+                    // Preserve user-entered data and repopulate SelectLists
+                    dto = await _assetService.PopulateDtoAssetAsync(dto);
                     return View(dto);
                 }
             }
             else
             {
-                dto = await PopulateDtoAssetAsync(dto);
                 TempData["error"] = "All fields are mandatory!";
-                TempData["storeId"] = dto.StoreId;
-                TempData["storeName"] = await _func.GetStoreNameByStoreIdAsync(dto.StoreId);
+                // Repopulate only the SelectList fields, keeping the user-entered data
+                dto = await _assetService.PopulateDtoAssetAsync(dto);
                 return View(dto);
             }
         }
-
         [Authorize(Roles = "Administrator, StoreOwner, User")]
         [HttpGet]
         public async Task<IActionResult> AssetDocuments(int id)
         {
-            var dto = new dtoAssetDocument();
-            dto = PopulateDtoAssetDocument(dto, id);
+            var result = await _assetService.GetAssetDocumentsAsync(id);
+            var dto = result.Value;
 
-            var asset = await _db.Assets.Where(m => m.Id == id).FirstOrDefaultAsync();
-            if (asset != null)
+            if (result.IsSuccess)
             {
-                TempData["assetInfo"] = asset.Name + " - " + asset.Model + " - " + asset.Year;
+                return View(dto);
             }
-
-            int nStoreId = await _func.GetStoreIdByAssetIdAsync(id);
-            string sStoreName = await _func.GetStoreNameByStoreIdAsync(nStoreId);
-
-            TempData["storeId"] = nStoreId;
-            TempData["storeName"] = sStoreName;
-
-            return View(dto);
+            else {
+                TempData["error"] = result.ErrorMessage;
+                return View(new AssetDocumentDTO());
+            }
         }
-
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UploadDocument(int Id, int DocumentTypeId, IFormFile? file)
         {
+            var result = await _assetService.UploadDocumentAsync(Id, DocumentTypeId, file);
 
-            string wwwRootPath = _webHostEnvironment.WebRootPath;
-            if (file != null && Id > 0 && DocumentTypeId > 0)
+            if (result.IsSuccess)
             {
-                string sFileName = "";
-                string sPath = "";
-
-                var documentType = _db.DocumentTypes.Where(m => m.Id == DocumentTypeId).FirstOrDefault();
-                if (documentType != null)
-                {
-                    sFileName = documentType.Name;
-                }
-
-                string fileName = sFileName + Path.GetExtension(file.FileName);
-                sPath = Path.Combine(wwwRootPath, @"assetdocuments");
-
-                try
-                {
-                    using (var fileStream = new FileStream(Path.Combine(sPath, fileName), FileMode.Create))
-                    {
-                        await file.CopyToAsync(fileStream);
-                    }
-
-                    var assetDocument = _db.AssetDocuments.Where(m => m.AssetId == Id && m.DocumentTypeId == DocumentTypeId).FirstOrDefault();
-                    if (assetDocument != null)
-                    {
-                        _db.AssetDocuments.Remove(assetDocument);
-                        await _db.SaveChangesAsync();
-                    }
-
-                    var newAssetDocument = new AssetDocument()
-                    {
-                        Name = sFileName,
-                        DocumentUrl = "/assetdocuments/" + fileName,
-                        DocumentTypeId = DocumentTypeId,
-                        AssetId = Id,
-                    };
-                    await _db.AssetDocuments.AddAsync(newAssetDocument);
-                    await _db.SaveChangesAsync();
-
-                    //Log News feed
-                    string employeeName = await _func.GetEmployeeNameAsync();
-                    string assetName = await _func.GetAssetNameAsync(Id);
-                    string storeName = await _func.GetStoreNameByStoreIdAsync(await _func.GetStoreIdByAssetIdAsync(Id));
-                    string message = $"{employeeName} uploaded {sFileName} for ({assetName}) in {storeName}";
-                    await _func.LogNewsFeedAsync(message, "Users", "Assets", "AssetInfo", Id);
-                }
-                catch (Exception ex)
-                {
-                    TempData["error"] = "Error occured! <br /> " + ex.Message;
-                    return RedirectToAction("AssetDocuments", "Assets", new { area = "Users", id = Id });
-                }
-                TempData["success"] = "File uploaded successfuly!";
-                return RedirectToAction("AssetDocuments", "Assets", new { area = "Users", id = Id });
+                TempData["success"] = "File uploaded successfully!";
             }
             else
             {
-                TempData["error"] = "Please select a file to upload!";
-                return RedirectToAction("AssetDocuments", "Assets", new { area = "Users", id = Id });
+                TempData["error"] = result.ErrorMessage;
             }
-        }
 
+            return RedirectToAction("AssetDocuments", "Assets", new { area = "Users", id = Id });
+        }
         [HttpGet]
-        public IActionResult AssetInfo(int id, int page = 1, int tab = 1, int categoryId = 0)
+        public async Task<IActionResult> AssetInfo(int id, int page = 1, int tab = 1, int categoryId = 0)
         {
-            var dto = new dtoAssetInfo();
+            var result = await _assetService.GetAssetInfoAsync(id, page, tab, categoryId);
 
-            var asset = _db.Assets.Where(m => m.Id == id)
-                .Include(m => m.SubCategory)
-                .Include(m => m.Condition)
-                .Include(m => m.SubCategory.Category)
-                .Include(m => m.AssetStatus)
-                .Include(m => m.Store).Include(m => m.Donor)
-                .FirstOrDefault();
-
-            var documents = _db.AssetDocuments.Where(m => m.AssetId == id).ToList();
-
-
-            TempData["categoryId"] = categoryId;
-
-            dto.Documents = documents;
-            if (asset != null)
+            if (result.IsSuccess)
             {
-                TempData["storeId"] = asset.StoreId;
-                TempData["storeName"] = asset.Store.Name;
-                dto.Asset = asset;
+                var dto = result.Value;
+                TempData["storeId"] = dto.Asset.StoreId;
+                TempData["storeName"] = dto.Asset.Store.Name;
+                TempData["categoryId"] = categoryId;
+                TempData["tab"] = tab.ToString();
+                return View(dto);
             }
             else
             {
-                TempData["error"] = "Record not found!";
+                TempData["error"] = result.ErrorMessage;
+                return RedirectToAction("Index", "Assets");
             }
-
-            var assetPictures = _db.AssetPictures.Where(m => m.AssetId == id).ToList();
-
-            var dtoAssetPictures = new dtoAssetPictures(assetPictures, 6);
-
-            TempData["tab"] = tab.ToString();
-
-            var assetHistory = _db.AssetHistory.Where(m => m.AssetId == id).OrderBy(m => m.TimeStamp).ToList();
-
-            dto.dtoAssetPictures = dtoAssetPictures;
-            dto.AssetHistory = assetHistory;
-
-            return View(dto);
         }
-
         [Authorize(Roles = "StoreOwner, User")]
         public async Task<IActionResult> DeleteDocument(int id)
         {
-            if (id > 0)
+            var result = await _assetService.DeleteDocumentAsync(id);
+            var dto = result.Value;
+
+            if (result.IsSuccess)
             {
-                var assetDocument = await _db.AssetDocuments.Where(m => m.Id == id).FirstOrDefaultAsync();
-                if (assetDocument != null)
-                {
-
-                    var sFileName = assetDocument.DocumentUrl.ToString();
-                    sFileName = sFileName.Substring(16, sFileName.Length - 16);
-
-                    if (!DeleteFile(sFileName, "assetdocuments"))
-                    {
-                        TempData["error"] = "Error deleting file from storage";
-                        return RedirectToAction("AssetDocuments", "Assets", new { id = assetDocument.AssetId });
-                    }
-
-                    _db.AssetDocuments.Remove(assetDocument);
-                    await _db.SaveChangesAsync();
-
-                    int nAssetId = assetDocument.AssetId;
-                    int nStoreId = await _func.GetStoreIdByAssetIdAsync(nAssetId);
-
-
-                    TempData["storeId"] = await _func.GetStoreIdByAssetIdAsync(nAssetId);
-                    TempData["storeName"] = await _func.GetStoreNameByStoreIdAsync(nStoreId);
-
-                    return RedirectToAction("AssetDocuments", "Assets", new { id = nAssetId });
-
-                }
-                else
-                {
-                    TempData["error"] = "Document not found!";
-                    return View();
-                }
+                return RedirectToAction("AssetDocuments", "Assets", new { id = dto.AssetId });
             }
             else
             {
-                TempData["error"] = "Document not found!";
+                TempData["error"] = result.ErrorMessage;
                 return View();
             }
         }
+
+
+
 
         [HttpGet]
         public async Task<IActionResult> AssetPictures(int id)
@@ -570,7 +256,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 TempData["assetInfo"] = asset.Name + " - " + asset.Model + " - " + asset.Year;
             }
 
-            
+
 
             TempData["storeId"] = storeId;
             TempData["storeName"] = storeName;
@@ -751,128 +437,56 @@ namespace MODAMSWeb.Areas.Users.Controllers
             return RedirectToAction("Index", "Settings", new { area = "Admin", id = id });
         }
 
+
         //API Calls
         [HttpGet]
-        public async Task<string> GetCategories()
+        public async Task<IActionResult> GetCategories()
         {
-            string sResult = "No Records Found";
-            var categories = await _db.Categories.ToListAsync();
+            var result = await _assetService.GetCategoriesAsync();
 
-            if (categories != null)
+            if (result.IsSuccess)
             {
-                sResult = JsonConvert.SerializeObject(categories);
+                return Json(new { success = true, data = result.Value });
             }
-
-            return sResult;
+            else
+            {
+                return Json(new { success = false, message = result.ErrorMessage });
+            }
         }
 
         [HttpGet]
-        public async Task<string> GetSubCategories(int? id)
+        public async Task<IActionResult> GetSubCategories(int? id)
         {
-            string sResult = "No Records Found";
-            var subCategories = await _db.SubCategories.ToListAsync();
+            var result = await _assetService.GetSubCategoriesAsync(id);
 
-            if (id != null)
-                subCategories = subCategories.Where(m => m.CategoryId == id).ToList();
-
-            if (subCategories != null)
+            if (result.IsSuccess)
             {
-                sResult = JsonConvert.SerializeObject(subCategories);
+                return Json(new { success = true, data = result.Value });
             }
-
-            return sResult;
+            else
+            {
+                return Json(new { success = false, message = result.ErrorMessage });
+            }
         }
-
         [HttpGet]
-        public async Task<string> GetDocumentTypes()
+        public async Task<IActionResult> GetDocumentTypes()
         {
-            string sResult = "No Records Found";
+            var result = await _assetService.GetDocumentTypesAsync();
 
-            var documentTypes = await _db.DocumentTypes.ToListAsync();
-            if (documentTypes != null)
+            if (result.IsSuccess)
             {
-                sResult = JsonConvert.SerializeObject(documentTypes);
+                return Json(new { success = true, data = result.Value });
             }
-            return sResult;
+            else
+            {
+                return Json(new { success = false, message = result.ErrorMessage });
+            }
         }
 
         //API Calls End
 
         //Private functions
-        private async Task<dtoAsset> PopulateDtoAssetAsync(dtoAsset dto)
-        {
-            var categories = await _db.Categories
-                .Select(m => new SelectListItem
-                {
-                    Text = m.CategoryName,
-                    Value = m.Id.ToString()
-                })
-                .ToListAsync();
-
-            var subCategories = await _db.SubCategories
-                .Select(m => new SelectListItem
-                {
-                    Text = m.SubCategoryName,
-                    Value = m.Id.ToString()
-                })
-                .ToListAsync();
-
-            var donors = await _db.Donors
-                .Select(m => new SelectListItem
-                {
-                    Text = m.Name,
-                    Value = m.Id.ToString()
-                })
-                .ToListAsync();
-
-            var statuses = await _db.AssetStatuses
-                .Select(m => new SelectListItem
-                {
-                    Text = m.StatusName,
-                    Value = m.Id.ToString()
-                })
-                .ToListAsync();
-
-            var conditions = await _db.Conditions
-                .Select(m => new SelectListItem
-                {
-                    Text = m.ConditionName,
-                    Value = m.Id.ToString()
-                })
-                .ToListAsync();
-
-            dto.Categories = categories;
-            dto.SubCategories = subCategories;
-            dto.Donors = donors;
-            dto.Statuses = statuses;
-            dto.Conditions = conditions;
-
-            return dto;
-        }
-
-        private dtoAssetDocument PopulateDtoAssetDocument(dtoAssetDocument dto, int AssetId)
-        {
-
-            var documentTypes = _db.DocumentTypes.ToList();
-            var vwAssetDocs = new List<vwAssetDocuments>();
-
-            foreach (var documentType in documentTypes)
-            {
-                var vwDocType = new vwAssetDocuments()
-                {
-                    Id = GetAssetDocumentId(AssetId, documentType.Id),
-                    DocumentTypeId = documentType.Id,
-                    Name = documentType.Name,
-                    AssetId = AssetId,
-                    DocumentUrl = GetDocumentUrl(AssetId, documentType.Id)
-                };
-                vwAssetDocs.Add(vwDocType);
-            }
-            dto.vwAssetDocuments = vwAssetDocs;
-            dto.AssetId = AssetId;
-
-            return dto;
-        }
+        
         private string GetDocumentUrl(int assetId, int documentTypeId)
         {
             var assetDocument = _db.AssetDocuments.Where(m => m.AssetId == assetId && m.DocumentTypeId == documentTypeId).FirstOrDefault();

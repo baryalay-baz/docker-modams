@@ -1,5 +1,5 @@
 ﻿@using MODAMS.Utility;
-@model MODAMS.Models.ViewModels.Dto.dtoAssets
+@model MODAMS.Models.ViewModels.Dto.AssetsDTO
 
 <div class="page-header">
     <div>
@@ -9,7 +9,7 @@
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">Dashboard</a></li>
             <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Stores" asp-action="Index">Stores</a></li>
-            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Stores" asp-action="StoreDetails" asp-route-id="@TempData["storeId"]">@TempData["storeName"]</a></li>
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Stores" asp-action="StoreDetails" asp-route-id="@Model.StoreId">@Model.StoreName</a></li>
             <li class="breadcrumb-item active" aria-current="page">Assets</li>
         </ol>
     </div>
@@ -20,7 +20,7 @@
             <div class="card-body p-4">
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="text-start">
-                        <h4 class="m-0">@TempData["storeName"]</h4>
+                        <h4 class="m-0">@Model.StoreName</h4>
                         @* <h5 class="m-0">@TempData["SubCategoryName"] (Count: @Model.TotalAssets())</h5> *@
 
                     </div>
@@ -54,7 +54,7 @@
                 }
                 <div class="mb-2">
                     <a asp-area="Users" asp-controller="Assets" asp-action="CreateAsset"
-                       asp-route-id="@TempData["storeId"]"
+                       asp-route-id="@Model.StoreId"
                        class="btn btn-info-gradient trShadow @sDisabled">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-inner-icn text-white" enable-background="new 0 0 24 24" viewBox="0 0 24 24"><path d="M16,11.5h-3.5V8c0-0.276123-0.223877-0.5-0.5-0.5S11.5,7.723877,11.5,8v3.5H8c-0.276123,0-0.5,0.223877-0.5,0.5s0.223877,0.5,0.5,0.5h3.5v3.5005493C11.5001831,16.2765503,11.723999,16.5001831,12,16.5h0.0006104C12.2765503,16.4998169,12.5001831,16.276001,12.5,16v-3.5H16c0.276123,0,0.5-0.223877,0.5-0.5S16.276123,11.5,16,11.5z M12,2C6.4771729,2,2,6.4771729,2,12s4.4771729,10,10,10c5.5202026-0.0062866,9.9937134-4.4797974,10-10C22,6.4771729,17.5228271,2,12,2z M12,21c-4.9705811,0-9-4.0294189-9-9s4.0294189-9,9-9c4.9682617,0.0056152,8.9943848,4.0317383,9,9C21,16.9705811,16.9705811,21,12,21z" /></svg>
                         New Asset
@@ -151,7 +151,7 @@
                 <div class="row">
                     @*<hr class="customHR" />*@
                     <div class="col-sm-12">
-                        <a asp-action="StoreDetails" asp-controller="Stores" asp-route-id="@TempData["storeId"]" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
+                        <a asp-action="StoreDetails" asp-controller="Stores" asp-route-id="@Model.StoreId" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
                     </div>
 
                 </div>
@@ -181,7 +181,7 @@
 
 
             $('.select2').select2();
-            var sStoreId = '@TempData["storeId"]';
+            var sStoreId = '@Model.StoreId';
             $('#SubCategoryId').on("change", () => {
                 window.location.href = '/Users/Assets/Index/' + sStoreId + '?subCategoryId=' + $("#SubCategoryId").val();
             });

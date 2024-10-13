@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MODAMS.Models.ViewModels.Dto
 {
-    public class dtoAssetDocument
+    public class AssetDocumentDTO
     {
         [Key]
         public int Id { get; set; }
@@ -31,11 +31,16 @@ namespace MODAMS.Models.ViewModels.Dto
         public int DocumentTypeId { get; set; }
 
         [ValidateNever]
-        public List<DocumentType> DocumentTypes { get; set; }
+        public List<vwAssetDocument> DocumentList { get; set; }
 
         [ValidateNever]
-        public List<vwAssetDocuments> vwAssetDocuments { get; set; }
+        public string AssetInfo { get; set; } = string.Empty;
 
+        [ValidateNever]
+        public int StoreId { get; set; }
+
+        [ValidateNever]
+        public string StoreName { get; set; } = string.Empty;
 
     }
 }

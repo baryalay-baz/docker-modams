@@ -1,5 +1,5 @@
 ﻿@using MODAMS.Utility;
-@model MODAMS.Models.ViewModels.Dto.dtoAssetList
+@model MODAMS.Models.ViewModels.Dto.AssetListDTO
 
 <div class="page-header">
     <div>
@@ -17,7 +17,7 @@
         <div class="card divShadow">
             <div class="card-body p-4">
                 <div class="d-flex align-items-center justify-content-between">
-                    <h4 class="m-0">@TempData["categoryName"] (Count: @Model.TotalAssets())</h4>
+                    <h4 class="m-0">@Model.CategoryName (Count: @Model.TotalAssets())</h4>
                     <select asp-for="@Model.CategoryId" asp-items="@Model.CategorySelectList"
                             class="form-control select2 form-select">
                         <option value="0">All Assets</option>

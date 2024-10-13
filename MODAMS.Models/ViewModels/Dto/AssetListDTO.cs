@@ -8,9 +8,11 @@ using System.Threading.Tasks;
 
 namespace MODAMS.Models.ViewModels.Dto
 {
-    public class dtoAssetList
+    public class AssetListDTO
     {
         public int CategoryId { get; set; }
+        public string CategoryName { get; set; }
+
         public List<Asset> AssetList { get; set; } = new List<Asset>();
 
         [ValidateNever]

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MODAMS.Models.ViewModels
 {
-    public class vwAssetDocuments
+    public class vwAssetDocument
     {
         public int Id { get; set; }
         public string Name { get; set; }
