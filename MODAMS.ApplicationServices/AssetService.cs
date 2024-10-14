@@ -183,6 +183,7 @@ namespace MODAMS.ApplicationServices
 
                     if (dto == null)
                     {
+                        dto = new AssetCreateDTO();
                         dto = await PopulateDtoAssetAsync(dto);
                         return Result<AssetCreateDTO>.Failure("Please fill all the mandatory fields!", dto);
                     }
@@ -239,11 +240,12 @@ namespace MODAMS.ApplicationServices
                     // Commit the transaction
                     await transaction.CommitAsync();
 
+                    dto.Id = newAsset.Id;
+
                     return Result<AssetCreateDTO>.Success(dto);
                 }
                 catch (Exception ex)
                 {
-                    // Rollback the transaction if something goes wrong
                     await transaction.RollbackAsync();
                     _func.LogException(_logger, ex);
                     dto = await PopulateDtoAssetAsync(dto);
@@ -691,7 +693,6 @@ namespace MODAMS.ApplicationServices
             
             return Result<string>.Success("Asset deleted successfully!");
         }
-
         public async Task<Result<string>> RecoverAssetAsync(int assetId)
         {
             if (assetId == 0)
@@ -722,7 +723,6 @@ namespace MODAMS.ApplicationServices
 
             return Result<string>.Success("Asset recovered successfully!");
         }
-
 
 
 
@@ -846,7 +846,6 @@ namespace MODAMS.ApplicationServices
                 return Result<string>.Failure(ex.Message);
             }
         }
-
 
         //Private functions
         private async Task<List<vwAssetDocument>> GetDocumentListAsync(int AssetId)

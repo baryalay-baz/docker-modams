@@ -1,22 +1,10 @@
-﻿using DocumentFormat.OpenXml.Office2010.Excel;
-using Kendo.Mvc.UI;
+﻿
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.CodeAnalysis.Elfie.Extensions;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.Web.CodeGeneration.EntityFrameworkCore;
 using MODAMS.ApplicationServices;
 using MODAMS.DataAccess.Data;
-using MODAMS.Models;
-using MODAMS.Models.ViewModels;
 using MODAMS.Models.ViewModels.Dto;
 using MODAMS.Utility;
-using Newtonsoft.Json;
-using NuGet.ContentModel;
-using NuGet.Protocol;
-using System.Data;
-using System.Drawing;
 
 namespace MODAMSWeb.Areas.Users.Controllers
 {
@@ -111,7 +99,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             }
 
             TempData["success"] = "Asset registered successfully!";
-            return RedirectToAction("EditAsset", "Assets", new { id = dto.Id });
+            return RedirectToAction("EditAsset", "Assets", new { id = result.Value.Id });
         }
         [Authorize(Roles = "StoreOwner, User")]
         [HttpGet]
