@@ -1,4 +1,4 @@
-﻿@model List<MODAMS.Models.AssetPicture>
+﻿@model MODAMS.Models.ViewModels.Dto.AssetPicturesDTO
 
 <style>
     .input-group {
@@ -14,8 +14,8 @@
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">Dashboard</a></li>
             <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Stores" asp-action="Index">Stores</a></li>
-            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Stores" asp-action="StoreDetails" asp-route-id="@TempData["storeId"]">@TempData["storeName"]</a></li>
-            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Assets" asp-action="Index" asp-route-id="@TempData["storeId"]">Assets</a></li>
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Stores" asp-action="StoreDetails" asp-route-id="@Model.StoreId">@Model.StoreName</a></li>
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Assets" asp-action="Index" asp-route-id="@Model.StoreId">Assets</a></li>
             <li class="breadcrumb-item active" aria-current="page">Picture Gallery</li>
         </ol>
     </div>
@@ -24,22 +24,22 @@
     <div class="col-sm-12 col-md-12 col-xl-12">
         <div class="card">
             <div class="card-header border-bottom bg-info-gradient divShadow d-flex justify-content-between align-items-center">
-                <h4 class="m-0 text-muted text-white">@TempData["assetInfo"]</h4>
+                <h4 class="m-0 text-muted text-white">@Model.AssetInfo</h4>
                 <div class="btn-group">
-                    <a asp-action="EditAsset" asp-controller="Assets" asp-route-id="@TempData["assetId"]" class="btn btn-outline-info" data-bs-toggle="tooltip" data-bs-original-title="Edit Asset">
+                    <a asp-action="EditAsset" asp-controller="Assets" asp-route-id="@Model.AssetId" class="btn btn-outline-info" data-bs-toggle="tooltip" data-bs-original-title="Edit Asset">
                         <i class="fa fa-edit"></i>
                     </a>
-                    <a asp-action="AssetDocuments" asp-controller="Assets" asp-route-id="@TempData["assetId"]" class="btn btn-outline-warning" data-bs-toggle="tooltip" data-bs-original-title="Asset Documents">
+                    <a asp-action="AssetDocuments" asp-controller="Assets" asp-route-id="@Model.AssetId" class="btn btn-outline-warning" data-bs-toggle="tooltip" data-bs-original-title="Asset Documents">
                         <i class="fa fa-folder"></i>
                     </a>
-                    <a asp-action="AssetPictures" asp-controller="Assets" asp-route-id="@TempData["assetId"]" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-original-title="Asset Pictures">
+                    <a asp-action="AssetPictures" asp-controller="Assets" asp-route-id="@Model.AssetId" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-original-title="Asset Pictures">
                         <i class="fa fa-image"></i>
                     </a>
                 </div>
             </div>
             <div class="card-body">
                 <form method="post" asp-action="UploadPicture" enctype="multipart/form-data">
-                    <input type="hidden" id="AssetId" name="AssetId" value="@TempData["assetId"]" />
+                    <input type="hidden" id="AssetId" name="AssetId" value="@Model.AssetId" />
                     <div class="row">
                         <div class="col-sm-6 col-md-6 col-xl-6">
                             <div class="form-group">
@@ -67,9 +67,9 @@
     <div class="card-body">
         <div class="row">
             @{
-                if (Model.Count > 0)
+                if (Model.AssetPictures.Count > 0)
                 {
-                    foreach (var pic in Model)
+                    foreach (var pic in Model.AssetPictures)
                     {
                         <div class="col-md-3">
                             <img src="@pic.ImageUrl"/>

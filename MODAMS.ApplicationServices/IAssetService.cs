@@ -20,6 +20,12 @@ namespace MODAMS.ApplicationServices
         Task<Result> UploadDocumentAsync(int assetId, int documentTypeId, IFormFile? file);
         Task<Result<dtoAssetInfo>> GetAssetInfoAsync(int id, int page = 1, int tab = 1, int categoryId = 0);
         Task<Result<DeleteDocumentResultDTO>> DeleteDocumentAsync(int documentId);
+        Task<Result<AssetPicturesDTO>> GetAssetPicturesAsync(int assetId);
+        Task<Result<string>> UploadPictureAsync(int assetId, IFormFile? file);
+        Task<Result<string>> DeletePictureAsync(int id, int assetId);
+        Task<Result<string>> DeleteAssetAsync(int assetId);
+        Task<Result<string>> RecoverAssetAsync(int assetId);
+
 
 
         Task<T> PopulateDtoAssetAsync<T>(T dto) where T : class, new();

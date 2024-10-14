@@ -24,22 +24,18 @@ namespace MODAMSWeb.Areas.Users.Controllers
     [Authorize]
     public class AssetsController : Controller
     {
-        private readonly ApplicationDbContext _db;
         private readonly IAMSFunc _func;
         private readonly IAssetService _assetService;
 
         private int _employeeId;
-        private readonly IWebHostEnvironment _webHostEnvironment;
-        public AssetsController(ApplicationDbContext db, IAMSFunc func, IWebHostEnvironment webHostEnvironment, IAssetService assetService)
+        
+        public AssetsController(ApplicationDbContext db, IAMSFunc func, IAssetService assetService)
         {
-            _db = db;
             _func = func;
             _assetService = assetService;
 
             _employeeId = _func.GetEmployeeId();
-            _webHostEnvironment = webHostEnvironment;
         }
-
         [HttpGet]
         public async Task<IActionResult> Index(int id, int subCategoryId = 0)
         {
@@ -180,7 +176,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
             {
                 return View(dto);
             }
-            else {
+            else
+            {
                 TempData["error"] = result.ErrorMessage;
                 return View(new AssetDocumentDTO());
             }
@@ -238,205 +235,88 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 return View();
             }
         }
-
-
-
-
         [HttpGet]
         public async Task<IActionResult> AssetPictures(int id)
         {
-            var assetPictures = await _db.AssetPictures.Where(m => m.AssetId == id).ToListAsync();
+            var result = await _assetService.GetAssetPicturesAsync(id);
+            var dto = result.Value;
 
-            var storeId = await _func.GetStoreIdByAssetIdAsync(id);
-            var storeName = await _func.GetStoreNameByStoreIdAsync(storeId);
-
-            var asset = await _db.Assets.Where(m => m.Id == id).FirstOrDefaultAsync();
-            if (asset != null)
+            if (result.IsSuccess)
             {
-                TempData["assetInfo"] = asset.Name + " - " + asset.Model + " - " + asset.Year;
+                return View(dto);
             }
-
-
-
-            TempData["storeId"] = storeId;
-            TempData["storeName"] = storeName;
-            TempData["assetId"] = id;
-
-            return View(assetPictures);
+            else
+            {
+                TempData["error"] = result.ErrorMessage;
+                return View(dto);
+            }
         }
-
         [HttpPost]
         [Authorize(Roles = "StoreOwner, User")]
         public async Task<IActionResult> UploadPicture(int AssetId, IFormFile? file)
         {
-            string wwwRootPath = _webHostEnvironment.WebRootPath;
-            if (file != null)
+            var result = await _assetService.UploadPictureAsync(AssetId, file);
+
+            if (result.IsSuccess)
             {
-                Guid guid = Guid.NewGuid();
-                string fileName = guid + Path.GetExtension(file.FileName);
-                string path = Path.Combine(wwwRootPath, @"assetpictures");
-
-                try
-                {
-                    using (var fileStream = new FileStream(Path.Combine(path, fileName), FileMode.Create))
-                    {
-                        await file.CopyToAsync(fileStream);
-                    }
-
-                    var assetPicture = new AssetPicture()
-                    {
-                        ImageUrl = "/assetpictures/" + fileName,
-                        AssetId = AssetId
-                    };
-                    await _db.AssetPictures.AddAsync(assetPicture);
-                    await _db.SaveChangesAsync();
-
-                    //Log NewsFeed
-                    string employeeName = await _func.GetEmployeeNameAsync();
-                    string assetName = await _func.GetAssetNameAsync(AssetId);
-                    string storeName = await _func.GetStoreNameByStoreIdAsync(await _func.GetStoreIdByAssetIdAsync(AssetId));
-                    string message = $"{employeeName} uploaded a picture for ({assetName}) in {storeName}";
-                    await _func.LogNewsFeedAsync(message, "Users", "Assets", "AssetInfo", AssetId);
-
-                }
-                catch (Exception ex)
-                {
-                    TempData["error"] = "Error occured! <br /> " + ex.Message;
-                    return RedirectToAction("AssetPictures", "Assets", new { area = "Users", id = AssetId });
-                }
-                finally
-                {
-                    TempData["success"] = "Picture uploaded successfuly!";
-                }
+                TempData["success"] = "Picture uploaded successfully!";
             }
             else
             {
-                TempData["error"] = "Error uploading file!";
-                return RedirectToAction("AssetPictures", "Assets", new { area = "Users", id = AssetId });
+                TempData["error"] = result.ErrorMessage;
             }
 
             return RedirectToAction("AssetPictures", "Assets", new { area = "Users", id = AssetId });
         }
-
         [Authorize(Roles = "StoreOwner, User")]
         public async Task<IActionResult> DeletePicture(int id, int assetId)
         {
-            bool blnInitialValidation = true;
-            if (id == 0)
-            {
-                TempData["error"] = "Picture not found!";
-                blnInitialValidation = false;
-            }
+            var result = await _assetService.DeletePictureAsync(id, assetId);
 
-            string sFileName = "";
-
-            var assetPicture = await _db.AssetPictures.Where(m => m.Id == id).FirstOrDefaultAsync();
-            if (assetPicture == null)
+            if (result.IsSuccess)
             {
-                TempData["error"] = "Picture not found!";
-                blnInitialValidation = false;
+                TempData["success"] = "Picture deleted successfuly!";
             }
             else
             {
-                sFileName = assetPicture.ImageUrl.ToString();
-                sFileName = sFileName.Substring(15, sFileName.Length - 15);
-
-                _db.AssetPictures.Remove(assetPicture);
-                await _db.SaveChangesAsync();
+                TempData["error"] = result.ErrorMessage;
             }
 
-            if (!blnInitialValidation)
-            {
-                return RedirectToAction("AssetPictures", "Assets", new { area = "Users", id = assetId });
-            }
-
-            if (!DeleteFile(sFileName, "assetpictures"))
-            {
-                TempData["error"] = "Error deleting picture from storage!";
-                return RedirectToAction("AssetPictures", "Assets", new { area = "Users", id = assetId });
-            }
-
-            TempData["success"] = "Picture deleted successfuly!";
             return RedirectToAction("AssetPictures", "Assets", new { area = "Users", id = assetId });
         }
-
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteAsset(int id)
         {
-            if (id == 0)
-            {
-                TempData["error"] = "Asset not found!";
-                return RedirectToAction("AssetInfo", "Assets", new { id = id });
-            }
+            var result = await _assetService.DeleteAssetAsync(id);
+            int storeId = await _func.GetStoreIdByAssetIdAsync(id);
 
-            var assetInDb = await _db.Assets.FirstOrDefaultAsync(m => m.Id == id);
-            if (assetInDb == null)
+            if (result.IsSuccess)
             {
-                TempData["error"] = "Asset not found!";
-                return RedirectToAction("AssetInfo", "Assets", new { id = id });
+                TempData["success"] = result.ErrorMessage;
+                return RedirectToAction("Index", "Assets", new { id = storeId });
             }
             else
             {
-                assetInDb.AssetStatusId = 4;
-                assetInDb.Remarks = $"Asset Deleted by {await _func.GetEmployeeNameAsync()}";
+                TempData["error"] = result.ErrorMessage;
+                return RedirectToAction("AssetInfo", "Assets", new { id });
             }
-            await _db.SaveChangesAsync();
-
-            var assetHistory = new AssetHistory()
-            {
-                AssetId = id,
-                Description = $"Asset Deleted by {await _func.GetEmployeeNameAsync()}",
-                TimeStamp = DateTime.Now,
-                TransactionRecordId = id,
-                TransactionTypeId = SD.Transaction_Delete
-            };
-            _db.AssetHistory.Add(assetHistory);
-            await _db.SaveChangesAsync();
-
-            int storeId = await _func.GetStoreIdByAssetIdAsync(id);
-
-            TempData["success"] = "Asset deleted successfuly!";
-            return RedirectToAction("Index", "Assets", new { id = storeId });
         }
-
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> RecoverAsset(int id)
         {
-            if (id == 0)
-            {
-                TempData["error"] = "Asset not found!";
-                return RedirectToAction("Index", "Settings", new { area = "Admin", id = id });
-            }
+            var result = await _assetService.RecoverAssetAsync(id);
 
-            var assetInDb = await _db.Assets.FirstOrDefaultAsync(m => m.Id == id);
-            if (assetInDb == null)
+            if (result.IsSuccess)
             {
-                TempData["error"] = "Asset not found!";
-                return RedirectToAction("Index", "Settings", new { area = "Admin", id = id });
+                TempData["success"] = "Asset recovered successfuly!";
             }
             else
             {
-                assetInDb.AssetStatusId = 1;
-                assetInDb.Remarks = $"Asset Recovered by {await _func.GetEmployeeNameAsync()}";
+                TempData["error"] = result.ErrorMessage;
             }
-            await _db.SaveChangesAsync();
 
-            var assetHistory = new AssetHistory()
-            {
-                AssetId = id,
-                Description = $"Asset Recovered by {await _func.GetEmployeeNameAsync()}",
-                TimeStamp = DateTime.Now,
-                TransactionRecordId = id,
-                TransactionTypeId = SD.Transaction_Recover
-            };
-            _db.AssetHistory.Add(assetHistory);
-            await _db.SaveChangesAsync();
-
-
-            TempData["success"] = "Asset Recovered successfuly!";
-            return RedirectToAction("Index", "Settings", new { area = "Admin", id = id });
+            return RedirectToAction("Index", "Settings", new { area = "Admin", id });
         }
-
 
         //API Calls
         [HttpGet]
@@ -453,7 +333,6 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 return Json(new { success = false, message = result.ErrorMessage });
             }
         }
-
         [HttpGet]
         public async Task<IActionResult> GetSubCategories(int? id)
         {
@@ -482,52 +361,5 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 return Json(new { success = false, message = result.ErrorMessage });
             }
         }
-
-        //API Calls End
-
-        //Private functions
-        
-        private string GetDocumentUrl(int assetId, int documentTypeId)
-        {
-            var assetDocument = _db.AssetDocuments.Where(m => m.AssetId == assetId && m.DocumentTypeId == documentTypeId).FirstOrDefault();
-            if (assetDocument != null)
-            {
-                return assetDocument.DocumentUrl;
-            }
-            else
-            {
-                return "not yet uploaded!";
-            }
-
-        }
-        private int GetAssetDocumentId(int assetId, int documentTypeId)
-        {
-            int nResult = 0;
-            var assetDocument = _db.AssetDocuments.Where(m => m.AssetId == assetId && m.DocumentTypeId == documentTypeId).FirstOrDefault();
-            if (assetDocument != null)
-            {
-                nResult = assetDocument.Id;
-            }
-            return nResult;
-        }
-        private bool DeleteFile(string fileName, string folderName)
-        {
-            string wwwRootPath = _webHostEnvironment.WebRootPath;
-            string folderPath = Path.Combine(wwwRootPath, folderName);
-            string filePath = Path.Combine(folderPath, fileName);
-
-            bool blnResult = true;
-            try
-            {
-                System.IO.File.Delete(filePath);
-            }
-            catch
-            {
-                blnResult = false;
-            }
-            return blnResult;
-        }
-
-
     }
 }

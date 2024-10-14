@@ -382,7 +382,7 @@ namespace MODAMS.ApplicationServices
             {
                 var dto = new AssetDocumentDTO();
                 dto.DocumentList = await GetDocumentListAsync(assetId);
-                
+
 
                 var asset = await _db.Assets.Where(m => m.Id == assetId).FirstOrDefaultAsync();
                 if (asset != null)
@@ -494,7 +494,7 @@ namespace MODAMS.ApplicationServices
 
                 // Fetch asset pictures
                 var assetPictures = await _db.AssetPictures.Where(m => m.AssetId == id).ToListAsync();
-                var dtoAssetPictures = new dtoAssetPictures(assetPictures, 6);
+                var dtoAssetPictures = new AssetPicturesDTO(assetPictures, 6);
 
                 // Fetch asset history
                 var assetHistory = await _db.AssetHistory.Where(m => m.AssetId == id)
@@ -555,11 +555,172 @@ namespace MODAMS.ApplicationServices
                 // Return success with the asset and store info to update TempData in the controller
                 return Result<DeleteDocumentResultDTO>.Success(resultDto);
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 _func.LogException(_logger, ex);
                 return Result<DeleteDocumentResultDTO>.Failure(ex.Message);
             }
+
+        }
+        public async Task<Result<AssetPicturesDTO>> GetAssetPicturesAsync(int assetId)
+        {
+            var assetPictures = await _db.AssetPictures.Where(m => m.AssetId == assetId).ToListAsync();
+            var dto = new AssetPicturesDTO(assetPictures, 6);
+
+            try
+            {
+                var storeId = await _func.GetStoreIdByAssetIdAsync(assetId);
+                var storeName = await _func.GetStoreNameByStoreIdAsync(storeId);
+
+                dto.StoreName = storeName;
+                dto.StoreId = storeId;
+                dto.AssetId = assetId;
+
+                var asset = await _db.Assets.Where(m => m.Id == assetId).FirstOrDefaultAsync();
+                if (asset != null)
+                {
+                    dto.AssetInfo = asset.Name + " - " + asset.Model + " - " + asset.Year;
+                }
+                return Result<AssetPicturesDTO>.Success(dto);
+            }
+            catch (Exception ex)
+            {
+                _func.LogException(_logger, ex);
+                return Result<AssetPicturesDTO>.Failure(ex.Message, dto);
+            }
+        }
+        public async Task<Result<string>> UploadPictureAsync(int assetId, IFormFile? file)
+        {
+            if (file == null)
+            {
+                return Result<string>.Failure("File not available");
+            }
+
+            string wwwRootPath = _webHostEnvironment.WebRootPath;
+            Guid guid = Guid.NewGuid();
+            string fileName = guid + Path.GetExtension(file.FileName);
+            string path = Path.Combine(wwwRootPath, "assetpictures");
+
+            try
+            {
+                // Save the file to disk
+                using (var fileStream = new FileStream(Path.Combine(path, fileName), FileMode.Create))
+                {
+                    await file.CopyToAsync(fileStream);
+                }
+
+                // Save the asset picture to the database
+                var assetPicture = new AssetPicture
+                {
+                    ImageUrl = "/assetpictures/" + fileName,
+                    AssetId = assetId
+                };
+                await _db.AssetPictures.AddAsync(assetPicture);
+                await _db.SaveChangesAsync();
+
+                // Log the action in the news feed
+                string employeeName = await _func.GetEmployeeNameAsync();
+                string assetName = await _func.GetAssetNameAsync(assetId);
+                string storeName = await _func.GetStoreNameByStoreIdAsync(await _func.GetStoreIdByAssetIdAsync(assetId));
+                string message = $"{employeeName} uploaded a picture for ({assetName}) in {storeName}";
+                await _func.LogNewsFeedAsync(message, "Users", "Assets", "AssetInfo", assetId);
+
+                return Result<string>.Success("Picture uploaded successfully!");
+            }
+            catch (Exception ex)
+            {
+                return Result<string>.Failure(ex.Message);
+            }
+        }
+        public async Task<Result<string>> DeletePictureAsync(int id, int assetId)
+        {
+            if (id == 0)
+            {
+                return Result<string>.Failure("Picture not found!");
+            }
+
+            var assetPicture = await _db.AssetPictures.FirstOrDefaultAsync(m => m.Id == id);
+            if (assetPicture == null)
+            {
+                return Result<string>.Failure("Picture not found!");
+            }
+
+            // Remove file from disk
+            string sFileName = assetPicture.ImageUrl.Substring(15); // Removes "/assetpictures/"
+            bool fileDeleted = DeleteFile(sFileName, "assetpictures");
+            if (!fileDeleted)
+            {
+                return Result<string>.Failure("Error deleting picture from storage!");
+            }
+
+            // Remove from database
+            _db.AssetPictures.Remove(assetPicture);
+            await _db.SaveChangesAsync();
+
+            return Result<string>.Success("Picture deleted successfully!");
+        }
+        public async Task<Result<string>> DeleteAssetAsync(int assetId)
+        {
+            if (assetId == 0)
+            {
+                return Result<string>.Failure("Asset not found!");
+            }
+
+            var assetInDb = await _db.Assets.FirstOrDefaultAsync(m => m.Id == assetId);
+            if (assetInDb == null)
+            {
+                return Result<string>.Failure("Asset not found!");
+            }
+
+            // Mark asset as deleted
+            assetInDb.AssetStatusId = SD.Asset_Deleted;
+            assetInDb.Remarks = $"Asset Deleted by {await _func.GetEmployeeNameAsync()}";
+            await _db.SaveChangesAsync();
+
+            // Add to asset history
+            var assetHistory = new AssetHistory
+            {
+                AssetId = assetId,
+                Description = $"Asset Deleted by {await _func.GetEmployeeNameAsync()}",
+                TimeStamp = DateTime.Now,
+                TransactionRecordId = assetId,
+                TransactionTypeId = SD.Transaction_Delete
+            };
+            _db.AssetHistory.Add(assetHistory);
+            await _db.SaveChangesAsync();
             
+            return Result<string>.Success("Asset deleted successfully!");
+        }
+
+        public async Task<Result<string>> RecoverAssetAsync(int assetId)
+        {
+            if (assetId == 0)
+            {
+                return Result<string>.Failure("Asset not found!");
+            }
+
+            var assetInDb = await _db.Assets.FirstOrDefaultAsync(m => m.Id == assetId);
+            if (assetInDb == null)
+            {
+                return Result<string>.Failure("Asset not found!");
+            }
+                        
+            assetInDb.AssetStatusId = SD.Asset_Available; // Will have to change it to the previous Asset Status ID Later
+            assetInDb.Remarks = $"Asset Recovered by {await _func.GetEmployeeNameAsync()}";
+            await _db.SaveChangesAsync();
+
+            var assetHistory = new AssetHistory
+            {
+                AssetId = assetId,
+                Description = $"Asset Recovered by {await _func.GetEmployeeNameAsync()}",
+                TimeStamp = DateTime.Now,
+                TransactionRecordId = assetId,
+                TransactionTypeId = SD.Transaction_Recover
+            };
+            _db.AssetHistory.Add(assetHistory);
+            await _db.SaveChangesAsync();
+
+            return Result<string>.Success("Asset recovered successfully!");
         }
 
 
@@ -690,7 +851,7 @@ namespace MODAMS.ApplicationServices
         //Private functions
         private async Task<List<vwAssetDocument>> GetDocumentListAsync(int AssetId)
         {
-            
+
             var documentTypes = await _db.DocumentTypes.ToListAsync();
             var documentList = new List<vwAssetDocument>();
 
@@ -706,7 +867,7 @@ namespace MODAMS.ApplicationServices
                 };
                 documentList.Add(vwDocType);
             }
-            
+
             return documentList;
         }
         private string GetDocumentUrl(int assetId, int documentTypeId)
@@ -738,16 +899,15 @@ namespace MODAMS.ApplicationServices
             string folderPath = Path.Combine(wwwRootPath, folderName);
             string filePath = Path.Combine(folderPath, fileName);
 
-            bool blnResult = true;
             try
             {
                 System.IO.File.Delete(filePath);
+                return true;
             }
             catch
             {
-                blnResult = false;
+                return false;
             }
-            return blnResult;
         }
     }
 }
