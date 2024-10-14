@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MODAMS.Models.ViewModels.Dto
 {
-    public class dtoStore
+    public class StoreDTO
     {
         public vwStore vwStore { get; set; } = new vwStore();
         public List<Employee> employees { get; set; } = new List<Employee>();
@@ -47,6 +48,13 @@ namespace MODAMS.Models.ViewModels.Dto
             return balance;
         }
         public string StoreOwnerInfo { get; set; }
-        
+
+        [ValidateNever]
+        public int StoreId { get; set; }
+
+        [ValidateNever]
+        public string StoreName { get; set; } = string.Empty;
+
+
     }
 }

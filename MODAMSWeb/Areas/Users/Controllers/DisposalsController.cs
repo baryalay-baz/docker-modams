@@ -49,7 +49,6 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 return View(new DisposalsDTO());
             }
         }
-
         [HttpGet]
         [Authorize(Roles = "StoreOwner, User")]
         public async Task<IActionResult> CreateDisposal()
@@ -66,8 +65,6 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 return View(new DisposalCreateDTO());
             }
         }
-
-        //Post CreateDisposal form
         [HttpPost]
         [Authorize(Roles = "StoreOwner, User")]
         public async Task<IActionResult> CreateDisposal(DisposalCreateDTO dto)
@@ -91,7 +88,6 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 return View(await _disposalService.PopulateDisposalDtoAsync(dto));
             }
         }
-
         [HttpGet]
         [Authorize(Roles = "StoreOwner, User")]
         public async Task<IActionResult> EditDisposal(int id)
@@ -108,8 +104,6 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 return RedirectToAction("Index", "Disposals");
             }
         }
-
-
         [HttpPost]
         [Authorize(Roles = "StoreOwner, User")]
         public async Task<IActionResult> EditDisposal(DisposalEditDTO dto)

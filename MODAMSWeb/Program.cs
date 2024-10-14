@@ -110,6 +110,7 @@ builder.Services.AddScoped<IHomeService, HomeService>();
 builder.Services.AddScoped<IAlertService, AlertService>();
 builder.Services.AddScoped<IAssetService, AssetService>();
 builder.Services.AddScoped<IDisposalService, DisposalService>();
+builder.Services.AddScoped<IStoreService, StoreService>();
 
 
 

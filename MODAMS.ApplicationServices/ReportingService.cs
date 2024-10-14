@@ -1,83 +1,51 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using MODAMS.DataAccess.Data;
-using MODAMS.Models;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using MODAMS.Models.ViewModels;
+using MODAMS.Models;
 using MODAMS.Models.ViewModels.Dto;
+using Microsoft.AspNetCore.Hosting;
+using MODAMS.DataAccess.Data;
 using MODAMS.Utility;
-using NuGet.ContentModel;
-using Telerik.Reporting;
-using Telerik.Reporting.Processing;
 using Telerik.Reporting.Services;
-using Telerik.Reporting.Services.AspNetCore;
-using Telerik.Reporting.Services.Engine;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 
-namespace MODAMSWeb.Areas.Users.Controllers
+namespace MODAMS.ApplicationServices
 {
-    [Area("Users")]
-    [Authorize]
-    public class ReportingController : Controller
+    public class ReportingService : IReportingService
     {
         private readonly ApplicationDbContext _db;
         private readonly IAMSFunc _func;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ILogger<ReportingService> _logger;
+
         private int _employeeId;
         private int _supervisorEmployeeId;
         private int _storeId;
-        private readonly IWebHostEnvironment _webHostEnvironment;
-        private readonly IReportSourceResolver _reportResolver;
-        public ReportingController(ApplicationDbContext db, IAMSFunc func, IWebHostEnvironment webHostEnvironment, IReportSourceResolver reportResolver)
+        public ReportingService(ApplicationDbContext db, IAMSFunc func,IHttpContextAccessor httpContextAccessor, ILogger<ReportingService> logger)
         {
             _db = db;
+            _httpContextAccessor = httpContextAccessor;
             _func = func;
+            _logger = logger;
+
             _employeeId = _func.GetEmployeeId();
             _supervisorEmployeeId = _func.GetSupervisorId(_employeeId);
-            _webHostEnvironment = webHostEnvironment;
-            _reportResolver = reportResolver;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Index()
-        {
-            //var assets = _db.Assets.Include(m => m.SubCategory).ThenInclude(m => m.Category)
-            //    .Include(m => m.Store).ThenInclude(m => m.Department)
-            //    .Include(m => m.AssetStatus).Include(m => m.Condition).ToList();
-
-            ReportingDTO dto = new ReportingDTO();
-            dto = await PopulateDTO(dto);
-
-            return View(dto);
-        }
-        public async Task<IActionResult> ReportViewerExternal(string Type, int id)
-        {
-            var dto = new ReportingDTO();
-            if (Type == "PrintVoucher")
-            {
-                dto = await PopulateDTO(dto);
-                dto.ReportId = "TransferVoucher";
-                dto.TransferId = id;
-            }
-            return View("ReportViewer", dto);
-        }
-        [HttpPost]
-        public async Task<IActionResult> ReportViewer(ReportingDTO dto)
-        {
-            dto = await PopulateDTO(dto);
-            return View(dto);
-        }
-        private async Task<ReportingDTO> PopulateDTO(ReportingDTO dto)
+        private bool IsInRole(string role) => _httpContextAccessor.HttpContext.User.IsInRole(role);
+        public async Task<ReportingDTO> PopulateDTO(ReportingDTO dto)
         {
             //Populate Asset Report
             var stores = await _db.vwStores.OrderByDescending(m => m.TotalCount).ToListAsync();
             var allStores = stores;
 
-            if (User.IsInRole("User"))
+            if (IsInRole("User"))
             {
                 stores = stores.Where(m => m.EmployeeId == _supervisorEmployeeId).ToList();
             }
-            else if (User.IsInRole("StoreOwner"))
+            else if (IsInRole("StoreOwner"))
             {
                 stores = stores.Where(m => m.EmployeeId == _employeeId).ToList();
                 if (stores.Count > 0)
@@ -101,31 +69,31 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 Text = m.Name,
                 Value = m.Id.ToString()
             });
-            var categories = _db.Categories.ToList().Select(m => new SelectListItem
+            var categories = await _db.Categories.Select(m => new SelectListItem
             {
                 Text = m.CategoryName,
                 Value = m.Id.ToString()
-            });
-            var subCategories = _db.SubCategories.ToList().Select(m => new SelectListItem
+            }).ToListAsync();
+            var subCategories = await _db.SubCategories.Select(m => new SelectListItem
             {
                 Text = m.SubCategoryName,
                 Value = m.Id.ToString()
-            });
-            var assetStatuses = _db.AssetStatuses.ToList().Select(m => new SelectListItem
+            }).ToListAsync();
+            var assetStatuses = await _db.AssetStatuses.Select(m => new SelectListItem
             {
                 Text = m.StatusName,
                 Value = m.Id.ToString()
-            });
-            var assetConditions = _db.Conditions.ToList().Select(m => new SelectListItem
+            }).ToListAsync();
+            var assetConditions = await _db.Conditions.Select(m => new SelectListItem
             {
                 Text = m.ConditionName,
                 Value = m.Id.ToString()
-            });
-            var donors = _db.Donors.ToList().Select(m => new SelectListItem
+            }).ToListAsync();
+            var donors = await _db.Donors.Select(m => new SelectListItem
             {
                 Text = m.Name,
                 Value = m.Id.ToString()
-            });
+            }).ToListAsync();
 
             dto.AssetStores = storeSelectList;
             dto.AssetStatuses = assetStatuses;
@@ -156,6 +124,5 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             return dto;
         }
-        
     }
 }
