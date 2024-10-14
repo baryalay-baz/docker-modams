@@ -724,8 +724,6 @@ namespace MODAMS.ApplicationServices
             return Result<string>.Success("Asset recovered successfully!");
         }
 
-
-
         //Populate Asset DTO
         public async Task<T> PopulateDtoAssetAsync<T>(T dto) where T : class, new()
         {

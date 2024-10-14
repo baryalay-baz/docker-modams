@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MODAMS.Models.ViewModels.Dto
 {
-    public class dtoDisposal
+    public class DisposalsDTO
     {
         public List<Disposal> Disposals { get; set; }
         public bool IsAuthorized { get; set; }

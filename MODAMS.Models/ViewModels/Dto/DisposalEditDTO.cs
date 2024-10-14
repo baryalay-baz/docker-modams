@@ -9,17 +9,14 @@ using System.Threading.Tasks;
 
 namespace MODAMS.Models.ViewModels.Dto
 {
-    public class dtoCreateDisposal
+    public class DisposalEditDTO
     {
         public bool IsAuthorized { get; set; } = false;
-
-
-
         public Disposal Disposal { get; set; } = new Disposal();
-
-
         public IFormFile? file { get; set; }
 
+
+        //Elements not to be validated
         [ValidateNever]
         public string StoreName { get; set; }
 
@@ -28,9 +25,11 @@ namespace MODAMS.Models.ViewModels.Dto
 
         [ValidateNever]
         public List<Asset> Assets { get; set; }
-        
+
         [ValidateNever]
         public IEnumerable<SelectListItem> DisposalTypeList { get; set; }
 
+        [ValidateNever]
+        public Asset CurrentDisposedAsset { get; set; }
     }
 }
