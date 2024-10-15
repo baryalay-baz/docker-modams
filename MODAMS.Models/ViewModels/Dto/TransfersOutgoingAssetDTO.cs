@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MODAMS.Models.ViewModels.Dto
 {
-    public class dtoTransfersIncomingAsset
+    public class TransfersOutgoingAssetDTO
     {
         public DateTime? TransferDate { get; set; }
         public string StoreFrom { get; set; } = string.Empty;

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 namespace MODAMS.Models.ViewModels.Dto
 {
-    public class dtoTransferPreview
+    public class TransferPreviewDTO
     {
         [ValidateNever]
         public string? TransferBy { get; set; }
@@ -15,8 +15,13 @@ namespace MODAMS.Models.ViewModels.Dto
         [ValidateNever]
         public bool IsReceiver { get; set; }
 
+        [ValidateNever]
+        public string FromSignature { get; set; } = string.Empty;
+
+        [ValidateNever]
+        public string ToSignature { get; set; } = string.Empty;
         
         public vwTransfer vwTransfer = new vwTransfer();
-        public List<dtoTransferAsset> transferAssets = new List<dtoTransferAsset>();
+        public List<TransferAssetDTO> transferAssets = new List<TransferAssetDTO>();
     }
 }

@@ -1,4 +1,4 @@
-﻿@model MODAMS.Models.ViewModels.Dto.dtoEditTransfer
+﻿@model MODAMS.Models.ViewModels.Dto.TransferEditDTO
 <style>
     input[type="date"]::-webkit-calendar-picker-indicator {
         display: none;
@@ -74,7 +74,7 @@
                                             <div class="mb-3 form-group">
                                                 <div class="mb-3 form-group">
                                                     <label>Transfer from Store</label>
-                                                    <input type="text" class="form-control" value="@TempData["storeFrom"]" readonly aria-required="true" autocomplete="off" />
+                                                    <input type="text" class="form-control" value="@Model.StoreFrom" readonly aria-required="true" autocomplete="off" />
                                                     <span asp-validation-for="Transfer.TransferNumber" class="text-danger"></span>
                                                 </div>
                                             </div>

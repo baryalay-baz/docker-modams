@@ -8,13 +8,16 @@ using System.Threading.Tasks;
 
 namespace MODAMS.Models.ViewModels.Dto
 {
-    public class dtoEditTransfer
+    public class TransferEditDTO
     {
         public Transfer Transfer { get; set; } = new Transfer();
         //public List<TransferDetail> transferDetails { get; set; }
-        public List<dtoTransferAsset> Assets { get; set; }
+        public List<TransferAssetDTO> Assets { get; set; }
 
         [ValidateNever]
         public IEnumerable<SelectListItem> StoreList { get; set; }
+
+        [ValidateNever]
+        public string StoreFrom { get; set; } = string.Empty;
     }
 }
