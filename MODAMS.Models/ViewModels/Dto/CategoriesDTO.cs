@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MODAMS.Models.ViewModels.Dto
 {
-    public class dtoCategories
+    public class CategoriesDTO
     {
         public int? SelectedCategoryId { get; set; }
         public List<Category> categories { get; set; }

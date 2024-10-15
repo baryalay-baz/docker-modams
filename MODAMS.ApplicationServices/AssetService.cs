@@ -470,9 +470,9 @@ namespace MODAMS.ApplicationServices
 
             return Result.Failure("Please select a valid file and try again.");
         }
-        public async Task<Result<dtoAssetInfo>> GetAssetInfoAsync(int id, int page = 1, int tab = 1, int categoryId = 0)
+        public async Task<Result<AssetInfoDTO>> GetAssetInfoAsync(int id, int page = 1, int tab = 1, int categoryId = 0)
         {
-            var dto = new dtoAssetInfo();
+            var dto = new AssetInfoDTO();
 
             try
             {
@@ -488,7 +488,7 @@ namespace MODAMS.ApplicationServices
 
                 if (asset == null)
                 {
-                    return Result<dtoAssetInfo>.Failure("Record not found!");
+                    return Result<AssetInfoDTO>.Failure("Record not found!");
                 }
 
                 // Fetch asset documents
@@ -509,12 +509,12 @@ namespace MODAMS.ApplicationServices
                 dto.dtoAssetPictures = dtoAssetPictures;
                 dto.AssetHistory = assetHistory;
 
-                return Result<dtoAssetInfo>.Success(dto);
+                return Result<AssetInfoDTO>.Success(dto);
             }
             catch (Exception ex)
             {
                 _func.LogException(_logger, ex);
-                return Result<dtoAssetInfo>.Failure(ex.Message);
+                return Result<AssetInfoDTO>.Failure(ex.Message);
             }
         }
         public async Task<Result<DeleteDocumentResultDTO>> DeleteDocumentAsync(int documentId)

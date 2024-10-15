@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MODAMS.Models.ViewModels.Dto
+﻿namespace MODAMS.Models.ViewModels.Dto
 {
-    public class dtoAssetInfo
+    public class AssetInfoDTO
     {
         public Asset Asset { get; set; }
         public List<AssetDocument> Documents { get; set; }

@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.Build.Framework;
 using Microsoft.EntityFrameworkCore;
+using MODAMS.ApplicationServices;
 using MODAMS.DataAccess.Data;
 using MODAMS.Models;
 using MODAMS.Models.ViewModels.Dto;
@@ -18,41 +17,38 @@ namespace MODAMSWeb.Areas.Admin.Controllers
     {
         private readonly ApplicationDbContext _db;
         private readonly IAMSFunc _func;
+        private readonly ICategoriesService _categoriesService;
         private int _employeeId;
 
-        public CategoriesController(ApplicationDbContext db, IAMSFunc func)
+        public CategoriesController(ApplicationDbContext db, IAMSFunc func, ICategoriesService categoriesService)
         {
             _db = db;
             _func = func;
+            _categoriesService = categoriesService;
+
             _employeeId = _func.GetEmployeeId();
         }
 
-        public IActionResult Index(int? id)
+        public async Task<IActionResult> Index(int? id)
         {
-            var categories = _db.Categories.ToList();
-            List<SubCategory> subcategories = new List<SubCategory>();
-            var dto = new dtoCategories();
+            var result = await _categoriesService.GetIndexAsync(id);
+            var dto = result.Value;
 
-            dto.categories = categories;
-
-            if (id != null)
+            if (result.IsSuccess)
             {
-                subcategories = _db.SubCategories.Where(m => m.CategoryId == id).ToList();
-                dto.subCategories = subcategories;
-                dto.SelectedCategoryId = id;
+                return View(dto);
             }
-            else
-            {
-                dto.subCategories = subcategories;
+            else {
+                TempData["error"] = result.ErrorMessage;
+                return View(new CategoriesDTO());
             }
-
-            return View(dto);
         }
 
         [Authorize(Roles = "Administrator, StoreOwner")]
         [HttpGet]
         public async Task<IActionResult> EditCategory(int? id)
         {
+
 
             if (id == null)
             {
@@ -114,17 +110,19 @@ namespace MODAMSWeb.Areas.Admin.Controllers
                 return View(category);
             }
 
-            var categoryInDb = await _db.Categories.Where(m => m.CategoryName == category.CategoryName).FirstOrDefaultAsync();
-            if (categoryInDb != null)
+            var result = await _categoriesService.CreateCategoryAsync(category);
+            var dto = result.Value;
+
+            if (result.IsSuccess)
             {
-                TempData["error"] = "Category with this name already exists!";
+                TempData["success"] = "Category added successfuly!";
+                return RedirectToAction("Index", "Categories");
+            }
+            else
+            {
+                TempData["error"] = result.ErrorMessage;
                 return View(category);
             }
-            await _db.Categories.AddAsync(category);
-            await _db.SaveChangesAsync();
-
-            TempData["success"] = "Category added successfuly!";
-            return RedirectToAction("Index", "Categories");
         }
 
         //Sub-Categories section
@@ -132,11 +130,12 @@ namespace MODAMSWeb.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult CreateSubCategory(int id)
         {
-            dtoSubCategory dto = new dtoSubCategory();
+            SubCategoryDTO dto = new SubCategoryDTO();
 
             if (id > 0)
             {
                 dto.CategoryId = id;
+                dto.SubCategoryCode = "-";
             }
             else
             {
@@ -149,85 +148,71 @@ namespace MODAMSWeb.Areas.Admin.Controllers
 
         [Authorize(Roles = "Administrator, StoreOwner")]
         [HttpPost]
-        public async Task<IActionResult> CreateSubCategory(dtoSubCategory dto)
+        public async Task<IActionResult> CreateSubCategory(SubCategoryDTO dto)
         {
-            if (dto != null)
+            if (!ModelState.IsValid)
             {
-                var subCategoryInDb = await _db.SubCategories.Where(m => m.SubCategoryName == dto.SubCategoryName).FirstOrDefaultAsync();
-                if (subCategoryInDb != null)
-                {
-                    TempData["error"] = "Sub-Category with this name already exists!";
-                    return View(dto);
-                }
-                try
-                {
-                    SubCategory subCategory = new SubCategory()
-                    {
-                        CategoryId = dto.CategoryId,
-                        SubCategoryCode = dto.SubCategoryCode,
-                        SubCategoryName = dto.SubCategoryName,
-                        LifeSpan = dto.LifeSpan
-                    };
-                    await _db.SubCategories.AddAsync(subCategory);
-                    await _db.SaveChangesAsync();
-                }
-                catch (Exception ex)
-                {
-                    TempData["error0"] = ex.Message;
-                    return View(dto);
-                }
+                TempData["error"] = "All fields are mandatory";
+                return View(dto);
+            }
 
+            var result = await _categoriesService.CreateSubCategoryAsync(dto);
+            dto = result.Value;
+
+            if (result.IsSuccess)
+            {
                 TempData["success"] = "Sub-Category added successfuly!";
                 return RedirectToAction("Index", "Categories");
             }
-
-            return View(dto);
+            else
+            {
+                TempData["error"] = result.ErrorMessage;
+                return View(dto);
+            }
         }
 
 
         [Authorize(Roles = "Administrator, StoreOwner")]
         [HttpGet]
-        public IActionResult EditSubCategory(int id)
+        public async Task<IActionResult> EditSubCategory(int id)
         {
             if (id == 0)
             {
                 TempData["error"] = "Please select a subcategory to first";
                 return RedirectToAction("Index", "Categories");
             }
-            var subCategory = _db.SubCategories.Where(m => m.Id == id).FirstOrDefault();
 
-            if (subCategory == null)
+            var result = await _categoriesService.GetEditSubCategoryAsync(id);
+            var dto = result.Value;
+
+            if (result.IsSuccess)
             {
-                TempData["error"] = "Sub-Category not found!";
+                return View(dto);
+            }
+            else
+            {
+                TempData["error"] = result.ErrorMessage;
                 return RedirectToAction("Index", "Categories");
             }
-
-            return View(subCategory);
         }
 
         [Authorize(Roles = "Administrator, StoreOwner")]
         [HttpPost]
         public async Task<IActionResult> EditSubCategory(SubCategory subCategory)
         {
-            if (subCategory != null)
+            var result = await _categoriesService.EditSubCategoryAsync(subCategory);
+
+            var dto = result.Value;
+            if (result.IsSuccess)
             {
-                var subCategoryInDb = await _db.SubCategories.Where(m => m.Id == subCategory.Id).FirstOrDefaultAsync();
-                if (subCategoryInDb == null)
-                {
-                    TempData["error"] = "Sub-Category not found!";
-                    return View(subCategory);
-                }
-
-                subCategoryInDb.SubCategoryCode = subCategory.SubCategoryCode;
-                subCategoryInDb.SubCategoryName = subCategory.SubCategoryName;
-                subCategoryInDb.LifeSpan = subCategory.LifeSpan;
-                await _db.SaveChangesAsync();
-
                 TempData["success"] = "Changes saved successfuly!";
                 return RedirectToAction("Index", "Categories");
             }
-
-            return View(subCategory);
+            else
+            {
+                TempData["error"] = result.ErrorMessage;
+                return View(dto);
+            }
         }
 
 
@@ -236,33 +221,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
         [Authorize(Roles = "Administrator, SeniorManagement, StoreOwner")]
         public async Task<string> GetSubCategories(string CategoryName)
         {
-            string sResult = "No Records Found";
-
-            if (CategoryName != null)
-            {
-                if (CategoryName == "All")
-                {
-                    var subCategories = _db.SubCategories.ToList();
-                    if (subCategories.Count > 0)
-                    {
-                        sResult = JsonConvert.SerializeObject(subCategories);
-                    }
-                }
-                else
-                {
-                    int nCategoryId = await _db.Categories.Where(m => m.CategoryName == CategoryName)
-                        .Select(m => m.Id).FirstOrDefaultAsync();
-                    if (nCategoryId > 0)
-                    {
-                        var subCategories = _db.SubCategories.Where(m => m.CategoryId == nCategoryId).ToList();
-                        if (subCategories.Count > 0)
-                        {
-                            sResult = JsonConvert.SerializeObject(subCategories);
-                        }
-                    }
-                }
-            }
-            return sResult;
+            return await _categoriesService.GetSubCategoriesAsync(CategoryName);
         }
     }
 }

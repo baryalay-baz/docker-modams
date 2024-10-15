@@ -536,7 +536,7 @@ namespace MODAMS.ApplicationServices
             {
                 _employeeId = (IsInRole("User")) ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
 
-                var transfer = await _db.Transfers.Where(m => m.Id == id).FirstOrDefaultAsync();
+                var transfer = await _db.Transfers.Where(m => m.Id == transferId).FirstOrDefaultAsync();
 
                 if (transfer == null)
                 {
@@ -770,7 +770,7 @@ namespace MODAMS.ApplicationServices
             {
                 var transferDetails = _db.TransferDetails
                 .Include(td => td.Transfer)
-                .Where(td => td.Transfer.StoreId == id && td.Transfer.TransferStatusId == 3)
+                .Where(td => td.Transfer.StoreId == storeId && td.Transfer.TransferStatusId == 3)
                 .ToList();
 
                 var assetIds = transferDetails.Select(td => td.AssetId).ToList();
