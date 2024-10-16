@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MODAMS.Models.ViewModels.Dto
 {
-    public class dtoOrganizationChart
+    public class OrganizationChartDTO
     {
         public int ID { get; set; }
         public string Name { get; set; }

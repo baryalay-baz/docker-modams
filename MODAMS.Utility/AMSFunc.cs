@@ -191,15 +191,15 @@ namespace MODAMS.Utility
             }
             return Convert.ToInt32(sEmployeeId);
         }
-        public async Task<dtoRedirection> GetRedirectionObjectAsync()
+        public async Task<RedirectionDTO> GetRedirectionObjectAsync()
         {
             string sRoleName = await GetRoleNameAsync(await GetEmployeeEmailAsync());
             var dto = sRoleName switch
             {
-                SD.Role_User => new dtoRedirection("Users", "Home", "Index"),
-                SD.Role_StoreOwner => new dtoRedirection("Admin", "Home", "Index"),
-                SD.Role_Administrator => new dtoRedirection("Security", "Home", "Index"),
-                _ => new dtoRedirection("Driver", "Home", "Index")
+                SD.Role_User => new RedirectionDTO("Users", "Home", "Index"),
+                SD.Role_StoreOwner => new RedirectionDTO("Admin", "Home", "Index"),
+                SD.Role_Administrator => new RedirectionDTO("Security", "Home", "Index"),
+                _ => new RedirectionDTO("Driver", "Home", "Index")
             };
             return dto;
         }

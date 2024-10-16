@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using Kendo.Mvc.UI;
 
 using MODAMS.Models.ViewModels.Dto;
+using MODAMS.ApplicationServices;
 
 namespace MODAMSWeb.Areas.Admin.Controllers
 {
@@ -21,360 +22,178 @@ namespace MODAMSWeb.Areas.Admin.Controllers
         private readonly IAMSFunc _func;
         private int _employeeId;
 
-        public DepartmentsController(ApplicationDbContext db, IAMSFunc func)
+        private readonly IDepartmentsService _departmentsService;
+        public DepartmentsController(ApplicationDbContext db, IAMSFunc func, IDepartmentsService departmentsService)
         {
             _db = db;
             _func = func;
+            _departmentsService = departmentsService;
+
             _employeeId = _func.GetEmployeeId();
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
-            List<vwDepartments> depts = await _db.vwDepartments.OrderByDescending(m => m.EmployeeId).ToListAsync();
-            List<vwEmployees> empls = await _db.vwEmployees.ToListAsync();
+            var result = await _departmentsService.GetIndexAsync();
+            var dto = result.Value;
 
-            var dto = new dtoDepartments() {
-                departments = depts,
-                employees = empls
-            };
-
-            return View(dto);
+            if (result.IsSuccess)
+            {
+                return View(dto);
+            }
+            else {
+                TempData["error"] = result.ErrorMessage;
+                return View(new DepartmentsDTO());
+            }
         }
-
         [HttpGet]
         [Authorize(Roles = "Administrator")]
-        public IActionResult CreateDepartment()
+        public async Task<IActionResult> CreateDepartment()
         {
-            var departmentDto = new dtoDepartment();
+            var result = await _departmentsService.GetCreateDepartmentAsync();
+            var dto = result.Value;
 
-            departmentDto.department = new Department();
+            if (result.IsSuccess) {
+                return View(dto);
+            }
 
-            var employeeList = _db.Employees.ToList().Select(m => new SelectListItem
-            {
-                Text = m.FullName,
-                Value = m.Id.ToString()
-            });
-
-            var departmentList = _db.vwDepartments.ToList().Select(m => new SelectListItem
-            {
-                Text = m.Name,
-                Value = m.Id.ToString()
-            });
-
-            departmentDto.Employees = employeeList;
-            departmentDto.Departments = departmentList;
-
-            return View(departmentDto);
+            TempData["error"] = result.ErrorMessage;
+            return RedirectToAction("Index");
         }
-
         [Authorize(Roles = "Administrator")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateDepartment(dtoDepartment form)
+        public async Task<IActionResult> CreateDepartment(DepartmentDTO form)
         {
             if (!ModelState.IsValid)
             {
                 TempData["error"] = "All fields are mandatory";
+                form = await _departmentsService.PopulateDepartmentDTO(form);
                 return View(form);
             }
+            
+            var result = await _departmentsService.CreateDepartmentAsync(form);
+            var dto = result.Value;
 
-            var department = await _db.Departments
-                .Where(m => m.Name == form.department.Name).FirstOrDefaultAsync();
-
-            if (department == null)
+            if (result.IsSuccess)
             {
-                await _db.Departments.AddAsync(form.department);
-                await _db.SaveChangesAsync();
-                await CreateStore(form.department);
-
                 TempData["success"] = "Department created succcessfuly!";
+                return RedirectToAction("Index", "Departments");
             }
-            else
-            {
-                TempData["error"] = "Department already exists!";
-                return View(form);
+            else {
+                TempData["error"] = result.ErrorMessage;
+                return View(dto);
             }
-
-            return RedirectToAction("Index", "Departments");
-        }
-
+        }       
         [HttpGet]
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> EditDepartment(int id)
         {
-            if (id == 0)
+            var result = await _departmentsService.GetEditDepartmentAsync(id);
+            var dto = result.Value;
+
+            if (result.IsSuccess)
             {
-                TempData["error"] = "Please select a department!";
+                return View(dto);
+            }
+            else {
+                TempData["error"] = result.ErrorMessage;
                 return RedirectToAction("Index", "Departments");
             }
-
-            var department = await _db.Departments.Where(m => m.Id == id).FirstOrDefaultAsync();
-            string departmentOwner = "";
-
-            if (department == null)
-            {
-                TempData["error"] = "Department not found!";
-                return RedirectToAction("Index", "Departments");
-            }
-            else
-            {
-                departmentOwner = await _func.GetEmployeeNameByIdAsync(department.EmployeeId == 0 || department.EmployeeId == null ? 0 : (int)department.EmployeeId);
-            }
-
-            var employeeList = await _db.Employees.Select(m => new SelectListItem
-            {
-                Text = m.FullName,
-                Value = m.Id.ToString()
-            }).ToListAsync();
-
-            var departmentList = await _db.vwDepartments.Select(m => new SelectListItem
-            {
-                Text = m.Name,
-                Value = m.Id.ToString()
-            }).ToListAsync();
-
-            var dto = new dtoDepartment()
-            {
-                department = department,
-                Employees = employeeList,
-                Departments = departmentList,
-                DepartmentOwner = departmentOwner
-            };
-
-            return View(dto);
         }
-
         [Authorize(Roles = "Administrator")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditDepartment(dtoDepartment form)
+        public async Task<IActionResult> EditDepartment(DepartmentDTO form)
         {
             if (!ModelState.IsValid)
             {
                 TempData["error"] = "All fields are mandatory!";
                 return View(form);
             }
-            var department = _db.Departments.Where(m => m.Id == form.department.Id).FirstOrDefault();
-            if (department == null)
+            var result = await _departmentsService.EditDepartmentAsync(form);
+            var dto = result.Value;
+
+            if (result.IsSuccess)
             {
-                TempData["error"] = "Department not found!";
-                return View(form);
+                TempData["success"] = "Department updated successfully!";
+                return RedirectToAction("Index", "Departments");
             }
-            department.Name = form.department.Name;
-            department.UpperLevelDeptId = form.department.UpperLevelDeptId;
-
-            await _db.SaveChangesAsync();
-            await UpdateStore(department);
-
-
-            TempData["success"] = "Department saved successfuly!";
-            return RedirectToAction("Index", "Departments");
+            else {
+                TempData["error"] = result.ErrorMessage;
+                return View(dto);
+            }
         }
-
         [HttpGet]
         [Authorize(Roles = "SeniorManagement, Administrator, StoreOwner")]
-        public IActionResult OrganizationChart()
+        public async Task<IActionResult> OrganizationChart()
         {
-            var departments = _db.vwDepartments.ToList().OrderBy(m => m.Id);
+            var result = await _departmentsService.GetOrganizationChartAsync();
+            var dto = result.Value;
 
-            List<dtoOrganizationChart> dto = new List<dtoOrganizationChart>();
-            int nCounter = 0;
-            foreach (var item in departments)
+            if (result.IsSuccess)
             {
-                nCounter++;
-                string imageUrl = (item.ImageUrl == string.Empty) ? "/assets/images/faces/profile_placeholder.png" : item.ImageUrl;
-                int? parentId = (item.UpperLevelDeptId == 0) ? null : item.UpperLevelDeptId;
-
-                dto.Add(new dtoOrganizationChart()
-                {
-                    ID = item.Id,
-                    Name = item.Name,
-                    ParentID = parentId,
-                    Title = item.OwnerName,
-                    Avatar = imageUrl,
-                    Expanded = false
-                });
-
+                return View(dto);
             }
-            return View(dto);
+
+            TempData["error"] = result.ErrorMessage;
+            return View(new List<OrganizationChartDTO>());
         }
-
-        public JsonResult Read([DataSourceRequest] DataSourceRequest request)
+        public async Task<JsonResult> Read([DataSourceRequest] DataSourceRequest request)
         {
-            var departments = _db.vwDepartments.ToList().OrderBy(m => m.Id);
-
-            List<dtoOrganizationChart> dto = new List<dtoOrganizationChart>();
-            int nCounter = 0;
-            foreach (var item in departments)
-            {
-                nCounter++;
-                string imageUrl = (item.ImageUrl == string.Empty) ? "/assets/images/faces/profile_placeholder.png" : item.ImageUrl;
-                int? parentId = (item.UpperLevelDeptId == 0) ? null : item.UpperLevelDeptId;
-
-                dto.Add(new dtoOrganizationChart()
-                {
-                    ID = item.Id,
-                    Name = item.Name,
-                    ParentID = parentId,
-                    Title = item.OwnerName,
-                    Avatar = imageUrl,
-                    Expanded = false
-                });
-
-            }
+            var dto = await _departmentsService.GetOrganizationChartJsonAsync();
             return Json(dto);
         }
-
         [HttpGet]
         [Authorize(Roles = "SeniorManagement, Administrator, StoreOwner")]
-        public string GetDepartments()
+        public async Task<string> GetDepartments()
         {
-            string sResult = "No Records Found";
-            var departments = _db.vwDepartments.ToList();
-            if (departments != null)
-            {
-                sResult = JsonConvert.SerializeObject(departments);
-            }
-            return sResult;
+            return await _departmentsService.GetDepartmentsAsync();
         }
-
         [HttpGet]
         [Authorize(Roles = "SeniorManagement, Administrator, StoreOwner")]
         public async Task<IActionResult> DepartmentHeads(int id)
         {
+            var result = await _departmentsService.GetDepartmentHeadsAsync(id);
+            var dto = result.Value;
 
-            List<DepartmentHead> departmentHeads = await _db.DepartmentHeads.Where(m => m.DepartmentId == id)
-                .Include(m => m.Employee).Include(m => m.Department).OrderByDescending(m => m.StartDate).ToListAsync();
+            if (result.IsSuccess) {
+                return View(dto);
+            }
 
-            var availableEmployeesList = await _db.vwAvailableEmployees.Where(m => m.RoleName == "StoreOwner").Select(m => new SelectListItem
-            {
-                Text = m.FullName,
-                Value = m.Id.ToString()
-            }).ToListAsync();
-
-            int departmentHeadId = await _func.GetDepartmentHeadAsync(id);
-            var storeOwner = await _func.GetEmployeeNameByIdAsync(departmentHeadId);
-
-            storeOwner = storeOwner == "Not found!" ? "Vacant" : storeOwner;
-            
-            var users = await _db.vwEmployees.Where(m => m.SupervisorEmployeeId == departmentHeadId & m.RoleName == "User").ToListAsync();
-
-            var dto = new dtoDepartmentHeads()
-            {
-                DepartmentHeads = departmentHeads,
-                Employees = availableEmployeesList,
-                DepartmentId = id,
-                DepartmentName = await _func.GetDepartmentNameByIdAsync(id),
-                Owner = storeOwner,
-                DepartmentUsers = users
-            };
-
-            return View(dto);
+            TempData["error"] = result.ErrorMessage;
+            return RedirectToAction("Index");
         }
         [HttpPost]
         [Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> AssignOwner(dtoDepartmentHeads dto)
+        public async Task<IActionResult> AssignOwner(DepartmentHeadsDTO dto)
         {
-            int nDepartmentId = dto.DepartmentId;
-            int nEmployeeId = dto.EmployeeId;
+            var result = await _departmentsService.AssignOwnerAsync(dto);
 
-            if (nEmployeeId == 0)
+            if (result.IsSuccess)
             {
-                TempData["error"] = "Employee Id not found!";
+                TempData["success"] = "Owner set successfully!";
+                return RedirectToAction("Index", "Departments");
+            }
+            else {
+                TempData["error"] = result.ErrorMessage;
+                return RedirectToAction("Index", "Departments");
+            }
+        }
+        [Authorize(Roles = "Administrator")]
+        [HttpPost]
+        public async Task<IActionResult> VacateDepartment(DepartmentHeadsDTO dto)
+        {
+            var result = await _departmentsService.VacateDepartmentAsync(dto);
+            if (result.IsSuccess)
+            {
+                TempData["success"] = "Store Vacated Successfuly!";
                 return RedirectToAction("Index", "Departments");
             }
 
-            var departmentHead = await _db.DepartmentHeads
-                .FirstOrDefaultAsync(m => m.DepartmentId == nDepartmentId && m.IsActive);
-
-
-            if (departmentHead != null)
-            {
-                departmentHead.IsActive = false;
-                departmentHead.EndDate = DateTime.Now;
-
-                var departmentUsers = await _db.Employees.Where(m => m.SupervisorEmployeeId == departmentHead.EmployeeId).ToListAsync();
-                if (departmentUsers != null)
-                {
-                    foreach (var user in departmentUsers)
-                    {
-                        user.SupervisorEmployeeId = nEmployeeId;
-                    }
-                }
-            }
-
-            if (nEmployeeId != 0)
-            {
-                var newDepartmentHead = new DepartmentHead
-                {
-                    DepartmentId = nDepartmentId,
-                    EmployeeId = nEmployeeId,
-                    StartDate = DateTime.Now,
-                    IsActive = true
-                };
-                _db.DepartmentHeads.Add(newDepartmentHead);
-            }
-
-            var department = await _db.Departments.FirstOrDefaultAsync(m => m.Id == nDepartmentId);
-            if (department != null)
-            {
-                department.EmployeeId = nEmployeeId != 0 ? nEmployeeId : null;
-            }
-
-            await _db.SaveChangesAsync();
-
-            TempData["success"] = "Owner set successfully!";
+            TempData["error"] = result.ErrorMessage;
             return RedirectToAction("Index", "Departments");
-        }
-        
-        [Authorize(Roles = "Administrator")]
-        [HttpPost]
-        public async Task<IActionResult> VacateDepartment(dtoDepartmentHeads dto)
-        {
-            var department = await _db.Departments.FirstOrDefaultAsync(m => m.Id == dto.DepartmentId);
-            if (department != null)
-            {
-                department.EmployeeId = null;
-
-                var departmentHead = _db.DepartmentHeads.FirstOrDefault(m=>m.DepartmentId== dto.DepartmentId && m.IsActive==true);
-                if (departmentHead != null)
-                {
-                    departmentHead.EndDate = DateTime.Now;
-                    departmentHead.IsActive = false;
-                }
-                await _db.SaveChangesAsync();
-
-            }
-
-            TempData["success"] = "Store Vacated Successfuly!";
-            return RedirectToAction("Index", "Departments");
-
-
-        }
-
-
-        //private functions
-        private async Task CreateStore(Department department)
-        {
-            var store = new Store()
-            {
-                Name = department.Name,
-                Description = "Store for " + department.Name,
-                DepartmentId = department.Id
-            };
-            await _db.Stores.AddAsync(store);
-            await _db.SaveChangesAsync();
-        }
-
-        private async Task UpdateStore(Department department)
-        {
-            var storeInDb = await _db.Stores.FirstOrDefaultAsync(m => m.DepartmentId == department.Id);
-
-            if (storeInDb != null)
-            {
-                storeInDb.Name = department.Name;
-            }
-            await _db.SaveChangesAsync();
         }
     }
 }

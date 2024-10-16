@@ -9,13 +9,13 @@ namespace MODAMS.Models.ViewModels.Dto
 {
 
 
-    public class dtoRedirection
+    public class RedirectionDTO
     {
-        public dtoRedirection()
+        public RedirectionDTO()
         {
 
         }
-        public dtoRedirection(string area, string controller, string action)
+        public RedirectionDTO(string area, string controller, string action)
         {
             Area = area;
             Controller = controller;

@@ -24,7 +24,7 @@ namespace MODAMS.Utility
         public Task NotifyUsersInRoleAsync(Notification notification, string role);
         public Task<int> IsEmailRegisteredAsync(string sEmail);
         public Task<string> GetDepartmentNameAsync(int nEmployeeId);
-        public Task<dtoRedirection> GetRedirectionObjectAsync();
+        public Task<RedirectionDTO> GetRedirectionObjectAsync();
         public Task<string> GetDepartmentNameByIdAsync(int nDepartmentId);
         public Task<string> GetRoleNameAsync(int nEmployeeId);
         public int GetSupervisorId(int nEmployeeId);

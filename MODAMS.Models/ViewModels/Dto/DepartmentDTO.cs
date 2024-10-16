@@ -9,18 +9,19 @@ using System.Threading.Tasks;
 
 namespace MODAMS.Models.ViewModels.Dto
 {
-    public class dtoDepartmentIndex
+    public class DepartmentDTO
     {
-        public List<vwDepartments> DepartmentList { get; set; }
+        public Department department { get; set; }
 
-        [Display(Name = "Department")]
-        public int DepartmentId { get; set; }
 
-        [Display(Name = "Employee")]
-        public int EmployeeId { get; set; }
+        [Display(Name ="Department Head")]
+        [ValidateNever]
+        public string DepartmentOwner { get; set; } = string.Empty;
 
         [ValidateNever]
         public IEnumerable<SelectListItem> Employees { get; set; }
 
+        [ValidateNever]
+        public IEnumerable<SelectListItem> Departments { get; set; }
     }
 }

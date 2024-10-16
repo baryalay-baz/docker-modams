@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MODAMS.Models.ViewModels.Dto
 {
-    public class dtoLog
+    public class LogDTO
     {
         public string TableName { get; set; }
         public string FieldName { get; set; }

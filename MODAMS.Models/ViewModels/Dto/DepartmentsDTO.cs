@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MODAMS.Models.ViewModels.Dto
 {
-    public class dtoDepartments
+    public class DepartmentsDTO
     {
         public List<vwDepartments> departments { get; set; }
         public List<vwEmployees> employees { get; set; }

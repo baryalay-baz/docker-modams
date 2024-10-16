@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MODAMS.Models.ViewModels.Dto
 {
-    public class dtoDepartmentHeads
+    public class DepartmentHeadsDTO
     {
         [Display(Name = "Select Employee to Assign as Owner")]
         public int EmployeeId { get; set; }
