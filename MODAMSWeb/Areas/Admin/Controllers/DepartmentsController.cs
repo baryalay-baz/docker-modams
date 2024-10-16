@@ -18,18 +18,10 @@ namespace MODAMSWeb.Areas.Admin.Controllers
     [Authorize(Roles = "Administrator, SeniorManagement, StoreOwner")]
     public class DepartmentsController : Controller
     {
-        private readonly ApplicationDbContext _db;
-        private readonly IAMSFunc _func;
-        private int _employeeId;
-
         private readonly IDepartmentsService _departmentsService;
-        public DepartmentsController(ApplicationDbContext db, IAMSFunc func, IDepartmentsService departmentsService)
+        public DepartmentsController(IDepartmentsService departmentsService)
         {
-            _db = db;
-            _func = func;
             _departmentsService = departmentsService;
-
-            _employeeId = _func.GetEmployeeId();
         }
 
         [HttpGet]

@@ -208,7 +208,7 @@ namespace MODAMS.ApplicationServices
                     DepartmentHeads = departmentHeads,
                     Employees = availableEmployeesList,
                     DepartmentId = departmentId,
-                    DepartmentName = await _func.GetDepartmentNameByIdAsync(id),
+                    DepartmentName = await _func.GetDepartmentNameByIdAsync(departmentId),
                     Owner = storeOwner,
                     DepartmentUsers = users
                 };
@@ -221,7 +221,7 @@ namespace MODAMS.ApplicationServices
                 return Result<DepartmentHeadsDTO>.Failure(ex.Message);
             }
         }
-        public async Task<Result<bool>>AssignOwner(DepartmentHeadsDTO dto){
+        public async Task<Result<bool>>AssignOwnerAsync(DepartmentHeadsDTO dto){
             try
             {
                 int nDepartmentId = dto.DepartmentId;
