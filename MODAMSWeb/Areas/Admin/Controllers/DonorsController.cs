@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
+using MODAMS.ApplicationServices;
 using MODAMS.DataAccess.Data;
 using MODAMS.Models;
 using MODAMS.Utility;
@@ -13,30 +14,35 @@ namespace MODAMSWeb.Areas.Admin.Controllers
     [Authorize(Roles = "Administrator, SeniorManagement, StoreOwner")]
     public class DonorsController : Controller
     {
-        private readonly ApplicationDbContext _db;
-        private readonly IAMSFunc _func;
-        private int _employeeId;
-
-        public DonorsController(ApplicationDbContext db, IAMSFunc func)
+        private readonly IDonorService _donorService;
+        public DonorsController(IDonorService donorService)
         {
-            _db = db;
-            _func = func;
-            _employeeId = _func.GetEmployeeId();
+            _donorService = donorService;
         }
-
-        public IActionResult Index()
+        [HttpGet]
+        public async Task<IActionResult> Index()
         {
-            var donors = _db.Donors.ToList();
-            return View(donors);
-        }
+            var result = await _donorService.GetIndexAsync();
+            var dto = result.Value;
 
+            if (result.IsSuccess)
+            {
+                return View(dto);
+            }
+            else
+            {
+                TempData["error"] = result.ErrorMessage;
+                return View(new List<Donor>());
+            }
+
+        }
         [HttpGet]
         public IActionResult CreateDonor()
         {
-            Donor donor = new Donor();
-            return View(donor);
+            var result = _donorService.GetCreateDonor();
+            var dto = result.Value;
+            return View(dto);
         }
-
         [Authorize(Roles = "Administrator, StoreOwner")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -48,39 +54,35 @@ namespace MODAMSWeb.Areas.Admin.Controllers
                 return View(donor);
             }
 
-            var donorInDb = await _db.Donors.Where(m => m.Code == donor.Code).FirstOrDefaultAsync();
-            if (donorInDb != null)
+            var result = await _donorService.CreateDonorAsync(donor);
+            var dto = result.Value;
+
+            if (result.IsSuccess)
             {
-                TempData["error"] = "Donor with this code already exists!";
-                return View(donor);
+                TempData["success"] = "Donor added successfully!";
             }
-
-            await _db.Donors.AddAsync(donor);
-            await _db.SaveChangesAsync();
-
-            TempData["success"] = "Donor added successfuly!";
+            else
+            {
+                TempData["error"] = result.ErrorMessage;
+            }
             return RedirectToAction("Index", "Donors");
         }
-
         [HttpGet]
-        public IActionResult EditDonor(int id)
+        public async Task<IActionResult> EditDonor(int id)
         {
-            if (id == 0) {
-                TempData["error"] = "Please select a donor";
-                return RedirectToAction("Index", "Donors");
-            }
+            var result = await _donorService.GetEditDonorAsync(id);
+            var dto = result.Value;
 
-            var donor = _db.Donors.Where(m=>m.Id == id).FirstOrDefault();
-            if (donor != null)
+            if (result.IsSuccess)
             {
-                return View(donor);
+                return View(dto);
             }
-            else {
-                TempData["error"] = "Donor not found!";
-                return RedirectToAction("Index", "Donors");
+            else
+            {
+                TempData["error"] = result.ErrorMessage;
+                return View(new Donor());
             }
         }
-
         [Authorize(Roles = "Administrator, StoreOwner")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -92,22 +94,19 @@ namespace MODAMSWeb.Areas.Admin.Controllers
                 return View(donor);
             }
 
-            var donorInDb = await _db.Donors.Where(m => m.Id == donor.Id).FirstOrDefaultAsync();
-            if (donorInDb != null)
+            var result = await _donorService.EditDonorAsync(donor);
+            var dto = result.Value;
+
+            if (result.IsSuccess)
             {
-                donorInDb.Code = donor.Code;
-                donorInDb.Name = donor.Name;
-                await _db.SaveChangesAsync();
-            }
-            else {
-                TempData["error"] = "Donor not found!";
+                TempData["success"] = "Donor added successfully!";
                 return RedirectToAction("Index", "Donors");
             }
-            
+            else {
+                TempData["error"] = result.ErrorMessage;
+                return View(dto);
+            }
 
-            TempData["success"] = "Donor saved successfuly!";
-            return RedirectToAction("Index", "Donors");
         }
-
     }
 }

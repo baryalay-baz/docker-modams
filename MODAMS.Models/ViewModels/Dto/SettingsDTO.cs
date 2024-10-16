@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MODAMS.Models.ViewModels.Dto
 {
-    public class dtoSettings
+    public class SettingsDTO
     {
         public List<LoginHistory> loginHistory = new List<LoginHistory>();
         public List<AuditLog> auditLog = new List<AuditLog>();

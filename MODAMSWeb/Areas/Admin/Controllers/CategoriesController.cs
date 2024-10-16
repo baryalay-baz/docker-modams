@@ -43,7 +43,6 @@ namespace MODAMSWeb.Areas.Admin.Controllers
                 return View(new CategoriesDTO());
             }
         }
-
         [Authorize(Roles = "Administrator, StoreOwner")]
         [HttpGet]
         public async Task<IActionResult> EditCategory(int? id)
@@ -66,7 +65,6 @@ namespace MODAMSWeb.Areas.Admin.Controllers
 
             return View(categoryInDb);
         }
-
         [Authorize(Roles = "Administrator, StoreOwner")]
         [HttpPost]
         public async Task<IActionResult> EditCategory(Category category)
@@ -91,7 +89,6 @@ namespace MODAMSWeb.Areas.Admin.Controllers
             TempData["success"] = "Changes saved successfuly!";
             return RedirectToAction("Index", "Categories");
         }
-
         [Authorize(Roles = "Administrator, StoreOwner")]
         [HttpGet]
         public IActionResult CreateCategory()
@@ -99,7 +96,6 @@ namespace MODAMSWeb.Areas.Admin.Controllers
             var category = new Category();
             return View(category);
         }
-
         [Authorize(Roles = "Administrator, StoreOwner")]
         [HttpPost]
         public async Task<IActionResult> CreateCategory(Category category)
@@ -124,8 +120,6 @@ namespace MODAMSWeb.Areas.Admin.Controllers
                 return View(category);
             }
         }
-
-        //Sub-Categories section
         [Authorize(Roles = "Administrator, StoreOwner")]
         [HttpGet]
         public IActionResult CreateSubCategory(int id)
@@ -145,7 +139,6 @@ namespace MODAMSWeb.Areas.Admin.Controllers
 
             return View(dto);
         }
-
         [Authorize(Roles = "Administrator, StoreOwner")]
         [HttpPost]
         public async Task<IActionResult> CreateSubCategory(SubCategoryDTO dto)
@@ -170,8 +163,6 @@ namespace MODAMSWeb.Areas.Admin.Controllers
                 return View(dto);
             }
         }
-
-
         [Authorize(Roles = "Administrator, StoreOwner")]
         [HttpGet]
         public async Task<IActionResult> EditSubCategory(int id)
@@ -195,7 +186,6 @@ namespace MODAMSWeb.Areas.Admin.Controllers
                 return RedirectToAction("Index", "Categories");
             }
         }
-
         [Authorize(Roles = "Administrator, StoreOwner")]
         [HttpPost]
         public async Task<IActionResult> EditSubCategory(SubCategory subCategory)
@@ -214,7 +204,6 @@ namespace MODAMSWeb.Areas.Admin.Controllers
                 return View(dto);
             }
         }
-
 
         //API AJAX CALLS
         [HttpGet]

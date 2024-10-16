@@ -113,6 +113,8 @@ builder.Services.AddScoped<IDisposalService, DisposalService>();
 builder.Services.AddScoped<IStoreService, StoreService>();
 builder.Services.AddScoped<ITransferService, TransferService>();
 builder.Services.AddScoped<ICategoriesService, CategoriesService>();
+builder.Services.AddScoped<IDonorService, DonorService>();
+builder.Services.AddScoped<ISettingsService, SettingsService>();
 
 
 
