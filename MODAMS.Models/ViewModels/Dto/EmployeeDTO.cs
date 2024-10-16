@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace MODAMS.Models.ViewModels.Dto
 {
-    public class dtoEmployee
+    public class EmployeeDTO
     {
         public Employee Employee { get; set; }
 

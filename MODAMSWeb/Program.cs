@@ -115,6 +115,7 @@ builder.Services.AddScoped<ITransferService, TransferService>();
 builder.Services.AddScoped<ICategoriesService, CategoriesService>();
 builder.Services.AddScoped<IDonorService, DonorService>();
 builder.Services.AddScoped<ISettingsService, SettingsService>();
+builder.Services.AddScoped<IEmployeesService, EmployeesService>();
 
 
 

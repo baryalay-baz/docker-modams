@@ -11,10 +11,12 @@ using System.Text.Encodings.Web;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using MODAMS.Models.ViewModels.Dto;
+using MODAMS.ApplicationServices;
+using MODAMS.Models.ViewModels;
 
 namespace MODAMSWeb.Areas.Admin.Controllers
 {
-    [Authorize(Roles ="StoreOwner, SeniorManagement, Administrator")]
+    [Authorize(Roles = "StoreOwner, SeniorManagement, Administrator")]
     [Area("Admin")]
     public class EmployeesController : Controller
     {
@@ -26,9 +28,13 @@ namespace MODAMSWeb.Areas.Admin.Controllers
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IEmailSender _emailSender;
 
-        public EmployeesController(ILogger<HomeController> logger, ApplicationDbContext db, IAMSFunc func,
+        private readonly IEmployeesService _employeesService;
+
+        public EmployeesController(IEmployeesService employeesService, ILogger<HomeController> logger, ApplicationDbContext db, IAMSFunc func,
             UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IEmailSender emailSender)
         {
+            _employeesService = employeesService;
+
             _logger = logger;
             _db = db;
             _func = func;
@@ -41,260 +47,158 @@ namespace MODAMSWeb.Areas.Admin.Controllers
         [Authorize(Roles = "StoreOwner, SeniorManagement, Administrator")]
         public async Task<IActionResult> Index()
         {
-            var employees = await _db.vwEmployees.ToListAsync();
+            var result = await _employeesService.GetIndexAsync();
+            var dto = result.Value;
 
-            if (User.IsInRole(SD.Role_StoreOwner))
+            if (result.IsSuccess)
             {
-                employees = employees.Where(m => m.SupervisorEmployeeId == _employeeId).ToList();
+                return View(dto);
             }
-
-            return View(employees);
+            else
+            {
+                TempData["error"] = result.ErrorMessage;
+                return View(new List<vwEmployees>());
+            }
         }
 
         [Authorize(Roles = "StoreOwner, Administrator")]
         [HttpGet]
-        public IActionResult CreateEmployee()
+        public async Task<IActionResult> CreateEmployee()
         {
+            var result = await _employeesService.GetCreateEmployeeAsync();
+            var dto = result.Value;
 
-            var employee = new dtoEmployee();
-
-            var roleList = _db.Roles.ToList().Select(m => new SelectListItem
+            if (result.IsSuccess)
             {
-                Text = m.Name,
-                Value = m.Name
-            });
-
-            var employeeList = _db.Employees.ToList().Select(m => new SelectListItem
-            {
-                Text = m.FullName,
-                Value = m.Id.ToString()
-            });
-
-            if (User.IsInRole("StoreOwner"))
-            {
-                roleList = roleList.Where(m => m.Text == "User");
+                return View(dto);
             }
             else
             {
-                roleList = roleList.Where(m => m.Text != "Administrator");
+                TempData["error"] = result.ErrorMessage;
+                return RedirectToAction("Index", "Employees");
             }
-
-
-            employee.Employee = new Employee();
-            employee.Employees = employeeList;
-            employee.RoleList = roleList;
-
-            return View(employee);
         }
 
         [Authorize(Roles = "StoreOwner, Administrator")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateEmployee(dtoEmployee form)
+        public async Task<IActionResult> CreateEmployee(EmployeeDTO form)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var employee = await _db.Employees.FirstOrDefaultAsync(m => m.Email == form.Employee.Email);
+                TempData["error"] = "Please fill all the mandatory fields";
+                form = await _employeesService.PopulateEmployeeDTOAsync(form);
 
-                if (employee != null)
-                {
-                    TempData["error"] = "Employee aleady exists!";
-                    return RedirectToAction("CreateEmployee", "Employees");
-                }
+                return View(form);
+            }
 
-                form.Employee.ImageUrl = "/assets/images/faces/profile_placeholder.png";
-                form.Employee.IsActive = true;
-                _db.Employees.Add(form.Employee);
-
-                await _db.SaveChangesAsync();
+            var result = await _employeesService.CreateEmployeeAsync(form);
+            if (result.IsSuccess)
+            {
                 TempData["success"] = "Employee added successfuly!";
-                SendRegistrationNotification(form.Employee.Email);
-            }
-            else
-            {
-                TempData["error"] = "All fields are mandatory!";
-                return RedirectToAction("CreateEmployee", "Employees");
+
+                // Pass the base URL and scheme to the service for generating the URL
+                await _employeesService.SendRegistrationNotification(
+                    form.Employee.Email,
+                    Request.Host.Value,
+                    Request.Scheme);
+
+                return RedirectToAction("Index", "Employees");
             }
 
-            return RedirectToAction("Index", "Employees");
+            form = await _employeesService.PopulateEmployeeDTOAsync(form);
+            TempData["error"] = result.ErrorMessage;
+            return View(form);
         }
+
 
         [Authorize(Roles = "StoreOwner, Administrator")]
         [HttpGet]
         public async Task<IActionResult> EditEmployee(int id)
         {
-            if (id == 0)
+            var result = await _employeesService.GetEditEmployeeAsync(id);
+
+            var dto = result.Value;
+
+            if (result.IsSuccess)
             {
-                TempData["error"] = "Record not found!";
-                return RedirectToAction("Index", "Employees");
+                return View(dto);
             }
-            var employeeDto = new dtoEmployee();
-            var employee = await _db.Employees.Where(m => m.Id == id).FirstOrDefaultAsync();
-
-            if (employee != null)
-            {
-                employeeDto.Employee = employee;
-
-                var currentRole = await _func.GetRoleNameAsync(id);
-                var roleList = await _db.Roles.Select(m => new SelectListItem
-                {
-                    Text = m.Name,
-                    Value = m.Name
-                }).ToListAsync();
-
-                var employeeList = await _db.Employees.Select(m => new SelectListItem
-                {
-                    Text = m.FullName,
-                    Value = m.Id.ToString()
-                }).ToListAsync();
-
-                if (User.IsInRole("StoreOwner"))
-                {
-                    roleList = (List<SelectListItem>)roleList.Where(m => m.Text == "User");
-                }
-
-                employeeDto.Employee = employee;
-                employeeDto.Employees = employeeList;
-                employeeDto.RoleList = roleList;
-                employeeDto.roleId = currentRole;
-            }
-            else
-            {
-                RedirectToAction("Index", "Employees", new { area = "Admin" });
-            }
-
-
-            return View(employeeDto);
+            TempData["error"] = result.ErrorMessage;
+            return RedirectToAction("Index", "Employees");
         }
 
         [Authorize(Roles = "StoreOwner, Administrator")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditEmployee(dtoEmployee form)
+        public async Task<IActionResult> EditEmployee(EmployeeDTO form)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var employee = await _db.Employees.FirstOrDefaultAsync(m => m.Email == form.Employee.Email);
+                form = await _employeesService.PopulateEmployeeDTOAsync(form);
+                return View(form);
+            }
 
-                if (employee == null)
-                {
-                    TempData["error"] = "Record not found!";
-                    return RedirectToAction("Index", "Employees");
-                }
+            var result = await _employeesService.EditEmployeeAsync(form);
+            var dto = result.Value;
 
-                employee.FullName = form.Employee.FullName;
-                employee.JobTitle = form.Employee.JobTitle;
-                employee.CardNumber = form.Employee.CardNumber;
-                employee.SupervisorEmployeeId = form.Employee.SupervisorEmployeeId;
-                employee.Phone = form.Employee.Phone;
-
-                var user = await _userManager.FindByEmailAsync(employee.Email);
-                if (user != null)
-                {
-                    var role = await _userManager.GetRolesAsync(user);
-                    string roleName = "User";
-
-                    if (role != null)
-                    {
-                        roleName = role[0];
-                    }
-
-                    var result = await _userManager.RemoveFromRoleAsync(user, roleName);
-                    if (result.Succeeded)
-                    {
-                        result = await _userManager.AddToRoleAsync(user, form.roleId);
-                    }
-                }
-                await _db.SaveChangesAsync();
-
-                TempData["success"] = "Employee updated successfuly!";
+            if (result.IsSuccess)
+            {
+                TempData["success"] = "Employee record updated successfully!";
+                return RedirectToAction("Index", "Employees");
             }
             else
             {
-                TempData["error"] = "All fields are mandatory!";
-                return RedirectToAction("CreateEmployee", "Employees");
+                TempData["error"] = result.ErrorMessage;
+                return View(dto);
             }
-
-            return RedirectToAction("Index", "Employees", new { area = "Admin" });
-
         }
 
         [Authorize(Roles = "StoreOwner, Administrator")]
         public async Task<IActionResult> LockAccount(int id)
         {
-            var employee = _db.Employees.Where(m => m.Id == id).FirstOrDefault();
-            if (employee != null)
-            {
-                employee.IsActive = false;
-                await _db.SaveChangesAsync();
+            var result = await _employeesService.LockAccountAsync(id);
+
+            if (result.IsSuccess) {
                 TempData["success"] = "Account locked successfuly!";
+                return RedirectToAction("Index", "Employees");
             }
-            else
-            {
-                TempData["error"] = "Record not found!";
-            }
+
+            TempData["error"] = result.ErrorMessage;
             return RedirectToAction("Index", "Employees");
+
         }
 
         [Authorize(Roles = "StoreOwner, Administrator")]
         public async Task<IActionResult> UnlockAccount(int id)
         {
-            var employee = _db.Employees.Where(m => m.Id == id).FirstOrDefault();
-            if (employee != null)
+            var result = await _employeesService.UnLockAccountAsync(id);
+
+            if (result.IsSuccess)
             {
-                employee.IsActive = true;
-                await _db.SaveChangesAsync();
                 TempData["success"] = "Account unlocked successfuly!";
+                return RedirectToAction("Index", "Employees");
             }
-            else
-            {
-                TempData["error"] = "Record not found!";
-            }
+
+            TempData["error"] = result.ErrorMessage;
             return RedirectToAction("Index", "Employees");
         }
 
         [Authorize(Roles = "Administrator, SeniorManagement, StoreOwner, User")]
         [HttpGet]
-        public async Task<string> GetFaces() {
-            var sResult = "No Records Found";
-
-            var faces = await _db.Employees.Select(m=> new {m.Id, m.ImageUrl}).ToListAsync();
-            if(faces.Count>0) {
-                sResult = JsonConvert.SerializeObject(faces);
-            }
-            return sResult;
-        }
-
-
-        private async void SendRegistrationNotification(string emailAddress)
+        public async Task<string> GetFaces()
         {
+            var result = await _employeesService.GetFacesAsync();
+            var data = result.Value;
 
-            var callbackUrl = Url.Page(
-            "/Account/Register",
-                    pageHandler: null,
-                    values: new { area = "Identity", returnUrl = emailAddress },
-                    protocol: Request.Scheme);
-
-            string shortmessage = "A new account has been created for you at MOD Asset Management System, " +
-                "please click the button below to follow the instructions!";
-
-            string message = "";
-
-            if (callbackUrl != null)
+            if (result.IsSuccess)
             {
-                message = _func.FormatMessage("Account Registration", shortmessage,
-                    emailAddress, HtmlEncoder.Default.Encode(callbackUrl), "Register here");
+                return data;
             }
-            else
-            {
-                message = _func.FormatMessage("Reset Password", shortmessage,
-                    emailAddress, HtmlEncoder.Default.Encode("./"), "Register here");
+            else {
+                return result.ErrorMessage;
             }
-
-            await _emailSender.SendEmailAsync(
-                emailAddress,
-                "Account Registration",
-                message);
         }
+
     }
 }
