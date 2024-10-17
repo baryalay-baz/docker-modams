@@ -289,7 +289,7 @@ namespace MODAMS.ApplicationServices
                 roleList = roleList.Where(m => m.Text == "User").ToList();
                 employeeList = employeeList.Where(m => m.Value == _employeeId.ToString()).ToList();
             }
-            else
+            else if(IsInRole("SeniorManagement"))
             {
                 roleList = roleList.Where(m => m.Text != "Administrator").ToList();
             }
