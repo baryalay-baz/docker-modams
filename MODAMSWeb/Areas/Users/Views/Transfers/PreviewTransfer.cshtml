@@ -88,7 +88,7 @@
         <div class="card">
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-8">
+                    <div class="col-md-12">
                         <div class="center-align bordered-div">
                             <table class="w-100">
                                 <tr>
@@ -154,15 +154,15 @@
                                                             {
                                                                 nCounter++;
                                                                 sCounter = (nCounter < 10) ? "0" + nCounter.ToString() + "." : nCounter.ToString() + ".";
-                                                                    <tr>
-                                                                        <td>@sCounter</td>
-                                                                        <td>@asset.SubCategory</td>
-                                                                        <td>@asset.Make</td>
-                                                                        <td>@asset.Model</td>
-                                                                        <td>@asset.AssetName</td>
-                                                                        <td>@asset.SerialNumber</td>
-                                                                        <td>@asset.Condition</td>
-                                                                    </tr>
+                                                                        <tr>
+                                                                            <td>@sCounter</td>
+                                                                            <td>@asset.SubCategory</td>
+                                                                            <td>@asset.Make</td>
+                                                                            <td>@asset.Model</td>
+                                                                            <td>@asset.AssetName</td>
+                                                                            <td>@asset.SerialNumber</td>
+                                                                            <td>@asset.Condition</td>
+                                                                        </tr>
                                                             }
                                                         }
 
@@ -175,15 +175,15 @@
                                                             @{
                                                                 if (Model.vwTransfer.TransferStatusId > SD.Transfer_Pending)
                                                                 {
-                                                                        <div class="barcode-container">
-                                                                            <div class="barcode-text">Transfer By</div>
-                                                                            <span style="font-family: Freestyle Script; font-size: 25pt;">
-                                                                                @Model.vwTransfer.SenderBarcode
-                                                                            </span>
-                                                                            <div class="barcode-text">
-                                                                                @Model.vwTransfer.SubmissionforAcknowledgementDate?.ToString("D")
+                                                                            <div class="barcode-container">
+                                                                                <div class="barcode-text">Transfer By</div>
+                                                                                <span style="font-family: Freestyle Script; font-size: 25pt;">
+                                                                                    @Model.vwTransfer.SenderBarcode
+                                                                                </span>
+                                                                                <div class="barcode-text">
+                                                                                    @Model.vwTransfer.SubmissionforAcknowledgementDate?.ToString("D")
+                                                                                </div>
                                                                             </div>
-                                                                        </div>
                                                                 }
                                                             }
                                                         </div>
@@ -191,20 +191,20 @@
                                                             @{
                                                                 if (Model.vwTransfer.TransferStatusId > SD.Transfer_SubmittedForAcknowledgement)
                                                                 {
-                                                                        <div class="barcode-container">
-                                                                            @{
+                                                                            <div class="barcode-container">
+                                                                                @{
                                                                             string barcodeText = "Received By";
                                                                             string sClass = "";
                                                                             if (sTransferStatus == "Rejected")
                                                                                 sClass = "text-danger";
-                                                                            }
+                                                                                }
 
-                                                                            <div class="barcode-text @sClass">@barcodeText</div>
-                                                                            <span class="@sClass" style="font-family: Freestyle Script; font-size: 25pt;">
-                                                                                @Model.vwTransfer.ReceiverBarcode
-                                                                            </span>
-                                                                            <div class="barcode-text @sClass">@Model.vwTransfer.AcknowledgementDate?.ToString("D")</div>
-                                                                        </div>
+                                                                                <div class="barcode-text @sClass">@barcodeText</div>
+                                                                                <span class="@sClass" style="font-family: Freestyle Script; font-size: 25pt;">
+                                                                                    @Model.vwTransfer.ReceiverBarcode
+                                                                                </span>
+                                                                                <div class="barcode-text @sClass">@Model.vwTransfer.AcknowledgementDate?.ToString("D")</div>
+                                                                            </div>
                                                                 }
                                                             }
                                                         </div>
@@ -221,69 +221,6 @@
                             </table>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="card" id="divAction">
-                            <div class="card-body divShadow center-align" id="dvAction">
-                                @{
-                                    if (Model.vwTransfer.TransferStatusId == SD.Transfer_Pending)
-                                    {
-                                        if (Model.IsSender)
-                                        {
-                                                <form method="post" asp-action="SubmitForAcknowledgement" id="frmSubmitForAcknowledgement">
-                                                    <input type="hidden" name="id" value="@Model.vwTransfer.Id" />
-                                                    <button type="submit" class="btn btn-info-gradient " id="btnSubmitTransfer">
-                                                        <i class="fa fa-check-circle"></i><span class="loading">&nbsp;Submit for Acknowledgement</span>
-                                                    </button>
-                                                </form>
-                                        }
-                                        else
-                                        {
-                                                @Html.Raw("<span id=\"spnAction\">No action required</span>")
-                                        }
-                                    }
-                                    else if (Model.vwTransfer.TransferStatusId == SD.Transfer_SubmittedForAcknowledgement)
-                                    {
-                                        if (Model.IsReceiver)
-                                        {
-                                                <form method="post" asp-action="AcknowledgeTransfer" id="frmAcknowledgeTransfer">
-                                                    <input type="hidden" name="id" value="@Model.vwTransfer.Id" />
-                                                    <button type="submit" class="btn btn-info-gradient" id="btnAcknowledgeTransfer">
-                                                        <i class="fa fa-check-circle"></i>&nbsp;Acknowledge Transfer
-                                                    </button>
-                                                </form>
-                                                @Html.Raw("&nbsp;&nbsp;")
-                                                <form method="post" asp-action="RejectTransfer" id="frmRejectTransfer">
-                                                    <input type="hidden" name="id" value="@Model.vwTransfer.Id" />
-                                                    <button type="submit" class="btn btn-secondary-gradient">
-                                                        <i class="fa fa-close"></i>&nbsp;Reject Transfer
-                                                    </button>
-                                                </form>
-                                        }
-                                        else
-                                        {
-                                                @Html.Raw("<span id=\"spnAction\">No action required</span>")
-                                        }
-                                    }
-                                    else
-                                    {
-                                            @Html.Raw("<span id=\"spnAction\">No action required</span>")
-                                    }
-                                }
-                            </div>
-                        </div>
-                        <div class="card">
-                            <div class="card-body divShadow center-align">
-                                @{
-                                        <form method="post" target="_blank" asp-action="PrintVoucher" id="frmPrintVoucher">
-                                            <input type="hidden" name="id" value="@Model.vwTransfer.Id" />
-                                        <button type="submit" class="btn btn-gray" id="btnPrintVoucher">
-                                                <i class="fa fa-print"></i>&nbsp;<span class="loading">&nbsp;Print Transfer Voucher</span>
-                                            </button>
-                                        </form>
-                                }
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
             <div class="card-footer">
@@ -292,6 +229,116 @@
                     <div class="col-sm-12">
                         <a asp-action="Index" asp-controller="Transfers" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Html.Raw(@"
+<style>
+    .btn-floating {
+        position: fixed;
+        top: 150px; /* Position from the top of the viewport */
+        right: 5px; /* Position from the right of the viewport */
+        z-index: 1050; /* Ensure it appears above other elements */
+        padding: 3px 5px;
+        font-size: 14px;
+        border-radius: 0%; /* Make the button circular */
+        background-color: rgba(0, 123, 255, 0.3); /* More transparent blue */
+        color: white;
+        border: none;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s, transform 0.3s;
+    }
+
+        .btn-floating i {
+            margin-right: 5px;
+        }
+
+        .btn-floating:hover {
+            background-color: rgba(0, 86, 179, 0.5);
+            transform: scale(1.1);
+        }
+
+    #offcanvasActions {
+        width: 500px;
+    }
+
+    @media (max-width: 767.98px) {
+        #offcanvasActions {
+            width: 100%;
+        }
+</style>")
+<button id="actionButton" class="btn btn-primary btn-floating" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasActions" aria-controls="offcanvasActions">
+    <i class="fa fa-cogs"></i> Actions
+</button>
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasActions" aria-labelledby="offcanvasActionsLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasActionsLabel">Actions</h5>
+        <button id="closeOffcanvasButton" type="button" class="btn-close" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <div class="card">
+            <div class="card" id="divAction">
+                <div class="card-body divShadow center-align" id="dvAction">
+                    @{
+                        if (Model.vwTransfer.TransferStatusId == SD.Transfer_Pending)
+                        {
+                            if (Model.IsSender)
+                            {
+                                    <form method="post" asp-action="SubmitForAcknowledgement" id="frmSubmitForAcknowledgement">
+                                        <input type="hidden" name="id" value="@Model.vwTransfer.Id" />
+                                        <button type="submit" class="btn btn-info-gradient " id="btnSubmitTransfer">
+                                            <i class="fa fa-check-circle"></i><span class="loading">&nbsp;Submit for Acknowledgement</span>
+                                        </button>
+                                    </form>
+                            }
+                            else
+                            {
+                                    @Html.Raw("<span id=\"spnAction\">No action required</span>")
+                            }
+                        }
+                        else if (Model.vwTransfer.TransferStatusId == SD.Transfer_SubmittedForAcknowledgement)
+                        {
+                            if (Model.IsReceiver)
+                            {
+                                    <form method="post" asp-action="AcknowledgeTransfer" id="frmAcknowledgeTransfer">
+                                        <input type="hidden" name="id" value="@Model.vwTransfer.Id" />
+                                        <button type="submit" class="btn btn-info-gradient" id="btnAcknowledgeTransfer">
+                                            <i class="fa fa-check-circle"></i><span class="loading">&nbsp;Acknowledge Transfer</span>
+                                        </button>
+                                    </form>
+                                    @Html.Raw("&nbsp;&nbsp;")
+                                    <form method="post" asp-action="RejectTransfer" id="frmRejectTransfer">
+                                        <input type="hidden" name="id" value="@Model.vwTransfer.Id" />
+                                        <button type="submit" class="btn btn-secondary-gradient" id="btnRejectTransfer">
+                                            <i class="fa fa-close"></i><span class="loading">&nbsp;Reject Transfer</span>
+                                        </button>
+                                    </form>
+                            }
+                            else
+                            {
+                                    @Html.Raw("<span id=\"spnAction\">No action required</span>")
+                            }
+                        }
+                        else
+                        {
+                                @Html.Raw("<span id=\"spnAction\">No action required</span>")
+                        }
+                    }
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body divShadow center-align">
+                    @{
+                            <form method="post" target="_blank" asp-action="PrintVoucher" id="frmPrintVoucher">
+                                <input type="hidden" name="id" value="@Model.vwTransfer.Id" />
+                                <button type="submit" class="btn btn-gray" id="btnPrintVoucher">
+                                    <i class="fa fa-print"></i>&nbsp;<span class="loading">&nbsp;Print Transfer Voucher</span>
+                                </button>
+                            </form>
+                    }
                 </div>
             </div>
         </div>
@@ -322,6 +369,34 @@
             });
 
             checkForAction();
+
+            $('#btnSubmitTransfer').on('click', e => {
+                //e.preventDefault();
+                $("#btnSubmitTransfer").addClass("btn-loading btn-icon disabled");
+            });
+            $("#btnAcknowledgeTransfer").on("click", (e) => {
+                //e.preventDefault();
+                $("#btnAcknowledgeTransfer").addClass("btn-loading btn-icon disabled");
+            });
+            $("#btnRejectTransfer").on("click", (e) => {
+                //e.preventDefault();
+                $("#btnRejectTransfer").addClass("btn-loading btn-icon disabled");
+            });
+
+            // When the offcanvas is opened
+            $('#offcanvasActions').on('show.bs.offcanvas', function () {
+                $('#actionButton').hide(); // Hide the action button
+            });
+
+            // When the offcanvas is closed
+            $('#offcanvasActions').on('hidden.bs.offcanvas', function () {
+                $('#actionButton').show(); // Show the action button again
+            });
+
+            // Close the offcanvas when the close button inside the offcanvas is clicked
+            $('#closeOffcanvasButton').on('click', function () {
+                $('#offcanvasActions').offcanvas('hide');
+            });
 
         });
 

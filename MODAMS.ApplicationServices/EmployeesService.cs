@@ -102,7 +102,7 @@ namespace MODAMS.ApplicationServices
 
                 await _db.Employees.AddAsync(dto.Employee);
                 await _db.SaveChangesAsync();
-
+                dto = await PopulateEmployeeDTOAsync(dto);
                 return Result<EmployeeDTO>.Success(dto);
             }
             catch (Exception ex)
@@ -179,6 +179,7 @@ namespace MODAMS.ApplicationServices
             catch (Exception ex)
             {
                 _func.LogException(_logger, ex);
+                dto = await PopulateEmployeeDTOAsync(dto);
                 return Result<EmployeeDTO>.Failure(ex.Message, dto);
             }
         }

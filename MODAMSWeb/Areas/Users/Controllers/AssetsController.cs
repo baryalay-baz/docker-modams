@@ -140,16 +140,12 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 else
                 {
                     TempData["error"] = result.ErrorMessage;
-                    // Preserve user-entered data and repopulate SelectLists
-                    dto = await _assetService.PopulateDtoAssetAsync(dto);
                     return View(dto);
                 }
             }
             else
             {
                 TempData["error"] = "All fields are mandatory!";
-                // Repopulate only the SelectList fields, keeping the user-entered data
-                dto = await _assetService.PopulateDtoAssetAsync(dto);
                 return View(dto);
             }
         }

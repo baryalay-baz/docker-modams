@@ -86,7 +86,7 @@ namespace MODAMS.ApplicationServices
                 await _db.Departments.AddAsync(dto.department);
                 await _db.SaveChangesAsync();
                 await CreateStoreAsync(dto.department);
-
+                dto = await PopulateDepartmentDTO(dto);
                 return Result<DepartmentDTO>.Success(dto);
             }
             catch (Exception ex)
@@ -140,6 +140,7 @@ namespace MODAMS.ApplicationServices
                 await _db.SaveChangesAsync();
                 await UpdateStoreAsync(department);
 
+                dto = await PopulateDepartmentDTO(dto);
                 return Result<DepartmentDTO>.Success(dto);
             }
             catch (Exception ex)

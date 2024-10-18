@@ -34,8 +34,6 @@ namespace MODAMSWeb.Areas.Users.Controllers
             _employeeId = _func.GetEmployeeId();
             _supervisorId = _func.GetSupervisorId(_employeeId);
         }
-
-
         [HttpGet]
         public async Task<IActionResult> Index(int id = 0, int transferStatusId = 0)
         {

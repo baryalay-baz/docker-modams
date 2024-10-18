@@ -39,9 +39,7 @@ namespace MODAMS.ApplicationServices
             _employeeId = _func.GetEmployeeId();
             _supervisorId = _func.GetSupervisorId(_employeeId);
         }
-
         private bool IsInRole(string role) => _httpContextAccessor.HttpContext.User.IsInRole(role);
-
         public async Task<Result<TransferDTO>> GetIndexAsync(int id = 0, int transferStatusId = 0)
         {
             try
@@ -273,6 +271,8 @@ namespace MODAMS.ApplicationServices
                         await _func.LogNewsFeedAsync(message, "Users", "Transfers", "PreviewTransfer", transfer.Id);
 
                         await _db.Database.CommitTransactionAsync();
+
+                        transferDTO.Transfer.Id = transfer.Id;
 
                         //success
                         return Result<TransferCreateDTO>.Success(transferDTO);

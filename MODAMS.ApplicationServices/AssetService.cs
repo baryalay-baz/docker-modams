@@ -181,6 +181,11 @@ namespace MODAMS.ApplicationServices
                         return Result<AssetCreateDTO>.Failure("Serial Number already in use", dto);
                     }
 
+                    if (await _db.Assets.AnyAsync(m => m.AssetStatusId != SD.Asset_Deleted && m.Barcode == dto.Barcode))
+                    {
+                        dto = await PopulateDtoAssetAsync(dto);
+                        return Result<AssetCreateDTO>.Failure("Barcode already in use", dto);
+                    }
                     if (dto == null)
                     {
                         dto = new AssetCreateDTO();
@@ -366,6 +371,7 @@ namespace MODAMS.ApplicationServices
 
                 // Return success with populated DTO
                 dto.StoreName = await _func.GetStoreNameByStoreIdAsync(dto.StoreId);
+                dto = await PopulateDtoAssetAsync(dto);
                 return Result<AssetEditDTO>.Success(dto);
             }
             catch (Exception ex)

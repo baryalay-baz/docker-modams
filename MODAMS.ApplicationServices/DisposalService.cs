@@ -183,7 +183,7 @@ namespace MODAMS.ApplicationServices
 
                 // Commit the transaction
                 await transaction.CommitAsync();
-
+                dto = await PopulateDisposalDtoAsync(dto);
                 return Result<DisposalCreateDTO>.Success(dto);
             }
             catch (Exception ex)
@@ -191,6 +191,7 @@ namespace MODAMS.ApplicationServices
                 // Rollback the transaction on any error
                 await transaction.RollbackAsync();
                 _func.LogException(_logger, ex);
+                dto = await PopulateDisposalDtoAsync(dto);
                 return Result<DisposalCreateDTO>.Failure(ex.Message);
             }
         }
@@ -339,13 +340,14 @@ namespace MODAMS.ApplicationServices
 
                 // Commit the transaction
                 await transaction.CommitAsync();
-
+                dto = await PopulateDisposalDtoAsync(dto);
                 return Result<DisposalEditDTO>.Success(dto);
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
                 _func.LogException(_logger, ex);
+                dto = await PopulateDisposalDtoAsync(dto);
                 return Result<DisposalEditDTO>.Failure(ex.Message);
             }
         }

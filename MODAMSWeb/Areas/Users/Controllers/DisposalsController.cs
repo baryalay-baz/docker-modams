@@ -85,7 +85,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             }
             else {
                 TempData["error"] = result.ErrorMessage;
-                return View(await _disposalService.PopulateDisposalDtoAsync(dto));
+                return View(dto);
             }
         }
         [HttpGet]
@@ -126,7 +126,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             else
             {
                 TempData["error"] = result.ErrorMessage;
-                return View(await _disposalService.PopulateDisposalDtoAsync(dto));
+                return View(dto);
             }
         }
 

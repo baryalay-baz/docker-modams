@@ -1,27 +1,14 @@
 ﻿@model ErrorViewModel
 
-<div class="row">
+@{
+    Layout = "_Layout2";
 
-    <div class="col-md-12">
-        <br /><br />
-        <h2 class="text-danger">An error occurred while processing your request.</h2>
+}
 
-        @if (Model.ShowRequestId)
-        {
-            <p>
-                <strong>Request ID:</strong> <code>@Model.RequestId</code>
-            </p>
-        }
-
-        <h3>Development Mode</h3>
-        <p>
-            Swapping to <strong>Development</strong> environment will display more detailed information about the error that occurred.
-        </p>
-        <p>
-            <strong>The Development environment shouldn't be enabled for deployed applications.</strong>
-            It can result in displaying sensitive information from exceptions to end users.
-            For local debugging, enable the <strong>Development</strong> environment by setting the <strong>ASPNETCORE_ENVIRONMENT</strong> environment variable to <strong>Development</strong>
-            and restarting the app.
-        </p>
-    </div>
+<h2 class="text-white mb-2">500<span class="fs-20">error</span></h2>
+<h5 class="error-details text-white">
+    Oops! Some error has occured, Please contact System Administrator!
+</h5>
+<div class="text-center">
+    <a class="btn btn-primary mt-5 mb-5" asp-area="" asp-page="/Index"> <i class="fa fa-long-arrow-left"></i> Back to Home </a>
 </div>
