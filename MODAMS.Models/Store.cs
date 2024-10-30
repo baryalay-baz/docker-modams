@@ -27,5 +27,13 @@ namespace MODAMS.Models
 
         [ValidateNever]
         public Department Department { get; set; }
+
+
+        //Sub tables
+        [ValidateNever]
+        public ICollection<VerificationSchedule> VerificationSchedules { get; set; }
+        [ValidateNever]
+        public ICollection<Asset> Assets { get; set; }
+
     }
 }

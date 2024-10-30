@@ -44,6 +44,10 @@ namespace MODAMS.DataAccess.Data
         public DbSet<AuditLog> AuditLog { get; set; }
         public DbSet<NewsFeed> NewsFeed { get; set; }
         public DbSet<LoginHistory> LoginHistory { get; set; }
+        public DbSet<VerificationSchedule> VerificationSchedules { get; set; }
+        public DbSet<VerificationRecord> VerificationRecords { get; set; }
+        public DbSet<VerificationTeam> VerificationTeams { get; set; }
+
 
 
         //Section for Views

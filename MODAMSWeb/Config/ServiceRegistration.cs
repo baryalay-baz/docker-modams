@@ -104,6 +104,7 @@ namespace MODAMSWeb.Config
             builder.Services.AddScoped<ISettingsService, SettingsService>();
             builder.Services.AddScoped<IEmployeesService, EmployeesService>();
             builder.Services.AddScoped<IDepartmentsService, DepartmentsService>();
+            builder.Services.AddScoped<IVerificationService, VerificationService>();
 
             // Add HttpContextAccessor
             builder.Services.AddHttpContextAccessor();

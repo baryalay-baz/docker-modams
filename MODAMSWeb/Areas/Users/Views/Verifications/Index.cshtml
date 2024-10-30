@@ -1,0 +1,204 @@
+﻿@model MODAMS.Models.ViewModels.Dto.VerificationsDTO
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/c3@0.7.20/c3.min.css">
+
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Asset Verifications</h1>
+    </div>
+    <div class="ms-auto pageheader-btn">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Verifications</li>
+        </ol>
+    </div>
+</div>
+@{
+    string sDisabled = "";
+}
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card divShadow">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h4 class="m-0">Asset Verifications</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8 col-sm-8">
+                <div class="card">
+                    <div class="card-status bg-primary-gradient br-tr-7 br-tl-7"></div>
+                    <div class="card-body">
+                        <a asp-area="Users" asp-controller="Verifications" asp-action="CreateSchedule"
+                           class="btn btn-info-gradient trShadow @sDisabled mb-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-inner-icn text-white" enable-background="new 0 0 24 24" viewBox="0 0 24 24"><path d="M16,11.5h-3.5V8c0-0.276123-0.223877-0.5-0.5-0.5S11.5,7.723877,11.5,8v3.5H8c-0.276123,0-0.5,0.223877-0.5,0.5s0.223877,0.5,0.5,0.5h3.5v3.5005493C11.5001831,16.2765503,11.723999,16.5001831,12,16.5h0.0006104C12.2765503,16.4998169,12.5001831,16.276001,12.5,16v-3.5H16c0.276123,0,0.5-0.223877,0.5-0.5S16.276123,11.5,16,11.5z M12,2C6.4771729,2,2,6.4771729,2,12s4.4771729,10,10,10c5.5202026-0.0062866,9.9937134-4.4797974,10-10C22,6.4771729,17.5228271,2,12,2z M12,21c-4.9705811,0-9-4.0294189-9-9s4.0294189-9,9-9c4.9682617,0.0056152,8.9943848,4.0317383,9,9C21,16.9705811,16.9705811,21,12,21z" /></svg>
+                            New Schedule
+                        </a>
+                        <div class="table-responsive export-table">
+                            <table id="tblSchedule" class="table text-nowrap mb-0 table-bordered key-buttons border-top border-bottom project-list-main">
+                                <thead class="bg-primary-gradient ms-auto divShadow">
+                                    <tr>
+                                        <th class="text-black bg-transparent border-bottom-0 w-2">#</th>
+                                        <th class="text-black bg-transparent border-bottom-0 w-20">Department</th>
+                                        <th class="text-black bg-transparent border-bottom-0 w-10">Type</th>
+                                        <th class="text-black bg-transparent border-bottom-0 w-30">Team</th>
+                                        <th class="text-black bg-transparent border-bottom-0 w-10">Start</th>
+                                        <th class="text-black bg-transparent border-bottom-0 w-10">End</th>
+                                        <th class="text-black bg-transparent border-bottom-0 w-20">Status</th>
+                                        <th class="text-black bg-transparent border-bottom-0 w-5 no-btn"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        int nCounter = 0;
+                                        string sCounter = "";
+                                        foreach (var schedule in Model.Schedules)
+                                        {
+                                            nCounter++;
+                                            sCounter = nCounter < 10 ? "0" + nCounter : nCounter.ToString();
+                                            sDisabled = schedule.VerificationStatus != "Pending" ? "disabled" : "";
+                                                <tr>
+                                                    <td class="text-black bg-transparent border-bottom-0 w-2">@sCounter</td>
+                                                    <td class="text-black bg-transparent border-bottom-0 w-20">@schedule.Store.Name</td>
+                                                    <td class="text-black bg-transparent border-bottom-0 w-10">@schedule.VerificationType</td>
+                                                    <td class="text-black bg-transparent border-bottom-0 w-30">
+                                                        <div class="avatar-list avatar-list-stacked">
+                                                            @{
+                                                            foreach (var emp in schedule.VerificationTeams)
+                                                            {
+                                                                if (emp != null)
+                                                                {
+                                                                    string sContent = $"{emp.Employee.JobTitle} <br /> {emp.Employee.Email}";
+
+                                                                            <a data-bs-container="body"
+                                                                               data-bs-content="@Html.Raw(sContent)"
+                                                                               data-bs-html="true"
+                                                                               data-bs-placement="right"
+                                                                               data-bs-popover-color="default"
+                                                                               data-bs-toggle="popover"
+                                                                               data-bs-original-title="@emp.Employee.FullName"
+                                                                               role="button" tabindex="0" data-bs-trigger="hover">
+                                                                                <span><img src="@emp.Employee.ImageUrl" alt="profile-user" class="avatar bradius cover-image"></span>
+                                                                            </a>
+                                                                }
+                                                            }
+                                                            }
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-black bg-transparent border-bottom-0 w-10">@schedule.StartDate.ToString("dd-MMM-yy")</td>
+                                                    <td class="text-black bg-transparent border-bottom-0 w-10">@schedule.EndDate.ToString("dd-MMM-yy")</td>
+                                                    <td class="text-black bg-transparent border-bottom-0 w-20">@schedule.VerificationStatus</td>
+                                                    <td class="text-black bg-transparent border-bottom-0 w-5 no-btn">
+                                                        <a asp-controller="Verifications" asp-action="EditSchedule" asp-route-id="@schedule.Id" class="btn btn-sm btn-outline-primary border me-2 @sDisabled" data-bs-toggle="tooltip" data-bs-original-title="Edit Schedule">
+                                                            <i class="fe fe-edit"></i>
+                                                        </a>
+                                                        <a asp-controller="Verifications" asp-action="PreviewSchedule" asp-route-id="@schedule.Id" class="btn btn-sm btn-outline-info border me-2" data-bs-toggle="tooltip" data-bs-original-title="Preview Schedule">
+                                                            <i class="fe fe-eye"></i>
+                                                        </a>
+                                                        <a asp-controller="Verifications" asp-action="DeleteSchedule" asp-route-id="@schedule.Id" class="btn btn-sm btn-outline-danger border me-2 @sDisabled" data-bs-toggle="tooltip" data-bs-original-title="Delete Schedule">
+                                                            <i class="fe fe-trash"></i>
+                                                        </a>
+                                                    
+                                                    </td>
+                                                </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+                <div class="row">
+                    <div class="col-md-12 col-sm-12">
+                        <div class="card">
+                            <div class="card-header border-bottom">
+                                <h3 class="card-title">Verification Schedules by Status</h3>
+                            </div>
+                            <div class="card-status bg-secondary-gradient br-tr-7 br-tl-7"></div>
+                            <div class="card-body" style="height:250px;">
+                                <div id="verificationBarChart" style="height: 250px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+@section scripts {
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.0/dist/echarts.min.js"></script>
+    <script>
+        $(document).ready(() => {
+            hideMenu();
+            makeDataTable('#tblSchedule', 1);
+            loadMetricsChart();
+        });
+
+        const loadMetricsChart = () => {
+            
+            var chartData = JSON.parse('@Html.Raw(Json.Serialize(Model.GetBarChartData()))');
+            
+            var statusLabels = chartData.map(item => item.scheduleStatus);
+            var scheduleCounts = chartData.map(item => item.scheduleCount);
+            
+            var barColors = ['#73C9E6', '#FF7F50', '#87CEEB'];
+
+            var chart = echarts.init(document.getElementById('verificationBarChart'));
+            
+            var chartOptions = {
+                grid: {
+                    top: 30,
+                    left: 70,
+                    right: 50,
+                    bottom: 80
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    }
+                },
+                xAxis: {
+                    type: 'category',
+                    data: statusLabels,
+                    axisLabel: {
+                        interval: 0,
+                        rotate: 30
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    name: 'Number of Schedules'
+                },
+                series: [
+                    {
+                        name: 'Schedules',
+                        type: 'bar',
+                        data: scheduleCounts,
+                        itemStyle: {
+                            color: function (params) {
+                                return barColors[params.dataIndex];
+                            }
+                        },
+                        label: {
+                            show: true,
+                            position: 'top',
+                            formatter: '{c}'
+                        }
+                    }
+                ]
+            };
+            chart.setOption(chartOptions);
+        }
+
+    </script>
+}

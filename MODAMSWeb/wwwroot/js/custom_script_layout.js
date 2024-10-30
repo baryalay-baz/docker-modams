@@ -1,5 +1,5 @@
 ﻿$(document).ready(() => {
-    setMode();
+    //setMode();
     loadProfileData();
     formatTables();
 

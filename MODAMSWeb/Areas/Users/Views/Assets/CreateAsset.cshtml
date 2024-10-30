@@ -1,6 +1,5 @@
 ﻿@model MODAMS.Models.ViewModels.Dto.AssetCreateDTO
 
-
 <style>
     input[type="date"]::-webkit-calendar-picker-indicator {
         display: none;
@@ -247,21 +246,19 @@
             $("#btnSubmit").on("click", () => {
                 $("#frmAsset").submit();
             });
+            
             loadCategories();
 
             $("#CategoryId").on("change", () => {
                 checkIfVehiclesSelected();
                 populateCmbSubCategory();
             });
-
             $('.picker').datepicker({
                 autoclose: true,
                 format: 'dd-MM-yyyy',
                 todayHighlight: true
             });
-
         });
-
         const checkIfVehiclesSelected = () => {
             if ($("#CategoryId").val() == "16") {
                 $("#dvVehicleIdentification").show();
@@ -275,7 +272,6 @@
                 $("#dvVehicleIdentification").hide();
             }
         }
-
         const loadCategories = () => {
             var postData = {};
             $.ajax({
@@ -358,6 +354,5 @@
                 showErrorMessageJs(result.message);
             }
         }
-
     </script>
 }

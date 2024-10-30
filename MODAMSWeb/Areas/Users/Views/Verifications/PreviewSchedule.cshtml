@@ -1,0 +1,386 @@
+﻿@model MODAMS.Models.ViewModels.Dto.VerificationSchedulePreviewDTO
+<style>
+    .is-invalid {
+        border-color: red;
+    }
+
+    #verificationOverlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5); /* Gray out the modal */
+        z-index: 1000;
+        text-align: center;
+    }
+
+        #verificationOverlay .fa-spinner {
+            font-size: 3rem;
+            color: white;
+        }
+
+        #verificationOverlay div {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+</style>
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Asset Verification Schedule</h1>
+    </div>
+    <div class="ms-auto pageheader-btn">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Verifications" asp-action="Index">Verifications</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Preview Schedule</li>
+        </ol>
+    </div>
+</div>
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12 col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-status bg-primary br-tr-7 br-tl-7"></div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <input asp-for="Id" hidden />
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="form-label">Department</label>
+                                                    <input type="text" class="form-control" value="@Model.StoreName" disabled />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Verification Type</label>
+                                                <input type="text" class="form-control" value="@Model.VerificationType" disabled />
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="form-label">Start Date</label>
+                                                    <input type="text" class="form-control" value="@Model.StartDate.ToString("dd-MMM-yy")" disabled />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">End Date</label>
+                                                <input type="text" class="form-control" value="@Model.EndDate.ToString("dd-MMM-yy")" disabled />
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3 form-group mt-2">
+                                                    <label class="form-label text-black">Notes</label>
+                                                    <textarea class="form-control mb-4" rows="3" disabled>@Model.Notes</textarea>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label text-black">Verification Team</label>
+                                                <div class="avatar-list avatar-list-stacked form-control">
+                                                    @{
+                                                        if (Model.VerificationTeam != null)
+                                                        {
+                                                            foreach (var emp in Model.VerificationTeam)
+                                                            {
+                                                                if (emp != null)
+                                                                {
+                                                                    string sContent = $"{emp.Employee.JobTitle} <br /> {emp.Employee.Email} <br /> {emp.Role}";
+                                                                    <a class="m-1"
+                                                                       data-bs-container="body"
+                                                                       data-bs-content="@Html.Raw(sContent)"
+                                                                       data-bs-html="true"
+                                                                       data-bs-placement="right"
+                                                                       data-bs-popover-color="default"
+                                                                       data-bs-toggle="popover"
+                                                                       data-bs-original-title="@emp.Employee.FullName"
+                                                                       role="button" tabindex="0" data-bs-trigger="hover">
+                                                                        <span><img src="@emp.Employee.ImageUrl" alt="profile-user" class="avatar bradius cover-image"></span>
+                                                                    </a>
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @{
+                                            string sVerificationEnabled = (Model.IsAuthorized && Model.VerificationStatus != "Completed") ? "" : "disabled";
+                                        }
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group mb-3 mt-2">
+                                                    <label class="form-label text-black">Verification Action</label>
+                                                    <div class="flex form-control p-2">
+                                                        <button id="btnVerify" type="button" class="btn btn-primary form-control @sVerificationEnabled">
+                                                            <i class="fa fa-check-square"></i> Verify Assets
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @{
+                                                if (Model.VerificationType == "Custom")
+                                                {
+                                                    var sCompletionEnabled = Model.VerificationStatus == "Ongoing" ? "" : "disabled";
+
+                                                    <div class="col-md-6">
+                                                        <div class="form-group mb-3 mt-2">
+                                                            <label class="form-label text-black">Complete Verification</label>
+                                                            <div class="flex form-control p-2">
+                                                                <button data-bs-toggle="dropdown" area-expanded="false" class="btn btn-info form-control @sCompletionEnabled">
+                                                                    <i class="fa fa-check-square"></i> Complete Verification
+                                                                </button>
+                                                                <div class="dropdown-menu" style="">
+                                                                    <div class="p-5">
+                                                                        <h4 class="dropdown-title bolder text-danger">Complete Schedule?</h4>
+                                                                        <p class="text-muted">You will not be able to undo this action, are you sure?</p>
+                                                                        <form asp-action="CompleteVerificationSchedule" id="frmComplete" method="post">
+                                                                            <input type="hidden" id="ScheduleId" name="ScheduleId" value="@Model.Id" />
+                                                                            <button type="submit" id="btnComplete" class="btn btn-outline-info btn-sm">
+                                                                                <i class="fa fa-check-square"></i> Complete
+                                                                            </button>
+                                                                        </form>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-status bg-danger br-tr-7 br-tl-7"></div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div id="verificationChart" class="" style="width: 100%; height: 400px;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-status bg-secondary br-tr-7 br-tl-7"></div>
+                                    <div class="card-body">
+                                        <div id="progressChart" style="width: 100%; height: 400px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="card-footer">
+        <div class="row">
+
+            <div class="col-sm-12">
+                <a asp-action="Index" asp-controller="Verifications" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="mdlVerifyAssets" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content modal-content-demo">
+            <div class="modal-header bg-gray-300">
+                <h5 class="modal-title">Verify Assets</h5>
+                <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" onclick="return refreshPage();">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div class="modal-notification"></div>
+            </div>
+            <div class="modal-body">
+                <div id="verificationOverlay" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0, 0, 0, 0.5); z-index:1000; text-align:center;">
+                    <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);">
+                        <i class="fa fa-spinner fa-spin" style="font-size:3rem; color:white;"></i>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <form asp-action="VerifyAsset" id="frmVerify" method="post" enctype="multipart/form-data">
+                                    <input asp-for="VerificationRecord.Id" type="hidden" />
+                                    <input asp-for="VerificationRecord.AssetId" type="hidden" />
+                                    <input asp-for="VerificationRecord.VerificationScheduleId" value="@Model.Id" type="hidden" />
+
+                                    <div class="form-group">
+                                        <label asp-for="VerificationRecord.AssetId" class="form-label">Selected Asset</label>
+                                        <input type="text" id="AssetName" class="form-control" value="-select an asset-" disabled />
+                                        <span id="spnAssetId" class="text-danger validation"></span>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label asp-for="VerificationRecord.VerificationDate" class="form-label">Verification Date</label>
+                                        <input asp-for="VerificationRecord.VerificationDate" type="text" class="form-control" value="@DateTime.Now.ToString("dd-MMM-yy")" disabled />
+                                        <span id="spnVerificationDate" class="text-danger validation"></span>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label asp-for="VerificationRecord.Result" class="form-label">Verification Result</label>
+                                        <select asp-for="VerificationRecord.Result" class="form-control form-select" required>
+                                            <option value="-1" disabled selected>-Select Result Option-</option>
+                                            <option>Verified (In Good Condition)</option>
+                                            <option>Verified (With Issues)</option>
+                                            <option>Verified (Damaged)</option>
+                                            <option>Verified (Out of Service)</option>
+                                            <option>Not Verified (Missing)</option>
+                                        </select>
+                                        <span id="spnResult" class="text-danger validation"></span>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label asp-for="VerificationRecord.Comments" class="form-label">Comments</label>
+                                        <textarea asp-for="VerificationRecord.Comments" rows="3" class="form-control" required></textarea>
+                                        <span id="spnComments" class="text-danger validation"></span>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label asp-for="file" class="form-label">Upload Current Picture</label>
+                                        <input asp-for="file" type="file" class="form-control dropify" required />
+                                        <span id="spnFile" class="text-danger validation"></span>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <button id="btnVerifyAsset" type="button" class="btn btn-primary form-control @sVerificationEnabled">
+                                            <i class="fa fa-check-square"></i> Verify Asset
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-body">
+                                <label class="form-label">Select Asset to verify</label>
+                                <div class="table-responsive export-table">
+                                    <table id="tblAssets" class="table text-nowrap mb-0 table-bordered key-buttons border-top border-bottom project-list-main">
+                                        <thead class="bg-primary-gradient ms-auto divShadow">
+                                            <tr>
+                                                <th class="text-black bg-transparent border-bottom-0 w-2"></th>
+                                                <th class="text-black bg-transparent border-bottom-0 w-10">Make</th>
+                                                <th class="text-black bg-transparent border-bottom-0 w-10">Model</th>
+                                                <th class="text-black bg-transparent border-bottom-0 w-10">Asset Name</th>
+                                                <th class="text-black bg-transparent border-bottom-0 w-30">Serial Number</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="table-body">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-light" data-bs-dismiss="modal" onclick="refreshPage();">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<section id="dvAssetsData" style="display:none;">@Html.Raw(Json.Serialize(Model.Assets))</section>
+<div class="modal fade" id="mdlVerified" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content modal-content-demo">
+            <div class="modal-header bg-gray-300">
+                <h5 class="modal-title">Verified Assets</h5>
+                <button aria-label="Close" class="btn-close" data-bs-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="verificationOverlay" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0, 0, 0, 0.5); z-index:1000; text-align:center;">
+                    <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);">
+                        <i class="fa fa-spinner fa-spin" style="font-size:3rem; color:white;"></i>
+                    </div>
+                </div>
+                <div class="modal-notification"></div>
+                <div class="card">
+                    <div class="card-body">
+                        <label class="h3" id="lblTitle">List of verified assets</label>
+                        <div class="table-responsive export-table">
+                            <table id="tblVerifiedAssets" class="table text-nowrap mb-0 table-bordered key-buttons border-top border-bottom project-list-main">
+                                <thead class="bg-primary-gradient ms-auto divShadow">
+                                    <tr>
+                                        <th class="text-black bg-transparent border-bottom-0 w-2"></th>
+                                        <th class="text-black bg-transparent border-bottom-0 w-10">Make</th>
+                                        <th class="text-black bg-transparent border-bottom-0 w-10">Model</th>
+                                        <th class="text-black bg-transparent border-bottom-0 w-10">Asset Name</th>
+                                        <th class="text-black bg-transparent border-bottom-0 w-30">Serial Number</th>
+                                        <th class="text-black bg-transparent border-bottom-0 w-30">Result</th>
+                                        <th class="text-black bg-transparent border-bottom-0 w-30">Verified By</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-body-verified">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-light" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.0/dist/echarts.min.js"></script>
+    <script src="@Url.Content("~/js/user_verifications_previewschedule.js")" defer></script>
+
+    <script>
+        $(document).ready(function () {
+            hideMenu();
+
+            // Pass serialized Model.BarchartData to a global JavaScript variable
+            var barchartData = @Html.Raw(Json.Serialize(Model.BarchartData));
+            var progressChartData = '@Html.Raw(Json.Serialize(Model.ProgressChart))';
+
+            // Now load the bar chart using the data
+            loadBarchart(barchartData);
+            loadProgressChart(progressChartData);
+
+            $("#btnVerify").on("click", () => {
+                loadAssetsData();
+                showModal();
+            });
+
+            $("#btnVerifyAsset").on("click", function (e) {
+                e.preventDefault();
+                if (isFormValid()) {
+                    submitVerificationForm();
+                } else {
+                    showErrorMessage("Please correct the validation errors!");
+                }
+            });
+
+            $("#btnComplete").on("click", function (e) {
+                e.preventDefault();
+                $("#frmComplete").submit();
+            });
+
+        });
+    </script>
+
+}

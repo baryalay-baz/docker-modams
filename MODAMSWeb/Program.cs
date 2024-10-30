@@ -13,7 +13,7 @@ MiddlewareSetup.ConfigureForwardedHeaders(app);
 // Error Handling
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("Users/Home/Error");
+    app.UseExceptionHandler("/Users/Home/Error");
     app.UseHsts();
 }
 else

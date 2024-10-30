@@ -1,5 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Office2010.Excel;
 using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
@@ -168,6 +169,8 @@ namespace MODAMS.ApplicationServices
                 try
                 {
                     var empId = IsInRole("User") ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
+
+                    dto.StoreName = await _func.GetStoreNameByStoreIdAsync(dto.StoreId);
 
                     if (await _func.GetStoreOwnerIdAsync(dto.StoreId) != empId)
                     {
