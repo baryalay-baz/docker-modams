@@ -54,7 +54,8 @@ namespace MODAMS.Utility
             // Return the user's EmployeeId if user is found
             return user?.EmployeeId ?? 0;
         }
-        public async Task<int> GetEmployeeIdAsync() {
+        public async Task<int> GetEmployeeIdAsync()
+        {
             // Get the current user
             var user = await _userManager.GetUserAsync(_contextAccessor.HttpContext.User) as ApplicationUser;
 
@@ -663,7 +664,6 @@ namespace MODAMS.Utility
 
             return result;
         }
-
         public void LogException(ILogger logger, Exception ex)
         {
             if (ex.InnerException != null)
@@ -675,6 +675,13 @@ namespace MODAMS.Utility
                 logger.LogError($"Error: {ex.Message}");
             }
         }
+        public async Task SendNotificationAsync(Notification notification)
+        {
+            await _db.Notifications.AddAsync(notification);
+            await _db.SaveChangesAsync();
+            await SendEmailAsync(notification.EmployeeTo, notification.Subject, notification.Message, notification.TargetRecordId, notification.NotificationSectionId);
+        }
+
 
 
         //Private methods
@@ -701,7 +708,7 @@ namespace MODAMS.Utility
             }
         }
         private async Task SendEmailAsync(int empId, string subject, string message, int recordId, int sectionId)
-        {   
+        {
             var emp = _db.Employees.Where(m => m.Id == empId).FirstOrDefault();
             string sEmail = "";
             string sFullName = "";

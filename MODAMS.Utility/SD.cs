@@ -34,6 +34,7 @@ namespace MODAMS.Utility
         public const int NS_NewRegistration = 1;
         public const int NS_ForgotPassword = 2;
         public const int NS_Transfer = 3;
+        public const int NS_Schedule = 4;
 
 
         

@@ -128,7 +128,7 @@
                                                 <div class="col-md-6">
                                                     <div class="mb-3 form-group">
                                                         <label asp-for="NewSchedule.NumberOfAssetsToVerify" class="text-black">Number of Assets to Verify</label>
-                                                        <input asp-for="NewSchedule.NumberOfAssetsToVerify" id="NumberOfAssetsToVerify" value="@Model.NumberOfAssets" class="form-control" disabled />
+                                                        <input asp-for="NewSchedule.NumberOfAssetsToVerify" value="@Model.NumberOfAssets" class="form-control" disabled />
                                                         <span asp-validation-for="NewSchedule.NumberOfAssetsToVerify" class="text-danger" id="spanNumberOfAssetsToVerify"></span>
                                                     </div>
                                                 </div>
@@ -254,7 +254,6 @@
                 todayHighlight: true
             });
             
-            $('#storeDropdown').change();
 
             $(".btn-add-record").on("click", () => {
                 // Get the selected employee name and role
@@ -306,20 +305,18 @@
                 var selectedValue = $(this).val();
                 
                 if (selectedValue === "Custom Verification") {
-                    $("#NumberOfAssetsToVerify").val(0).prop("disabled", false);
+                    $("#NewSchedule_NumberOfAssetsToVerify").val(0).prop("disabled", false);
                 } else {
-                    $("#NumberOfAssetsToVerify").val(assetCount).prop("disabled", true);
+                    $("#NewSchedule_NumberOfAssetsToVerify").val(assetCount).prop("disabled", true);
                 }
             });
-
-
 
             $("#btn-submit").on("click", () => {
                 var blnCheck = true;
 
                 // Get the value of assets to verify and convert to number
-                var assetsToVerify = parseInt($('#NumberOfAssetsToVerify').val(), 10);
-                var assetCount = $(storeDropdown).find('option:selected').data('asset-count');
+                var assetsToVerify = parseInt($('#NewSchedule_NumberOfAssetsToVerify').val(), 10);
+                var assetCount = parseInt($('#NumberOfAssets').val(), 10);
 
                 // Validate that the number is greater than or equal to 1
                 if (isNaN(assetsToVerify) || assetsToVerify < 1 || assetsToVerify > assetCount) {
@@ -332,6 +329,7 @@
                 // Check if validation passed and team members are selected
                 if (blnCheck && selectedTeamMembers.length > 0) {
                     $("#teamMembersData").val(JSON.stringify(selectedTeamMembers));
+                    $("#NewSchedule_NumberOfAssetsToVerify").prop("disabled", false);
                     $("#frmCreateSchedule").submit();
                 } else if (selectedTeamMembers.length === 0) {
                     notif({
@@ -346,7 +344,6 @@
             });
 
         });
-
         const removeMember = id => {
             $(`#member-${id}`).remove();
 

@@ -53,6 +53,7 @@ namespace MODAMS.Utility
         public Task<List<vwCategoryAsset>> GetvwCategoryAssetsAsync();
 
         public void LogException(ILogger logger, Exception ex);
+        public Task SendNotificationAsync(Notification notification);
 
     }
 }

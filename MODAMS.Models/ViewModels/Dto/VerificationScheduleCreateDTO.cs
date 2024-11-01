@@ -11,9 +11,8 @@ namespace MODAMS.Models.ViewModels.Dto
 
         [ValidateNever]
         public string StoreName { get; set; } = string.Empty;
-        [ValidateNever]
         public VerificationSchedule NewSchedule { get; set; } // For creating a new schedule
-
+        [ValidateNever]
         public Store Store { get; set; }
 
         [ValidateNever]

@@ -127,7 +127,7 @@
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="mb-3 form-group">
-                                                        <label class="text-black">Number of Assets in Project Store</label>
+                                                        <label class="text-black">Number of Assets in Store</label>
                                                         <input id="NumberOfAssets" class="form-control" type="text" value="@Model.AssetCount(Model.StoreId)" disabled />
                                                     </div>
                                                 </div>
@@ -345,9 +345,6 @@
                     });
                 }
             });
-
-
-            
         });
         const changeVerificationTypeDropdown = () => {
             // Get asset count from the selected project store

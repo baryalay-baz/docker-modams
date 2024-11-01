@@ -69,7 +69,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             else
             {
                 TempData["error"] = "Transaction failed: " + result.ErrorMessage;
-                return View(dto);
+                return RedirectToAction("CreateSchedule","VerificationSchedules");
             }
         }
         [HttpGet]
