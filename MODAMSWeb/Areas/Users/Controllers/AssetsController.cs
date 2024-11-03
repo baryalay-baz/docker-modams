@@ -1,7 +1,7 @@
 ﻿
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MODAMS.ApplicationServices;
+using MODAMS.ApplicationServices.IServices;
 using MODAMS.DataAccess.Data;
 using MODAMS.Models.ViewModels.Dto;
 using MODAMS.Utility;

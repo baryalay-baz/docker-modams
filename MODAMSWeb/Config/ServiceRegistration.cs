@@ -7,6 +7,7 @@ using MODAMS.Utility;
 using Telerik.Reporting.Services;
 using Telerik.Reporting.Cache.File;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using MODAMS.ApplicationServices.IServices;
 
 namespace MODAMSWeb.Config
 {

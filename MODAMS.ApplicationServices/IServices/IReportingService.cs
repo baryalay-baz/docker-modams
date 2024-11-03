@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MODAMS.ApplicationServices
+namespace MODAMS.ApplicationServices.IServices
 {
-    public interface ISettingsService
+    public interface IReportingService
     {
-        Task<Result<SettingsDTO>> GetIndexAsync(int? nMonth, int? nYear);
+        Task<ReportingDTO> PopulateDTO(ReportingDTO dto);
     }
 }

@@ -1,23 +1,15 @@
-﻿using DocumentFormat.OpenXml.Office2010.Excel;
-using DocumentFormat.OpenXml.Spreadsheet;
-using DocumentFormat.OpenXml.Wordprocessing;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using MODAMS.ApplicationServices.IServices;
 using MODAMS.DataAccess.Data;
 using MODAMS.Models;
 using MODAMS.Models.ViewModels;
 using MODAMS.Models.ViewModels.Dto;
 using MODAMS.Utility;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MODAMS.ApplicationServices
 {
@@ -42,8 +34,6 @@ namespace MODAMS.ApplicationServices
             _employeeId = _func.GetEmployeeId();
             _webHostEnvironment = webHostEnvironment;
         }
-
-        private bool IsInRole(string role) => _httpContextAccessor.HttpContext.User.IsInRole(role);
 
         public async Task<Result<AssetsDTO>> GetIndexAsync(int storeId, int subCategoryId = 0)
         {
@@ -854,7 +844,9 @@ namespace MODAMS.ApplicationServices
             }
         }
 
+
         //Private functions
+        private bool IsInRole(string role) => _httpContextAccessor.HttpContext.User.IsInRole(role);
         private async Task<List<vwAssetDocument>> GetDocumentListAsync(int AssetId)
         {
 

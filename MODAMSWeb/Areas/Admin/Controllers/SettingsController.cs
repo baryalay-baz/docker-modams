@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MODAMS.ApplicationServices;
+using MODAMS.ApplicationServices.IServices;
 using MODAMS.Models.ViewModels.Dto;
 
 namespace MODAMSWeb.Areas.Admin.Controllers

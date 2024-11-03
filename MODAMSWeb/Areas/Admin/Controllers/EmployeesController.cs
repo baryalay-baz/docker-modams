@@ -11,8 +11,8 @@ using System.Text.Encodings.Web;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using MODAMS.Models.ViewModels.Dto;
-using MODAMS.ApplicationServices;
 using MODAMS.Models.ViewModels;
+using MODAMS.ApplicationServices.IServices;
 
 namespace MODAMSWeb.Areas.Admin.Controllers
 {

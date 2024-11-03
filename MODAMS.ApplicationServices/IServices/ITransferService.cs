@@ -1,6 +1,6 @@
 ﻿using MODAMS.Models.ViewModels.Dto;
 
-namespace MODAMS.ApplicationServices
+namespace MODAMS.ApplicationServices.IServices
 {
     public interface ITransferService
     {

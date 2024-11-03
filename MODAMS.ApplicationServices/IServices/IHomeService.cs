@@ -5,7 +5,7 @@ using MODAMS.Models;
 using MODAMS.Models.ViewModels.Dto;
 
 
-namespace MODAMS.ApplicationServices
+namespace MODAMS.ApplicationServices.IServices
 {
     public interface IHomeService
     {

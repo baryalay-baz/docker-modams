@@ -9,6 +9,7 @@ using Telerik.Reporting.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using MODAMS.ApplicationServices.IServices;
 
 
 namespace MODAMS.ApplicationServices
