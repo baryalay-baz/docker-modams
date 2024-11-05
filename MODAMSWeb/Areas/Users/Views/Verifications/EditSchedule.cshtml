@@ -219,6 +219,7 @@
                     <div class="card-footer">
                         <div class="flex">
                             <button type="button" id="btn-submit" class="btn btn-info-gradient"><i class="fa fa-check-circle"></i>&nbsp;Save Schedule</button>
+                            <a asp-action="PreviewSchedule" asp-controller="Verifications" asp-route-id="@Model.Id" class="btn btn-primary-gradient"><i class="fe fe-eye"></i>&nbsp;Preview Schedule</a>
                             <a asp-action="Index" asp-controller="Verifications" id="btnCancel" class="btn btn-secondary-gradient"><i class="fe fe-corner-up-left"></i>&nbsp;Cancel</a>
                         </div>
                     </div>

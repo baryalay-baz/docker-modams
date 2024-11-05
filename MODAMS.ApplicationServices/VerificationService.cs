@@ -250,14 +250,11 @@ namespace MODAMS.ApplicationServices
                     try
                     {
                         var storeOwnerId = await _func.GetStoreOwnerIdAsync(scheduleInDb.StoreId);
-
+                        dto.EmployeeId = storeOwnerId;
+                        dto.VerificationStatus = "Pending";
+                        
                         // Update the schedule with the new values from dto
                         _db.Entry(scheduleInDb).CurrentValues.SetValues(dto);
-
-                        // Preserve the original values for specific fields
-                        scheduleInDb.EmployeeId = scheduleInDb.EmployeeId;
-                        scheduleInDb.VerificationStatus = "Pending";
-                        scheduleInDb.NumberOfAssetsToVerify = dto.NumberOfAssetsToVerify;
 
                         await _db.SaveChangesAsync();
 
@@ -334,11 +331,14 @@ namespace MODAMS.ApplicationServices
                         schedule.VerificationStatus,
                         schedule.VerificationType,
                         schedule.Notes,
-                        schedule.StoreId
+                        schedule.StoreId,
+                        schedule.NumberOfAssetsToVerify
                     })
                     .FirstOrDefaultAsync();
 
                 if (schedule == null) return Result<VerificationSchedulePreviewDTO>.Failure("Schedule Not found!");
+
+                int verifiedAssets = await _db.VerificationRecords.Where(m => m.VerificationScheduleId == id).CountAsync();
 
                 var dto = new VerificationSchedulePreviewDTO
                 {
@@ -351,7 +351,9 @@ namespace MODAMS.ApplicationServices
                     Notes = schedule.Notes,
                     StoreId = schedule.StoreId,
                     StoreName = await _func.GetStoreNameByStoreIdAsync(schedule.StoreId),
-                    Assets = await GetVerificationAssetListAsync(schedule.StoreId, schedule.Id)
+                    Assets = await GetVerificationAssetListAsync(schedule.StoreId, schedule.Id),
+                    NumberOfAssetsToVerify = schedule.NumberOfAssetsToVerify,
+                    VerifiedAssets = verifiedAssets
                 };
 
                 if (dto == null) return Result<VerificationSchedulePreviewDTO>.Failure("Schedule Not found!");

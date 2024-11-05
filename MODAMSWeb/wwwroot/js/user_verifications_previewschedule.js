@@ -341,8 +341,9 @@ const loadAssetsData = () => {
 const loadAssets = (data) => {
     var Data = JSON.parse(data);
     var sHtml = '';
-    var sButton = '';
 
+    let assetsToVerify = $('#txtNumberOfAssetsToVerify').val();
+    let verifiedCount = 0;
     if ($.fn.DataTable.isDataTable("#tblAssets")) {
         $("#tblAssets").DataTable().clear().destroy(); // Destroy the existing table before rebuilding it
     }
@@ -351,32 +352,38 @@ const loadAssets = (data) => {
         Data.forEach(e => {
             if (e.isSelected) {
                 sButton = `<i class="fa fa-check-circle text-success delete-icon" id="icon-${e.id}" style="font-size: 1rem;" data-id="${e.verificationRecordId}" data-assetId="${e.id}"></i> Verified`;
+                verifiedCount++;
             } else {
                 sButton = `<button class="btn btn-outline-info btn-sm" onclick="return selectRecord(${e.id});">Select</button>`;
             }
             sHtml += `
                 <tr id="tr-${e.id}">
                     <td id="td-${e.id}" class="text-black bg-transparent border-bottom-0 w-2">${sButton}</td>
-                    <td class="text-black bg-transparent border-bottom-0 w-10">${e.make}</td>
                     <td class="text-black bg-transparent border-bottom-0 w-10">${e.model}</td>
-                    <td class="text-black bg-transparent border-bottom-0 w-30">${e.name}</td>
-                    <td class="text-black bg-transparent border-bottom-0 w-10">${e.serialNo}</td>
+                    <td class="text-black bg-transparent border-bottom-0 w-10">${e.name}</td>
+                    <td class="text-black bg-transparent border-bottom-0 w-30">${e.serialNo}</td>
+                    <td class="text-black bg-transparent border-bottom-0 w-10">${e.barcode}</td>
                 </tr>
             `;
         });
-        
         $("#table-body").html("").html(sHtml);
+
     }
 
     bindHoverAndClickEvents(); // Add hover and click event handling after the table is generated
 
-    
+
     var table = makeDataTable("#tblAssets", "1", 5);
 
     if (table) {
         table.page(currentPage_tblAssets).draw(false); // Restore the DataTable to the previously stored page
     } else {
         console.error('DataTable is not initialized correctly.');
+    }
+    if (assetsToVerify == verifiedCount) {
+        $("#btnVerifyAsset").addClass("disabled");
+    } else {
+        $("#btnVerifyAsset").removeClass("disabled");
     }
 };
 const bindHoverAndClickEvents = () => {
@@ -439,6 +446,7 @@ const deleteVerificationRecord = (verificationRecordId, assetId) => {
         complete: function () {
             // Hide the overlay and spinner
             $("#verificationOverlay").hide();
+            $("#btnVerifyAsset").removeClass("disabled");
             //$("#frmVerify").find("input, select, button").prop("disabled", false);
         }
     });

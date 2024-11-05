@@ -17,6 +17,7 @@ namespace MODAMS.Models.ViewModels.Dto
         public string VerificationStatus { get; set; } = string.Empty;
         public string VerificationType { get; set; } = string.Empty;
         public int NumberOfAssetsToVerify { get; set; }
+        public int VerifiedAssets { get; set; }
         public string Notes { get; set; } = string.Empty;
         public int StoreId { get; set; }
         public string StoreName { get; set; }

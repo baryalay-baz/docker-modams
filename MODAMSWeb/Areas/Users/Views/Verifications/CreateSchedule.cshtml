@@ -122,13 +122,13 @@
                                                 <div class="col-md-6">
                                                     <div class="mb-3 form-group">
                                                         <label class="text-black">Number of Assets in Store</label>
-                                                        <input id="NumberOfAssets" class="form-control" type="text" value="@Model.NumberOfAssets" disabled />
+                                                        <input id="NumberOfAssets" class="form-control" type="text" value="@Model.NumberOfAssets" readonly />
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="mb-3 form-group">
                                                         <label asp-for="NewSchedule.NumberOfAssetsToVerify" class="text-black">Number of Assets to Verify</label>
-                                                        <input asp-for="NewSchedule.NumberOfAssetsToVerify" value="@Model.NumberOfAssets" class="form-control" disabled />
+                                                        <input asp-for="NewSchedule.NumberOfAssetsToVerify" value="@Model.NumberOfAssets" id="NumberOfAssetsToVerify" class="form-control" readonly />
                                                         <span asp-validation-for="NewSchedule.NumberOfAssetsToVerify" class="text-danger" id="spanNumberOfAssetsToVerify"></span>
                                                     </div>
                                                 </div>
@@ -213,7 +213,9 @@
                     </div>
                     <div class="card-footer">
                         <div class="flex">
-                            <button type="button" id="btn-submit" class="btn btn-info-gradient"><i class="fa fa-check-circle"></i>&nbsp;Save Schedule</button>
+                            <button type="button" id="btn-submit" class="btn btn-info-gradient">
+                                <i class="fa fa-check-circle"></i><span class="loading">&nbsp;Save Schedule</span>
+                            </button>
                             <a asp-action="Index" asp-controller="Verifications" id="btnCancel" class="btn btn-secondary-gradient"><i class="fe fe-corner-up-left"></i>&nbsp;Cancel</a>
                         </div>
                     </div>
@@ -303,11 +305,11 @@
                 var assetCount = $('#NumberOfAssets').val();
 
                 var selectedValue = $(this).val();
-                
+
                 if (selectedValue === "Custom Verification") {
-                    $("#NewSchedule_NumberOfAssetsToVerify").val(0).prop("disabled", false);
+                    $("#NumberOfAssetsToVerify").val(0).prop("readonly", false);
                 } else {
-                    $("#NewSchedule_NumberOfAssetsToVerify").val(assetCount).prop("disabled", true);
+                    $("#NumberOfAssetsToVerify").val(assetCount).prop("readonly", true);
                 }
             });
 
@@ -315,7 +317,7 @@
                 var blnCheck = true;
 
                 // Get the value of assets to verify and convert to number
-                var assetsToVerify = parseInt($('#NewSchedule_NumberOfAssetsToVerify').val(), 10);
+                var assetsToVerify = parseInt($('#NumberOfAssetsToVerify').val(), 10);
                 var assetCount = parseInt($('#NumberOfAssets').val(), 10);
 
                 // Validate that the number is greater than or equal to 1
@@ -331,6 +333,8 @@
                     $("#teamMembersData").val(JSON.stringify(selectedTeamMembers));
                     $("#NewSchedule_NumberOfAssetsToVerify").prop("disabled", false);
                     $("#frmCreateSchedule").submit();
+                    $("#btn-submit").addClass("btn-loading btn-icon disabled");
+
                 } else if (selectedTeamMembers.length === 0) {
                     notif({
                         type: "error",
