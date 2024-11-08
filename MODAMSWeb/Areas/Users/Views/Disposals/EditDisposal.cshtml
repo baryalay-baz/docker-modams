@@ -176,7 +176,7 @@
                                                 <div class="card mb-0">
                                                     <div class="card-header border-bottom-0" id="heading8" role="tab">
                                                         <a id="collapse-button" class="accor-style2 collapsed" aria-controls="collapse8" aria-expanded="true" data-bs-toggle="collapse" href="#collapse8">
-                                                            <i class="fe fe-plus-circle me-2"></i>Select Asset to dispose
+                                                            <i class="fe fe-plus-circle me-2"></i>Select Asset to dispose (The list shows assets with Available status only)
                                                         </a>
                                                     </div>
                                                     <div aria-labelledby="heading8" class="collapse" data-bs-parent="#accordion8" id="collapse8" role="tabpanel">
@@ -203,7 +203,7 @@
                                                                                 sCounter = nCounter < 10 ? "0" + nCounter.ToString() : nCounter.ToString();
                                                                                 <tr>
                                                                                     <td><a class="btn btn-primary btn-sm" onclick="return selectAsset(@asset.Id,event);">select</a></td>
-                                                                                    <td>@asset..CategoryName</td>
+                                                                                    <td>@asset.CategoryName</td>
                                                                                     <td>@asset.Make</td>
                                                                                     <td>@asset.Model</td>
                                                                                     <td>@asset.AssetName</td>
@@ -331,7 +331,7 @@
             // $('.picker').datepicker('setDate', currentDate).val("");
 
             makeDataTable('#tblAssets', "1");
-
+            
             $("#btnSubmit").on("click", (e) => {
                 e.preventDefault();
                 if ($("#Disposal_AssetId").val() == 0) {
@@ -369,7 +369,7 @@
         const loadSelection = () => {
             var id = parseInt($("#Disposal_AssetId").val());
 
-            const assets = @Html.Raw(Json.Serialize(Model.Assets));
+            const assets = JSON.parse('@Html.Raw(Json.Serialize(Model.Assets))');
 
             if (assets && assets.length > 0) {
                 const selectedAsset = assets.find(asset => asset.id === id);
@@ -379,7 +379,7 @@
                     $("#spnModel").html(selectedAsset.model);
                     $("#spnAssetName").html(selectedAsset.name);
 
-                    const categoryName = selectedAsset.subCategory.category.categoryName;
+                    const categoryName = selectedAsset.categoryName;
 
                     const isVehicle = categoryName == "Vehicles";
 
@@ -394,21 +394,18 @@
         const selectAsset = (id, e) => {
             e.preventDefault();
 
-            const assets = @Html.Raw(Json.Serialize(Model.Assets));
-
+            const assets = JSON.parse('@Html.Raw(Json.Serialize(Model.Assets))');
             if (assets && assets.length > 0) {
                 const selectedAsset = assets.find(asset => asset.id === id);
 
                 if (selectedAsset) {
                     $("#spnMake").html(selectedAsset.make);
                     $("#spnModel").html(selectedAsset.model);
-                    $("#spnAssetName").html(selectedAsset.name);
+                    $("#spnAssetName").html(selectedAsset.assetName);
 
-                    const categoryName = selectedAsset.subCategory.category.categoryName;
+                    const categoryName = selectedAsset.categoryName;
+                    const identification = selectedAsset.identification;
 
-                    const isVehicle = categoryName == "Vehicles";
-
-                    const identification = isVehicle ? "Plate No: " + selectedAsset.plate : "Serial No: " + selectedAsset.serialNo;
                     $("#spnIdentification").html(identification);
                 }
             }

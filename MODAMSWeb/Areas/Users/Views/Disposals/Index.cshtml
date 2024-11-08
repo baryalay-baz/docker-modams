@@ -19,6 +19,7 @@
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center justify-content-between">
                             <h4 class="m-0">Asset Disposals</h4>
+                            <h4 class="float-end">@Model.StoreName</h4>
                         </div>
                     </div>
                 </div>
@@ -31,6 +32,80 @@
                 sDisabled = "";
             }
         }
+        <div class="row">
+
+            @{
+                var nCounter = 0;
+                var nTotalCount = 0;
+                var bgClass = "";
+                foreach (var item in Model.ChartData)
+                {
+                    nCounter++;
+                    switch (nCounter)
+                    {
+                        case 1:
+                            bgClass = "bg-primary";
+                            break;
+                        case 2:
+                            bgClass = "bg-secondary";
+                            break;
+                        case 3:
+                            bgClass = "bg-info";
+                            break;
+                        case 4:
+                            bgClass = "bg-warning";
+                            break;
+                        default:
+                            bgClass = "bg-default";
+                            break;
+                    }
+
+
+
+                    if (nCounter > 3)
+                        nTotalCount += item.Count;
+
+                    if (nCounter < 4)
+                    {
+                        <div class="col-md-12 col-lg-6 col-xl-3">
+                            <div class="card">
+                                <div class="card-body divShadow">
+                                    <div class="row">
+                                        <div class="col-8">
+                                            <h4>@item.Type</h4>
+                                            <p>@item.Count</p>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="hpx-50 wpx-50 @bgClass br-5 d-flex align-items-center justify-content-center ms-auto">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="text-white w-icn" enable-background="new 0 0 24 24" viewBox="0 0 24 24"><path d="M17,4h-1.1846313C15.4013672,2.8383179,14.3035889,2.0014648,13,2h-2C9.6964111,2.0014648,8.5986328,2.8383179,8.1846313,4H7C5.3438721,4.0018311,4.0018311,5.3438721,4,7v12c0.0018311,1.6561279,1.3438721,2.9981689,3,3h10c1.6561279-0.0018311,2.9981689-1.3438721,3-3V7C19.9981689,5.3438721,18.6561279,4.0018311,17,4z M9,5c0.0014038-1.1040039,0.8959961-1.9985962,2-2h2c1.1040039,0.0014038,1.9985962,0.8959961,2,2v2H9V5z M19,19c-0.0014038,1.1040039-0.8959961,1.9985962-2,2H7c-1.1040039-0.0014038-1.9985962-0.8959961-2-2V7c0.0014038-1.1040039,0.8959961-1.9985962,2-2h1v2.5006104C8.0001831,7.7765503,8.223999,8.0001831,8.5,8h7.0006104C15.7765503,7.9998169,16.0001831,7.776001,16,7.5V5h1c1.1040039,0.0014038,1.9985962,0.8959961,2,2V19z"></path></svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            }
+            <div class="col-md-12 col-lg-6 col-xl-3">
+                <div class="card">
+                    <div class="card-body divShadow">
+                        <div class="row">
+                            <div class="col-8">
+                                <h4>Others</h4>
+                                <p>@nTotalCount</p>
+                            </div>
+                            <div class="col-4">
+                                <div class="hpx-50 wpx-50 br-5 d-flex align-items-center justify-content-center bg-warning ms-auto">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="text-white w-icn" enable-background="new 0 0 24 24" viewBox="0 0 24 24"><path d="M17,4h-1.1846313C15.4013672,2.8383179,14.3035889,2.0014648,13,2h-2C9.6964111,2.0014648,8.5986328,2.8383179,8.1846313,4H7C5.3438721,4.0018311,4.0018311,5.3438721,4,7v12c0.0018311,1.6561279,1.3438721,2.9981689,3,3h10c1.6561279-0.0018311,2.9981689-1.3438721,3-3V7C19.9981689,5.3438721,18.6561279,4.0018311,17,4z M9,5c0.0014038-1.1040039,0.8959961-1.9985962,2-2h2c1.1040039,0.0014038,1.9985962,0.8959961,2,2v2H9V5z M19,19c-0.0014038,1.1040039-0.8959961,1.9985962-2,2H7c-1.1040039-0.0014038-1.9985962-0.8959961-2-2V7c0.0014038-1.1040039,0.8959961-1.9985962,2-2h1v2.5006104C8.0001831,7.7765503,8.223999,8.0001831,8.5,8h7.0006104C15.7765503,7.9998169,16.0001831,7.776001,16,7.5V5h1c1.1040039,0.0014038,1.9985962,0.8959961,2,2V19z"></path></svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
         <div class="row">
             <div class="col-md-8">
                 <div class="card">
@@ -51,40 +126,53 @@
                                         <th class="text-white bg-transparent border-bottom-0 w-10">Category</th>
                                         <th class="text-white bg-transparent border-bottom-0 w-20">Asset Name</th>
                                         <th class="text-white bg-transparent border-bottom-0 w-10">Identification</th>
-                                        <th class="text-white bg-transparent border-bottom-0 w-10">Store</th>
                                         <th class="text-white bg-transparent border-bottom-0 w-10 no-btn">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @{
-                                        int nCounter = 0;
+                                        nCounter = 0;
                                         string sCounter = "0";
                                         string sIdentification = "";
-                                        foreach (var disposal in Model.Disposals)
+                                        if (Model.Disposals != null)
                                         {
-                                            nCounter++;
-                                            sCounter = nCounter < 10 ? '0' + nCounter.ToString() : nCounter.ToString();
-                                            sIdentification = disposal.Asset.SubCategory.Category.CategoryName == "Vehicles"
-                                            ? "Plate: " + disposal.Asset.Plate
-                                            : "SN: " + disposal.Asset.SerialNo;
+                                            foreach (var disposal in Model.Disposals)
+                                            {
+                                                nCounter++;
+                                                sCounter = nCounter < 10 ? '0' + nCounter.ToString() : nCounter.ToString();
+                                                sIdentification = disposal.Asset.SubCategory.Category.CategoryName == "Vehicles"
+                                                ? "Plate: " + disposal.Asset.Plate
+                                                : "SN: " + disposal.Asset.SerialNo;
 
-                                            <tr>
-                                                <td>@sCounter</td>
-                                                <td>@disposal.DisposalDate.ToString("dd-MMM-yyyy")</td>
-                                                <td>@disposal.DisposalType.Type</td>
-                                                <td>@disposal.Asset.SubCategory.SubCategoryName</td>
-                                                <td>@disposal.Asset.Name</td>
-                                                <td>@sIdentification</td>
-                                                <td>@disposal.Asset.Store.Name</td>
-                                                <td>
-                                                    <a asp-controller="Disposals" asp-action="EditDisposal" asp-route-id="@disposal.Id" class="btn btn-sm btn-outline-primary border me-2 @sDisabled" data-bs-toggle="tooltip" data-bs-original-title="Edit Disposal">
-                                                        <i class="fe fe-edit"></i>
-                                                    </a>
-                                                    @*<a asp-controller="Disposals" asp-action="PreviewDisposal" asp-route-id="@disposal.Id" class="btn btn-sm btn-outline-primary border me-2" data-bs-toggle="tooltip" data-bs-original-title="Preview Disposal">
-                                            <i class="fe fe-eye"></i>
-                                            </a>*@
-                                                </td>
-                                            </tr>
+                                                <tr>
+                                                    <td>@sCounter</td>
+                                                    <td>@disposal.DisposalDate.ToString("dd-MMM-yyyy")</td>
+                                                    <td>@disposal.DisposalType.Type</td>
+                                                    <td>@disposal.Asset.SubCategory.SubCategoryName</td>
+                                                    <td>@disposal.Asset.Name</td>
+                                                    <td>@sIdentification</td>
+                                                    <td>
+                                                        <a asp-controller="Disposals" asp-action="EditDisposal" asp-route-id="@disposal.Id" class="btn btn-sm btn-outline-primary border me-2 @sDisabled" data-bs-toggle="tooltip" data-bs-original-title="Edit Disposal">
+                                                            <i class="fe fe-edit"></i>
+                                                        </a>
+                                                        <button data-bs-toggle="dropdown" area-expanded="false" class="btn btn-sm btn-outline-danger border me-2">
+                                                            <i class="fe fe-trash"></i>
+                                                        </button>
+                                                        <div class="dropdown-menu" style="">
+                                                            <div class="p-5">
+                                                                <h4 class="dropdown-title bolder text-danger">Delete Disposal?</h4>
+                                                                <p class="text-muted">You will not be able to undo this action, are you sure?</p>
+                                                                <form asp-action="DeleteDisposal" id="frmDeleteDisposal" method="post">
+                                                                    <input type="hidden" id="id" name="id" value="@disposal.Id" />
+                                                                    <button type="submit" id="btnSubmitDeleteDisposal" class="btn btn-outline-danger btn-sm">
+                                                                        <i class="fa fa-check-square"></i> Delete
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            }
                                         }
                                     }
                                 </tbody>
@@ -104,14 +192,16 @@
         </div>
     </div>
 </div>
-@section scripts{
+@section scripts {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/c3@0.7.20/c3.min.css">
     <script>
-        $(document).ready(() => {
-            hideMenu();
-            makeDataTable('#tblDisposals', 1);
-            pieChartDisposals();
 
+
+        $(document).ready(() => {
+
+            hideMenu();
+            makeDataTable('#tblDisposals', 1, 5);
+            pieChartDisposals();
         });
 
         const pieChartDisposals = () => {

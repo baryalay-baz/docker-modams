@@ -11,12 +11,13 @@ namespace MODAMS.Models.ViewModels.Dto
         public List<Disposal> Disposals { get; set; }
         public bool IsAuthorized { get; set; }
         public int StoreId { get; set; }
+        public string StoreName { get; set; } = string.Empty;
         public List<DisposalChart> ChartData { get; set; }
     }
 
     public class DisposalChart{ 
         public string Type { get; set; }
-        public int EmployeeId { get; set; }
+        public int? EmployeeId { get; set; }
         public int Count { get; set; }
     }
 }

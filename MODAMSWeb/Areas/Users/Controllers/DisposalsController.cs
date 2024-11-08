@@ -129,7 +129,21 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 return View(dto);
             }
         }
+        [HttpPost]
+        [Authorize(Roles = "StoreOwner, User")]
+        public async Task<IActionResult> DeleteDisposal(int id) {
+            var result = await _disposalService.DeleteDisposalAsync(id);
 
+            if (result.IsSuccess)
+            {
+                TempData["success"] = "Disposal deleted successfuly!";
+                return RedirectToAction("Index", "Disposals");
+            }
+            else {
+                TempData["error"] = result.ErrorMessage;
+                return RedirectToAction("Index", "Disposals");
+            }
+        }
 
     }
 }
