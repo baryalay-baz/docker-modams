@@ -80,7 +80,11 @@ namespace MODAMS.ApplicationServices
                         (disposal, disposalType) => new { Disposal = disposal, DisposalType = disposalType }
                     )
                     .GroupBy(
-                        joined => new { joined.DisposalType.Type, joined.Disposal.EmployeeId },
+                        item => new
+                        {
+                            Type = item.Type,
+                            EmployeeId = item.EmployeeId // This will now handle nullable EmployeeId
+                        },
                         (key, grouped) => new DisposalChart
                         {
                             Type = key.Type,
