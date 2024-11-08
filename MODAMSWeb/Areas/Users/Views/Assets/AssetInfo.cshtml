@@ -1,8 +1,10 @@
 ﻿@using System.Globalization
+@using MODAMS.Utility
 @model MODAMS.Models.ViewModels.Dto.AssetInfoDTO
 
 @inject MODAMS.Utility.IAMSFunc _func
 
+<link href="~/css/assetinfo.css" rel="stylesheet" />
 <div class="page-header">
     <div>
         <h1 class="page-title">Asset Information</h1>
@@ -56,129 +58,99 @@
         <div class="tab-content">
             <div class="tab-pane active" id="tab_1">
                 <!-- ROW -->
+                @{
+                    string sHeight = "600px;";
+                }
                 <div class="row">
-                    <div class="col-xl-9 col-lg-12">
+                    <div class="col-xl-9 col-lg-12" id="div1">
                         <div class="card">
                             <div class="card-header border-bottom d-block divShadow bg-info-gradient text-white">
-                                <div class="row align-items-center">
-                                    <div class="col">
-                                        <h4 class="mb-1">
-                                            @Model.Asset.Make - @Model.Asset.Model - @Model.Asset.Year
-                                            @{
-                                                var employeeId = await _func.GetEmployeeIdAsync();
+                                <h3 class="card-title text-bold">
+                                    @Model.Asset.SubCategory.SubCategoryName (@Model.Asset.Name)
+                                    @{
+                                        var employeeId = await _func.GetEmployeeIdAsync();
 
-                                                employeeId = (User.IsInRole("User")) ? await _func.GetSupervisorIdAsync(employeeId) : employeeId;
-                                                if (employeeId == await _func.GetStoreOwnerIdAsync(await _func.GetStoreIdByAssetIdAsync(Model.Asset.Id)))
-                                                {
-                                                    <a asp-action="EditAsset" asp-controller="Assets" asp-route-id="@Model.Asset.Id" class="ms-1" id="checkElement"><i class="fe fe-edit"></i></a>
-                                                }
-                                                if (User.IsInRole("Administrator"))
-                                                {
-                                                    <a asp-action="DeleteAsset" asp-controller = "Assets" asp-route-id="@Model.Asset.Id" class="float-end btn btn-secondary-gradient">
-                                                        <i class="fa fa-trash"></i>&nbsp;Delete Asset
-                                                    </a>
-                                                }
-                                            }
-                                        </h4>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-body p-0" style="height:340px;">
-                                <div class="border-top"></div>
-                                <div class="table-responsive p-5">
-                                    <table class="table row table-borderless">
-                                        <tbody class="col-lg-12 col-xl-4 p-0">
-                                            <tr>
-                                                <td><strong>Make :</strong> @Model.Asset.Make</td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>Asset Category :</strong> @Model.Asset.SubCategory.SubCategoryName</td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>Manufacturing Country :</strong> @Model.Asset.ManufacturingCountry</td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>Condition : </strong> @Model.Asset.Condition.ConditionName</td>
-                                            </tr>
-                                        </tbody>
-                                        <tbody class="col-lg-12 col-xl-4 p-0 border-top-0">
-                                            <tr>
-                                                <td><strong>Model :</strong> @Model.Asset.Model</td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>Asset Name :</strong> @Model.Asset.Name</td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>Purchase Order :</strong> @Model.Asset.PONumber</td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>Barcode :</strong> @Model.Asset.Barcode </td>
-                                            </tr>
-
-                                        </tbody>
-                                        <tbody class="col-lg-12 col-xl-4 p-0 border-top-0">
-                                            <tr>
-                                                <td><strong>Year :</strong> @Model.Asset.Year</td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>Serial Number :</strong> @Model.Asset.SerialNo</td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>Purchase Date :</strong> @Model.Asset.PurchaseDate?.ToString("MMMM dd, yyyy") </td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>Reciept Date :</strong> @Model.Asset.RecieptDate?.ToString("MMMM dd, yyyy") </td>
-                                            </tr>
-                                        </tbody>
-
-                                        <tbody class="col-lg-12 col-xl-4 p-0 border-top-0">
-                                            <tr>
-                                                <td><strong>Procured By : </strong> @Model.Asset.ProcuredBy</td>
-                                            </tr>
-                                        </tbody>
-                                        <tbody class="col-lg-12 col-xl-4 p-0 border-top-0">
-                                            <tr>
-                                                <td><strong>Donor :</strong> @Model.Asset.Donor.Name</td>
-                                            </tr>
-                                        </tbody>
-                                        <tbody class="col-lg-12 col-xl-4 p-0 border-top-0">
-                                            <tr>
-                                                <td><strong>Remarks :</strong> @Model.Asset.Remarks </td>
-                                            </tr>
-                                        </tbody>
-                                        @{
-                                            if (Model.Asset.SubCategory.Category.Id == 16)
-                                            {
-                                                <tbody class="col-lg-12 col-xl-4 p-0 border-top-0">
-                                                    <tr>
-                                                        <td><strong>Engine Number : </strong> @Model.Asset.Engine</td>
-                                                    </tr>
-                                                </tbody>
-                                                <tbody class="col-lg-12 col-xl-4 p-0 border-top-0">
-                                                    <tr>
-                                                        <td><strong>Chasis Number:</strong> @Model.Asset.Chasis</td>
-                                                    </tr>
-                                                </tbody>
-                                                <tbody class="col-lg-12 col-xl-4 p-0 border-top-0">
-                                                    <tr>
-                                                        <td><strong>Plate Number :</strong> @Model.Asset.Plate </td>
-                                                    </tr>
-                                                </tbody>
-                                            }
+                                        employeeId = (User.IsInRole("User")) ? await _func.GetSupervisorIdAsync(employeeId) : employeeId;
+                                        if (employeeId == await _func.GetStoreOwnerIdAsync(await _func.GetStoreIdByAssetIdAsync(Model.Asset.Id)))
+                                        {
+                                            <a asp-action="EditAsset" asp-controller="Assets" asp-route-id="@Model.Asset.Id" class="ms-1" id="checkElement"><i class="fe fe-edit"></i></a>
                                         }
-                                        <tbody class="col-lg-12 col-xl-8 p-0 border-top-0">
-                                            <tr>
-                                                <td><strong>Specifications : </strong> @Model.Asset.Specifications</td>
-                                            </tr>
-                                        </tbody>
-                                        <tbody class="col-lg-12 col-xl-4 p-0 border-top-0">
-                                            <tr>
-                                                <td><strong>Status : </strong> @Model.Asset.AssetStatus.StatusName</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
+                                        <span class="float-end">@Model.Asset.Store.Name</span>
+
+                                    }
+                                </h3>
                             </div>
+                            @{
+                                string sBackground = "";
+
+                                switch (Model.Asset.AssetStatusId)
+                                {
+                                    case SD.Asset_Available:
+                                        sBackground = "primary";
+                                        break;
+                                    case SD.Asset_Disposed:
+                                        sBackground = "secondary";
+                                        break;
+                                    case SD.Asset_HandedOver:
+                                        sBackground = "info";
+                                        break;
+                                }
+                            }
+                            <div class="card-body p-0">
+                                <div class="border-top"></div>
+                                <div class="grid-container">
+                                    <div class="grid-item"><strong>Make :</strong> @Model.Asset.Make</div>
+                                    <div class="grid-item"><strong>Model :</strong> @Model.Asset.Model</div>
+                                    <div class="grid-item"><strong>Year :</strong> @Model.Asset.Year</div>
+
+                                    <div class="grid-item"><strong>Category :</strong> @Model.Asset.SubCategory.SubCategoryName</div>
+                                    <div class="grid-item"><strong>Asset Name :</strong> @Model.Asset.Name</div>
+                                    <div class="grid-item"><strong>Manufacturing Country :</strong> @Model.Asset.ManufacturingCountry</div>
+
+                                    <div class="grid-item"><strong>Serial Number :</strong> @Model.Asset.SerialNo</div>
+                                    <div class="grid-item"><strong>Barcode :</strong> @Model.Asset.Barcode</div>
+                                    <div class="grid-item"><strong>Purchase Order :</strong> @Model.Asset.PONumber</div>
+
+                                    <div class="grid-item"><strong>Purchase Date :</strong> @Model.Asset.PurchaseDate?.ToString("MMMM dd, yyyy")</div>
+                                    <div class="grid-item"><strong>Receipt Date :</strong> @Model.Asset.RecieptDate?.ToString("MMMM dd, yyyy")</div>
+                                    <div class="grid-item"><strong>Procured By : </strong> @Model.Asset.ProcuredBy</div>
+
+                                    <div class="grid-item"><strong>Condition : </strong> @Model.Asset.Condition.ConditionName</div>
+                                    <div class="grid-item"><strong>Donor :</strong> @Model.Asset.Donor.Name</div>
+                                    <div class="grid-item">
+                                        <strong>Status : </strong>
+                                        <span class="text-primary">
+                                            <span class="mb-0 mt-1 badge rounded-pill bg-@sBackground-transparent text-@sBackground">
+                                                @Model.Asset.AssetStatus.StatusName
+                                            </span>
+                                        </span>
+                                    </div>
+
+                                    <div class="grid-item full-width"><strong>Specifications : </strong> @Model.Asset.Specifications</div>
+
+                                    @if (Model.Asset.SubCategory.Category.Id == 16)
+                                    {
+                                        sHeight = "690px;";
+
+                                        <div class="grid-item"><strong>Engine Number : </strong> @Model.Asset.Engine</div>
+                                        <div class="grid-item"><strong>Chassis Number:</strong> @Model.Asset.Chasis</div>
+                                        <div class="grid-item"><strong>Plate Number :</strong> @Model.Asset.Plate</div>
+                                    }
+                                    <div class="grid-item full-width"><strong>Remarks :</strong> @Model.Asset.Remarks</div>
+                                    @{
+                                        if (User.IsInRole("Administrator"))
+                                        {
+                                            <div class="grid-item full-width">
+                                                <a asp-action="DeleteAsset" asp-controller="Assets" asp-route-id="@Model.Asset.Id" class="btn btn-secondary-gradient">
+                                                    <i class="fa fa-trash"></i>&nbsp;Delete Asset
+                                                </a>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+
+                            </div>
+
                         </div>
                         <div class="card">
                             <div class="card-body" style="height:170px;">
@@ -243,35 +215,43 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-xl-3 col-lg-12">
+                    <div class="col-xl-3 col-lg-12" id="div2">
                         <div class="card">
-                            <div class="card-header border-bottom">
+                            <div class="card-header border-bottom d-block divShadow bg-info-gradient text-white">
                                 <h3 class="card-title text-bold">Asset History</h3>
                             </div>
-                            <div class="card-body" style="height:540px;">
+                            <div class="card-body" style="height:@sHeight">
                                 <ul class="task-list">
                                     @{
                                         int historyCount = Model.AssetHistory.Count;
-                                        int nHistoryCounter = 1;
-                                        foreach (var history in Model.AssetHistory)
+                                        if (historyCount > 0)
                                         {
-                                            string formattedDate = history.TimeStamp.ToString("dd-MMM-yyyy");
 
-                                            <li>
-                                                <i class="task-icon @_func.GetBGColor(nHistoryCounter)"></i>
-                                                <p class="fw-semibold">@history.Description</p>
-                                                <p class="text-muted fs-12">@formattedDate</p>
-                                            </li>
-                                            if (nHistoryCounter == 5 && historyCount > 5)
+                                            int nHistoryCounter = 1;
+                                            foreach (var history in Model.AssetHistory)
                                             {
-                                                <li>
-                                                    <i class="task-icon bg-primary"></i>
-                                                    <h6><a href="#" class="btn btn-link"> more...</a></h6>
-                                                </li>
+                                                string formattedDate = history.TimeStamp.ToString("dd-MMM-yyyy");
 
-                                                break;
+                                                <li>
+                                                    <i class="task-icon @_func.GetBGColor(nHistoryCounter)"></i>
+                                                    <p class="fw-semibold">@history.Description</p>
+                                                    <p class="text-muted fs-12">@formattedDate</p>
+                                                </li>
+                                                if (nHistoryCounter == 5 && historyCount > 5)
+                                                {
+                                                    <li>
+                                                        <i class="task-icon bg-primary"></i>
+                                                        <h6><a href="#" class="btn btn-link"> more...</a></h6>
+                                                    </li>
+
+                                                    break;
+                                                }
+                                                nHistoryCounter++;
                                             }
-                                            nHistoryCounter++;
+                                        }
+                                        else
+                                        {
+                                            <p class="text-center">No history available!</p>
                                         }
                                     }
                                 </ul>
@@ -282,25 +262,25 @@
             </div>
             <div class="tab-pane" id="tab_2">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <div class="card">
-                            <div class="p-3 divShadow">
-                                <div class="float-start">
-                                    <h5>Asset Documents</h5>
-                                </div>
-                                <div class="float-end">
+                            <div class="card-header border-bottom d-block divShadow bg-info-gradient text-white">
+
+                                <h3 class="card-title text-bold">
+                                    Asset Documents
+
                                     @{
                                         if (employeeId == await _func.GetStoreOwnerIdAsync(await _func.GetStoreIdByAssetIdAsync(Model.Asset.Id)))
                                         {
-                                            <a class="btn btn-outline-primary btn-sm" asp-action="AssetDocuments" asp-controller="Assets" asp-route-id="@Model.Asset.Id" id="checkElement"><i class="fa fa-edit"></i>&nbsp;Edit Documents</a>
+                                            <a asp-action="AssetDocuments" asp-controller="Assets" asp-route-id="@Model.Asset.Id" class="ms-1" id="checkElement"><i class="fa fa-edit"></i></a>
                                         }
                                     }
-                                </div>
+                                </h3>
                             </div>
-                            <div class="card-body">
+                            <div class="card-body" style="width:800px;">
                                 <div class="table-responsive">
                                     <table id="tblDocuments" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
-                                        <thead class="table-head">
+                                        <thead>
                                             <tr>
                                                 <th class="bg-transparent border-bottom-0 w-5">S.No</th>
                                                 <th class="bg-transparent border-bottom-0">Document Name</th>
@@ -346,18 +326,17 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="demo-gallery card">
-                            <div class="p-3 divShadow">
-                                <div class="float-start">
-                                    <h5>Asset Picture Gallery</h5>
-                                </div>
-                                <div class="float-end">
+                            <div class="card-header border-bottom d-block divShadow bg-info-gradient text-white">
+                                <h3 class="card-title text-bold">
+                                    Asset Picture Gallery
+
                                     @{
                                         if (employeeId == await _func.GetStoreOwnerIdAsync(await _func.GetStoreIdByAssetIdAsync(Model.Asset.Id)))
                                         {
-                                            <a class="btn btn-outline-primary btn-sm" asp-action="AssetPictures" asp-controller="Assets" asp-route-id="@Model.Asset.Id" id="checkElement"><i class="fa fa-edit"></i>&nbsp;Edit Pictures</a>
+                                            <a class="ms-1" asp-action="AssetPictures" asp-controller="Assets" asp-route-id="@Model.Asset.Id" id="checkElement"><i class="fa fa-edit"></i></a>
                                         }
                                     }
-                                </div>
+                                </h3>
                             </div>
                             <div class="card-body">
                                 <ul id="lightgallery" class="list-unstyled row">
@@ -370,16 +349,14 @@
                                                 nCounter++;
                                                 <li class="col-xs-6 col-sm-4 col-md-4 col-xl-4 mb-5 border-bottom-0" data-responsive="~/assetpictures" data-src="@pic.ImageUrl" data-sub-html="">
                                                     <a href="javascript:void(0)">
-                                                        <img class="img-responsive br-5 wp-100" src="@pic.ImageUrl" alt="Thumb-1">
+                                                        <img class="img-responsive br-5 wp-100" src="@pic.ImageUrl" alt="@pic.ImageUrl">
                                                     </a>
                                                 </li>
                                             }
                                         }
                                         else
                                         {
-                                            <li class="col-xs-6 col-sm-4 col-md-4 col-xl-4 mb-5 border-bottom-0">
-                                                <span class="text-center">No pictures uploaded!</span>
-                                            </li>
+                                            <p class="text-center">No pictures uploaded!</p>
                                         }
 
                                     }
@@ -451,7 +428,7 @@
         $(document).ready(function () {
             hideMenu();
 
-            makeDataTable('#tblDocuments');
+            makeDataTable('#tblDocuments', 10);
 
             setTab();
         });
@@ -487,6 +464,8 @@
                 $("#a_tab_3").addClass("active");
             }
         }
+
+
 
     </script>
 }

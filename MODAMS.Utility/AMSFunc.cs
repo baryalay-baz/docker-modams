@@ -602,10 +602,20 @@ namespace MODAMS.Utility
             _db.LoginHistory.Add(login);
             _db.SaveChanges();
         }
-        public async Task<Asset> AssetGlobalSearchAsync(string search)
+        public async Task<AssetSearchDTO> AssetGlobalSearchAsync(string search)
         {
             var asset = await _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted && m.Barcode == search)
                 .Include(m => m.SubCategory).ThenInclude(m => m.Category)
+                .Select(m => new AssetSearchDTO {
+                    Id = m.Id,
+                    Category = m.SubCategory.Category.CategoryName,
+                    SubCategory = m.SubCategory.SubCategoryName,
+                    Make = m.Make,
+                    Model = m.Model,
+                    Name = m.Name,
+                    Specifications = m.Specifications,
+                    StoreName = m.Store.Name
+                })
                 .FirstOrDefaultAsync();
 
             //Search by Serial Number
@@ -613,6 +623,17 @@ namespace MODAMS.Utility
             {
                 asset = await _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted && m.SerialNo == search)
                 .Include(m => m.SubCategory).ThenInclude(m => m.Category)
+                .Select(m => new AssetSearchDTO
+                {
+                    Id = m.Id,
+                    Category = m.SubCategory.Category.CategoryName,
+                    SubCategory = m.SubCategory.SubCategoryName,
+                    Make = m.Make,
+                    Model = m.Model,
+                    Name = m.Name,
+                    Specifications = m.Specifications,
+                    StoreName = m.Store.Name
+                })
                 .FirstOrDefaultAsync();
             }
 
@@ -621,6 +642,17 @@ namespace MODAMS.Utility
             {
                 asset = await _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted && m.Plate == search)
                 .Include(m => m.SubCategory).ThenInclude(m => m.Category)
+                .Select(m => new AssetSearchDTO
+                {
+                    Id = m.Id,
+                    Category = m.SubCategory.Category.CategoryName,
+                    SubCategory = m.SubCategory.SubCategoryName,
+                    Make = m.Make,
+                    Model = m.Model,
+                    Name = m.Name,
+                    Specifications = m.Specifications,
+                    StoreName = m.Store.Name
+                })
                 .FirstOrDefaultAsync();
             }
 
@@ -629,6 +661,17 @@ namespace MODAMS.Utility
             {
                 asset = await _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted && m.Engine == search)
                 .Include(m => m.SubCategory).ThenInclude(m => m.Category)
+                .Select(m => new AssetSearchDTO
+                {
+                    Id = m.Id,
+                    Category = m.SubCategory.Category.CategoryName,
+                    SubCategory = m.SubCategory.SubCategoryName,
+                    Make = m.Make,
+                    Model = m.Model,
+                    Name = m.Name,
+                    Specifications = m.Specifications,
+                    StoreName = m.Store.Name
+                })
                 .FirstOrDefaultAsync();
             }
 
@@ -637,6 +680,17 @@ namespace MODAMS.Utility
             {
                 asset = await _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted && m.Chasis == search)
                 .Include(m => m.SubCategory).ThenInclude(m => m.Category)
+                .Select(m => new AssetSearchDTO
+                {
+                    Id = m.Id,
+                    Category = m.SubCategory.Category.CategoryName,
+                    SubCategory = m.SubCategory.SubCategoryName,
+                    Make = m.Make,
+                    Model = m.Model,
+                    Name = m.Name,
+                    Specifications = m.Specifications,
+                    StoreName = m.Store.Name
+                })
                 .FirstOrDefaultAsync();
             }
 

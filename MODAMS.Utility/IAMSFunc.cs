@@ -49,7 +49,7 @@ namespace MODAMS.Utility
         public Task<string> GetAssetNameAsync(int assetId);
         public Task RecordLoginAsync(string userId);
         public Task<int> GetEmployeeIdByUserIdAsync(string userId);
-        public Task<Asset> AssetGlobalSearchAsync(string search);
+        public Task<AssetSearchDTO> AssetGlobalSearchAsync(string search);
         public Task<List<vwCategoryAsset>> GetvwCategoryAssetsAsync();
 
         public void LogException(ILogger logger, Exception ex);

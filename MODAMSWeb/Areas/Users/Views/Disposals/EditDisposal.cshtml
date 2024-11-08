@@ -201,14 +201,13 @@
                                                                             foreach (var asset in Model.Assets)
                                                                             {
                                                                                 sCounter = nCounter < 10 ? "0" + nCounter.ToString() : nCounter.ToString();
-                                                                                sIdentification = asset.SubCategory.Category.CategoryName == "Vehicles" ? "Plate No: " + asset.Plate : "SN: " + asset.SerialNo;
                                                                                 <tr>
                                                                                     <td><a class="btn btn-primary btn-sm" onclick="return selectAsset(@asset.Id,event);">select</a></td>
-                                                                                    <td>@asset.SubCategory.Category.CategoryName</td>
+                                                                                    <td>@asset..CategoryName</td>
                                                                                     <td>@asset.Make</td>
                                                                                     <td>@asset.Model</td>
-                                                                                    <td>@asset.Name</td>
-                                                                                    <td>@sIdentification</td>
+                                                                                    <td>@asset.AssetName</td>
+                                                                                    <td>@asset.Identification</td>
                                                                                     <td>@asset.Barcode</td>
                                                                                 </tr>
                                                                             }

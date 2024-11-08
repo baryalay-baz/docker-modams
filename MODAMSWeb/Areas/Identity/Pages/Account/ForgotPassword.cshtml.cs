@@ -4,6 +4,7 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Net.Mail;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -14,6 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using MODAMS.Utility;
+using static QRCoder.PayloadGenerator;
 
 namespace MODAMSWeb.Areas.Identity.Pages.Account
 {
@@ -22,11 +24,13 @@ namespace MODAMSWeb.Areas.Identity.Pages.Account
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IEmailSender _emailSender;
         private readonly IAMSFunc _func;
-        public ForgotPasswordModel(UserManager<IdentityUser> userManager, IEmailSender emailSender, IAMSFunc func)
+        private readonly ILogger<ForgotPasswordModel> _logger;
+        public ForgotPasswordModel(UserManager<IdentityUser> userManager, IEmailSender emailSender, IAMSFunc func, ILogger<ForgotPasswordModel> logger)
         {
             _userManager = userManager;
             _emailSender = emailSender;
             _func = func;
+            _logger = logger;
         }
 
         [BindProperty]
@@ -65,11 +69,19 @@ namespace MODAMSWeb.Areas.Identity.Pages.Account
                 string message = _func.FormatMessage("Reset Password", shortmessage,
                     Input.Email, HtmlEncoder.Default.Encode(callbackUrl), "Reset Password");
 
-                await _emailSender.SendEmailAsync(
+                try
+                {
+                    await _emailSender.SendEmailAsync(
                     Input.Email,
                     "Reset Password",
                     message);
 
+                    _logger.LogInformation($"Email sent to {Input.Email} with subject Reset Password.");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"error sending email: {ex.Message}");
+                }
                 return RedirectToPage("./ForgotPasswordConfirmation");
             }
 

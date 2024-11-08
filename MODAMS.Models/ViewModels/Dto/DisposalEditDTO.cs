@@ -24,7 +24,7 @@ namespace MODAMS.Models.ViewModels.Dto
         public string StoreOwner { get; set; }
 
         [ValidateNever]
-        public List<Asset> Assets { get; set; }
+        public List<DisposalAssetDto> Assets { get; set; }
 
         [ValidateNever]
         public IEnumerable<SelectListItem> DisposalTypeList { get; set; }

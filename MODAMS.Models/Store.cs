@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace MODAMS.Models
@@ -33,6 +34,7 @@ namespace MODAMS.Models
         [ValidateNever]
         public ICollection<VerificationSchedule> VerificationSchedules { get; set; }
         [ValidateNever]
+        
         public ICollection<Asset> Assets { get; set; }
 
     }

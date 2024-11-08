@@ -10,7 +10,7 @@ namespace MODAMS.Models.ViewModels.Dto
     public class GlobalSearchDTO
     {
         public int TransferId {  get; set; }
-        public Asset Asset { get; set; } = new Asset();
+        public AssetSearchDTO Asset { get; set; } = new AssetSearchDTO();
         public AssetPicture AssetPicture { get; set; } = new AssetPicture();
     }
 }

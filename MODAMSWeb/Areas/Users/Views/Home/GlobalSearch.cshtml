@@ -68,12 +68,14 @@
                             </td>
                             <td width="70%">
                                 @{
-                                    if (Model.Asset.Name != "")
+                                    if (Model.Asset.Name!= "")
                                     {
-                                        <h5>@Model.Asset.SubCategory.Category.CategoryName - @Model.Asset.SubCategory.SubCategoryName</h5>
-                                        <p class="h5">@Model.Asset.Make - @Model.Asset.Model - @Model.Asset.Year</p>
+                                        <h5>@Model.Asset.Category - @Model.Asset.SubCategory</h5>
+                                        <p class="h5">@Model.Asset.Make - @Model.Asset.Model</p>
                                         <h3>@Model.Asset.Name</h3>
                                         <p class="h5">@Model.Asset.Specifications</p>
+                                        <p class="h5 text-bold">@Model.Asset.StoreName</p>
+
                                         <a class="btn btn-primary-gradient trShadow " href="/Users/Assets/AssetInfo/@Model.Asset.Id">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
                                                 <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>

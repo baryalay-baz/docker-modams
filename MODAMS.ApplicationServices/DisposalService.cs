@@ -38,7 +38,6 @@ namespace MODAMS.ApplicationServices
             _employeeId = _func.GetEmployeeId();
         }
 
-        private bool IsInRole(string role) => _httpContextAccessor.HttpContext.User.IsInRole(role);
 
         public async Task<Result<DisposalsDTO>> GetIndexAsync()
         {
@@ -203,7 +202,7 @@ namespace MODAMS.ApplicationServices
                 var employeeId = IsInRole("User") ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
                 var storeId = await _func.GetStoreIdByEmployeeIdAsync(employeeId);
 
-                
+
                 var disposal = await _db.Disposals
                     .Where(m => m.Id == id)
                     .Include(m => m.DisposalType)
@@ -215,7 +214,7 @@ namespace MODAMS.ApplicationServices
 
                 if (disposal == null)
                     return Result<DisposalEditDTO>.Failure("Disposal not found!");
-                
+
 
                 var dto = new DisposalEditDTO
                 {
@@ -359,7 +358,7 @@ namespace MODAMS.ApplicationServices
         public async Task<T> PopulateDisposalDtoAsync<T>(T dto) where T : class
         {
             // Check if the DTO has the necessary properties using reflection
-            var employeeIdField = dto.GetType().GetProperty("IsAuthorized");
+            var isAuthorizedField = dto.GetType().GetProperty("IsAuthorized");
             var storeNameField = dto.GetType().GetProperty("StoreName");
             var storeOwnerField = dto.GetType().GetProperty("StoreOwner");
             var assetsField = dto.GetType().GetProperty("Assets");
@@ -371,21 +370,29 @@ namespace MODAMS.ApplicationServices
             // Populate Assets
             if (assetsField != null)
             {
-                var assetList = _db.Assets
-                    .Where(m => m.AssetStatusId != SD.Asset_Deleted && m.StoreId == _storeId)
-                    .Include(m => m.SubCategory)
-                    .Include(m => m.SubCategory.Category)
-                    .Where(m => m.AssetStatusId == SD.Asset_Available)
-                    .ToList();
+                var assetList = await _db.Assets
+                    .Include(m => m.SubCategory).ThenInclude(m => m.Category)
+                    .Where(m => m.AssetStatusId == SD.Asset_Available && m.StoreId == _storeId)
+                    .Select(a => new DisposalAssetDto
+                    {
+                        Id = a.Id,
+                        CategoryName = a.SubCategory.Category.CategoryName,
+                        SubCategoryName = a.SubCategory.SubCategoryName,
+                        AssetName = a.Name,
+                        Make = a.Make,
+                        Model = a.Model,
+                        Barcode = a.Barcode,
+                        Identification = a.SubCategory.Category.CategoryName == "Vehicles" ? "Plate No: " + a.Plate : "SN: " + a.SerialNo
+                    }).ToListAsync();
 
                 assetsField.SetValue(dto, assetList);
             }
 
             // Populate IsAuthorized (only if the property exists)
-            if (employeeIdField != null)
+            if (isAuthorizedField != null)
             {
                 var isAuthorized = await _func.GetStoreOwnerIdAsync(_storeId) == _employeeId;
-                employeeIdField.SetValue(dto, isAuthorized);
+                isAuthorizedField.SetValue(dto, isAuthorized);
             }
 
             // Populate StoreName
@@ -416,6 +423,7 @@ namespace MODAMS.ApplicationServices
             return dto;
         }
 
-
+        //Private Functions
+        private bool IsInRole(string role) => _httpContextAccessor.HttpContext.User.IsInRole(role);
     }
 }

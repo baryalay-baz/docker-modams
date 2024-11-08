@@ -33,7 +33,7 @@
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">Dashboard</a></li>
             <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Stores" asp-action="Index">Stores</a></li>
-            <li class="breadcrumb-item active" aria-current="page">@TempData["storeName"]</li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.StoreName</li>
         </ol>
     </div>
 </div>
@@ -42,7 +42,7 @@
         <div class="card">
             <div class="card-body p-4">
                 <div class="d-flex align-items-center justify-content-between">
-                    <h4 class="m-0">@TempData["storeName"]</h4>
+                    <h4 class="m-0">@Model.StoreName</h4>
                     <div>
                         @Html.Raw(Model.StoreOwnerInfo)
                     </div>
@@ -76,7 +76,7 @@
         </a>
     </div>
     <div class="col-xl col-md-12">
-        <a asp-area="Users" asp-controller="Transfers" asp-action="ReceivedAssets" asp-route-id="@TempData["storeId"]">
+        <a asp-area="Users" asp-controller="Transfers" asp-action="ReceivedAssets" asp-route-id="@Model.StoreId">
             <div class="card divShadow">
                 <div class="card-body">
                     <div class="row">
@@ -97,7 +97,7 @@
         </a>
     </div>
     <div class="col-xl col-md-12">
-        <a asp-area="Users" asp-controller="Transfers" asp-action="TransferredAssets" asp-route-id="@TempData["storeId"]">
+        <a asp-area="Users" asp-controller="Transfers" asp-action="TransferredAssets" asp-route-id="@Model.StoreId">
             <div class="card divShadow">
                 <div class="card-body">
                     <div class="row">
