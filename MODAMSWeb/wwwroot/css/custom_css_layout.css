@@ -70,3 +70,7 @@ hr.customHR {
     font-size: 1.2em;
 }
 
+.custom-badge {
+    font-size: 0.4rem; /* Adjust font size as needed */
+    padding:  0.6em 0.8em; /* Adjust padding to make it smaller */
+}

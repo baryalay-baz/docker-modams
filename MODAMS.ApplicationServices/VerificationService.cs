@@ -23,7 +23,7 @@ namespace MODAMS.ApplicationServices
         private readonly int _employeeId;
         private readonly int _countryOfficeId;
 
-        public VerificationService(ApplicationDbContext db, IAMSFunc func, 
+        public VerificationService(ApplicationDbContext db, IAMSFunc func,
             IHttpContextAccessor httpContextAccessor, IWebHostEnvironment webHostEnvironment,
             ILogger<VerificationService> logger)
         {
@@ -85,7 +85,8 @@ namespace MODAMS.ApplicationServices
 
                     dto.NumberOfAssets = assets.Count;
                 }
-                else {
+                else
+                {
                     return Result<VerificationScheduleCreateDTO>.Failure("Store not available");
                 }
 
@@ -252,7 +253,7 @@ namespace MODAMS.ApplicationServices
                         var storeOwnerId = await _func.GetStoreOwnerIdAsync(scheduleInDb.StoreId);
                         dto.EmployeeId = storeOwnerId;
                         dto.VerificationStatus = "Pending";
-                        
+
                         // Update the schedule with the new values from dto
                         _db.Entry(scheduleInDb).CurrentValues.SetValues(dto);
 
@@ -314,9 +315,9 @@ namespace MODAMS.ApplicationServices
         {
             try
             {
-                var employees = await _db.Employees.Where(m => m.Id==_employeeId || m.SupervisorEmployeeId == _employeeId).ToListAsync();
+                var employees = await _db.Employees.Where(m => m.Id == _employeeId || m.SupervisorEmployeeId == _employeeId).ToListAsync();
                 var storeList = await _db.Stores
-                    .Include(m=>m.Department)
+                    .Include(m => m.Department)
                     .Where(m => m.Department.EmployeeId == _employeeId).ToListAsync();
 
                 var schedule = await _db.VerificationSchedules
@@ -392,6 +393,15 @@ namespace MODAMS.ApplicationServices
             if (file == null || file.Length == 0)
             {
                 return Result<bool>.Failure("No file uploaded or file is empty");
+            }
+
+            var verificationRecordInDb = await _db.VerificationRecords
+                .Where(m => m.VerificationScheduleId == dto.VerificationRecord.VerificationScheduleId 
+                && m.AssetId == dto.VerificationRecord.AssetId).FirstOrDefaultAsync();
+
+            if (verificationRecordInDb != null)
+            {
+                return Result<bool>.Failure($"This asset is already verified by {verificationRecordInDb.VerifiedBy}");
             }
 
             using (var transaction = await _db.Database.BeginTransactionAsync())
@@ -593,7 +603,7 @@ namespace MODAMS.ApplicationServices
         private async Task<List<SelectListItem>> GetEmployeesSelectListAsync()
         {
             var employees = await _db.Employees
-                .Where(m => m.Id == _employeeId|| m.SupervisorEmployeeId== _employeeId)
+                .Where(m => m.Id == _employeeId || m.SupervisorEmployeeId == _employeeId)
                 .ToListAsync();
 
             return employees
@@ -606,7 +616,7 @@ namespace MODAMS.ApplicationServices
         private async Task<List<SelectListItem>> GetStoresSelectListAsync()
         {
             var storeList = await _db.Stores
-                .Include(m=>m.Department)
+                .Include(m => m.Department)
                 .Where(m => m.Department.EmployeeId == _employeeId)
                 .ToListAsync();
 
@@ -824,7 +834,7 @@ namespace MODAMS.ApplicationServices
             {
                 return Result.Failure("Picture not found!");
             }
-                        
+
             // Remove the picture entry from the database
             try
             {

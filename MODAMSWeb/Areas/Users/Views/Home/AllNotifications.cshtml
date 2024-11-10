@@ -28,36 +28,42 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-8">
                         @{
                             string bgClass = "";
-                            foreach (var item in Model)
+                            if (Model != null)
                             {
-                                var sMessage = item.Message.Substring(0, item.Message.IndexOf(','));
-                                bgClass = item.IsViewed ? "" : "bg-light-transparent";
-                                <a href="/Users/Home/NotificationDirector/@item.Id">
-                                    <div class="row @bgClass mb-3 p-3 table-bordered">
-                                        <div class="col-md-1 text-center">
+                                foreach (var item in Model)
+                                {
+                                    var sMessage = (item.Message!=null) && (item.Message.Contains(','))
+                                    ? item.Message.Substring(0, item.Message.IndexOf(',')) : item.Message;
 
-                                            <div class="avatar-container avatar-lg me-4">
-                                                <img alt="avatar" class="rounded-circle" src="@item.ImageUrl">
-                                                @{
-                                                    if (!item.IsViewed)
-                                                    {
-                                                        <span class="pulse rounded-pill bg-success"></span>
+                                    //bgClass = item.IsViewed ? "" : "text-bold";
+                                    <a href="/Users/Home/NotificationDirector/@item.Id">
+                                        <div class="row @bgClass mb-3 p-3 table-bordered">
+                                            <div class="col-md-1 text-center">
+
+                                                <div class="avatar-container avatar-lg me-4">
+                                                    <img alt="avatar" class="rounded-circle" src="@item.ImageUrl">
+                                                </div>
+
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div>
+                                                    <span class="notification-label mb-1">@Html.Raw(sMessage)</span>
+                                                    &nbsp;
+                                                    @{
+                                                        if (!item.IsViewed)
+                                                        {
+                                                            <span class="badge bg-primary my-1 custom-badge">New</span>
+                                                        }
                                                     }
-                                                }
-                                            </div>
-
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div>
-                                                <span class="notification-label mb-1">@Html.Raw(sMessage)</span>
-                                                <span class="notification-subtext text-muted">@item.DateTime.ToString("dd-MMM-yyyy")</span>
+                                                    <span class="notification-subtext text-muted">@item.DateTime.ToString("dd-MMM-yyyy")</span>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </a>
+                                    </a>
+                                }
                             }
                         }
                     </div>
@@ -71,6 +77,7 @@
                     </div>
 
                 </div>
+            </div>
         </div>
     </div>
 </div>

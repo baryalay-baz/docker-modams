@@ -62,7 +62,7 @@
                     string sHeight = "600px;";
                 }
                 <div class="row">
-                    <div class="col-xl-9 col-lg-12" id="div1">
+                    <div class="col-xl-9 col-lg-12">
                         <div class="card">
                             <div class="card-header border-bottom d-block divShadow bg-info-gradient text-white">
                                 <h3 class="card-title text-bold">
@@ -76,7 +76,6 @@
                                             <a asp-action="EditAsset" asp-controller="Assets" asp-route-id="@Model.Asset.Id" class="ms-1" id="checkElement"><i class="fe fe-edit"></i></a>
                                         }
                                         <span class="float-end">@Model.Asset.Store.Name</span>
-
                                     }
                                 </h3>
                             </div>
@@ -356,7 +355,7 @@
                                         }
                                         else
                                         {
-                                            <p class="text-center">No pictures uploaded!</p>
+                                            <li><p class="text-center">No pictures uploaded!</p></li>
                                         }
 
                                     }

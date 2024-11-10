@@ -63,7 +63,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             }
             else {
                 TempData["error"] = result.ErrorMessage;
-                return View(new TransferDTO());
+                return RedirectToAction("Index", "Transfers");
             }
         }
         [Authorize(Roles = "StoreOwner, User")]

@@ -326,7 +326,6 @@ namespace MODAMS.ApplicationServices
                 return Result<DisposalEditDTO>.Failure(ex.Message);
             }
         }
-
         public async Task<Result<bool>> DeleteDisposalAsync(int id)
         {
             using (var transaction = await _db.Database.BeginTransactionAsync())
@@ -372,8 +371,6 @@ namespace MODAMS.ApplicationServices
                 }
             }
         }
-
-        //Populate Disposal
         public async Task<T> PopulateDisposalDtoAsync<T>(T dto) where T : class
         {
             // Check if the DTO has the necessary properties using reflection
@@ -502,7 +499,6 @@ namespace MODAMS.ApplicationServices
                 return string.Empty;
             }
         }
-
         private async Task UpdateAssetStatusAsync(int assetId, int statusId)
         {
             var asset = await _db.Assets.FirstOrDefaultAsync(m => m.Id == assetId);
@@ -511,7 +507,6 @@ namespace MODAMS.ApplicationServices
                 asset.AssetStatusId = statusId;
             }
         }
-
         private async Task AddAssetHistoryAsync(int assetId, string description)
         {
             var assetHistory = new AssetHistory
@@ -524,7 +519,6 @@ namespace MODAMS.ApplicationServices
             };
             await _db.AssetHistory.AddAsync(assetHistory);
         }
-
         private async Task LogNewsFeedAsync(int disposalId, int assetId)
         {
             string employeeName = await _func.GetEmployeeNameAsync();

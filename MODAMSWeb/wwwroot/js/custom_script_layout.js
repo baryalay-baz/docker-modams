@@ -89,33 +89,26 @@ const displayNotifications = (data) => {
         showErrorMessageJs('Notifications value is not valid.');
         return;
     }
-
+    
     let isNewNotification = false;
     let nCounter = 0;
     let sHtml = "";
-    let sbgClass = "";
+    
     for (const e of data) {
         nCounter++;
-        const sPulse = e.IsViewed ? '' : '<span class="pulse rounded-pill bg-success"></span>';
-        if (!e.IsViewed) {
-            sbgClass = "bg-light-transparent"
+        const sNew = e.isViewed ? '' : '&nbsp;<span class="badge bg-primary my-1 custom-badge text-white">New</span>';
+        if (!e.isViewed)
             isNewNotification = true;
-        } else {
-            sbgClass = "";
-        }
 
         if (nCounter > 4) {
             break; // Exit the loop once nCounter exceeds 4
         }
         sHtml += `
-                    <a class="dropdown-item ${sbgClass}" href="/Users/Home/NotificationDirector/${e.id}">
+                    <a class="dropdown-item" href="/Users/Home/NotificationDirector/${e.id}">
                         <div class="notification-each d-flex ">
-                            <div class="avatar-container avatar-md me-2">
-                                <img alt="avatar" class="rounded-circle" src="${e.imageUrl}">
-                            </div>
                             <div>
                                 <span class="notification-label mb-1">${shortenMessage(e.message)}</span>
-                                        ${sPulse}
+                                        ${sNew}
                                 <span class="notification-subtext text-muted">${formattedDate(e.dateTime)}</span>
                             </div>
                         </div>
@@ -132,14 +125,14 @@ const displayNotifications = (data) => {
     } else {
         notificationPulse.hide();
         sHtml = `<a class="dropdown-item" href="#">
-                                        <div class="notification-each d-flex">
-                                            <div class="me-3 notifyimg brround">
-                                            </div>
-                                            <div>
-                                                <span class="notification-label mb-1">No notification available</span>
-                                            </div>
-                                        </div>
-                                    </a>`;
+                    <div class="notification-each d-flex">
+                        <div class="me-3 notifyimg brround">
+                        </div>
+                        <div class="text-center">
+                            <span class="notification-label mb-1">No notification available</span>
+                        </div>
+                    </div>
+                 </a>`;
         $("#dvNotifications").html(sHtml);
     }
 
