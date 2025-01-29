@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MODAMS.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241030081731_AddVerificationTablesToDb")]
+    [Migration("20250129112233_AddVerificationTablesToDb")]
     partial class AddVerificationTablesToDb
     {
         /// <inheritdoc />
