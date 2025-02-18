@@ -246,7 +246,7 @@ namespace MODAMS.ApplicationServices
         public async Task SendRegistrationNotification(string emailAddress, string? baseUrl, string scheme)
         {
             // Construct the callback URL manually
-            var callbackUrl = $"{scheme}://{baseUrl}/Account/Register?returnUrl={Uri.EscapeDataString(emailAddress)}";
+            var callbackUrl = $"{scheme}://{baseUrl}/Identity/Account/Register?returnUrl={Uri.EscapeDataString(emailAddress)}";
 
             string shortMessage = "A new account has been created for you at MOD Asset Management System, " +
                                   "please click the button below to follow the instructions!";
