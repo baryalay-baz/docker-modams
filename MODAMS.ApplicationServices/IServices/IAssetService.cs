@@ -35,5 +35,6 @@ namespace MODAMS.ApplicationServices.IServices
         Task<Result<string>> GetCategoriesAsync();
         Task<Result<string>> GetSubCategoriesAsync(int? categoryId);
         Task<Result<string>> GetDocumentTypesAsync();
+        Task<Result<int>> GetLastAssetIdAsync();
     }
 }

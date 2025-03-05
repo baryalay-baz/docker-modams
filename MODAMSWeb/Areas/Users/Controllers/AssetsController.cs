@@ -345,5 +345,19 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 return Json(new { success = false, message = result.ErrorMessage });
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> GetLastAssetId()
+        {
+            var result = await _assetService.GetLastAssetIdAsync();
+            if (result.IsSuccess)
+            {
+                return Json(result.Value);
+            }
+            else
+            {
+                TempData["error"] = "Error occurred getting last Asset Id";
+                return Json(0);
+            }
+        }
     }
 }

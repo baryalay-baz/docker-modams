@@ -253,12 +253,42 @@
                 checkIfVehiclesSelected();
                 populateCmbSubCategory();
             });
+
+            $("#CategoryId, #SubCategoryId").on("change", async () => {
+                await generateBarcode();
+            });
+
             $('.picker').datepicker({
                 autoclose: true,
                 format: 'dd-MM-yyyy',
                 todayHighlight: true
             });
         });
+
+        const generateBarcode = async () => {
+            const categoryId = $("#CategoryId").val().toString().padStart(3, '0');
+            const subCategoryId = $("#SubCategoryId").val().toString().padStart(3, '0');
+
+            if (categoryId && subCategoryId) {
+                const lastAssetId = await getLastAssetId();
+                const newAssetId = lastAssetId + 1; // Increment the last asset ID
+                const barcode = `MOD-${categoryId}-${subCategoryId}-${newAssetId}`;
+
+                $("#Barcode").val(barcode);
+            }
+            checkIfVehiclesSelected();
+        }
+        const getLastAssetId = async () => {
+            try {
+                const response = await fetch('/Users/Assets/GetLastAssetId');
+                const lastAssetId = await response.json();
+                return lastAssetId;
+            } catch (error) {
+                console.error("Error fetching last asset ID:", error);
+                return 0;
+            }
+        }
+
         const checkIfVehiclesSelected = () => {
             if ($("#CategoryId").val() == "16") {
                 $("#dvVehicleIdentification").show();

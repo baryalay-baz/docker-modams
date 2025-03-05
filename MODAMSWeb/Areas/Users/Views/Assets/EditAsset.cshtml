@@ -254,6 +254,7 @@
     <script>
         $(document).ready(() => {
             hideMenu();
+            checkIfVehiclesSelected();
 
             $('.select2').select2();
 
@@ -351,7 +352,8 @@
                     }
                 },
                 complete: function () {
-                    populateCmbSubCategory();
+                    //This is not required in EditAsset View
+                    //populateCmbSubCategory();
                 }
             });
         }

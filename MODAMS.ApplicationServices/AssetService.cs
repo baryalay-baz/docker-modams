@@ -843,6 +843,18 @@ namespace MODAMS.ApplicationServices
                 return Result<string>.Failure(ex.Message);
             }
         }
+        public async Task<Result<int>> GetLastAssetIdAsync()
+        {
+            try
+            {
+                int lastAssetId = await _db.Assets.AnyAsync() ? await _db.Assets.MaxAsync(m => m.Id) : 0;
+                return Result<int>.Success(lastAssetId);
+            }
+            catch (Exception ex)
+            {
+                return Result<int>.Failure(ex.Message);
+            }
+        }
 
 
         //Private functions
