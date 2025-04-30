@@ -8,6 +8,7 @@ using Telerik.Reporting.Services;
 using Telerik.Reporting.Cache.File;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using MODAMS.ApplicationServices.IServices;
+using Microsoft.AspNetCore.Mvc.Razor;
 
 namespace MODAMSWeb.Config
 {
@@ -22,6 +23,8 @@ namespace MODAMSWeb.Config
             builder.Services.AddIdentity<IdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
+
+            builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
             // Configure Identity options
             builder.Services.Configure<IdentityOptions>(options =>
@@ -78,7 +81,12 @@ namespace MODAMSWeb.Config
 
             // Add Razor Pages and Controllers with Views
             builder.Services.AddRazorPages();
-            builder.Services.AddControllersWithViews().AddNewtonsoftJson();
+
+            builder.Services
+                .AddControllersWithViews()
+                .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
+                .AddDataAnnotationsLocalization()
+                .AddNewtonsoftJson();
 
             // Add Reporting services configuration
             builder.Services.TryAddScoped<IReportServiceConfiguration>(sp => new ReportServiceConfiguration

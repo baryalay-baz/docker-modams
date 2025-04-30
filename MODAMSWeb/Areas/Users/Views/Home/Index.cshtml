@@ -1,4 +1,8 @@
-﻿@model MODAMS.Models.ViewModels.Dto.DashboardDTO
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+
+@model MODAMS.Models.ViewModels.Dto.DashboardDTO
+@inject IViewLocalizer Localizer
+
 <link href="~/assets/plugins/c3-0.7.20/c3.min.css" rel="stylesheet" />
 <style>
     body {
@@ -88,7 +92,7 @@
 </style>
 <div class="page-header">
     <div>
-        <h1 class="page-title">Dashboard</h1>
+        <h1 class="page-title">@Localizer["Dashboard"]</h1>
     </div>
     <br />
     <div class="marquee-container" id="marquee-container">
@@ -149,8 +153,8 @@
                 <div class="card-body pnlHeight">
                     <div class="row">
                         <div class="col">
-                            <h3 class="mb-2 fw-semibold text-muted">Stores</h3>
-                            <p class="text-muted fs-13 mb-0">Stores</p>
+                            <h3 class="mb-2 fw-semibold text-muted">@Localizer["Stores"]</h3>
+                            <p class="text-muted fs-13 mb-0">@Localizer["Stores"]</p>
                         </div>
                         <div class="col col-auto top-icn dash">
                             <div class="counter-icon bg-primary dash ms-auto box-shadow-primary">
@@ -160,7 +164,7 @@
                         <div class="row">
                             <div class="col">
                                 <small class="text-muted">
-                                    Asset Store for every single department of the ministry, add, edit, update assets in this section
+                                    @Localizer["StoreDescription"]
                                 </small>
                             </div>
                         </div>
@@ -176,8 +180,8 @@
                 <div class="card-body pnlHeight">
                     <div class="row">
                         <div class="col">
-                            <h3 class="mb-2 fw-semibold text-muted">Transfers</h3>
-                            <p class="text-muted fs-13 mb-0 text-secondary">Asset Transfers</p>
+                            <h3 class="mb-2 fw-semibold text-muted">@Localizer["Transfers"]</h3>
+                            <p class="text-muted fs-13 mb-0 text-secondary">@Localizer["AssetTransfers"]</p>
                         </div>
                         <div class="col col-auto top-icn dash">
                             <div class="counter-icon bg-secondary dash ms-auto box-shadow-primary">
@@ -188,7 +192,7 @@
                         <div class="row">
                             <div class="col">
                                 <small class="text-muted">
-                                    Transfer of Assets among different stores at every section and every level.
+                                    @Localizer["TransferDescription"]
                                 </small>
                             </div>
                         </div>
@@ -204,8 +208,8 @@
                 <div class="card-body pnlHeight">
                     <div class="row">
                         <div class="col">
-                            <h3 class="mb-2 fw-semibold text-muted">Disposal</h3>
-                            <p class="text-muted fs-13 mb-0">Asset Disposal</p>
+                            <h3 class="mb-2 fw-semibold text-muted">@Localizer["Disposal"]</h3>
+                            <p class="text-muted fs-13 mb-0">@Localizer["AssetDisposal"]</p>
                         </div>
                         <div class="col col-auto top-icn dash">
                             <div class="counter-icon bg-info dash ms-auto box-shadow-primary">
@@ -217,7 +221,7 @@
                         <div class="row">
                             <div class="col">
                                 <small class="text-muted">
-                                    Disposal of Assets that includes selling, recycling, donating, or scrapping the asset.
+                                    @Localizer["DisposalDescription"]
                                 </small>
                             </div>
                         </div>
@@ -233,8 +237,8 @@
                 <div class="card-body pnlHeight">
                     <div class="row">
                         <div class="col">
-                            <h3 class="mb-2 fw-semibold text-muted">Reports</h3>
-                            <p class="text-muted fs-13 mb-0">Reporting</p>
+                            <h3 class="mb-2 fw-semibold text-muted">@Localizer["Reports"]</h3>
+                            <p class="text-muted fs-13 mb-0">@Localizer["Reporting"]</p>
                         </div>
                         <div class="col col-auto top-icn dash">
                             <div class="counter-icon bg-warning dash ms-auto box-shadow-primary">
@@ -244,7 +248,7 @@
                         <div class="row">
                             <div class="col">
                                 <small class="text-muted">
-                                    Dynamic reporting tool provides generating of multiple types of reports
+                                    @Localizer["ReportingDescription"]
                                 </small>
                             </div>
                         </div>

@@ -54,6 +54,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Controllers\" />
+    <Folder Include="Resources\Areas\Users\Controllers\" />
     <Folder Include="wwwroot\assets\plugins\google-api\" />
     <Folder Include="wwwroot\assetdocuments\" />
     <Folder Include="wwwroot\disposaldocuments\" />
