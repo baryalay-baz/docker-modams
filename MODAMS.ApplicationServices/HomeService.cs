@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Hosting;
 using MODAMS.Models;
 using MODAMS.ApplicationServices.IServices;
 
+
 namespace MODAMS.ApplicationServices
 {
     public class HomeService : IHomeService
@@ -259,11 +260,34 @@ namespace MODAMS.ApplicationServices
 
             try
             {
-                using (var fileStream = new FileStream(Path.Combine(facesPath, fileName), FileMode.Create))
+                // 1. Save the uploaded file temporarily
+                var originalFilePath = Path.Combine(facesPath, "original_" + fileName);
+                using (var fileStream = new FileStream(originalFilePath, FileMode.Create))
                 {
                     await file.CopyToAsync(fileStream);
                 }
 
+                // 2. Crop the face using DNN
+                var prototxtPath = Path.Combine(webRootPath, "DnnModels", "deploy.prototxt.txt");
+                var caffeModelPath = Path.Combine(webRootPath, "DnnModels", "res10_300x300_ssd_iter_140000.caffemodel");
+                var faceCropper = new DnnFaceCropper(prototxtPath, caffeModelPath);
+
+                var croppedFilePath = Path.Combine(facesPath, fileName); // Final profile picture path
+                var result = faceCropper.CropFace(originalFilePath, croppedFilePath);
+
+                if (result != "Face cropped successfully.")
+                {
+                    // If no face detected, optionally fall back to the full original image
+                    System.IO.File.Copy(originalFilePath, croppedFilePath, true);
+                }
+
+                // 3. Delete the original uploaded file to save space
+                if (System.IO.File.Exists(originalFilePath))
+                {
+                    System.IO.File.Delete(originalFilePath);
+                }
+
+                // 4. Update employee's ImageUrl
                 var employee = await _db.Employees.FirstOrDefaultAsync(m => m.Id == employeeId);
                 if (employee != null)
                 {
@@ -287,6 +311,8 @@ namespace MODAMS.ApplicationServices
                 return Result<bool>.Failure($"An error occurred while uploading the file: {ex.Message}");
             }
         }
+
+
         public async Task<Result<GlobalSearchDTO>> SearchTransferOrAssetAsync(string barcode)
         {
             try

@@ -118,7 +118,7 @@ namespace MODAMS.DataAccess.Migrations
 
                     b.HasIndex("SubCategoryId");
 
-                    b.ToTable("Assets");
+                    b.ToTable("Assets", (string)null);
                 });
 
             modelBuilder.Entity("MODAMS.Models.AssetDocument", b =>
@@ -149,7 +149,7 @@ namespace MODAMS.DataAccess.Migrations
 
                     b.HasIndex("DocumentTypeId");
 
-                    b.ToTable("AssetDocuments");
+                    b.ToTable("AssetDocuments", (string)null);
                 });
 
             modelBuilder.Entity("MODAMS.Models.AssetDocumentChecklist", b =>
@@ -169,7 +169,7 @@ namespace MODAMS.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AssetDocumentChecklist");
+                    b.ToTable("AssetDocumentChecklist", (string)null);
                 });
 
             modelBuilder.Entity("MODAMS.Models.AssetHistory", b =>
@@ -200,7 +200,7 @@ namespace MODAMS.DataAccess.Migrations
 
                     b.HasIndex("TransactionTypeId");
 
-                    b.ToTable("AssetHistory");
+                    b.ToTable("AssetHistory", (string)null);
                 });
 
             modelBuilder.Entity("MODAMS.Models.AssetPicture", b =>
@@ -222,7 +222,7 @@ namespace MODAMS.DataAccess.Migrations
 
                     b.HasIndex("AssetId");
 
-                    b.ToTable("AssetPictures");
+                    b.ToTable("AssetPictures", (string)null);
                 });
 
             modelBuilder.Entity("MODAMS.Models.AssetStatus", b =>
@@ -239,7 +239,7 @@ namespace MODAMS.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AssetStatuses");
+                    b.ToTable("AssetStatuses", (string)null);
                 });
 
             modelBuilder.Entity("MODAMS.Models.AuditLog", b =>
@@ -282,7 +282,7 @@ namespace MODAMS.DataAccess.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("AuditLog");
+                    b.ToTable("AuditLog", (string)null);
                 });
 
             modelBuilder.Entity("MODAMS.Models.Category", b =>
@@ -303,7 +303,7 @@ namespace MODAMS.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("MODAMS.Models.Condition", b =>
@@ -320,7 +320,7 @@ namespace MODAMS.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Conditions");
+                    b.ToTable("Conditions", (string)null);
                 });
 
             modelBuilder.Entity("MODAMS.Models.Department", b =>
@@ -343,7 +343,7 @@ namespace MODAMS.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Departments");
+                    b.ToTable("Departments", (string)null);
                 });
 
             modelBuilder.Entity("MODAMS.Models.DepartmentHead", b =>
@@ -375,7 +375,7 @@ namespace MODAMS.DataAccess.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("DepartmentHeads");
+                    b.ToTable("DepartmentHeads", (string)null);
                 });
 
             modelBuilder.Entity("MODAMS.Models.Disposal", b =>
@@ -413,7 +413,7 @@ namespace MODAMS.DataAccess.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("Disposals");
+                    b.ToTable("Disposals", (string)null);
                 });
 
             modelBuilder.Entity("MODAMS.Models.DisposalType", b =>
@@ -430,7 +430,7 @@ namespace MODAMS.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DisposalTypes");
+                    b.ToTable("DisposalTypes", (string)null);
                 });
 
             modelBuilder.Entity("MODAMS.Models.DocumentType", b =>
@@ -450,7 +450,7 @@ namespace MODAMS.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DocumentTypes");
+                    b.ToTable("DocumentTypes", (string)null);
                 });
 
             modelBuilder.Entity("MODAMS.Models.Donor", b =>
@@ -471,7 +471,7 @@ namespace MODAMS.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Donors");
+                    b.ToTable("Donors", (string)null);
                 });
 
             modelBuilder.Entity("MODAMS.Models.Employee", b =>
@@ -522,7 +522,7 @@ namespace MODAMS.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Employees");
+                    b.ToTable("Employees", (string)null);
                 });
 
             modelBuilder.Entity("MODAMS.Models.LoginHistory", b =>
@@ -547,7 +547,7 @@ namespace MODAMS.DataAccess.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("LoginHistory");
+                    b.ToTable("LoginHistory", (string)null);
                 });
 
             modelBuilder.Entity("MODAMS.Models.NewsFeed", b =>
@@ -587,7 +587,7 @@ namespace MODAMS.DataAccess.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("NewsFeed");
+                    b.ToTable("NewsFeed", (string)null);
                 });
 
             modelBuilder.Entity("MODAMS.Models.Notification", b =>
@@ -626,7 +626,7 @@ namespace MODAMS.DataAccess.Migrations
 
                     b.HasIndex("NotificationSectionId");
 
-                    b.ToTable("Notifications");
+                    b.ToTable("Notifications", (string)null);
                 });
 
             modelBuilder.Entity("MODAMS.Models.NotificationSection", b =>
@@ -655,7 +655,7 @@ namespace MODAMS.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("NotificationSections");
+                    b.ToTable("NotificationSections", (string)null);
                 });
 
             modelBuilder.Entity("MODAMS.Models.Store", b =>
@@ -681,7 +681,7 @@ namespace MODAMS.DataAccess.Migrations
 
                     b.HasIndex("DepartmentId");
 
-                    b.ToTable("Stores");
+                    b.ToTable("Stores", (string)null);
                 });
 
             modelBuilder.Entity("MODAMS.Models.SubCategory", b =>
@@ -710,7 +710,7 @@ namespace MODAMS.DataAccess.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("SubCategories");
+                    b.ToTable("SubCategories", (string)null);
                 });
 
             modelBuilder.Entity("MODAMS.Models.TransactionType", b =>
@@ -727,7 +727,7 @@ namespace MODAMS.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TransactionTypes");
+                    b.ToTable("TransactionTypes", (string)null);
                 });
 
             modelBuilder.Entity("MODAMS.Models.Transfer", b =>
@@ -781,7 +781,7 @@ namespace MODAMS.DataAccess.Migrations
 
                     b.HasIndex("TransferStatusId");
 
-                    b.ToTable("Transfers");
+                    b.ToTable("Transfers", (string)null);
                 });
 
             modelBuilder.Entity("MODAMS.Models.TransferDetail", b =>
@@ -810,7 +810,7 @@ namespace MODAMS.DataAccess.Migrations
 
                     b.HasIndex("TransferId");
 
-                    b.ToTable("TransferDetails");
+                    b.ToTable("TransferDetails", (string)null);
                 });
 
             modelBuilder.Entity("MODAMS.Models.TransferStatus", b =>
@@ -827,7 +827,7 @@ namespace MODAMS.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TransferStatuses");
+                    b.ToTable("TransferStatuses", (string)null);
                 });
 
             modelBuilder.Entity("MODAMS.Models.VerificationRecord", b =>
@@ -870,7 +870,7 @@ namespace MODAMS.DataAccess.Migrations
 
                     b.HasIndex("VerificationScheduleId");
 
-                    b.ToTable("VerificationRecords");
+                    b.ToTable("VerificationRecords", (string)null);
                 });
 
             modelBuilder.Entity("MODAMS.Models.VerificationSchedule", b =>
@@ -912,7 +912,7 @@ namespace MODAMS.DataAccess.Migrations
 
                     b.HasIndex("StoreId");
 
-                    b.ToTable("VerificationSchedules");
+                    b.ToTable("VerificationSchedules", (string)null);
                 });
 
             modelBuilder.Entity("MODAMS.Models.VerificationTeam", b =>
@@ -939,7 +939,7 @@ namespace MODAMS.DataAccess.Migrations
 
                     b.HasIndex("VerificationScheduleId");
 
-                    b.ToTable("VerificationTeams");
+                    b.ToTable("VerificationTeams", (string)null);
                 });
 
             modelBuilder.Entity("MODAMS.Models.ViewModels.vwAsset", b =>
@@ -1073,7 +1073,7 @@ namespace MODAMS.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("vwAssets");
+                    b.ToTable("vwAssets", (string)null);
                 });
 
             modelBuilder.Entity("MODAMS.Models.ViewModels.vwAvailableEmloyees", b =>
@@ -1094,7 +1094,7 @@ namespace MODAMS.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("vwAvailableEmployees");
+                    b.ToTable("vwAvailableEmployees", (string)null);
                 });
 
             modelBuilder.Entity("MODAMS.Models.ViewModels.vwCategoryAsset", b =>
@@ -1117,7 +1117,7 @@ namespace MODAMS.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("vwCategoryAssets");
+                    b.ToTable("vwCategoryAssets", (string)null);
                 });
 
             modelBuilder.Entity("MODAMS.Models.ViewModels.vwDepartments", b =>
@@ -1156,7 +1156,7 @@ namespace MODAMS.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("vwDepartments");
+                    b.ToTable("vwDepartments", (string)null);
                 });
 
             modelBuilder.Entity("MODAMS.Models.ViewModels.vwDisposal", b =>
@@ -1201,7 +1201,7 @@ namespace MODAMS.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("vwDisposals");
+                    b.ToTable("vwDisposals", (string)null);
                 });
 
             modelBuilder.Entity("MODAMS.Models.ViewModels.vwEmployees", b =>
@@ -1256,7 +1256,7 @@ namespace MODAMS.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("vwEmployees");
+                    b.ToTable("vwEmployees", (string)null);
                 });
 
             modelBuilder.Entity("MODAMS.Models.ViewModels.vwStore", b =>
@@ -1302,7 +1302,7 @@ namespace MODAMS.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("vwStores");
+                    b.ToTable("vwStores", (string)null);
                 });
 
             modelBuilder.Entity("MODAMS.Models.ViewModels.vwStoreCategoryAsset", b =>
@@ -1330,7 +1330,7 @@ namespace MODAMS.DataAccess.Migrations
                     b.Property<decimal>("TotalCost")
                         .HasColumnType("decimal(18,2)");
 
-                    b.ToTable("vwStoreCategoryAssets");
+                    b.ToTable("vwStoreCategoryAssets", (string)null);
                 });
 
             modelBuilder.Entity("MODAMS.Models.ViewModels.vwTransfer", b =>
@@ -1395,7 +1395,7 @@ namespace MODAMS.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("vwTransfers");
+                    b.ToTable("vwTransfers", (string)null);
                 });
 
             modelBuilder.Entity("MODAMS.Models.ViewModels.vwTransferVoucher", b =>
@@ -1489,7 +1489,7 @@ namespace MODAMS.DataAccess.Migrations
                     b.Property<int>("TransferStatusId")
                         .HasColumnType("int");
 
-                    b.ToTable("vwTransferVouchers");
+                    b.ToTable("vwTransferVouchers", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
