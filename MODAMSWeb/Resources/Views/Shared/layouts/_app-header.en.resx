@@ -117,13 +117,55 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Dashboard" xml:space="preserve">
-    <value>Dashboard</value>
+  <data name="Categories" xml:space="preserve">
+    <value>Categories</value>
+  </data>
+  <data name="Departments" xml:space="preserve">
+    <value>Departments</value>
+  </data>
+  <data name="Disposals" xml:space="preserve">
+    <value>Disposals</value>
+  </data>
+  <data name="Donors" xml:space="preserve">
+    <value>Donors</value>
   </data>
   <data name="Employees" xml:space="preserve">
     <value>Employees</value>
   </data>
-  <data name="WelcomeMessage" xml:space="preserve">
-    <value>Welcome to the System</value>
+  <data name="English" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value>Logout</value>
+  </data>
+  <data name="Notifications" xml:space="preserve">
+    <value>Notifications</value>
+  </data>
+  <data name="Profile" xml:space="preserve">
+    <value>Profile</value>
+  </data>
+  <data name="Reports" xml:space="preserve">
+    <value>Reports</value>
+  </data>
+  <data name="ScanBarcode" xml:space="preserve">
+    <value>Scan Barcode</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="Somali" xml:space="preserve">
+    <value>Somali</value>
+  </data>
+  <data name="Stores" xml:space="preserve">
+    <value>Stores</value>
+  </data>
+  <data name="Transfers" xml:space="preserve">
+    <value>Transfers</value>
+  </data>
+  <data name="Verifications" xml:space="preserve">
+    <value>Verifications</value>
+  </data>
+  <data name="ViewAllNotifications" xml:space="preserve">
+    <value>View All Notifications</value>
   </data>
 </root>

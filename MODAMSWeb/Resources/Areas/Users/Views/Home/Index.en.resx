@@ -153,4 +153,22 @@
   <data name="Reporting" xml:space="preserve">
     <value>Reporting</value>
   </data>
+  <data name="Category" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="NumberOfAssets" xml:space="preserve">
+    <value>Number of Assets</value>
+  </data>
+  <data name="TotalCost" xml:space="preserve">
+    <value>Total Cost</value>
+  </data>
+  <data name="TotalAssets" xml:space="preserve">
+    <value>Total Assets</value>
+  </data>
+  <data name="CurrentValue" xml:space="preserve">
+    <value>Current Value</value>
+  </data>
+  <data name="TotalStores" xml:space="preserve">
+    <value>Total Stores</value>
+  </data>
 </root>

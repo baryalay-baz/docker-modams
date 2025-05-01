@@ -120,6 +120,9 @@
   <data name="Dashboard" xml:space="preserve">
     <value>Dashboard-ka</value>
   </data>
+  <data name="Employees" xml:space="preserve">
+    <value>Shaqaalaha</value>
+  </data>
   <data name="WelcomeMessage" xml:space="preserve">
     <value>Ku soo dhawow nidaamka</value>
   </data>

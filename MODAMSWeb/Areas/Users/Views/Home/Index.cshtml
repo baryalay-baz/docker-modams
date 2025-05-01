@@ -65,6 +65,11 @@
         min-height: 170px;
     }
 
+    .pnlHeightFooter{
+        max-height: 120px;
+        min-height: 120px;
+    }
+
     .legend span {
         padding-block: 3px;
         padding-left: 5px;
@@ -101,35 +106,35 @@
                 @{
                     foreach (var newsfeed in Model.NewsFeed)
                     {
-                                    <span class="news-item text-muted p-2 text-info">
-                                        <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512">
-                                            <style>
-                                                svg {
-                                                    fill: lightblue
-                                                }
-                                            </style>
-                                            <path d="M0 256L28.5 28c2-16 15.6-28 31.8-28H228.9c15 0 27.1 12.1 27.1 27.1c0 3.2-.6 6.5-1.7 9.5L208 160H347.3c20.2 0 36.7 16.4 36.7 36.7c0 7.4-2.2 14.6-6.4 20.7l-192.2 281c-5.9 8.6-15.6 13.7-25.9 13.7h-2.9c-15.7 0-28.5-12.8-28.5-28.5c0-2.3 .3-4.6 .9-6.9L176 288H32c-17.7 0-32-14.3-32-32z" />
-                                        </svg>
-                                        @newsfeed.Description
-                                    </span>
+                        <span class="news-item text-muted p-2 text-info">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512">
+                                <style>
+                                    svg {
+                                        fill: lightblue
+                                    }
+                                </style>
+                                <path d="M0 256L28.5 28c2-16 15.6-28 31.8-28H228.9c15 0 27.1 12.1 27.1 27.1c0 3.2-.6 6.5-1.7 9.5L208 160H347.3c20.2 0 36.7 16.4 36.7 36.7c0 7.4-2.2 14.6-6.4 20.7l-192.2 281c-5.9 8.6-15.6 13.7-25.9 13.7h-2.9c-15.7 0-28.5-12.8-28.5-28.5c0-2.3 .3-4.6 .9-6.9L176 288H32c-17.7 0-32-14.3-32-32z" />
+                            </svg>
+                            @newsfeed.Description
+                        </span>
 
-                                    @Html.Raw("&nbsp; &nbsp; &nbsp;")
+                        @Html.Raw("&nbsp; &nbsp; &nbsp;")
                     }
-                                @if (Model.NewsFeed.Count > 0)
+                    @if (Model.NewsFeed.Count > 0)
                     {
-                                    <a asp-area="Users" asp-controller="Home" asp-action="Newsfeed">
-                                        <span class="news-item text-muted p-2">
-                                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512">
-                                                <style>
-                                                    svg {
-                                                        fill: lightblue
-                                                    }
-                                                </style>
-                                                <path d="M0 256L28.5 28c2-16 15.6-28 31.8-28H228.9c15 0 27.1 12.1 27.1 27.1c0 3.2-.6 6.5-1.7 9.5L208 160H347.3c20.2 0 36.7 16.4 36.7 36.7c0 7.4-2.2 14.6-6.4 20.7l-192.2 281c-5.9 8.6-15.6 13.7-25.9 13.7h-2.9c-15.7 0-28.5-12.8-28.5-28.5c0-2.3 .3-4.6 .9-6.9L176 288H32c-17.7 0-32-14.3-32-32z" />
-                                            </svg>
-                                            more...
-                                        </span>
-                                    </a>
+                        <a asp-area="Users" asp-controller="Home" asp-action="Newsfeed">
+                            <span class="news-item text-muted p-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512">
+                                    <style>
+                                        svg {
+                                            fill: lightblue
+                                        }
+                                    </style>
+                                    <path d="M0 256L28.5 28c2-16 15.6-28 31.8-28H228.9c15 0 27.1 12.1 27.1 27.1c0 3.2-.6 6.5-1.7 9.5L208 160H347.3c20.2 0 36.7 16.4 36.7 36.7c0 7.4-2.2 14.6-6.4 20.7l-192.2 281c-5.9 8.6-15.6 13.7-25.9 13.7h-2.9c-15.7 0-28.5-12.8-28.5-28.5c0-2.3 .3-4.6 .9-6.9L176 288H32c-17.7 0-32-14.3-32-32z" />
+                                </svg>
+                                more...
+                            </span>
+                        </a>
                     }
 
                 }
@@ -268,9 +273,9 @@
                         <table id="tblCategories" class="table text-nowrap mb-0 table-bordered border-top border-bottom divShadow">
                             <thead class="bg-primary-gradient ms-auto divShadow">
                                 <tr>
-                                    <th class="text-white">Category</th>
-                                    <th class="text-white">Number of Assets</th>
-                                    <th class="text-white">Total Cost</th>
+                                    <th class="text-white">@Localizer["Category"]</th>
+                                    <th class="text-white">@Localizer["NumberOfAssets"]</th>
+                                    <th class="text-white">@Localizer["TotalCost"]</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -279,17 +284,17 @@
                                     {
                                         foreach (var sca in Model.CategoryAssets)
                                         {
-                                                        <tr>
-                                                            <td class="text-muted fs-15 fw-semibold">
-                                                                <a asp-action="AssetList" asp-controller="Assets"
-                                                                   asp-route-id="@sca.Id"
-                                                                   class="text-muted hover-effect">
-                                                                    @sca.CategoryName
-                                                                </a>
-                                                            </td>
-                                                            <td class="text-muted fs-15 fw-semibold">@sca.TotalAssets</td>
-                                                            <td class="text-muted fs-15 fw-semibold text-end">@sca.TotalCost.ToString("N2")</td>
-                                                        </tr>
+                                            <tr>
+                                                <td class="text-muted fs-15 fw-semibold">
+                                                    <a asp-action="AssetList" asp-controller="Assets"
+                                                       asp-route-id="@sca.Id"
+                                                       class="text-muted hover-effect">
+                                                        @sca.CategoryName
+                                                    </a>
+                                                </td>
+                                                <td class="text-muted fs-15 fw-semibold">@sca.TotalAssets</td>
+                                                <td class="text-muted fs-15 fw-semibold text-end">@sca.TotalCost.ToString("N2")</td>
+                                            </tr>
                                         }
                                         //<tr>
                                         //    <td class="text-muted fs-15 fw-semibold"><span class="text-bold float-end">Total Assets Registered:</span></td>
@@ -298,9 +303,9 @@
                                     }
                                     else
                                     {
-                                                    <tr>
-                                                        <td colspan="2">No Assets available!</td>
-                                                    </tr>
+                                        <tr>
+                                            <td colspan="2">No Assets available!</td>
+                                        </tr>
                                     }
                                 }
 
@@ -318,11 +323,11 @@
         <div class="row">
             <div class="col-md-3">
                 <div class="card ">
-                    <div class="card-body">
+                    <div class="card-body pnlHeightFooter">
                         <div class="row">
                             <div class="col-8">
-                                <h4 class="text-muted">Total Assets</h4>
-                                <p class="text-muted">@Model.TotalAssets()</p>
+                                <h5 class="text-muted">@Localizer["TotalAssets"]</h5>
+                                <p class="text-muted text-bold">@(Model.TotalAssets().ToString("N0") ?? "0")</p>
                             </div>
                             <div class="col-4">
                                 <div class="hpx-50 wpx-50 bg-primary br-5 d-flex align-items-center justify-content-center ms-auto">
@@ -335,11 +340,11 @@
             </div>
             <div class="col-md-3">
                 <div class="card ">
-                    <div class="card-body">
+                    <div class="card-body pnlHeightFooter">
                         <div class="row">
                             <div class="col-8">
-                                <h4 class="text-muted tw-semibold">Total Cost</h4>
-                                <p class="text-muted">@Model.TotalCost().ToString("n2")</p>
+                                <h5 class="text-muted tw-semibold">@Localizer["TotalCost"]</h5>
+                                <p class="text-muted text-bold">@(Model.TotalCost().ToString("n2") ?? "0")</p>
                             </div>
                             <div class="col-4">
                                 <div class="hpx-50 wpx-50 bg-secondary br-5 d-flex align-items-center justify-content-center ms-auto">
@@ -354,11 +359,11 @@
             </div>
             <div class="col-md-3">
                 <div class="card ">
-                    <div class="card-body">
+                    <div class="card-body pnlHeightFooter">
                         <div class="row">
                             <div class="col-8">
-                                <h4 class="text-muted">Current Value</h4>
-                                <p class="text-muted">@Model.CurrentValue.ToString("n2")</p>
+                                <h5 class="text-muted">@Localizer["CurrentValue"]</h5>
+                                <p class="text-muted text-bold">@(Model.CurrentValue.ToString("n2") ?? "0")</p>
                             </div>
                             <div class="col-4">
                                 <div class="hpx-50 wpx-50 bg-info br-5 d-flex align-items-center justify-content-center ms-auto">
@@ -371,11 +376,11 @@
             </div>
             <div class="col-md-3">
                 <div class="card ">
-                    <div class="card-body">
+                    <div class="card-body pnlHeightFooter">
                         <div class="row">
                             <div class="col-8">
-                                <h4 class="text-muted">Total Stores</h4>
-                                <p class="text-muted">@Model.StoreCount</p>
+                                <h5 class="text-muted">@Localizer["TotalStores"]</h5>
+                                <p class="text-muted text-bold">@Model.StoreCount</p>
                             </div>
                             <div class="col-4">
                                 <div class="hpx-50 wpx-50 bg-warning br-5 d-flex align-items-center justify-content-center ms-auto">
@@ -396,7 +401,7 @@
 
     <script>
         $(document).ready(function () {
-            makeDataTable('#tblCategories', '1', 5);
+            makeDataTable('#tblCategories', '1');
             pieChart();
 
             const marqueeContainer = document.getElementById("marquee-container");
@@ -422,7 +427,7 @@
         const pieChart = () => {
             var sData = '@Html.Raw(Json.Serialize(Model.CategoryAssets))';
             var result = tryParseJson(sData, "Chart Data");
-            
+
             if (result.status === "error") {
                 showErrorMessageJs(result.message);
                 return;
