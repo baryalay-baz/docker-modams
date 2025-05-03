@@ -10,6 +10,7 @@ using MODAMS.Models.ViewModels;
 using MODAMS.Models.ViewModels.Dto;
 using MODAMS.Utility;
 using Newtonsoft.Json;
+using System.Globalization;
 
 namespace MODAMS.ApplicationServices
 {
@@ -39,6 +40,8 @@ namespace MODAMS.ApplicationServices
         {
             try
             {
+                var isSomali = CultureInfo.CurrentUICulture.Name == "so";
+
                 var assets = await _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted && m.StoreId == storeId).Include(m => m.AssetStatus)
                 .Include(m => m.SubCategory).ThenInclude(m => m.Category)
                 .Include(m => m.Condition).Include(m => m.Donor)
@@ -50,7 +53,7 @@ namespace MODAMS.ApplicationServices
                 }
                 var categories = await _db.vwStoreCategoryAssets.Where(m => m.StoreId == storeId).Select(m => new SelectListItem
                 {
-                    Text = m.SubCategoryName,
+                    Text = isSomali ? m.SubCategoryNameSo : m.SubCategoryName,
                     Value = m.SubCategoryId.ToString(),
                     Selected = (m.SubCategoryId == subCategoryId)
                 }).ToListAsync();
@@ -76,7 +79,7 @@ namespace MODAMS.ApplicationServices
                 if (subCategory != null)
                 {
                     dto.SubCategoryId = subCategory.Id;
-                    dto.SubCategoryName = subCategory.SubCategoryName;
+                    dto.SubCategoryName = isSomali?subCategory.SubCategoryNameSo:subCategory.SubCategoryName;
                 }
 
                 dto.StoreId = storeId;
@@ -689,7 +692,7 @@ namespace MODAMS.ApplicationServices
             };
             _db.AssetHistory.Add(assetHistory);
             await _db.SaveChangesAsync();
-            
+
             return Result<string>.Success("Asset deleted successfully!");
         }
         public async Task<Result<string>> RecoverAssetAsync(int assetId)
@@ -704,7 +707,7 @@ namespace MODAMS.ApplicationServices
             {
                 return Result<string>.Failure("Asset not found!");
             }
-                        
+
             assetInDb.AssetStatusId = SD.Asset_Available; // Will have to change it to the previous Asset Status ID Later
             assetInDb.Remarks = $"Asset Recovered by {await _func.GetEmployeeNameAsync()}";
             await _db.SaveChangesAsync();

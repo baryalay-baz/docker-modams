@@ -1,64 +1,67 @@
-﻿@model MODAMS.Models.ViewModels.Dto.StoresDTO
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+
+@model MODAMS.Models.ViewModels.Dto.StoresDTO
+@inject IViewLocalizer Localizer
 
 <style>
     .card.divBackground {
-        position: relative;
-        overflow: hidden; /* Ensure the pseudo-element doesn't cause overflow */
+    position: relative;
+    overflow: hidden; /* Ensure the pseudo-element doesn't cause overflow */
     }
 
-        .card.divBackground::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('../assets/images/brand/FGS_Small4.png');
-            background-repeat: no-repeat;
-            background-position: center; /* Center the background image */
-            background-size: 15%; /* Increase the size by 10% */
-            opacity: 0.5; /* Adjust the opacity to your preference */
-            pointer-events: none; /* Allow interaction with content behind the pseudo-element */
-        }
+    .card.divBackground::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../assets/images/brand/FGS_Small4.png');
+    background-repeat: no-repeat;
+    background-position: center; /* Center the background image */
+    background-size: 15%; /* Increase the size by 10% */
+    opacity: 0.5; /* Adjust the opacity to your preference */
+    pointer-events: none; /* Allow interaction with content behind the pseudo-element */
+    }
 
     .tooltip-container {
-        position: relative;
-        display: inline-block;
-        cursor: pointer;
-        color: #333;
-        font-size: 16px;
-        padding: 10px;
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    color: #333;
+    font-size: 16px;
+    padding: 10px;
     }
 
     .tooltip {
-        visibility: hidden;
-        width: 240px; /* Adjust the width as needed */
-        background-color: #fff;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        border-radius: 8px;
-        position: absolute;
-        z-index: 1;
-        top: 125%;
-        left: 50%;
-        margin-left: -120px; /* Half of the width */
-        opacity: 0;
-        transition: opacity 0.3s, visibility 0.3s;
+    visibility: hidden;
+    width: 240px; /* Adjust the width as needed */
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    position: absolute;
+    z-index: 1;
+    top: 125%;
+    left: 50%;
+    margin-left: -120px; /* Half of the width */
+    opacity: 0;
+    transition: opacity 0.3s, visibility 0.3s;
     }
 
     .cardTooltip {
-        padding: 16px;
+    padding: 16px;
     }
 
     .tooltip-container:hover .tooltip {
-        visibility: visible;
-        opacity: 1;
+    visibility: visible;
+    opacity: 1;
     }
 </style>
 
 <!-- PAGE-HEADER -->
 <div class="page-header">
     <div>
-        <h1 class="page-title">Asset Stores</h1>
+        <h1 class="page-title">@Localizer["AssetStores"]</h1>
     </div>
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
@@ -74,10 +77,10 @@
             <div class="card-body p-4">
                 <div class="d-flex align-items-center justify-content-between">
 
-                    <div class="col-md-3"><input type="text" id="txtSearchStore" class="form-control" placeholder="search for store" /></div>
+                    <div class="col-md-3"><input type="text" id="txtSearchStore" class="form-control" placeholder="@Localizer["SearchForStore"]" /></div>
 
                     <div class="btn-list">
-                        <a class="btn btn-outline-info" data-bs-target="#mdl-asset-report" data-bs-toggle="modal"><i class="fe fe-printer"></i> Asset Reports</a>
+                        <a class="btn btn-outline-info" data-bs-target="#mdl-asset-report" data-bs-toggle="modal"><i class="fe fe-printer"></i> @Localizer["AssetReports"]</a>
                     </div>
                 </div>
             </div>
@@ -111,7 +114,7 @@
                                                                         </div>
                                                                         <div class="ms-1">
                                                                             <h6 class="mb-1"> <a class="float-start text-bold" asp-area="Users" asp-controller="Stores" asp-action="StoreDetails" asp-route-id="@store.Id">@store.Name</a></h6>
-                                                                            <span class="text-muted pe-2 fs-11 float-start mt-1">@Html.Raw(sStoreType)</span>
+                                                                            <span class="text-muted pe-2 fs-11 float-start mt-1">@Localizer[sStoreType]</span>
 
                                                                         </div>
                                                                     </div>
@@ -122,7 +125,7 @@
                                                         <div class="col-md-12 mt-4">
                                                             <div class="row align-items-center">
                                                                 <div class="col">
-                                                                    <p class="m-0 mb-2">Members</p>
+                                                                    <p class="m-0 mb-2">@Localizer["Members"]</p>
                                                                     <div class="avatar-list avatar-list-stacked">
                                                                         @{
                                                                             var storeEmps = Model.storeEmployees.Where(m => m.StoreId == store.Id).OrderByDescending(m => m.Role).ToList();
@@ -153,7 +156,7 @@
                                                                 </div>
                                                                 <div class="col-auto">
                                                                     <p class="mb-0">
-                                                                        <span class="text-muted d-block">Total Assets</span>
+                                                                        <span class="text-muted d-block">@Localizer["TotalAssets"]</span>
                                                                         <span class="text-primary text-bold float-end">@store.TotalCount</span>
                                                                     </p>
                                                                 </div>
@@ -163,11 +166,11 @@
                                                             <div class="d-f-ai-c-jc-c">
                                                                 <div class="row wp-100">
                                                                     <div class="col-md-6">
-                                                                        <span class="text-muted d-block float-start">Initial Cost</span><br />
+                                                                        <span class="text-muted d-block float-start">@Localizer["InitialCost"]</span><br />
                                                                         <span class="text-primary text-bold float-start">@Math.Round(Convert.ToDecimal(store.TotalCost),0).ToString("N0")</span>
                                                                     </div>
                                                                     <div class="col-md-6">
-                                                                        <span class="text-muted d-block float-end">Current Value</span><br />
+                                                                        <span class="text-muted d-block float-end">@Localizer["CurrentValue"]</span><br />
                                                                         <span class="text-primary text-bold float-end">@Math.Round(Convert.ToDecimal(store.DepCost),0).ToString("N0")</span>
                                                                     </div>
                                                                 </div>
@@ -188,7 +191,7 @@
                         </div>
                     </div>
                     <div class="card-footer">
-                        <a asp-area="Users" asp-controller="Home" asp-action="Index" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
+                        <a asp-area="Users" asp-controller="Home" asp-action="Index" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;@Localizer["Previous"]</a>
                     </div>
                 </div>
             </div>

@@ -11,6 +11,13 @@
         window.location.href = "/Users/Home/GlobalSearch/?barcode=" + $("#txtGlobalSearch").val();
     });
     loadNotificationsData();
+
+    window.addEventListener('resize', () => {
+        if (window.innerWidth < 768) {
+            document.body.classList.remove('sidenav-toggled'); // force hide sidebar on mobile
+        }
+    });
+
 });
 
 const loadProfileData = () => {

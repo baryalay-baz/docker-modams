@@ -12,6 +12,9 @@ namespace MODAMS.Models
         [Display(Name = "Department Name")]
         public string Name { get; set; } = string.Empty;
 
+        [Display(Name = "Department Name Somali")]
+        public string NameSo { get; set; } = string.Empty;
+
         [Required]
         [Display(Name ="Upper-level Department")]
         public int UpperLevelDeptId { get; set; }

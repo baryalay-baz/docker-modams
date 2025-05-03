@@ -19,5 +19,8 @@ namespace MODAMS.Models
         [Required]
         [Display(Name ="Category Name")]
         public string CategoryName { get; set; } = String.Empty;
+
+        [Display(Name ="Category Name Somali")]
+        public string CategoryNameSo { get; set; } = String.Empty;
     }
 }

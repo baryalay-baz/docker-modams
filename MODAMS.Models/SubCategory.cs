@@ -21,6 +21,9 @@ namespace MODAMS.Models
         [Display(Name = "Sub-Category Name")]
         public string SubCategoryName { get; set; } = String.Empty;
 
+        [Display(Name = "Sub-Category Name Somali")]
+        public string SubCategoryNameSo { get; set; } = String.Empty;
+
         [Required]
         [Display(Name ="Life Span (Months)")]
         public int LifeSpan { get; set; }

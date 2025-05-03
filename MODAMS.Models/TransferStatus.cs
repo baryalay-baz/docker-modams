@@ -15,5 +15,8 @@ namespace MODAMS.Models
         [Required]
         [Display(Name ="Transfer Status")]
         public string Status { get; set; }
+
+        [Display(Name = "Transfer Status Somali")]
+        public string StatusSo { get; set; } = String.Empty;
     }
 }

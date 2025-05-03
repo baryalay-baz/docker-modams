@@ -10,6 +10,7 @@ namespace MODAMS.Models.ViewModels
     {
         public int Id { get; set; } 
         public string CategoryName { get; set; } = string.Empty;
+        public string CategoryNameSo { get; set; } = string.Empty;
         public int TotalAssets { get; set; }
         public decimal TotalCost { get; set; }
     }

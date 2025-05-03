@@ -1,28 +1,31 @@
-﻿@model MODAMS.Models.ViewModels.Dto.StoreDTO
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@model MODAMS.Models.ViewModels.Dto.StoreDTO
+
+@inject IViewLocalizer Localizer
 
 @*<link href="~/assets/plugins/c3/c3.min.css" rel="stylesheet" />*@
 <link href="~/assets/plugins/c3-0.7.20/c3.min.css" rel="stylesheet" />
 
 <style>
     .legend span {
-        padding-block: 3px;
-        padding-left: 5px;
-        padding-right: 5px;
-        display: inline-block;
-        text-align: center;
-        cursor: pointer;
-        color: white;
+    padding-block: 3px;
+    padding-left: 5px;
+    padding-right: 5px;
+    display: inline-block;
+    text-align: center;
+    cursor: pointer;
+    color: white;
     }
 
     .hover-effect {
-        position: relative;
-        left: 0;
-        transition: left 0.3s ease-in-out;
+    position: relative;
+    left: 0;
+    transition: left 0.3s ease-in-out;
     }
 
-        .hover-effect:hover {
-            left: 10px;
-        }
+    .hover-effect:hover {
+    left: 10px;
+    }
 </style>
 
 <div class="page-header">
@@ -54,12 +57,12 @@
 <div class="row">
     <div class="col-xl col-md-12">
         <a asp-area="Users" asp-controller="Assets" asp-action="Index"
-           asp-route-id="@Model.StoreId" asp-route-subCategoryId="0">
+        asp-route-id="@Model.StoreId" asp-route-subCategoryId="0">
             <div class="card divShadow">
                 <div class="card-body">
                     <div class="row">
                         <div class="col-7">
-                            <h6 class="text-bold text-info">Registered</h6>
+                            <h6 class="text-bold text-info">@Localizer["Registered"]</h6>
                             <span class="text-info text-bold">@Model.StoreCategoryAssets.Sum(m => m.TotalAssets)</span>
                         </div>
                         <div class="col-5">
@@ -81,7 +84,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-7">
-                            <h6 class="text-bold text-primary">Received</h6>
+                            <h6 class="text-bold text-primary">@Localizer["Received"]</h6>
                             <span class="text-primary text-bold">@Model.ReceivedAssets</span>
                         </div>
                         <div class="col-5">
@@ -102,7 +105,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-7">
-                            <h6 class="text-bold text-success">Transferred</h6>
+                            <h6 class="text-bold text-success">@Localizer["Transferred"]</h6>
                             <span class="text-success text-bold">@Model.TransferredAssets</span>
                         </div>
                         <div class="col-5">
@@ -123,7 +126,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-7">
-                            <h6 class="text-bold text-warning">Handover</h6>
+                            <h6 class="text-bold text-warning">@Localizer["Handover"]</h6>
                             <span class="text-warning text-bold">0</span>
                         </div>
                         <div class="col-5">
@@ -144,7 +147,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-7">
-                            <h6 class="text-bold text-secondary">Disposed</h6>
+                            <h6 class="text-bold text-secondary">@Localizer["Disposed"]</h6>
                             <span class="text-secondary text-bold">@Model.Disposals</span>
                         </div>
                         <div class="col-5">
@@ -164,7 +167,7 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-7">
-                        <h6 class="text-bold text-muted">Balance</h6>
+                        <h6 class="text-bold text-muted">@Localizer["Balance"]</h6>
                         <span class="text-muted text-bold">@Model.GetBalance()</span>
                     </div>
                     <div class="col-5">
@@ -186,19 +189,21 @@
         <div class="card">
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-7 mb-3">
                         <div class="table-responsive">
                             <table id="tblCategories" class="table text-nowrap mb-0 table-bordered border-top border-bottom divShadow">
                                 <thead class="bg-primary-gradient ms-auto divShadow">
                                     <tr>
-                                        <th class="text-white">Category</th>
-                                        <th class="text-white">Sub Category</th>
-                                        <th class="text-white">Total Assets</th>
-                                        <th class="text-white">Total Cost</th>
+                                        <th class="text-white">@Localizer["Category"]</th>
+                                        <th class="text-white">@Localizer["SubCategory"]</th>
+                                        <th class="text-white">@Localizer["TotalAssets"]</th>
+                                        <th class="text-white">@Localizer["TotalCost"]</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @{
+                                        var isSomali = System.Globalization.CultureInfo.CurrentUICulture.Name == "so";
+
                                         if (Model.StoreCategoryAssets.Count > 0)
                                         {
                                             int nTotalAssets = 0;
@@ -221,7 +226,7 @@
                                                         if (CategoryCheck)
                                                         {
                                                             <td rowspan="@nCategoryCount" class="text-muted fs-15 fw-semibold">
-                                                                @sca.CategoryName
+                                                                @(isSomali ? sca.CategoryNameSo : sca.CategoryName)
                                                             </td>
                                                             CategoryCheck = false;
                                                         }
@@ -231,7 +236,7 @@
                                                            asp-route-id="@sca.StoreId"
                                                            asp-route-subCategoryId="@sca.SubCategoryId"
                                                            class="text-muted hover-effect">
-                                                            @sca.SubCategoryName
+                                                            @(isSomali ? sca.SubCategoryNameSo : sca.SubCategoryName)
                                                         </a>
                                                     </td>
                                                     <td class="text-muted fs-15 fw-semibold @sbgClass" style="text-align: right;">
@@ -250,7 +255,7 @@
 
                                             }
                                             <tr>
-                                                <td colspan="2" style="text-align:right; font-weight:bold;">Total:</td>
+                                                <td colspan="2" style="text-align:right; font-weight:bold;">@Localizer["Total"]:</td>
                                                 <td style="text-align:right; font-weight:bold;">@nTotalAssets</td>
                                                 <td style="text-align:right; font-weight:bold;">@nTotalAssetCost.ToString("N2")</td>
                                             </tr>
@@ -260,17 +265,33 @@
                             </table>
                         </div>
                     </div>
-                    <div class="col-md-6 container">
+                    <div class="col-md-5 container">
                         <div id="chart" class="mt-5"></div>
                     </div>
                 </div>
             </div>
             <div class="card-footer">
-                <a asp-area="Users" asp-controller="Stores" asp-action="Index" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
+                <a asp-area="Users" asp-controller="Stores" asp-action="Index" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;@Localizer["Previous"]</a>
             </div>
         </div>
     </div>
 </div>
+
+@{
+    var localizedStoreCategoryAssets = Model.StoreCategoryAssets.Select(sca => new
+    {
+        sca.CategoryId,
+        sca.SubCategoryId,
+        sca.StoreId,
+        CategoryName = isSomali ? sca.CategoryNameSo : sca.CategoryName,
+        SubCategoryName = isSomali ? sca.SubCategoryNameSo : sca.SubCategoryName,
+        sca.TotalAssets,
+        sca.TotalCost
+    }).ToList();
+
+    var jsonData = Json.Serialize(localizedStoreCategoryAssets);
+}
+
 <section id="dvChartData" style="display:none;">
 </section>
 @section scripts {
@@ -288,8 +309,9 @@
         });
 
         const pieChart = () => {
-            var sData = '@Html.Raw(Json.Serialize(Model.StoreCategoryAssets))';
-
+            //var sData = '@Html.Raw(Json.Serialize(Model.StoreCategoryAssets))';
+            var sData = '@Html.Raw(jsonData)';
+            
             if (sData == "No Records Found" || sData == "") {
             } else {
                 var Data = JSON.parse(sData);

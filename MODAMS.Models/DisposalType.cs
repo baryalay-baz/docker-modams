@@ -15,5 +15,8 @@ namespace MODAMS.Models
         [Required]
         [Display(Name ="Disposal Type")]
         public string Type { get; set; }
+
+        [Display(Name = "Disposal Type Somali")]
+        public string TypeSo { get; set; } = String.Empty;
     }
 }

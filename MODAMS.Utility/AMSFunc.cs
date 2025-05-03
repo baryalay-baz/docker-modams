@@ -10,6 +10,7 @@ using MODAMS.Models.ViewModels;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using DocumentFormat.OpenXml.Spreadsheet;
+using System.Globalization;
 
 
 namespace MODAMS.Utility
@@ -698,6 +699,8 @@ namespace MODAMS.Utility
         }
         public async Task<List<vwCategoryAsset>> GetvwCategoryAssetsAsync()
         {
+            var isSomali = CultureInfo.CurrentUICulture.Name == "so";
+
             var result = await _db.Assets
                 .Include(m => m.Store)
                 .Include(m => m.SubCategory).ThenInclude(m => m.Category)
@@ -705,7 +708,7 @@ namespace MODAMS.Utility
                 .GroupBy(a => new
                 {
                     a.SubCategory.Category.Id,
-                    a.SubCategory.Category.CategoryName
+                    CategoryName = isSomali ? a.SubCategory.Category.CategoryNameSo : a.SubCategory.Category.CategoryName
                 })
                 .Select(g => new vwCategoryAsset
                 {
@@ -718,6 +721,7 @@ namespace MODAMS.Utility
 
             return result;
         }
+
         public void LogException(ILogger logger, Exception ex)
         {
             if (ex.InnerException != null)

@@ -16,5 +16,8 @@ namespace MODAMS.Models
         [Display(Name ="Asset Status")]
         public string StatusName { get; set; }
 
+        [Display(Name = "Asset Status Somali")]
+        public string StatusNameSo { get; set; } = String.Empty;
+
     }
 }

@@ -19,6 +19,9 @@ namespace MODAMS.Models
         [Display(Name="Store Name")]
         public string Name { get; set; } = string.Empty;
 
+        [Display(Name = "Store Name Somali")]
+        public string NameSo { get; set; } = string.Empty;
+
         [Display(Name ="Description")]
         public string Description { get; set; } = String.Empty;
 
