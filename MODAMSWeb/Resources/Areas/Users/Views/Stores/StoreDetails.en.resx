@@ -123,6 +123,12 @@
   <data name="Category" xml:space="preserve">
     <value>Category</value>
   </data>
+  <data name="Cost" xml:space="preserve">
+    <value>Cost</value>
+  </data>
+  <data name="Count" xml:space="preserve">
+    <value>Count</value>
+  </data>
   <data name="Disposed" xml:space="preserve">
     <value>Disposed</value>
   </data>

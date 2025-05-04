@@ -171,4 +171,10 @@
   <data name="TotalStores" xml:space="preserve">
     <value>Wadarta Bakhaarrada</value>
   </data>
+  <data name="Count" xml:space="preserve">
+    <value>Tirin</value>
+  </data>
+  <data name="Cost" xml:space="preserve">
+    <value>Qiimaha</value>
+  </data>
 </root>

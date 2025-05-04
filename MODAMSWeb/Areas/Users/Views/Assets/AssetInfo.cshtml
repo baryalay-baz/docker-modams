@@ -1,13 +1,15 @@
-﻿@using System.Globalization
-@using MODAMS.Utility
+﻿@using MODAMS.Utility
+@using System.Globalization
+@using Microsoft.AspNetCore.Mvc.Localization
 @model MODAMS.Models.ViewModels.Dto.AssetInfoDTO
-
+@inject IViewLocalizer Localizer
 @inject MODAMS.Utility.IAMSFunc _func
+
 
 <link href="~/css/assetinfo.css" rel="stylesheet" />
 <div class="page-header">
     <div>
-        <h1 class="page-title">Asset Information</h1>
+        <h1 class="page-title">@Localizer["AssetInformation"]</h1>
     </div>
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
@@ -40,13 +42,13 @@
                 <div class="tabs-menu4 py-5 project-menu">
                     <nav class="nav border-bottom px-4 d-block d-lg-flex flex-2">
                         <a id="a_tab_1" class="nav-link border py-1 mb-2 mb-lg-0 br-lg-5 mx-1 mx-md-1 active" data-bs-toggle="tab" href="#tab_1">
-                            Overview
+                            @Localizer["Overview"]
                         </a>
                         <a id="a_tab_2" class="nav-link border py-1 mb-2 mb-lg-0 br-lg-5 mx-1 mx-md-1" data-bs-toggle="tab" href="#tab_2">
-                            Documents
+                            @Localizer["Documents"]
                         </a>
                         <a id="a_tab_3" class="nav-link border py-1 mb-2 mb-lg-0 br-lg-5 mx-1 mx-md-1" data-bs-toggle="tab" href="#tab_3">
-                            Pictures
+                            @Localizer["Pictures"]
                         </a>
                     </nav>
                 </div>
@@ -60,154 +62,158 @@
                 <!-- ROW -->
                 @{
                     string sHeight = "600px;";
+                    bool isSomali = CultureInfo.CurrentCulture.Name == "so" ? true : false;
+                    var sCategoryName = isSomali ? Model.Asset.SubCategory.SubCategoryNameSo : Model.Asset.SubCategory.SubCategoryName;
                 }
                 <div class="row">
                     <div class="col-xl-9 col-lg-12">
-                        <div class="card">
-                            <div class="card-header border-bottom d-block divShadow bg-info-gradient text-white">
-                                <h3 class="card-title text-bold">
-                                    @Model.Asset.SubCategory.SubCategoryName (@Model.Asset.Name)
-                                    @{
-                                        var employeeId = await _func.GetEmployeeIdAsync();
+                        <div id="dvMainContainer">
+                            <div class="card">
+                                <div class="card-header border-bottom d-block divShadow bg-info-gradient text-white">
+                                    <h3 class="card-title text-bold">
+                                        @(sCategoryName)
+                                        @{
+                                            var employeeId = await _func.GetEmployeeIdAsync();
 
-                                        employeeId = (User.IsInRole("User")) ? await _func.GetSupervisorIdAsync(employeeId) : employeeId;
-                                        if (employeeId == await _func.GetStoreOwnerIdAsync(await _func.GetStoreIdByAssetIdAsync(Model.Asset.Id)))
-                                        {
-                                            <a asp-action="EditAsset" asp-controller="Assets" asp-route-id="@Model.Asset.Id" class="ms-1" id="checkElement"><i class="fe fe-edit"></i></a>
+                                            employeeId = (User.IsInRole("User")) ? await _func.GetSupervisorIdAsync(employeeId) : employeeId;
+                                            if (employeeId == await _func.GetStoreOwnerIdAsync(await _func.GetStoreIdByAssetIdAsync(Model.Asset.Id)))
+                                            {
+                                                <a asp-action="EditAsset" asp-controller="Assets" asp-route-id="@Model.Asset.Id" class="ms-1" id="checkElement"><i class="fe fe-edit"></i></a>
+                                            }
+                                            <span class="float-end">@Model.Asset.Store.Name</span>
                                         }
-                                        <span class="float-end">@Model.Asset.Store.Name</span>
+                                    </h3>
+                                </div>
+                                @{
+                                    string sBackground = "";
+
+                                    switch (Model.Asset.AssetStatusId)
+                                    {
+                                        case SD.Asset_Available:
+                                            sBackground = "primary";
+                                            break;
+                                        case SD.Asset_Disposed:
+                                            sBackground = "secondary";
+                                            break;
+                                        case SD.Asset_HandedOver:
+                                            sBackground = "info";
+                                            break;
                                     }
-                                </h3>
-                            </div>
-                            @{
-                                string sBackground = "";
-
-                                switch (Model.Asset.AssetStatusId)
-                                {
-                                    case SD.Asset_Available:
-                                        sBackground = "primary";
-                                        break;
-                                    case SD.Asset_Disposed:
-                                        sBackground = "secondary";
-                                        break;
-                                    case SD.Asset_HandedOver:
-                                        sBackground = "info";
-                                        break;
                                 }
-                            }
-                            <div class="card-body p-0">
-                                <div class="border-top"></div>
-                                <div class="grid-container">
-                                    <div class="grid-item"><strong>Make :</strong> @Model.Asset.Make</div>
-                                    <div class="grid-item"><strong>Model :</strong> @Model.Asset.Model</div>
-                                    <div class="grid-item"><strong>Year :</strong> @Model.Asset.Year</div>
+                                <div class="card-body p-0">
+                                    <div class="border-top"></div>
+                                    <div class="grid-container">
+                                        <div class="grid-item"><strong>@Localizer["Make"] :</strong> @Model.Asset.Make</div>
+                                        <div class="grid-item"><strong>@Localizer["Model"] :</strong> @Model.Asset.Model</div>
+                                        <div class="grid-item"><strong>@Localizer["Year"] :</strong> @Model.Asset.Year</div>
 
-                                    <div class="grid-item"><strong>Category :</strong> @Model.Asset.SubCategory.SubCategoryName</div>
-                                    <div class="grid-item"><strong>Asset Name :</strong> @Model.Asset.Name</div>
-                                    <div class="grid-item"><strong>Manufacturing Country :</strong> @Model.Asset.ManufacturingCountry</div>
+                                        <div class="grid-item"><strong>@Localizer["Category"] :</strong> @sCategoryName</div>
+                                        <div class="grid-item"><strong>@Localizer["AssetName"] :</strong> @Model.Asset.Name</div>
+                                        <div class="grid-item"><strong>@Localizer["ManufacturingCountry"] :</strong> @Model.Asset.ManufacturingCountry</div>
 
-                                    <div class="grid-item"><strong>Serial Number :</strong> @Model.Asset.SerialNo</div>
-                                    <div class="grid-item"><strong>Barcode :</strong> @Model.Asset.Barcode</div>
-                                    <div class="grid-item"><strong>Purchase Order :</strong> @Model.Asset.PONumber</div>
+                                        <div class="grid-item"><strong>@Localizer["SerialNumber"] :</strong> @Model.Asset.SerialNo</div>
+                                        <div class="grid-item"><strong>@Localizer["Barcode"] :</strong> @Model.Asset.Barcode</div>
+                                        <div class="grid-item"><strong>@Localizer["PONumber"] :</strong> @Model.Asset.PONumber</div>
 
-                                    <div class="grid-item"><strong>Purchase Date :</strong> @Model.Asset.PurchaseDate?.ToString("MMMM dd, yyyy")</div>
-                                    <div class="grid-item"><strong>Receipt Date :</strong> @Model.Asset.RecieptDate?.ToString("MMMM dd, yyyy")</div>
-                                    <div class="grid-item"><strong>Procured By : </strong> @Model.Asset.ProcuredBy</div>
+                                        <div class="grid-item"><strong>@Localizer["PurchaseDate"] :</strong> @Model.Asset.PurchaseDate?.ToString("MMMM dd, yyyy")</div>
+                                        <div class="grid-item"><strong>@Localizer["ReceiptDate"] :</strong> @Model.Asset.RecieptDate?.ToString("MMMM dd, yyyy")</div>
+                                        <div class="grid-item"><strong>@Localizer["ProcuredBy"]: </strong> @Model.Asset.ProcuredBy</div>
 
-                                    <div class="grid-item"><strong>Condition : </strong> @Model.Asset.Condition.ConditionName</div>
-                                    <div class="grid-item"><strong>Donor :</strong> @Model.Asset.Donor.Name</div>
-                                    <div class="grid-item">
-                                        <strong>Status : </strong>
-                                        <span class="text-primary">
-                                            <span class="mb-0 mt-1 badge rounded-pill bg-@sBackground-transparent text-@sBackground">
-                                                @Model.Asset.AssetStatus.StatusName
+                                        <div class="grid-item"><strong>@Localizer["Condition"] : </strong> @Model.Asset.Condition.ConditionName</div>
+                                        <div class="grid-item"><strong>@Localizer["Donor"] :</strong> @Model.Asset.Donor.Name</div>
+                                        <div class="grid-item">
+                                            <strong>@Localizer["Status"] : </strong>
+                                            <span class="text-primary">
+                                                <span class="mb-0 mt-1 badge rounded-pill bg-@sBackground-transparent text-@sBackground">
+                                                    @(isSomali ? Model.Asset.AssetStatus.StatusNameSo : Model.Asset.AssetStatus.StatusName)
+                                                </span>
                                             </span>
-                                        </span>
+                                        </div>
+
+                                        <div class="grid-item full-width"><strong>@Localizer["Specifications"] : </strong> @Model.Asset.Specifications</div>
+
+                                        @if (Model.Asset.SubCategory.Category.Id == 16)
+                                        {
+                                            sHeight = "690px;";
+
+                                            <div class="grid-item"><strong>@Localizer["EngineNumber"]: </strong> @Model.Asset.Engine</div>
+                                            <div class="grid-item"><strong>@Localizer["ChasisNumber"]:</strong> @Model.Asset.Chasis</div>
+                                            <div class="grid-item"><strong>@Localizer["PlateNumber"]:</strong> @Model.Asset.Plate</div>
+                                        }
+                                        <div class="grid-item full-width"><strong>@Localizer["Remarks"] :</strong> @Model.Asset.Remarks</div>
+                                        @{
+                                            if (User.IsInRole("Administrator"))
+                                            {
+                                                <div class="grid-item full-width">
+                                                    <a asp-action="DeleteAsset" asp-controller="Assets" asp-route-id="@Model.Asset.Id" class="btn btn-secondary-gradient">
+                                                        <i class="fa fa-trash"></i>&nbsp;@Localizer["DeleteAsset"]
+                                                    </a>
+                                                </div>
+                                            }
+                                        }
                                     </div>
 
-                                    <div class="grid-item full-width"><strong>Specifications : </strong> @Model.Asset.Specifications</div>
-
-                                    @if (Model.Asset.SubCategory.Category.Id == 16)
-                                    {
-                                        sHeight = "690px;";
-
-                                        <div class="grid-item"><strong>Engine Number : </strong> @Model.Asset.Engine</div>
-                                        <div class="grid-item"><strong>Chassis Number:</strong> @Model.Asset.Chasis</div>
-                                        <div class="grid-item"><strong>Plate Number :</strong> @Model.Asset.Plate</div>
-                                    }
-                                    <div class="grid-item full-width"><strong>Remarks :</strong> @Model.Asset.Remarks</div>
-                                    @{
-                                        if (User.IsInRole("Administrator"))
-                                        {
-                                            <div class="grid-item full-width">
-                                                <a asp-action="DeleteAsset" asp-controller="Assets" asp-route-id="@Model.Asset.Id" class="btn btn-secondary-gradient">
-                                                    <i class="fa fa-trash"></i>&nbsp;Delete Asset
-                                                </a>
-                                            </div>
-                                        }
-                                    }
                                 </div>
 
                             </div>
-
-                        </div>
-                        <div class="card">
-                            <div class="card-body" style="height:170px;">
-                                <div class="row prjct-details">
-                                    <div class="col-xl-2 col-lg-12">
-                                        <div class="text-center border py-5 br-5 details">
-                                            <div>
-                                                <span class="m-0 text-muted">Initial Cost:</span>
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="row prjct-details">
+                                        <div class="col-xl-2 col-lg-12">
+                                            <div class="text-center border py-5 br-5 details">
+                                                <div>
+                                                    <span class="m-0 text-muted">@Localizer["InitialCost"]:</span>
+                                                </div>
+                                                <h5 class="mt-3 text-teritary">@Model.Asset.Cost.ToString("N2")</h5>
                                             </div>
-                                            <h5 class="mt-3 text-teritary">@Model.Asset.Cost.ToString("C2")</h5>
                                         </div>
-                                    </div>
-                                    @{
-                                        var cost = Model.Asset.Cost;
-                                        decimal depCost = 0;
-                                        decimal difference = 0;
-                                        string usePercentage = "0";
+                                        @{
+                                            var cost = Model.Asset.Cost;
+                                            decimal depCost = 0;
+                                            decimal difference = 0;
+                                            string usePercentage = "0";
 
-                                        if (cost > 0)
-                                        {
-                                            depCost = await _func.GetDepreciatedCostAsync(Model.Asset.Id);
-                                            difference = cost - depCost;
+                                            if (cost > 0)
+                                            {
+                                                depCost = await _func.GetDepreciatedCostAsync(Model.Asset.Id);
+                                                difference = cost - depCost;
 
-                                            usePercentage = ((difference * 100) / cost).ToString("N0");
+                                                usePercentage = ((difference * 100) / cost).ToString("N0");
+                                            }
+
                                         }
+                                        <div class="col-xl-8 col-lg-12">
+                                            <div class="text-center d-f-ai-c-jc-c border py-5 br-5">
+                                                <div class="wp-80">
+                                                    <div class="project-percentage medium-bar medium-lg">
+                                                        <div class="percentage-title mb-4">
+                                                            <span class="text-muted">
+                                                                <i class="fe fe-clipboard"></i>
+                                                                @Localizer["AssetUsage"]
+                                                            </span>
+                                                            <span class="progress-main font-weight-semibold text-13 mb-1">@usePercentage% / 100%</span>
+                                                        </div>
 
-                                    }
-                                    <div class="col-xl-8 col-lg-12">
-                                        <div class="text-center d-f-ai-c-jc-c border py-5 br-5">
-                                            <div class="wp-80">
-                                                <div class="project-percentage medium-bar medium-lg">
-                                                    <div class="percentage-title mb-4">
-                                                        <span class="text-muted">
-                                                            <i class="fe fe-clipboard"></i>
-                                                            Asset Usage
-                                                        </span>
-                                                        <span class="progress-main font-weight-semibold text-13 mb-1">@usePercentage% / 100%</span>
-                                                    </div>
-
-                                                    <div class="progress progress-md mb-3">
-                                                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-info"
-                                                             role="progressbar"
-                                                             style="width: @usePercentage%"
-                                                             area-valuenow="@usePercentage"
-                                                             aria-valuemin="0"
-                                                             aria-valuemax="100">
+                                                        <div class="progress progress-md mb-3">
+                                                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-info"
+                                                                 role="progressbar"
+                                                                 style="width: @usePercentage%"
+                                                                 area-valuenow="@usePercentage"
+                                                                 aria-valuemin="0"
+                                                                 aria-valuemax="100">
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="col-xl-2 col-lg-12">
-                                        <div class="text-center border py-5 br-5 details">
-                                            <div>
-                                                <span class="m-0 text-muted"> Current Value:</span>
+                                        <div class="col-xl-2 col-lg-12">
+                                            <div class="text-center border py-5 br-5 details">
+                                                <div>
+                                                    <span class="m-0 text-muted">@Localizer["CurrentValue"]:</span>
+                                                </div>
+                                                <h5 class="mt-3 text-danger">@depCost.ToString("N2")</h5>
                                             </div>
-                                            <h5 class="mt-3 text-danger">@depCost.ToString("C2")</h5>
                                         </div>
                                     </div>
                                 </div>
@@ -217,7 +223,7 @@
                     <div class="col-xl-3 col-lg-12" id="div2">
                         <div class="card">
                             <div class="card-header border-bottom d-block divShadow bg-info-gradient text-white">
-                                <h3 class="card-title text-bold">Asset History</h3>
+                                <h3 class="card-title text-bold">@Localizer["AssetHistory"]</h3>
                             </div>
                             <div class="card-body" style="height:@sHeight">
                                 <ul class="task-list">
@@ -230,10 +236,10 @@
                                             foreach (var history in Model.AssetHistory)
                                             {
                                                 string formattedDate = history.TimeStamp.ToString("dd-MMM-yyyy");
-
+                                                var sHistory = isSomali ? AssetHistoryTranslator.Translate(history.Description) : history.Description;
                                                 <li>
                                                     <i class="task-icon @_func.GetBGColor(nHistoryCounter)"></i>
-                                                    <p class="fw-semibold">@history.Description</p>
+                                                    <p class="fw-semibold">@sHistory</p>
                                                     <p class="text-muted fs-12">@formattedDate</p>
                                                 </li>
                                                 if (nHistoryCounter == 5 && historyCount > 5)
@@ -266,7 +272,7 @@
                             <div class="card-header border-bottom d-block divShadow bg-info-gradient text-white">
 
                                 <h3 class="card-title text-bold">
-                                    Asset Documents
+                                    @Localizer["AssetDocuments"]
 
                                     @{
                                         if (employeeId == await _func.GetStoreOwnerIdAsync(await _func.GetStoreIdByAssetIdAsync(Model.Asset.Id)))
@@ -281,9 +287,9 @@
                                     <table id="tblDocuments" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
                                         <thead>
                                             <tr>
-                                                <th class="bg-transparent border-bottom-0 w-5">S.No</th>
-                                                <th class="bg-transparent border-bottom-0">Document Name</th>
-                                                <th class="bg-transparent border-bottom-0">Download Link</th>
+                                                <th class="bg-transparent border-bottom-0 w-5">@Localizer["SNo"]</th>
+                                                <th class="bg-transparent border-bottom-0">@Localizer["DocumentName"]</th>
+                                                <th class="bg-transparent border-bottom-0">@Localizer["DownloadLink"]</th>
                                             </tr>
                                         </thead>
                                         <tbody class="table-body">
@@ -327,7 +333,7 @@
                         <div class="demo-gallery card">
                             <div class="card-header border-bottom d-block divShadow bg-info-gradient text-white">
                                 <h3 class="card-title text-bold">
-                                    Asset Picture Gallery
+                                    @Localizer["AssetPictureGallery"]
 
                                     @{
                                         if (employeeId == await _func.GetStoreOwnerIdAsync(await _func.GetStoreIdByAssetIdAsync(Model.Asset.Id)))
@@ -355,7 +361,7 @@
                                         }
                                         else
                                         {
-                                            <li><p class="text-center">No pictures uploaded!</p></li>
+                                            <li><p class="text-center">@Localizer["NoDataAvailable"]</p></li>
                                         }
 
                                     }
@@ -397,11 +403,11 @@
                 @{
                     if (categoryId > 0)
                     {
-                        <a asp-action="AssetList" asp-controller="Assets" asp-route-id="@categoryId" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
+                        <a asp-action="AssetList" asp-controller="Assets" asp-route-id="@categoryId" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;@Localizer["Previous"]</a>
                     }
                     else
                     {
-                        <a asp-action="Index" asp-controller="Assets" asp-route-id="@Model.Asset.StoreId" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
+                        <a asp-action="Index" asp-controller="Assets" asp-route-id="@Model.Asset.StoreId" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;@Localizer["Previous"]</a>
                     }
                 }
 

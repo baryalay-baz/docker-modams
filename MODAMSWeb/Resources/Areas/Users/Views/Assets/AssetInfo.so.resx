@@ -117,46 +117,130 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Balance" xml:space="preserve">
-    <value>Baaqi</value>
+  <data name="AssetCategory" xml:space="preserve">
+    <value>Nooca Hantida</value>
+  </data>
+  <data name="AssetDocuments" xml:space="preserve">
+    <value>Dokumentiyada Hantida</value>
+  </data>
+  <data name="AssetHistory" xml:space="preserve">
+    <value>Taariikhda Hantida</value>
+  </data>
+  <data name="AssetInformation" xml:space="preserve">
+    <value>Macluumaadka Hantida</value>
+  </data>
+  <data name="AssetName" xml:space="preserve">
+    <value>Nooca Hantida</value>
+  </data>
+  <data name="AssetPictureGallery" xml:space="preserve">
+    <value>Keydka Sairrada Hantida</value>
+  </data>
+  <data name="AssetRegisteredBy" xml:space="preserve">
+    <value>Hantida Waxaa Diiwaangeliyey</value>
+  </data>
+  <data name="AssetUsage" xml:space="preserve">
+    <value>Isticmaalka Hantida</value>
+  </data>
+  <data name="Barcode" xml:space="preserve">
+    <value>Barcode-ka</value>
   </data>
   <data name="Category" xml:space="preserve">
-    <value>Nooc</value>
+    <value>Nooca</value>
   </data>
-  <data name="Cost" xml:space="preserve">
-    <value>Qiimaha</value>
+  <data name="Condition" xml:space="preserve">
+    <value>Xaaladda</value>
   </data>
-  <data name="Count" xml:space="preserve">
-    <value>Tirin</value>
+  <data name="CurrentValue" xml:space="preserve">
+    <value>Qiimaha Waqtiga</value>
   </data>
-  <data name="Disposed" xml:space="preserve">
-    <value>Laga takhalusey</value>
+  <data name="DeleteAsset" xml:space="preserve">
+    <value>Tirtir Hantida</value>
   </data>
-  <data name="Handover" xml:space="preserve">
-    <value>La-dhiibey</value>
+  <data name="DepartmentName" xml:space="preserve">
+    <value>Magaca Waaxda</value>
+  </data>
+  <data name="Documents" xml:space="preserve">
+    <value>Dokumentiyada</value>
+  </data>
+  <data name="Donor" xml:space="preserve">
+    <value>Deeq-bixiye</value>
+  </data>
+  <data name="DownloadLink" xml:space="preserve">
+    <value>Soo-dejiso Link-iga</value>
+  </data>
+  <data name="EditDocuments" xml:space="preserve">
+    <value>Tifaftir Hantida</value>
+  </data>
+  <data name="EditPictures" xml:space="preserve">
+    <value>Tifaftir Sawirrada</value>
+  </data>
+  <data name="InitialCost" xml:space="preserve">
+    <value>Qiimaha Hore</value>
+  </data>
+  <data name="Make" xml:space="preserve">
+    <value>Sharikadda Sameysey</value>
+  </data>
+  <data name="ManufacturingCountry" xml:space="preserve">
+    <value>Dalka Lagu Soo Farsameeyey</value>
+  </data>
+  <data name="Model" xml:space="preserve">
+    <value>Model-ka</value>
+  </data>
+  <data name="NoDataAvailable" xml:space="preserve">
+    <value>Xog Lagama Hayo</value>
+  </data>
+  <data name="Overview" xml:space="preserve">
+    <value>Guudmar</value>
+  </data>
+  <data name="Pictures" xml:space="preserve">
+    <value>Sawirrada</value>
+  </data>
+  <data name="PONumber" xml:space="preserve">
+    <value>Lambarka Dalabka Wax-soo-iibsiga</value>
   </data>
   <data name="Previous" xml:space="preserve">
     <value>Hore</value>
   </data>
-  <data name="Received" xml:space="preserve">
-    <value>La-heley</value>
+  <data name="ProcuredBy" xml:space="preserve">
+    <value>Cidda soo iibisey</value>
   </data>
-  <data name="Registered" xml:space="preserve">
-    <value>Diiwaangashan</value>
+  <data name="PurchaseDate" xml:space="preserve">
+    <value>Taariikhda Soo-iibsashada</value>
   </data>
-  <data name="SubCategory" xml:space="preserve">
-    <value>Nooc-hoosaad</value>
+  <data name="ReceiptDate" xml:space="preserve">
+    <value>Taariikhda La-heley</value>
   </data>
-  <data name="Total" xml:space="preserve">
-    <value>Wadarta</value>
+  <data name="Remarks" xml:space="preserve">
+    <value>Faallooyin</value>
   </data>
-  <data name="TotalAssets" xml:space="preserve">
-    <value>Wadarta Hantida</value>
+  <data name="SerialNumber" xml:space="preserve">
+    <value>Tirada Taxan</value>
   </data>
-  <data name="TotalCost" xml:space="preserve">
-    <value>Wadarta Kharashka</value>
+  <data name="Status" xml:space="preserve">
+    <value>Heerka</value>
   </data>
-  <data name="Transferred" xml:space="preserve">
-    <value>La-warejiyey</value>
+  <data name="Specifications" xml:space="preserve">
+    <value>Tilmaamaha Gaarka ah ee Farsamo</value>
+  </data>
+  <data name="Year" xml:space="preserve">
+    <value>Sanadka</value>
+  </data>
+  <data name="EngineNumber" xml:space="preserve">
+    <value>Lambarka Mashiinka</value>
+  </data>
+  <data name="ChasisNumber" xml:space="preserve">
+    <value>Lambarka Shaandhada</value>
+  </data>
+  <data name="PlateNumber" xml:space="preserve">
+    <value>Lambarka Taarikada</value>
+  </data>
+  <data name="TransferHistoryMessage1" xml:space="preserve">
+    <value>Hantidii Laga Soo Wareejiyay </value>
+  </data>
+  <data name="TransferHistoryMessage2" xml:space="preserve">
+    <value>-aad Ee </value>
+  </data>
+  <data name="DocumentName" xml:space="preserve">
+    <value>Magaca Dukumentiga</value>
   </data>
 </root>
