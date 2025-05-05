@@ -79,7 +79,7 @@ namespace MODAMS.ApplicationServices
                 if (subCategory != null)
                 {
                     dto.SubCategoryId = subCategory.Id;
-                    dto.SubCategoryName = isSomali?subCategory.SubCategoryNameSo:subCategory.SubCategoryName;
+                    dto.SubCategoryName = isSomali ? subCategory.SubCategoryNameSo : subCategory.SubCategoryName;
                 }
 
                 dto.StoreId = storeId;
@@ -98,6 +98,8 @@ namespace MODAMS.ApplicationServices
         {
             try
             {
+                var isSomali = CultureInfo.CurrentUICulture.Name == "so";
+
                 var assets = await _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted).Include(m => m.AssetStatus)
                 .Include(m => m.SubCategory).Include(m => m.Condition).Include(m => m.Donor)
                 .Include(m => m.Store).ToListAsync();
@@ -108,7 +110,7 @@ namespace MODAMS.ApplicationServices
                 }
                 var categories = _db.Categories.ToList().Select(m => new SelectListItem
                 {
-                    Text = m.CategoryName,
+                    Text = isSomali ? m.CategoryNameSo : m.CategoryName,
                     Value = m.Id.ToString(),
                     Selected = (m.Id == storeId)
                 });
@@ -119,9 +121,16 @@ namespace MODAMS.ApplicationServices
                     CategorySelectList = categories,
                 };
                 var category = await _db.Categories.Where(m => m.Id == storeId).FirstOrDefaultAsync();
-
-                dto.CategoryId = (category == null) ? 0 : category.Id;
-                dto.CategoryName = (category == null) ? "All Assets" : category.CategoryName;
+                if (category == null)
+                {
+                    dto.CategoryId = 0;
+                    dto.CategoryName = isSomali ? "Hantida oo Dhan" : "All Assets";
+                }
+                else
+                {
+                    dto.CategoryId = category.Id;
+                    dto.CategoryName = isSomali ? category.CategoryNameSo : category.CategoryName;
+                }
 
                 return Result<AssetListDTO>.Success(dto);
             }
@@ -494,7 +503,9 @@ namespace MODAMS.ApplicationServices
                 }
 
                 // Fetch asset documents
-                var documents = await _db.AssetDocuments.Where(m => m.AssetId == id).ToListAsync();
+                var documents = await _db.AssetDocuments.Where(m => m.AssetId == id)
+                    .Include(m => m.DocumentType)
+                    .ToListAsync();
 
                 // Fetch asset pictures
                 var assetPictures = await _db.AssetPictures.Where(m => m.AssetId == id).ToListAsync();

@@ -514,6 +514,15 @@ namespace MODAMS.Utility
                 case 5:
                     sResult = "bg-danger";
                     break;
+                case 6:
+                    sResult = "bg-primary";
+                    break;
+                case 7:
+                    sResult = "bg-secondary";
+                    break;
+                case 8:
+                    sResult = "bg-warning";
+                    break;
             }
             return sResult;
         }

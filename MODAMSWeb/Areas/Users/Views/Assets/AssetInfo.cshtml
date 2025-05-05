@@ -61,12 +61,11 @@
             <div class="tab-pane active" id="tab_1">
                 <!-- ROW -->
                 @{
-                    string sHeight = "600px;";
                     bool isSomali = CultureInfo.CurrentCulture.Name == "so" ? true : false;
                     var sCategoryName = isSomali ? Model.Asset.SubCategory.SubCategoryNameSo : Model.Asset.SubCategory.SubCategoryName;
                 }
                 <div class="row">
-                    <div class="col-xl-9 col-lg-12">
+                    <div class="col-md-9">
                         <div id="dvMainContainer">
                             <div class="card">
                                 <div class="card-header border-bottom d-block divShadow bg-info-gradient text-white">
@@ -134,8 +133,6 @@
 
                                         @if (Model.Asset.SubCategory.Category.Id == 16)
                                         {
-                                            sHeight = "690px;";
-
                                             <div class="grid-item"><strong>@Localizer["EngineNumber"]: </strong> @Model.Asset.Engine</div>
                                             <div class="grid-item"><strong>@Localizer["ChasisNumber"]:</strong> @Model.Asset.Chasis</div>
                                             <div class="grid-item"><strong>@Localizer["PlateNumber"]:</strong> @Model.Asset.Plate</div>
@@ -220,12 +217,12 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-xl-3 col-lg-12" id="div2">
+                    <div class="col-md-3" id="div2">
                         <div class="card">
                             <div class="card-header border-bottom d-block divShadow bg-info-gradient text-white">
                                 <h3 class="card-title text-bold">@Localizer["AssetHistory"]</h3>
                             </div>
-                            <div class="card-body" style="height:@sHeight">
+                            <div class="card-body" id="dvHistoryCard" style="overflow-y: auto;">
                                 <ul class="task-list">
                                     @{
                                         int historyCount = Model.AssetHistory.Count;
@@ -242,7 +239,7 @@
                                                     <p class="fw-semibold">@sHistory</p>
                                                     <p class="text-muted fs-12">@formattedDate</p>
                                                 </li>
-                                                if (nHistoryCounter == 5 && historyCount > 5)
+                                                if (nHistoryCounter == 8 && historyCount > 8)
                                                 {
                                                     <li>
                                                         <i class="task-icon bg-primary"></i>
@@ -305,7 +302,7 @@
                                                         sCounter = nCounter < 10 ? '0' + nCounter.ToString() : nCounter.ToString();
                                                         <tr>
                                                             <td class="text-muted text-center fs-15 fw-semibold">@sCounter.</td>
-                                                            <td class="text-muted fs-15 fw-semibold">@doc.Name</td>
+                                                            <td class="text-muted fs-15 fw-semibold">@(isSomali ? doc.DocumentType.NameSo : doc.DocumentType.Name)</td>
                                                             <td class="text-muted fs-15 fw-semibold">
                                                                 @{
                                                                     if (doc.Id > 0)
@@ -434,9 +431,31 @@
             hideMenu();
 
             makeDataTable('#tblDocuments', 10);
+            adjustMainContainerHeight();
 
             setTab();
         });
+
+        function adjustMainContainerHeight() {
+            const mainContainer = document.getElementById('dvMainContainer');
+            mainContainer.style.height = 'auto'; // Reset height
+            mainContainer.style.height = `${mainContainer.scrollHeight}px`; // Set to content height
+            setCardBodyHeight();
+        }
+
+        function setCardBodyHeight() {
+            const mainContainer = document.getElementById('dvMainContainer');
+
+            const cardBody = document.getElementById('dvHistoryCard');
+
+            if (mainContainer && cardBody) {
+                cardBody.style.height = `${mainContainer.scrollHeight - 80}px`;
+            }
+
+            console.log(`${mainContainer.scrollHeight} - ${cardBody.scrollHeight}`);
+
+        }
+
         const setTab = () => {
             var tab = '@TempData["tab"]';
 

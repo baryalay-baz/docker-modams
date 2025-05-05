@@ -1,9 +1,13 @@
 ﻿@using MODAMS.Utility;
+@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization
+
 @model MODAMS.Models.ViewModels.Dto.AssetListDTO
+@inject IViewLocalizer Localizer
 
 <div class="page-header">
     <div>
-        <h1 class="page-title">Assets</h1>
+        <h1 class="page-title">@Localizer["AssetList"]</h1>
     </div>
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
@@ -17,17 +21,16 @@
         <div class="card divShadow">
             <div class="card-body p-4">
                 <div class="d-flex align-items-center justify-content-between">
-                    <h4 class="m-0">@Model.CategoryName (Count: @Model.TotalAssets())</h4>
+                    <h4 class="m-0">@Model.CategoryName (@Localizer["Count"]: @Model.TotalAssets())</h4>
                     <select asp-for="@Model.CategoryId" asp-items="@Model.CategorySelectList"
                             class="form-control select2 form-select">
-                        <option value="0">All Assets</option>
+                        <option value="0">@Localizer["AllAssets"]</option>
                     </select>
                 </div>
             </div>
         </div>
     </div>
     <div class="col-md-12 mb-3">
-        
     </div>
     <div class="col-12 col-sm-12">
         <div class="card">
@@ -36,23 +39,25 @@
                     <table id="tblAssets" class="table text-nowrap mb-0 table-bordered key-buttons border-top border-bottom project-list-main">
                         <thead class="bg-primary-gradient ms-auto divShadow">
                             <tr>
-                                <th class="text-white bg-transparent border-bottom-0 w-5">S.No</th>
-                                <th class="text-white bg-transparent border-bottom-0 w-10">Category</th>
-                                <th class="text-white bg-transparent border-bottom-0 w-10">Make</th>
-                                <th class="text-white bg-transparent border-bottom-0 w-10">Model</th>
-                                <th class="text-white bg-transparent border-bottom-0 w-20">Asset Name</th>
-                                <th class="text-white bg-transparent border-bottom-0 w-10">Identification</th>
-                                <th class="text-white bg-transparent border-bottom-0 w-10">Store Name</th>
-                                <th class="text-white bg-transparent border-bottom-0 w-10">Status</th>
-                                <th class="text-white bg-transparent border-bottom-0 w-10 no-btn">Action</th>
+                                <th class="text-white bg-transparent border-bottom-0 w-5">@Localizer["SNo"]</th>
+                                <th class="text-white bg-transparent border-bottom-0 w-10">@Localizer["Category"]</th>
+                                <th class="text-white bg-transparent border-bottom-0 w-10">@Localizer["Make"]</th>
+                                <th class="text-white bg-transparent border-bottom-0 w-10">@Localizer["Model"]</th>
+                                <th class="text-white bg-transparent border-bottom-0 w-20">@Localizer["AssetName"]</th>
+                                <th class="text-white bg-transparent border-bottom-0 w-10">@Localizer["Identification"]</th>
+                                <th class="text-white bg-transparent border-bottom-0 w-10">@Localizer["Store"]</th>
+                                <th class="text-white bg-transparent border-bottom-0 w-10">@Localizer["Status"]</th>
+                                <th class="text-white bg-transparent border-bottom-0 w-10 no-btn">@Localizer["Action"]</th>
                             </tr>
                         </thead>
                         <tbody class="table-body">
                             @{
+                                var isSomali = CultureInfo.CurrentUICulture.Name == "so";
                                 int nCounter = 0;
                                 string sCounter = "0";
                                 string sBackground = "primary";
                                 string sIdentification = "";
+
                                 foreach (var asset in Model.AssetList)
                                 {
                                     nCounter++;
@@ -73,7 +78,7 @@
                                     }
                                     <tr>
                                         <td class="text-muted text-center fs-15 fw-semibold">@sCounter.</td>
-                                        <td class="text-muted fs-15 fw-semibold">@asset.SubCategory.SubCategoryName</td>
+                                        <td class="text-muted fs-15 fw-semibold">@(isSomali ? asset.SubCategory.SubCategoryNameSo : asset.SubCategory.SubCategoryName)</td>
                                         <td class="text-muted fs-15 fw-semibold">@asset.Make</td>
                                         <td class="text-muted fs-15 fw-semibold">@asset.Model</td>
                                         <td class="text-muted fs-15 fw-semibold">@asset.Name</td>
@@ -82,17 +87,15 @@
                                         <td class="text-muted fs-15 fw-semibold">
                                             <span class="text-primary">
                                                 <span class="mb-0 mt-1 badge rounded-pill bg-@sBackground-transparent text-@sBackground">
-                                                    @asset.AssetStatus.StatusName
+                                                    @(isSomali ? asset.AssetStatus.StatusNameSo : asset.AssetStatus.StatusName)
                                                 </span>
                                             </span>
                                         </td>
                                         <td class="text-muted fs-15 fw-semibold">
                                             <div class="d-flex align-items-stretch">
-                                                <a asp-controller="Assets" asp-action="AssetInfo" asp-route-id="@asset.Id" asp-route-categoryId="@asset.SubCategory.CategoryId" class="btn btn-sm btn-outline-info border me-2" data-bs-toggle="tooltip" data-bs-original-title="Asset Information">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
-                                                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-                                                        <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
-                                                    </svg>
+                                                <a asp-controller="Assets" asp-action="AssetInfo" asp-route-id="@asset.Id"
+                                                   class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="tooltip" data-bs-original-title="@Localizer["AssetInformation"]">
+                                                    <i class="fe fe-info"></i>
                                                 </a>
                                             </div>
                                         </td>
@@ -107,7 +110,7 @@
                 <div class="row">
                     @*<hr class="customHR" />*@
                     <div class="col-sm-12">
-                        <a asp-action="Index" asp-controller="Home" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
+                        <a asp-action="Index" asp-controller="Home" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;@Localizer["Previous"]</a>
                     </div>
 
                 </div>
@@ -119,7 +122,7 @@
 @section scripts {
 
     <!-- PROJECT-LIST JS-->
-    @*<script src="~/assets/js/project-list.js"></script>*@
+@*<script src="~/assets/js/project-list.js"></script>*@
     <script>
         $(document).ready(function () {
             hideMenu();
@@ -129,7 +132,7 @@
             $('#CategoryId').on("change", ()=>{
                 window.location.href = '/Users/Assets/AssetList/' + $("#CategoryId").val();
             });
-            
+
         });
     </script>
 

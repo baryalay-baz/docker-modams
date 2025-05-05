@@ -15,10 +15,12 @@ namespace MODAMS.Models
         [Required]
         [Display(Name="Document Type")]
         public string Name { get; set; } = String.Empty;
-
+        public string NameSo { get; set; } = String.Empty;
         [Required]
         [Display(Name="Is Required")]
         public bool IsRequired { get; set; }
+
+        
 
     }
 }
