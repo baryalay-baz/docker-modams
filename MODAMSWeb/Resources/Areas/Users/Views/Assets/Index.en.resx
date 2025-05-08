@@ -120,11 +120,17 @@
   <data name="Action" xml:space="preserve">
     <value>Action</value>
   </data>
+  <data name="AllAssets" xml:space="preserve">
+    <value>All Assets</value>
+  </data>
   <data name="AssetDocuments" xml:space="preserve">
     <value>Asset Documents</value>
   </data>
   <data name="AssetInformation" xml:space="preserve">
     <value>Asset Information</value>
+  </data>
+  <data name="AssetList" xml:space="preserve">
+    <value>Asset List</value>
   </data>
   <data name="AssetName" xml:space="preserve">
     <value>Asset Name</value>

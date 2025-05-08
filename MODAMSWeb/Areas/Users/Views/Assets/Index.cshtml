@@ -7,7 +7,7 @@
 
 <div class="page-header">
     <div>
-        <h1 class="page-title">@Localizer["Assets"]</h1>
+        <h1 class="page-title">@Localizer["AssetList"]</h1>
     </div>
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
@@ -42,7 +42,7 @@
                             <label asp-for="@Model.SubCategoryId" class="mr-2 mb-0" style="vertical-align: middle;">filter:</label>
                             <select asp-for="@Model.SubCategoryId" asp-items="@Model.CategorySelectList"
                             class="form-control select2 form-select">
-                                <option value="0">All Assets</option>
+                                <option value="0">@Localizer["AllAssets"]</option>
                             </select>
                         </div>
                     </div>

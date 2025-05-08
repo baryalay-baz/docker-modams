@@ -1,4 +1,8 @@
-﻿@model MODAMS.Models.ViewModels.Dto.AssetEditDTO
+﻿@using System.Globalization
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+@model MODAMS.Models.ViewModels.Dto.AssetEditDTO
 
 
 <style>
@@ -10,7 +14,7 @@
 <!-- PAGE-HEADER -->
 <div class="page-header">
     <div>
-        <h1 class="page-title">Edit Asset</h1>
+        <h1 class="page-title">@Localizer["EditAsset"]</h1>
     </div>
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
@@ -28,15 +32,15 @@
     <div class="col-lg-12 col-md-12">
         <div class="card">
             <div class="card-header border-bottom bg-info-gradient divShadow d-flex justify-content-between align-items-center">
-                <h4 class="mb-0 text-white">Asset Details</h4>
+                <h4 class="mb-0 text-white">@Localizer["AssetDetails"]</h4>
                 <div class="btn-group">
-                    <a asp-action="EditAsset" asp-controller="Assets" asp-route-id="@Model.Id" class="btn btn-info" data-bs-toggle="tooltip" data-bs-original-title="Edit Asset">
+                    <a asp-action="EditAsset" asp-controller="Assets" asp-route-id="@Model.Id" class="btn btn-info" data-bs-toggle="tooltip" data-bs-original-title="@Localizer["EditAsset"]">
                         <i class="fa fa-edit"></i>
                     </a>
-                    <a asp-action="AssetDocuments" asp-controller="Assets" asp-route-id="@Model.Id" class="btn btn-outline-warning" data-bs-toggle="tooltip" data-bs-original-title="Asset Documents">
+                    <a asp-action="AssetDocuments" asp-controller="Assets" asp-route-id="@Model.Id" class="btn btn-outline-warning" data-bs-toggle="tooltip" data-bs-original-title="@Localizer["AssetDocuments"]">
                         <i class="fa fa-folder"></i>
                     </a>
-                    <a asp-action="AssetPictures" asp-controller="Assets" asp-route-id="@Model.Id" class="btn btn-outline-primary" data-bs-toggle="tooltip" data-bs-original-title="Asset Pictures">
+                    <a asp-action="AssetPictures" asp-controller="Assets" asp-route-id="@Model.Id" class="btn btn-outline-primary" data-bs-toggle="tooltip" data-bs-original-title="@Localizer["AssetPictures"]">
                         <i class="fa fa-image"></i>
                     </a>
                 </div>
@@ -55,7 +59,7 @@
                                 <div class="row">
                                     <div class="col-sm-4">
                                         <div class="mb-3 form-group">
-                                            <label asp-for="CategoryId"></label>
+                                            <label>@Localizer["Category"]</label>
                                             <select asp-for="CategoryId" asp-items="@Model.Categories"
                                                     class="form-control select2 form-select">
                                             </select>
@@ -64,7 +68,7 @@
                                     </div>
                                     <div class="col-sm-4">
                                         <div class="mb-3 form-group">
-                                            <label asp-for="SubCategoryId"></label>
+                                            <label>@Localizer["SubCategory"]</label>
                                             <select asp-for="SubCategoryId" asp-items="@Model.SubCategories"
                                                     class="form-control select2 form-select">
                                             </select>
@@ -73,7 +77,7 @@
                                     </div>
                                     <div class="col-sm-4">
                                         <div class="mb-3 form-group">
-                                            <label asp-for="Name"></label>
+                                            <label>@Localizer["AssetName"]</label>
                                             <input asp-for="Name" class="form-control" aria-required="true" />
                                             <span asp-validation-for="Name" class="text-danger"></span>
                                         </div>
@@ -82,21 +86,21 @@
                                 <div class="row">
                                     <div class="col-sm-4">
                                         <div class="mb-3 form-group">
-                                            <label asp-for="Make"></label>
+                                            <label>@Localizer["Make"]</label>
                                             <input asp-for="Make" class="form-control" aria-required="true" />
                                             <span asp-validation-for="Make" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-sm-4">
                                         <div class="mb-3 form-group">
-                                            <label asp-for="Model"></label>
+                                            <label>@Localizer["Model"]</label>
                                             <input asp-for="Model" class="form-control" aria-required="true" />
                                             <span asp-validation-for="Model" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-sm-4">
                                         <div class="mb-3 form-group">
-                                            <label asp-for="Year"></label>
+                                            <label>@Localizer["Year"]</label>
                                             <input asp-for="Year" class="form-control" aria-required="true" />
                                             <span asp-validation-for="Year" class="text-danger"></span>
                                         </div>
@@ -105,21 +109,21 @@
                                 <div class="row" id="dvVehicleIdentification" style="display:none;">
                                     <div class="col-sm-4">
                                         <div class="mb-3 form-group">
-                                            <label asp-for="Engine"></label>
+                                            <label>@Localizer["Engine"]</label>
                                             <input asp-for="Engine" class="form-control" aria-required="true" />
                                             <span asp-validation-for="Engine" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-sm-4">
                                         <div class="mb-3 form-group">
-                                            <label asp-for="Chasis"></label>
+                                            <label>@Localizer["Chasis"]</label>
                                             <input asp-for="Chasis" class="form-control" aria-required="true" />
                                             <span asp-validation-for="Chasis" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-sm-4">
                                         <div class="mb-3 form-group">
-                                            <label asp-for="Plate"></label>
+                                            <label>@Localizer["Plate"]</label>
                                             <input asp-for="Plate" class="form-control" aria-required="true" />
                                             <span asp-validation-for="Plate" class="text-danger"></span>
                                         </div>
@@ -128,21 +132,21 @@
                                 <div class="row">
                                     <div class="col-sm-4">
                                         <div class="mb-3 form-group">
-                                            <label asp-for="ManufacturingCountry"></label>
+                                            <label>@Localizer["ManufacturingCountry"]</label>
                                             <input asp-for="ManufacturingCountry" class="form-control" aria-required="true" />
                                             <span asp-validation-for="ManufacturingCountry" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-sm-4">
                                         <div class="mb-3 form-group">
-                                            <label asp-for="SerialNo"></label>
+                                            <label>@Localizer["SerialNo"]</label>
                                             <input asp-for="SerialNo" class="form-control" aria-required="true" />
                                             <span asp-validation-for="SerialNo" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-sm-4">
                                         <div class="mb-3 form-group">
-                                            <label asp-for="Barcode"></label>
+                                            <label>@Localizer["Barcode"]</label>
                                             <input asp-for="Barcode" class="form-control" aria-required="true" />
                                             <span asp-validation-for="Barcode" class="text-danger"></span>
                                         </div>
@@ -152,7 +156,7 @@
                                 <div class="row">
                                     <div class="col-sm-12">
                                         <div class="mb-3 form-group">
-                                            <label asp-for="Specifications"></label>
+                                            <label>@Localizer["Specifications"]</label>
                                             <textarea asp-for="Specifications" class="form-control mb-4" placeholder="" rows="3"></textarea>
                                             <span asp-validation-for="Specifications" class="text-danger"></span>
                                         </div>
@@ -161,21 +165,21 @@
                                 <div class="row">
                                     <div class="col-sm-4">
                                         <div class="mb-3 form-group">
-                                            <label asp-for="Cost"></label>
+                                            <label>@Localizer["Cost"]</label>
                                             <input asp-for="Cost" class="form-control" aria-required="true" />
                                             <span asp-validation-for="Cost" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-sm-4">
                                         <div class="mb-3 form-group">
-                                            <label asp-for="PurchaseDate"></label>
+                                            <label>@Localizer["PurchaseDate"]</label>
                                             <input asp-for="PurchaseDate" asp-format="{0:dd-MMM-yyyy}" class="form-control picker" aria-required="true" type="text" />
                                             <span asp-validation-for="PurchaseDate" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-sm-4">
                                         <div class="mb-3 form-group">
-                                            <label asp-for="RecieptDate"></label>
+                                            <label>@Localizer["RecieptDate"]</label>
                                             <input asp-for="RecieptDate" asp-format="{0:dd-MMM-yyyy}" class="form-control picker" aria-required="true" type="text" />
                                             <span asp-validation-for="RecieptDate" class="text-danger"></span>
                                         </div>
@@ -184,16 +188,16 @@
                                 <div class="row">
                                     <div class="col-sm-4">
                                         <div class="mb-3 form-group">
-                                            <label asp-for="PONumber"></label>
+                                            <label>@Localizer["PONumber"]</label>
                                             <input asp-for="PONumber" class="form-control" aria-required="true" />
                                             <span asp-validation-for="PONumber" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-sm-4">
                                         <div class="mb-3 form-group">
-                                            <label asp-for="ProcuredBy"></label>
+                                            <label>@Localizer["ProcuredBy"]</label>
                                             <select asp-for="ProcuredBy" class="form-control select2 form-select" aria-required="true">
-                                                <option selected disabled>-Select Procurement Entity-</option>
+                                                <option selected disabled>-@Localizer["SelectProcurementEntity"]-</option>
                                                 <option value="UNOPS">UNOPS</option>
                                                 <option value="EU">European Union</option>
                                                 <option value="Somalia">Somalia</option>
@@ -204,9 +208,9 @@
                                     </div>
                                     <div class="col-sm-4">
                                         <div class="mb-3 form-group">
-                                            <label asp-for="DonorId"></label>
+                                            <label>@Localizer["Donor"]</label>
                                             <select asp-for="DonorId" asp-items="Model.Donors" class="form-control select2 form-select">
-                                                <option disabled selected>-Select Donor-</option>
+                                                <option disabled selected>-@Localizer["SelectDonor"]-</option>
                                             </select>
                                             <span asp-validation-for="DonorId" class="text-danger"></span>
                                         </div>
@@ -215,16 +219,16 @@
                                 <div class="row">
                                     <div class="col-sm-4">
                                         <div class="mb-3 form-group">
-                                            <label asp-for="ConditionId"></label>
+                                            <label>@Localizer["Condition"]</label>
                                             <select asp-for="ConditionId" asp-items="Model.Conditions" class="form-control select2 form-select">
-                                                <option disabled selected>-Select Condition-</option>
+                                                <option disabled selected>-@Localizer["SelectCondition"]-</option>
                                             </select>
                                             <span asp-validation-for="ConditionId" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-sm-8">
                                         <div class="mb-3 form-group">
-                                            <label asp-for="Remarks"></label>
+                                            <label>@Localizer["Remarks"]</label>
                                             <input asp-for="Remarks" class="form-control" aria-required="true" />
                                             <span asp-validation-for="Remarks" class="text-danger"></span>
                                         </div>
@@ -236,9 +240,9 @@
                 </div>
                 <div class="row p-5">
                     <div class="btn-list">
-                        <button id="btnSubmit" class="btn btn-info">Save Changes</button>
+                        <button id="btnSubmit" class="btn btn-info">@Localizer["SaveChanges"]</button>
                         <a asp-action="Index" asp-controller="Assets" asp-route-id="@Model.StoreId"
-                           id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
+                           id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;@Localizer["Previous"]</a>
                     </div>
                 </div>
             </div>
@@ -361,12 +365,15 @@
             var sData = $("#dvCategoryData").html();
             var result = tryParseJson(sData, "Categories");
 
+            var isSomali = getCurrentLanguage() === "so" ? true : false;
+
             if (result.status === "success") {
                 const data = result.data;
 
-                var sHtml = '<option selected disabled>-Select Category-</option>';
+                var sHtml = `<option selected disabled>-${isSomali ? 'Dooro Qayb' : 'Select Category'}-</option>`;
+
                 data.forEach((e) => {
-                    sHtml += '<option value="' + e.Id + '">' + e.CategoryName + '</option>';
+                    sHtml += `<option value="${e.Id}">${isSomali ? e.CategoryNameSo : e.CategoryName}</option>`;
                 })
 
                 $("#CategoryId").html("").html(sHtml);
@@ -377,15 +384,17 @@
         const populateCmbSubCategory = () => {
             var id = $("#CategoryId").val();
             var sData = $("#dvSubCategoryData").html();
+            var isSomali = getCurrentLanguage() === "so" ? true : false;
 
             var result = tryParseJson(sData, "Sub Categories");
-            var sHtml = '<option disabled value="0">-Select Sub-Category-</option>';
+
+            var sHtml = `<option disabled>-${isSomali ? 'Dooro Qayb-hoosaad' : 'Select Sub-Category'}-</option>`;
 
             if (result.status === "success") {
                 const data = result.data;
                 data.forEach((e) => {
                     if (e.CategoryId == id)
-                        sHtml += '<option value="' + e.Id + '">' + e.SubCategoryName + '</option>';
+                        sHtml+= `<option value="${e.Id}">${isSomali ? e.SubCategoryNameSo : e.SubCategoryName}</option>`;
                 });
                 $("#SubCategoryId").html("").html(sHtml);
             } else {

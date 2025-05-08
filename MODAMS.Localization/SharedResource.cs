@@ -1,4 +1,4 @@
-﻿namespace MODAMSWeb.Localization
+﻿namespace MODAMS.Localization
 {
     public class SharedResource
     {

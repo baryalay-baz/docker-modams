@@ -145,7 +145,7 @@
     <value>Barcode-ka</value>
   </data>
   <data name="Category" xml:space="preserve">
-    <value>Nooca</value>
+    <value>Qayb</value>
   </data>
   <data name="Condition" xml:space="preserve">
     <value>Xaaladda</value>
@@ -233,12 +233,6 @@
   </data>
   <data name="PlateNumber" xml:space="preserve">
     <value>Lambarka Taarikada</value>
-  </data>
-  <data name="TransferHistoryMessage1" xml:space="preserve">
-    <value>Hantidii Laga Soo Wareejiyay </value>
-  </data>
-  <data name="TransferHistoryMessage2" xml:space="preserve">
-    <value>-aad Ee </value>
   </data>
   <data name="DocumentName" xml:space="preserve">
     <value>Magaca Dukumentiga</value>

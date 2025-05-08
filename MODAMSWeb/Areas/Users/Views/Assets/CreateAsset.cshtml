@@ -1,4 +1,9 @@
-﻿@model MODAMS.Models.ViewModels.Dto.AssetCreateDTO
+﻿@using System.Globalization
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+@model MODAMS.Models.ViewModels.Dto.AssetCreateDTO
+
 
 <style>
     input[type="date"]::-webkit-calendar-picker-indicator {
@@ -9,7 +14,7 @@
 <!-- PAGE-HEADER -->
 <div class="page-header">
     <div>
-        <h1 class="page-title">New Asset</h1>
+        <h1 class="page-title">@Localizer["NewAsset"]</h1>
     </div>
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
@@ -27,7 +32,7 @@
     <div class="col-lg-12 col-md-12">
         <div class="card">
             <div class="card-header border-bottom bg-info-gradient divShadow">
-                <h4 class="mb-0 text-white">Asset Details</h4>
+                <h4 class="mb-0 text-white">@Localizer["AssetDetails"]</h4>
             </div>
             <div class="card-body p-0">
                 <div class="row p-5 border-bottom">
@@ -45,7 +50,7 @@
                                             <label asp-for="CategoryId"></label>
                                             <select asp-for="CategoryId" asp-items="@Model.Categories"
                                                     class="form-control select2 form-select">
-                                                <option disabled selected>-Select Category-</option>
+                                                <option disabled selected>-@Localizer["SelectCategory"]-</option>
                                             </select>
                                             <span asp-validation-for="CategoryId" class="text-danger"></span>
                                         </div>
@@ -55,7 +60,7 @@
                                             <label asp-for="SubCategoryId"></label>
                                             <select asp-for="SubCategoryId" asp-items="@Model.SubCategories"
                                                     class="form-control select2 form-select">
-                                                <option disabled selected>-Select Sub-Category-</option>
+                                                <option disabled selected>-@Localizer["SelectSubCategory"]-</option>
                                             </select>
                                             <span asp-validation-for="SubCategoryId" class="text-danger"></span>
                                         </div>
@@ -182,7 +187,7 @@
                                         <div class="mb-3 form-group">
                                             <label asp-for="ProcuredBy"></label>
                                             <select asp-for="ProcuredBy" class="form-control select2 form-select" aria-required="true">
-                                                <option selected disabled>-Select Procurement Entity-</option>
+                                                <option selected disabled>-@Localizer["SelectProcurementEntity"]-</option>
                                                 <option value="UNOPS">UNOPS</option>
                                                 <option value="EU">European Union</option>
                                                 <option value="Somalia">Somalia</option>
@@ -195,7 +200,7 @@
                                         <div class="mb-3 form-group">
                                             <label asp-for="DonorId"></label>
                                             <select asp-for="DonorId" asp-items="Model.Donors" class="form-control select2 form-select">
-                                                <option disabled selected>-Select Donor-</option>
+                                                <option disabled selected>-@Localizer["SelectDonor"]-</option>
                                             </select>
                                             <span asp-validation-for="DonorId" class="text-danger"></span>
                                         </div>
@@ -206,7 +211,7 @@
                                         <div class="mb-3 form-group">
                                             <label asp-for="ConditionId"></label>
                                             <select asp-for="ConditionId" asp-items="Model.Conditions" class="form-control select2 form-select">
-                                                <option disabled selected>-Select Condition-</option>
+                                                <option disabled selected>-@Localizer["SelectCondition"]-</option>
                                             </select>
                                             <span asp-validation-for="ConditionId" class="text-danger"></span>
                                         </div>
@@ -225,8 +230,8 @@
                 </div>
                 <div class="row p-5">
                     <div class="btn-list">
-                        <button id="btnSubmit" class="btn btn-info-gradient"> Save Asset</button>
-                        <a asp-action="Index" asp-controller="Assets" asp-route-id="@Model.StoreId" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
+                        <button id="btnSubmit" class="btn btn-info-gradient"> @Localizer["SaveAsset"]</button>
+                        <a asp-action="Index" asp-controller="Assets" asp-route-id="@Model.StoreId" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;@Localizer["Previous"]</a>
                     </div>
                 </div>
             </div>
@@ -246,7 +251,7 @@
             $("#btnSubmit").on("click", () => {
                 $("#frmAsset").submit();
             });
-            
+
             loadCategories();
 
             $("#CategoryId").on("change", () => {
@@ -302,6 +307,7 @@
                 $("#dvVehicleIdentification").hide();
             }
         }
+
         const loadCategories = () => {
             var postData = {};
             $.ajax({
@@ -353,15 +359,19 @@
             var sData = $("#dvCategoryData").html();
             var result = tryParseJson(sData, "Categories");
 
+            var isSomali = getCurrentLanguage() === "so" ? true : false;
+
             if (result.status === "success") {
                 const data = result.data;
 
-                var sHtml = '<option selected disabled>-Select Category-</option>';
+                var sHtml = `<option selected disabled>-${isSomali ? 'Dooro Qayb' : 'Select Category'}-</option>`;
+
                 data.forEach((e) => {
-                    sHtml += '<option value="' + e.Id + '">' + e.CategoryName + '</option>';
+                    sHtml += `<option value="${e.Id}">${isSomali ? e.CategoryNameSo : e.CategoryName}</option>`;
                 })
 
                 $("#CategoryId").html("").html(sHtml);
+                console.log(sHtml);
             } else {
                 showErrorMessageJs(result.message);
             }
@@ -371,13 +381,16 @@
             var sData = $("#dvSubCategoryData").html();
 
             var result = tryParseJson(sData, "Sub Categories");
-            var sHtml = '<option disabled value="0">-Select Sub-Category-</option>';
+            
+            var isSomali = getCurrentLanguage() === "so" ? true : false;
+
+            var sHtml = `<option disabled>-${isSomali ? 'Dooro Qayb-hoosaad' : 'Select Sub-Category'}-</option>`;
 
             if (result.status === "success") {
                 const data = result.data;
                 data.forEach((e) => {
                     if (e.CategoryId == id)
-                        sHtml += '<option value="' + e.Id + '">' + e.SubCategoryName + '</option>';
+                        sHtml+= `<option value="${e.Id}">${isSomali ? e.SubCategoryNameSo : e.SubCategoryName}</option>`;
                 });
                 $("#SubCategoryId").html("").html(sHtml);
             }else{

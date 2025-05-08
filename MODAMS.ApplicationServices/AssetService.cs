@@ -23,7 +23,7 @@ namespace MODAMS.ApplicationServices
         private readonly IWebHostEnvironment _webHostEnvironment;
 
         private readonly int _employeeId;
-
+        private readonly bool _isSomali;
         public AssetService(IAMSFunc func, ApplicationDbContext db, IHttpContextAccessor httpContextAccessor,
             ILogger<AssetService> logger, IWebHostEnvironment webHostEnvironment)
         {
@@ -33,6 +33,7 @@ namespace MODAMS.ApplicationServices
             _logger = logger;
 
             _employeeId = _func.GetEmployeeId();
+            _isSomali = CultureInfo.CurrentUICulture.Name == "so";
             _webHostEnvironment = webHostEnvironment;
         }
 
@@ -40,7 +41,6 @@ namespace MODAMS.ApplicationServices
         {
             try
             {
-                var isSomali = CultureInfo.CurrentUICulture.Name == "so";
 
                 var assets = await _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted && m.StoreId == storeId).Include(m => m.AssetStatus)
                 .Include(m => m.SubCategory).ThenInclude(m => m.Category)
@@ -53,7 +53,7 @@ namespace MODAMS.ApplicationServices
                 }
                 var categories = await _db.vwStoreCategoryAssets.Where(m => m.StoreId == storeId).Select(m => new SelectListItem
                 {
-                    Text = isSomali ? m.SubCategoryNameSo : m.SubCategoryName,
+                    Text = _isSomali ? m.SubCategoryNameSo : m.SubCategoryName,
                     Value = m.SubCategoryId.ToString(),
                     Selected = (m.SubCategoryId == subCategoryId)
                 }).ToListAsync();
@@ -79,7 +79,7 @@ namespace MODAMS.ApplicationServices
                 if (subCategory != null)
                 {
                     dto.SubCategoryId = subCategory.Id;
-                    dto.SubCategoryName = isSomali ? subCategory.SubCategoryNameSo : subCategory.SubCategoryName;
+                    dto.SubCategoryName = _isSomali ? subCategory.SubCategoryNameSo : subCategory.SubCategoryName;
                 }
 
                 dto.StoreId = storeId;
@@ -98,8 +98,6 @@ namespace MODAMS.ApplicationServices
         {
             try
             {
-                var isSomali = CultureInfo.CurrentUICulture.Name == "so";
-
                 var assets = await _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted).Include(m => m.AssetStatus)
                 .Include(m => m.SubCategory).Include(m => m.Condition).Include(m => m.Donor)
                 .Include(m => m.Store).ToListAsync();
@@ -110,7 +108,7 @@ namespace MODAMS.ApplicationServices
                 }
                 var categories = _db.Categories.ToList().Select(m => new SelectListItem
                 {
-                    Text = isSomali ? m.CategoryNameSo : m.CategoryName,
+                    Text = _isSomali ? m.CategoryNameSo : m.CategoryName,
                     Value = m.Id.ToString(),
                     Selected = (m.Id == storeId)
                 });
@@ -124,12 +122,12 @@ namespace MODAMS.ApplicationServices
                 if (category == null)
                 {
                     dto.CategoryId = 0;
-                    dto.CategoryName = isSomali ? "Hantida oo Dhan" : "All Assets";
+                    dto.CategoryName = _isSomali ? "Hantida oo Dhan" : "All Assets";
                 }
                 else
                 {
                     dto.CategoryId = category.Id;
-                    dto.CategoryName = isSomali ? category.CategoryNameSo : category.CategoryName;
+                    dto.CategoryName = _isSomali ? category.CategoryNameSo : category.CategoryName;
                 }
 
                 return Result<AssetListDTO>.Success(dto);
@@ -177,25 +175,26 @@ namespace MODAMS.ApplicationServices
                     if (await _func.GetStoreOwnerIdAsync(dto.StoreId) != empId)
                     {
                         dto = await PopulateDtoAssetAsync(dto);
-                        return Result<AssetCreateDTO>.Failure("You are not authorized to perform this action!", dto);
+                        var sError = _isSomali ? "Uma aad fasaxinid inaad fuliso tallaabadan!" : "You are not authorized to perform this action!";
+                        return Result<AssetCreateDTO>.Failure(sError, dto);
                     }
 
                     if (await _db.Assets.AnyAsync(m => m.AssetStatusId != SD.Asset_Deleted && m.SerialNo == dto.SerialNo))
                     {
                         dto = await PopulateDtoAssetAsync(dto);
-                        return Result<AssetCreateDTO>.Failure("Serial Number already in use", dto);
+                        return Result<AssetCreateDTO>.Failure(_isSomali ? "Tirada Taxanaha hore ayaa loo isticmaalay" : "Serial Number already in use", dto);
                     }
 
                     if (await _db.Assets.AnyAsync(m => m.AssetStatusId != SD.Asset_Deleted && m.Barcode == dto.Barcode))
                     {
                         dto = await PopulateDtoAssetAsync(dto);
-                        return Result<AssetCreateDTO>.Failure("Barcode already in use", dto);
+                        return Result<AssetCreateDTO>.Failure(_isSomali ? "Baar-koodhka hore ayaa loo isticmaalay" : "Barcode already in use", dto);
                     }
                     if (dto == null)
                     {
                         dto = new AssetCreateDTO();
                         dto = await PopulateDtoAssetAsync(dto);
-                        return Result<AssetCreateDTO>.Failure("Please fill all the mandatory fields!", dto);
+                        return Result<AssetCreateDTO>.Failure(_isSomali ? "Fadlan buuxi dhammaan meelaha munaasabka ah!" : "Please fill all the mandatory fields!", dto);
                     }
 
                     // Create the new asset
@@ -275,7 +274,7 @@ namespace MODAMS.ApplicationServices
                     .FirstOrDefaultAsync(m => m.Id == id);
 
                 if (assetInDb == null)
-                    return Result<AssetEditDTO>.Failure("Asset not found.", dto);
+                    return Result<AssetEditDTO>.Failure(_isSomali ? "Hanti lama helin" : "Asset not found", dto);
 
                 dto.Id = assetInDb.Id;
                 dto.CategoryId = assetInDb.SubCategory.CategoryId;
@@ -325,7 +324,7 @@ namespace MODAMS.ApplicationServices
                 {
                     // Populate select lists before returning the DTO
                     dto = await PopulateDtoAssetAsync(dto);
-                    return Result<AssetEditDTO>.Failure("Asset not found!", dto);
+                    return Result<AssetEditDTO>.Failure(_isSomali ? "Hanti lama helin" : "Asset not found!", dto);
                 }
 
                 // Check for existing serial number
@@ -339,7 +338,10 @@ namespace MODAMS.ApplicationServices
                     {
                         // Populate select lists before returning the DTO
                         dto = await PopulateDtoAssetAsync(dto);
-                        return Result<AssetEditDTO>.Failure($"Serial number already assigned to Asset with Id {recordWithSameSerialNo.Id}!", dto);
+                        var sError = _isSomali ? $"Tirada Taxanaha hore ayaa loo xilsaaray Hanti leh Aqoonsiga {recordWithSameSerialNo.Id};"
+                            : $"Serial number already assigned to Asset with Id {recordWithSameSerialNo.Id}!";
+
+                        return Result<AssetEditDTO>.Failure(sError, dto);
                     }
                 }
                 // Update the record
@@ -479,7 +481,7 @@ namespace MODAMS.ApplicationServices
                 }
             }
 
-            return Result.Failure("Please select a valid file and try again.");
+            return Result.Failure(_isSomali? "Fadlan dooro fayl ansax ah oo dib isku day" : "Please select a valid file and try again");
         }
         public async Task<Result<AssetInfoDTO>> GetAssetInfoAsync(int id, int page = 1, int tab = 1, int categoryId = 0)
         {
@@ -499,7 +501,7 @@ namespace MODAMS.ApplicationServices
 
                 if (asset == null)
                 {
-                    return Result<AssetInfoDTO>.Failure("Record not found!");
+                    return Result<AssetInfoDTO>.Failure(_isSomali? "Diiwaanka lama helin!" : "Record not found!");
                 }
 
                 // Fetch asset documents
@@ -536,13 +538,13 @@ namespace MODAMS.ApplicationServices
             {
                 if (documentId <= 0)
                 {
-                    return Result<DeleteDocumentResultDTO>.Failure("Invalid document ID.");
+                    return Result<DeleteDocumentResultDTO>.Failure(_isSomali? "Aqoonsiga dukumintiga ma ansax ah" : "Invalid document ID");
                 }
 
                 var assetDocument = await _db.AssetDocuments.FirstOrDefaultAsync(m => m.Id == documentId);
                 if (assetDocument == null)
                 {
-                    return Result<DeleteDocumentResultDTO>.Failure("Document not found!");
+                    return Result<DeleteDocumentResultDTO>.Failure(_isSomali? "Dukuminti lama helin!" : "Document not found!");
                 }
 
                 // Extract the file name from the URL
@@ -551,7 +553,7 @@ namespace MODAMS.ApplicationServices
                 // Attempt to delete the file
                 if (!DeleteFile(sFileName, "assetdocuments"))
                 {
-                    return Result<DeleteDocumentResultDTO>.Failure("Error deleting file from storage");
+                    return Result<DeleteDocumentResultDTO>.Failure(_isSomali? "Khalad ayaa dhacay xilliga la tirtirayay faylka kaydka" : "Error deleting file from storage");
                 }
 
                 // Remove the document from the database
@@ -608,7 +610,7 @@ namespace MODAMS.ApplicationServices
         {
             if (file == null)
             {
-                return Result<string>.Failure("File not available");
+                return Result<string>.Failure(_isSomali? "Faylka ma jiro" : "File not available");
             }
 
             string wwwRootPath = _webHostEnvironment.WebRootPath;
@@ -640,7 +642,7 @@ namespace MODAMS.ApplicationServices
                 string message = $"{employeeName} uploaded a picture for ({assetName}) in {storeName}";
                 await _func.LogNewsFeedAsync(message, "Users", "Assets", "AssetInfo", assetId);
 
-                return Result<string>.Success("Picture uploaded successfully!");
+                return Result<string>.Success(_isSomali? "Sawirka si guul leh ayaa loo soo geliyey!" : "Picture uploaded successfully!");
             }
             catch (Exception ex)
             {
@@ -651,13 +653,13 @@ namespace MODAMS.ApplicationServices
         {
             if (id == 0)
             {
-                return Result<string>.Failure("Picture not found!");
+                return Result<string>.Failure(_isSomali? "Sawir lama helin!" : "Picture not found!");
             }
 
             var assetPicture = await _db.AssetPictures.FirstOrDefaultAsync(m => m.Id == id);
             if (assetPicture == null)
             {
-                return Result<string>.Failure("Picture not found!");
+                return Result<string>.Failure(_isSomali? "Sawir lama helin!" : "Picture not found!");
             }
 
             // Remove file from disk
@@ -665,26 +667,26 @@ namespace MODAMS.ApplicationServices
             bool fileDeleted = DeleteFile(sFileName, "assetpictures");
             if (!fileDeleted)
             {
-                return Result<string>.Failure("Error deleting picture from storage!");
+                return Result<string>.Failure(_isSomali? "Khalad ayaa dhacay xilliga la tirtirayay sawirka kaydka!" : "Error deleting picture from storage!");
             }
 
             // Remove from database
             _db.AssetPictures.Remove(assetPicture);
             await _db.SaveChangesAsync();
 
-            return Result<string>.Success("Picture deleted successfully!");
+            return Result<string>.Success(_isSomali? "Sawirka si guul leh ayaa loo tirtiray!" : "Picture deleted successfully!");
         }
         public async Task<Result<string>> DeleteAssetAsync(int assetId)
         {
             if (assetId == 0)
             {
-                return Result<string>.Failure("Asset not found!");
+                return Result<string>.Failure(_isSomali? "Hanti lama helin!" : "Asset not found!");
             }
 
             var assetInDb = await _db.Assets.FirstOrDefaultAsync(m => m.Id == assetId);
             if (assetInDb == null)
             {
-                return Result<string>.Failure("Asset not found!");
+                return Result<string>.Failure(_isSomali? "Hanti lama helin!" : "Asset not found!");
             }
 
             // Mark asset as deleted
@@ -704,19 +706,19 @@ namespace MODAMS.ApplicationServices
             _db.AssetHistory.Add(assetHistory);
             await _db.SaveChangesAsync();
 
-            return Result<string>.Success("Asset deleted successfully!");
+            return Result<string>.Success(_isSomali? "Hantida si guul leh ayaa loo tirtiray!" : "Asset deleted successfully!");
         }
         public async Task<Result<string>> RecoverAssetAsync(int assetId)
         {
             if (assetId == 0)
             {
-                return Result<string>.Failure("Asset not found!");
+                return Result<string>.Failure(_isSomali ? "Hanti lama helin!" : "Asset not found!");
             }
 
             var assetInDb = await _db.Assets.FirstOrDefaultAsync(m => m.Id == assetId);
             if (assetInDb == null)
             {
-                return Result<string>.Failure("Asset not found!");
+                return Result<string>.Failure(_isSomali ? "Hanti lama helin!" : "Asset not found!");
             }
 
             assetInDb.AssetStatusId = SD.Asset_Available; // Will have to change it to the previous Asset Status ID Later
@@ -734,17 +736,18 @@ namespace MODAMS.ApplicationServices
             _db.AssetHistory.Add(assetHistory);
             await _db.SaveChangesAsync();
 
-            return Result<string>.Success("Asset recovered successfully!");
+            return Result<string>.Success(_isSomali? "Hantida si guul leh ayaa loo soo celiyey!" : "Asset recovered successfully!");
         }
 
         //Populate Asset DTO
         public async Task<T> PopulateDtoAssetAsync<T>(T dto) where T : class, new()
         {
+
             // Use reflection to populate common fields for both DTOs
             var categories = await _db.Categories
                 .Select(m => new SelectListItem
                 {
-                    Text = m.CategoryName,
+                    Text = _isSomali ? m.CategoryNameSo : m.CategoryName,
                     Value = m.Id.ToString()
                 })
                 .ToListAsync();
@@ -752,7 +755,7 @@ namespace MODAMS.ApplicationServices
             var subCategories = await _db.SubCategories
                 .Select(m => new SelectListItem
                 {
-                    Text = m.SubCategoryName,
+                    Text = _isSomali ? m.SubCategoryNameSo : m.SubCategoryName,
                     Value = m.Id.ToString()
                 })
                 .ToListAsync();
@@ -768,7 +771,7 @@ namespace MODAMS.ApplicationServices
             var statuses = await _db.AssetStatuses
                 .Select(m => new SelectListItem
                 {
-                    Text = m.StatusName,
+                    Text = _isSomali ? m.StatusNameSo : m.StatusName,
                     Value = m.Id.ToString()
                 })
                 .ToListAsync();
@@ -776,7 +779,7 @@ namespace MODAMS.ApplicationServices
             var conditions = await _db.Conditions
                 .Select(m => new SelectListItem
                 {
-                    Text = m.ConditionName,
+                    Text = _isSomali ? m.ConditionNameSo : m.ConditionName,
                     Value = m.Id.ToString()
                 })
                 .ToListAsync();
@@ -818,7 +821,7 @@ namespace MODAMS.ApplicationServices
         }
         public async Task<Result<string>> GetSubCategoriesAsync(int? categoryId)
         {
-            string result = "Data not available!";
+            string result = _isSomali? "Xog lama heli karo!" : "Data not available!";
             try
             {
                 var subCategories = await _db.SubCategories.ToListAsync();
@@ -842,7 +845,7 @@ namespace MODAMS.ApplicationServices
         {
             try
             {
-                string result = "Data not available!";
+                string result = _isSomali ? "Xog lama heli karo!" : "Data not available!";
 
                 var documentTypes = await _db.DocumentTypes.ToListAsync();
                 if (documentTypes != null)
@@ -903,7 +906,7 @@ namespace MODAMS.ApplicationServices
             }
             else
             {
-                return "not yet uploaded!";
+                return _isSomali? "Dukuminti lama heli karo!" : "Document not available!";
             }
 
         }

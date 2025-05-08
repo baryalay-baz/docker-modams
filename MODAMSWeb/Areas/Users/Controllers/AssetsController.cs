@@ -5,6 +5,7 @@ using MODAMS.ApplicationServices.IServices;
 using MODAMS.DataAccess.Data;
 using MODAMS.Models.ViewModels.Dto;
 using MODAMS.Utility;
+using System.Globalization;
 
 namespace MODAMSWeb.Areas.Users.Controllers
 {
@@ -16,13 +17,14 @@ namespace MODAMSWeb.Areas.Users.Controllers
         private readonly IAssetService _assetService;
 
         private int _employeeId;
-        
+        private bool _isSomali;
         public AssetsController(ApplicationDbContext db, IAMSFunc func, IAssetService assetService)
         {
             _func = func;
             _assetService = assetService;
 
             _employeeId = _func.GetEmployeeId();
+            _isSomali = CultureInfo.CurrentUICulture.Name == "so";
         }
         [HttpGet]
         public async Task<IActionResult> Index(int id, int subCategoryId = 0)
@@ -63,7 +65,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
             var empId = User.IsInRole("User") ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
             if (await _func.GetStoreOwnerIdAsync(id) != empId)
             {
-                TempData["error"] = "You are not authorized to perform this action!";
+                var sError = _isSomali ? "Uma aad fasaxinid inaad fuliso tallaabadan!" : "You are not authorized to perform this action!";
+                TempData["error"] = sError;
                 return RedirectToAction("Index", "Assets", new { area = "Users", id = id });
             }
 
@@ -98,7 +101,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 return View(dto);
             }
 
-            TempData["success"] = "Asset registered successfully!";
+            TempData["success"] = _isSomali ? "Hantida si guul leh ayaa loo diiwaangeliyey" : "Asset registered successfully!";
             return RedirectToAction("EditAsset", "Assets", new { id = result.Value.Id });
         }
         [Authorize(Roles = "StoreOwner, User")]
@@ -124,7 +127,10 @@ namespace MODAMSWeb.Areas.Users.Controllers
             var empId = User.IsInRole("User") ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
             if (await _func.GetStoreOwnerIdAsync(dto.StoreId) != empId)
             {
-                TempData["error"] = "You are not authorized to perform this action!";
+                var sError = _isSomali ? "Uma aad fasaxinid inaad fuliso tallaabadan!"
+                    : "You are not authorized to perform this action!";
+                TempData["error"] = sError;
+
                 return RedirectToAction("Index", "Assets", new { area = "Users", id = dto.StoreId });
             }
 
@@ -134,7 +140,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
                 if (result.IsSuccess)
                 {
-                    TempData["success"] = "Changes saved successfully!";
+                    TempData["success"] = _isSomali ? "Isbeddelada si guul leh ayaa loo kaydiyey!" : "Changes saved successfully!";
                     return RedirectToAction("EditAsset", "Assets", new { id = dto.Id });
                 }
                 else
@@ -145,7 +151,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             }
             else
             {
-                TempData["error"] = "All fields are mandatory!";
+                TempData["error"] = _isSomali ? "Dhammaan meelaha waa qasab in la buuxiyo!" : "All fields are mandatory!";
                 return View(dto);
             }
         }
@@ -174,7 +180,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             if (result.IsSuccess)
             {
-                TempData["success"] = "File uploaded successfully!";
+                TempData["success"] = _isSomali ? "Faylka si guul leh ayaa loo soo geliyey!" : "File uploaded successfully!";
             }
             else
             {
@@ -243,7 +249,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             if (result.IsSuccess)
             {
-                TempData["success"] = "Picture uploaded successfully!";
+                TempData["success"] = _isSomali ? "Sawirka si guul leh ayaa loo soo geliyey!" : "Picture uploaded successfully!";
             }
             else
             {
@@ -259,7 +265,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             if (result.IsSuccess)
             {
-                TempData["success"] = "Picture deleted successfuly!";
+                TempData["success"] = _isSomali ? "Sawirka si guul leh ayaa loo tirtiray!" : "Picture deleted successfuly!";
             }
             else
             {
@@ -292,7 +298,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             if (result.IsSuccess)
             {
-                TempData["success"] = "Asset recovered successfuly!";
+                TempData["success"] = _isSomali? "Hantida si guul leh ayaa loo soo celiyey!" : "Asset recovered successfuly!";
             }
             else
             {
@@ -355,7 +361,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             }
             else
             {
-                TempData["error"] = "Error occurred getting last Asset Id";
+                TempData["error"] = _isSomali? "Khalad ayaa dhacay marki la helayay Aqoonsiga Hantida ugu dambeysay" : "Error occurred getting last Asset Id";
                 return Json(0);
             }
         }

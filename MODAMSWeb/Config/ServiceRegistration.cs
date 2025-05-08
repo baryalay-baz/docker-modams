@@ -9,6 +9,9 @@ using Telerik.Reporting.Cache.File;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using MODAMS.ApplicationServices.IServices;
 using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.Extensions.Localization;
+using MODAMS.Localization;
+using MODAMSWeb.Localization;
 
 namespace MODAMSWeb.Config
 {
@@ -82,11 +85,20 @@ namespace MODAMSWeb.Config
             // Add Razor Pages and Controllers with Views
             builder.Services.AddRazorPages();
 
-            builder.Services
-                .AddControllersWithViews()
-                .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
-                .AddDataAnnotationsLocalization()
-                .AddNewtonsoftJson();
+            builder.Services.AddControllersWithViews(options =>
+            {
+                var localizer = builder.Services.BuildServiceProvider()
+                    .GetRequiredService<IStringLocalizer<MODAMS.Localization.ValidationMessages>>();
+                options.ModelMetadataDetailsProviders.Add(new CustomValidationMetadataProvider(localizer));
+            })
+            .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
+            .AddDataAnnotationsLocalization(options =>
+            {
+                options.DataAnnotationLocalizerProvider = (type, factory) =>
+                    factory.Create(typeof(MODAMS.Localization.ValidationMessages));
+            })
+            .AddNewtonsoftJson();
+
 
             // Add Reporting services configuration
             builder.Services.TryAddScoped<IReportServiceConfiguration>(sp => new ReportServiceConfiguration

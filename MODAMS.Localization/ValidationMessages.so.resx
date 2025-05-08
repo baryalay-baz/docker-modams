@@ -117,124 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AssetCategory" xml:space="preserve">
-    <value>Asset Category</value>
+  <data name="InvalidEmail" xml:space="preserve">
+    <value>Goobta {0} ma aha iimayl sax ah.</value>
   </data>
-  <data name="AssetDocuments" xml:space="preserve">
-    <value>Asset Documents</value>
+  <data name="InvalidPattern" xml:space="preserve">
+    <value>Calaamadaha khaaska ah lama ogola.</value>
   </data>
-  <data name="AssetHistory" xml:space="preserve">
-    <value>Asset History</value>
+  <data name="InvalidRange" xml:space="preserve">
+    <value>Goobta {0} waa inay u dhaxaysaa {1} iyo {2}.</value>
   </data>
-  <data name="AssetInformation" xml:space="preserve">
-    <value>Asset Information</value>
-  </data>
-  <data name="AssetName" xml:space="preserve">
-    <value>Asset Name</value>
-  </data>
-  <data name="AssetPictureGallery" xml:space="preserve">
-    <value>Asset Picture Gallery</value>
-  </data>
-  <data name="AssetRegisteredBy" xml:space="preserve">
-    <value>Asset Registered By</value>
-  </data>
-  <data name="AssetUsage" xml:space="preserve">
-    <value>Asset Usage</value>
-  </data>
-  <data name="Barcode" xml:space="preserve">
-    <value>Barcode</value>
-  </data>
-  <data name="Category" xml:space="preserve">
-    <value>Category</value>
-  </data>
-  <data name="Condition" xml:space="preserve">
-    <value>Condition</value>
-  </data>
-  <data name="CurrentValue" xml:space="preserve">
-    <value>Current Value</value>
-  </data>
-  <data name="DeleteAsset" xml:space="preserve">
-    <value>Delete Asset</value>
-  </data>
-  <data name="DepartmentName" xml:space="preserve">
-    <value>Department Name</value>
-  </data>
-  <data name="Documents" xml:space="preserve">
-    <value>Documents</value>
-  </data>
-  <data name="Donor" xml:space="preserve">
-    <value>Donor</value>
-  </data>
-  <data name="DownloadLink" xml:space="preserve">
-    <value>Download Link</value>
-  </data>
-  <data name="EditDocuments" xml:space="preserve">
-    <value>Edit Documents</value>
-  </data>
-  <data name="EditPictures" xml:space="preserve">
-    <value>Edit Pictures</value>
-  </data>
-  <data name="InitialCost" xml:space="preserve">
-    <value>Initial Cost</value>
-  </data>
-  <data name="Make" xml:space="preserve">
-    <value>Make</value>
-  </data>
-  <data name="ManufacturingCountry" xml:space="preserve">
-    <value>Manufacturing Country</value>
-  </data>
-  <data name="Model" xml:space="preserve">
-    <value>Model</value>
-  </data>
-  <data name="NoDataAvailable" xml:space="preserve">
-    <value>No data available</value>
-  </data>
-  <data name="Overview" xml:space="preserve">
-    <value>Overview</value>
-  </data>
-  <data name="Pictures" xml:space="preserve">
-    <value>Pictures</value>
-  </data>
-  <data name="PONumber" xml:space="preserve">
-    <value>Purchase Order Number</value>
-  </data>
-  <data name="Previous" xml:space="preserve">
-    <value>Previous</value>
-  </data>
-  <data name="ProcuredBy" xml:space="preserve">
-    <value>Procured By</value>
-  </data>
-  <data name="PurchaseDate" xml:space="preserve">
-    <value>Purchase Date</value>
-  </data>
-  <data name="ReceiptDate" xml:space="preserve">
-    <value>Receipt Date</value>
-  </data>
-  <data name="Remarks" xml:space="preserve">
-    <value>Remarks</value>
-  </data>
-  <data name="SerialNumber" xml:space="preserve">
-    <value>Serial Number</value>
-  </data>
-  <data name="Status" xml:space="preserve">
-    <value>Status</value>
-  </data>
-  <data name="Specifications" xml:space="preserve">
-    <value>Technical Specifications</value>
-  </data>
-  <data name="Year" xml:space="preserve">
-    <value>Year</value>
-  </data>
-  <data name="EngineNumber" xml:space="preserve">
-    <value>Engine Number</value>
-  </data>
-  <data name="ChasisNumber" xml:space="preserve">
-    <value>Chasis Number</value>
-  </data>
-  <data name="PlateNumber" xml:space="preserve">
-    <value>Plate Number</value>
-  </data>
-  <data name="DocumentName" xml:space="preserve">
-    <value>Document Name</value>
+  <data name="Required" xml:space="preserve">
+    <value>Goobta {0} waa qasab.</value>
   </data>
 </root>

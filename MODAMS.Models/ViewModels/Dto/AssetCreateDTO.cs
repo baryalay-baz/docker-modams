@@ -1,13 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
+using MODAMS.Localization;
 
 namespace MODAMS.Models.ViewModels.Dto
 {
@@ -16,103 +11,148 @@ namespace MODAMS.Models.ViewModels.Dto
         [Key]
         public int Id { get; set; }
 
-        [Required]
-        [RegularExpression(@"^[a-zA-Z0-9 -]*$", ErrorMessage = "Special characters are not allowed.")]
-        [Display(Name = "Asset Name")]
+        [Required(
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "Required")]
+        [RegularExpression(@"^[a-zA-Z0-9 -]*$",
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "InvalidPattern")]
+        [Display(Name = "AssetName", ResourceType = typeof(CreateAssetLabels))]
         public string Name { get; set; } = string.Empty;
 
-        [Required]
-        [RegularExpression(@"^[a-zA-Z0-9 -]*$", ErrorMessage = "Special characters are not allowed.")]
-
-        [Display(Name = "Make")]
+        [Required(
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "Required")]
+        [RegularExpression(@"^[a-zA-Z0-9 -]*$",
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "InvalidPattern")]
+        [Display(Name = "Make", ResourceType = typeof(CreateAssetLabels))]
         public string Make { get; set; } = string.Empty;
 
-        [Required]
-        [RegularExpression(@"^[a-zA-Z0-9 -]*$", ErrorMessage = "Special characters are not allowed.")]
-        [Display(Name = "Model")]
+        [Required(
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "Required")]
+        [RegularExpression(@"^[a-zA-Z0-9 -]*$",
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "InvalidPattern")]
+        [Display(Name = "Model", ResourceType = typeof(CreateAssetLabels))]
         public string Model { get; set; } = string.Empty;
 
-        [Required]
-        [Display(Name = "Year")]
+        [Required(
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "Required")]
+        [Display(Name = "Year", ResourceType = typeof(CreateAssetLabels))]
         public string Year { get; set; } = string.Empty;
 
-        [Display(Name = "Manufacturing Country")]
+        [Display(Name = "ManufacturingCountry", ResourceType = typeof(CreateAssetLabels))]
         public string? ManufacturingCountry { get; set; }
 
-        [Required]
-        [Display(Name = "Serial Number")]
+        [Required(
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "Required")]
+        [Display(Name = "SerialNo", ResourceType = typeof(CreateAssetLabels))]
         public string SerialNo { get; set; } = string.Empty;
 
-        [Display(Name = "Barcode")]
+        [Display(Name = "Barcode", ResourceType = typeof(CreateAssetLabels))]
         public string? Barcode { get; set; }
 
-        [Required]
-        [Display(Name = "Engine Number")]
+        [Required(
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "Required")]
+        [Display(Name = "Engine", ResourceType = typeof(CreateAssetLabels))]
         public string Engine { get; set; } = string.Empty;
 
-        [Required]
-        [Display(Name = "Chasis Number")]
+        [Required(
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "Required")]
+        [Display(Name = "Chasis", ResourceType = typeof(CreateAssetLabels))]
         public string Chasis { get; set; } = string.Empty;
 
-        [Required]
-        [Display(Name = "License Plate Number")]
+        [Required(
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "Required")]
+        [Display(Name = "Plate", ResourceType = typeof(CreateAssetLabels))]
         public string Plate { get; set; } = string.Empty;
 
-        [Required]
-        [Display(Name = "Specifications")]
+        [Required(
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "Required")]
+        [Display(Name = "Specifications", ResourceType = typeof(CreateAssetLabels))]
         public string Specifications { get; set; } = string.Empty;
 
-        [Required]
-        [Display(Name = "Initial Cost")]
+        [Required(
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "Required")]
+        [Display(Name = "Cost", ResourceType = typeof(CreateAssetLabels))]
         public decimal Cost { get; set; } = 0;
 
-        [Required]
-        [Display(Name = "Purchase Date")]
+        [Required(
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "Required")]
+        [Display(Name = "PurchaseDate", ResourceType = typeof(CreateAssetLabels))]
         [Column(TypeName = "date")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? PurchaseDate { get; set; }
 
-        [Required]
-        [Display(Name = "Purchase Order Number")]
+        [Required(
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "Required")]
+        [Display(Name = "PONumber", ResourceType = typeof(CreateAssetLabels))]
         public string? PONumber { get; set; }
 
-        [Required]
-        [Display(Name = "Reciept Date")]
+        [Required(
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "Required")]
+        [Display(Name = "RecieptDate", ResourceType = typeof(CreateAssetLabels))]
         [Column(TypeName = "date")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime? RecieptDate { get; set; }
 
-        [Required]
-        [Display(Name = "Procured By")]
+        [Required(
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "Required")]
+        [Display(Name = "ProcuredBy", ResourceType = typeof(CreateAssetLabels))]
         public string? ProcuredBy { get; set; }
 
-        [Display(Name = "Remarks")]
+        [Display(Name = "Remarks", ResourceType = typeof(CreateAssetLabels))]
         public string? Remarks { get; set; } = string.Empty;
 
-        [Required]
-        [Display(Name = "Category")]
+        [Required(
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "Required")]
+        [Display(Name = "Category", ResourceType = typeof(CreateAssetLabels))]
         public int CategoryId { get; set; }
 
-        [Required]
-        [Display(Name = "Sub Category")]
+        [Required(
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "Required")]
+        [Display(Name = "SubCategory", ResourceType = typeof(CreateAssetLabels))]
         public int SubCategoryId { get; set; }
 
-        [Required]
-        [Display(Name = "Asset Condition")]
+        [Required(
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "Required")]
+        [Display(Name = "AssetCondition", ResourceType = typeof(CreateAssetLabels))]
         public int ConditionId { get; set; }
 
-        [Required]
-        [Display(Name = "Store")]
+        [Required(
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "Required")]
+        [Display(Name = "Store", ResourceType = typeof(CreateAssetLabels))]
         public int StoreId { get; set; }
 
-        [Required]
-        [Display(Name = "Donor")]
+        [Required(
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "Required")]
+        [Display(Name = "Donor", ResourceType = typeof(CreateAssetLabels))]
         public int DonorId { get; set; }
 
-        [Required]
-        [Display(Name = "Status")]
+        [Required(
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "Required")]
+        [Display(Name = "Status", ResourceType = typeof(CreateAssetLabels))]
         public int AssetStatusId { get; set; }
 
         [ValidateNever]
@@ -135,6 +175,5 @@ namespace MODAMS.Models.ViewModels.Dto
 
         [ValidateNever]
         public bool IsAuthorized { get; set; } = false;
-
     }
 }

@@ -117,124 +117,88 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AssetCategory" xml:space="preserve">
-    <value>Asset Category</value>
-  </data>
-  <data name="AssetDocuments" xml:space="preserve">
-    <value>Asset Documents</value>
-  </data>
-  <data name="AssetHistory" xml:space="preserve">
-    <value>Asset History</value>
-  </data>
-  <data name="AssetInformation" xml:space="preserve">
-    <value>Asset Information</value>
-  </data>
   <data name="AssetName" xml:space="preserve">
-    <value>Asset Name</value>
-  </data>
-  <data name="AssetPictureGallery" xml:space="preserve">
-    <value>Asset Picture Gallery</value>
-  </data>
-  <data name="AssetRegisteredBy" xml:space="preserve">
-    <value>Asset Registered By</value>
-  </data>
-  <data name="AssetUsage" xml:space="preserve">
-    <value>Asset Usage</value>
-  </data>
-  <data name="Barcode" xml:space="preserve">
-    <value>Barcode</value>
-  </data>
-  <data name="Category" xml:space="preserve">
-    <value>Category</value>
-  </data>
-  <data name="Condition" xml:space="preserve">
-    <value>Condition</value>
-  </data>
-  <data name="CurrentValue" xml:space="preserve">
-    <value>Current Value</value>
-  </data>
-  <data name="DeleteAsset" xml:space="preserve">
-    <value>Delete Asset</value>
-  </data>
-  <data name="DepartmentName" xml:space="preserve">
-    <value>Department Name</value>
-  </data>
-  <data name="Documents" xml:space="preserve">
-    <value>Documents</value>
-  </data>
-  <data name="Donor" xml:space="preserve">
-    <value>Donor</value>
-  </data>
-  <data name="DownloadLink" xml:space="preserve">
-    <value>Download Link</value>
-  </data>
-  <data name="EditDocuments" xml:space="preserve">
-    <value>Edit Documents</value>
-  </data>
-  <data name="EditPictures" xml:space="preserve">
-    <value>Edit Pictures</value>
-  </data>
-  <data name="InitialCost" xml:space="preserve">
-    <value>Initial Cost</value>
-  </data>
-  <data name="Make" xml:space="preserve">
-    <value>Make</value>
-  </data>
-  <data name="ManufacturingCountry" xml:space="preserve">
-    <value>Manufacturing Country</value>
-  </data>
-  <data name="Model" xml:space="preserve">
-    <value>Model</value>
-  </data>
-  <data name="NoDataAvailable" xml:space="preserve">
-    <value>No data available</value>
-  </data>
-  <data name="Overview" xml:space="preserve">
-    <value>Overview</value>
-  </data>
-  <data name="Pictures" xml:space="preserve">
-    <value>Pictures</value>
-  </data>
-  <data name="PONumber" xml:space="preserve">
-    <value>Purchase Order Number</value>
-  </data>
-  <data name="Previous" xml:space="preserve">
-    <value>Previous</value>
-  </data>
-  <data name="ProcuredBy" xml:space="preserve">
-    <value>Procured By</value>
-  </data>
-  <data name="PurchaseDate" xml:space="preserve">
-    <value>Purchase Date</value>
-  </data>
-  <data name="ReceiptDate" xml:space="preserve">
-    <value>Receipt Date</value>
-  </data>
-  <data name="Remarks" xml:space="preserve">
-    <value>Remarks</value>
-  </data>
-  <data name="SerialNumber" xml:space="preserve">
-    <value>Serial Number</value>
+    <value>Nooca Hantida</value>
   </data>
   <data name="Status" xml:space="preserve">
-    <value>Status</value>
+    <value>Xaaladda</value>
+  </data>
+  <data name="Barcode" xml:space="preserve">
+    <value>Barcode-ka</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Qayb</value>
+  </data>
+  <data name="Chasis" xml:space="preserve">
+    <value>Lambarka Shaandhada</value>
+  </data>
+  <data name="AssetCondition" xml:space="preserve">
+    <value>Xaaladda</value>
+  </data>
+  <data name="Cost" xml:space="preserve">
+    <value>Qiimaha</value>
+  </data>
+  <data name="Donor" xml:space="preserve">
+    <value>Deeq-bixiye</value>
+  </data>
+  <data name="Engine" xml:space="preserve">
+    <value>Lambarka Mashiinka</value>
+  </data>
+  <data name="Make" xml:space="preserve">
+    <value>Sharikadda Sameysey</value>
+  </data>
+  <data name="ManufacturingCountry" xml:space="preserve">
+    <value>Dalka Lagu Soo Farsameeyey</value>
+  </data>
+  <data name="Model" xml:space="preserve">
+    <value>Model-ka</value>
+  </data>
+  <data name="Plate" xml:space="preserve">
+    <value>Lambarka Taarikada</value>
+  </data>
+  <data name="PONumber" xml:space="preserve">
+    <value>Lambarka Dalabka Wax-soo-iibsiga</value>
+  </data>
+  <data name="ProcuredBy" xml:space="preserve">
+    <value>Cidda soo iibisey</value>
+  </data>
+  <data name="PurchaseDate" xml:space="preserve">
+    <value>Taariikhda Soo-iibsashada</value>
+  </data>
+  <data name="RecieptDate" xml:space="preserve">
+    <value>Taariikhda La-heley</value>
+  </data>
+  <data name="Remarks" xml:space="preserve">
+    <value>Faallooyin</value>
+  </data>
+  <data name="SerialNo" xml:space="preserve">
+    <value>Tirada Taxan</value>
   </data>
   <data name="Specifications" xml:space="preserve">
-    <value>Technical Specifications</value>
+    <value>Tilmaamaha Gaarka ah ee Farsamo</value>
+  </data>
+  <data name="Store" xml:space="preserve">
+    <value>Bakhaarka</value>
+  </data>
+  <data name="SubCategory" xml:space="preserve">
+    <value>Qayb-hoosaad</value>
   </data>
   <data name="Year" xml:space="preserve">
-    <value>Year</value>
+    <value>Sanadka</value>
   </data>
-  <data name="EngineNumber" xml:space="preserve">
-    <value>Engine Number</value>
+  <data name="CategoryId" xml:space="preserve">
+    <value>Qayb</value>
   </data>
-  <data name="ChasisNumber" xml:space="preserve">
-    <value>Chasis Number</value>
+  <data name="SubCategoryId" xml:space="preserve">
+    <value>Qayb-hoosaad</value>
   </data>
-  <data name="PlateNumber" xml:space="preserve">
-    <value>Plate Number</value>
+  <data name="StoreId" xml:space="preserve">
+    <value>Bakhaarka</value>
   </data>
-  <data name="DocumentName" xml:space="preserve">
-    <value>Document Name</value>
+  <data name="AssetStatusId" xml:space="preserve">
+    <value>Xaaladda</value>
+  </data>
+  <data name="DonorId" xml:space="preserve">
+    <value>Deeq-bixiye</value>
   </data>
 </root>

@@ -120,11 +120,17 @@
   <data name="Action" xml:space="preserve">
     <value>Tallaabo-qaad</value>
   </data>
+  <data name="AllAssets" xml:space="preserve">
+    <value>Hantida oo Dhan</value>
+  </data>
   <data name="AssetDocuments" xml:space="preserve">
     <value>Dokumentiyada Hantida</value>
   </data>
   <data name="AssetInformation" xml:space="preserve">
     <value>Macluumaadka Hantida</value>
+  </data>
+  <data name="AssetList" xml:space="preserve">
+    <value>Liiska Hantida</value>
   </data>
   <data name="AssetName" xml:space="preserve">
     <value>Magaca Hantida</value>
@@ -136,7 +142,7 @@
     <value>Hantida</value>
   </data>
   <data name="Category" xml:space="preserve">
-    <value>Nooc</value>
+    <value>Qayb</value>
   </data>
   <data name="EditAsset" xml:space="preserve">
     <value>Tifaftir Hantida</value>
