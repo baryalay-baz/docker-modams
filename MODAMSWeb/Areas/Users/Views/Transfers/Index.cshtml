@@ -1,8 +1,12 @@
-﻿@model MODAMS.Models.ViewModels.Dto.TransferDTO
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization
+@inject IViewLocalizer Localizer
+
+@model MODAMS.Models.ViewModels.Dto.TransferDTO
 
 <div class="page-header">
     <div>
-        <h1 class="page-title">Asset Transfers</h1>
+        <h1 class="page-title">@Localizer["AssetTransfers"]</h1>
     </div>
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
@@ -36,7 +40,7 @@
                         else
                         {
                             <select class="form-control select2 form-select">
-                                <option disabled>-No Transfers Available-</option>
+                                <option disabled>-@Localizer["NoTransfersAvailable"]-</option>
                             </select>
                         }
                     }
@@ -52,9 +56,9 @@
                                                 <a asp-area="Users" asp-controller="Transfers" asp-action="TransferredAssets" asp-route-id="@Model.StoreId">
                                                     <div class="row">
                                                         <div class="col-7">
-                                                            <h6 class="text-info">Assets Transferred</h6>
-                                                            <span class="text-info text-bold">Count: @Model.TotalTransferCount(Model.StoreId)</span><br />
-                                                            <span class="text-info text-bold">Value: $@Model.TotalTransferValue.ToString("n2")</span>
+                                                            <h6 class="text-info">@Localizer["AssetsTransferred"]</h6>
+                                                            <span class="text-info text-bold">@Localizer["Count"]: @Model.TotalTransferCount(Model.StoreId)</span><br />
+                                                            <span class="text-info text-bold">@Localizer["Value"]: $@Model.TotalTransferValue.ToString("n2")</span>
                                                         </div>
                                                         <div class="col-5">
                                                             <div class="hpx-50 wpx-50 br-5 d-flex align-items-center justify-content-center bg-info-gradient text-white ms-auto">
@@ -72,9 +76,9 @@
                                                 <a asp-area="Users" asp-controller="Transfers" asp-action="ReceivedAssets" asp-route-id="@Model.StoreId">
                                                     <div class="row">
                                                         <div class="col-7">
-                                                            <h6 class="text-primary">Assets Received</h6>
-                                                            <span class="text-primary text-bold">Count: @Model.TotalReceivedCount(Model.StoreId)</span><br />
-                                                            <span class="text-primary text-bold">Value: $@Model.TotalReceivedValue.ToString("n2")</span>
+                                                            <h6 class="text-primary">@Localizer["AssetsReceived"]</h6>
+                                                            <span class="text-primary text-bold">@Localizer["Count"]: @Model.TotalReceivedCount(Model.StoreId)</span><br />
+                                                            <span class="text-primary text-bold">@Localizer["Value"]: $@Model.TotalReceivedValue.ToString("n2")</span>
                                                         </div>
                                                         <div class="col-5">
                                                             <div class="hpx-50 wpx-50 br-5 d-flex align-items-center justify-content-center bg-primary-gradient text-white ms-auto">
@@ -97,9 +101,9 @@
                                         <div class="tabs-menu1 ">
                                             <!-- Tabs -->
                                             <ul class="nav panel-tabs">
-                                                <li><a href="#tabOutgoing" class="active me-1 text-default my-1" data-bs-toggle="tab">Outgoing Transfers</a></li>
+                                                <li><a href="#tabOutgoing" class="active me-1 text-default my-1" data-bs-toggle="tab">@Localizer["OutgoingTransfers"]</a></li>
                                                 <li>
-                                                    <a href="#tabIncoming" data-bs-toggle="tab" class="me-1 text-default my-1">Incoming Transfers &nbsp;<span id="spnNew" class="badge bg-danger"></span></a>
+                                                    <a href="#tabIncoming" data-bs-toggle="tab" class="me-1 text-default my-1">@Localizer["IncomingTransfers"] &nbsp;<span id="spnNew" class="badge bg-danger"></span></a>
                                                 </li>
                                             </ul>
                                         </div>
@@ -111,11 +115,11 @@
                                                     <div class="col-8 col-sm-8">
                                                         <div class="mb-4">
                                                             <div class="input-group">
-                                                                <label class="rdiobox" for="rd-0"><input onclick="return radioCall(0);" class="mr-5" name="rd-status" type="radio" id="rd-0" checked><span style="font-size:medium;">All Transfers</span></label>&nbsp;&nbsp;
-                                                                <label class="rdiobox" for="rd-1"><input onclick="return radioCall(1);" class="mr-5" name="rd-status" type="radio" id="rd-1"><span style="font-size:medium;">Pending</span></label>&nbsp;&nbsp;
-                                                                <label class="rdiobox" for="rd-2"><input onclick="return radioCall(2);" class="mr-5" name="rd-status" type="radio" id="rd-2"><span style="font-size:medium;">Awaiting Acknowledgement</span></label>&nbsp;&nbsp;
-                                                                <label class="rdiobox" for="rd-3"><input onclick="return radioCall(3);" class="mr-5" name="rd-status" type="radio" id="rd-3"><span style="font-size:medium;">Completed</span></label>&nbsp;&nbsp;
-                                                                <label class="rdiobox" for="rd-4"><input onclick="return radioCall(4);" class="mr-5" name="rd-status" type="radio" id="rd-4"><span style="font-size:medium;">Rejected</span></label>&nbsp;&nbsp;
+                                                                <label class="rdiobox" for="rd-0"><input onclick="return radioCall(0);" class="mr-5" name="rd-status" type="radio" id="rd-0" checked><span style="font-size:medium;">@Localizer["AllTransfers"]</span></label>&nbsp;&nbsp;
+                                                                <label class="rdiobox" for="rd-1"><input onclick="return radioCall(1);" class="mr-5" name="rd-status" type="radio" id="rd-1"><span style="font-size:medium;">@Localizer["Pending"]</span></label>&nbsp;&nbsp;
+                                                                <label class="rdiobox" for="rd-2"><input onclick="return radioCall(2);" class="mr-5" name="rd-status" type="radio" id="rd-2"><span style="font-size:medium;">@Localizer["AwaitingAcknowledgement"]</span></label>&nbsp;&nbsp;
+                                                                <label class="rdiobox" for="rd-3"><input onclick="return radioCall(3);" class="mr-5" name="rd-status" type="radio" id="rd-3"><span style="font-size:medium;">@Localizer["Completed"]</span></label>&nbsp;&nbsp;
+                                                                <label class="rdiobox" for="rd-4"><input onclick="return radioCall(4);" class="mr-5" name="rd-status" type="radio" id="rd-4"><span style="font-size:medium;">@Localizer["Rejected"]</span></label>&nbsp;&nbsp;
                                                             </div>
                                                         </div>
 
@@ -124,12 +128,12 @@
                                                                 <thead class="bg-primary-gradient ms-auto divShadow">
                                                                     <tr>
                                                                         <th class="text-white bg-transparent border-bottom-0 w-2">#</th>
-                                                                        <th class="text-white bg-transparent border-bottom-0 w-10">Date</th>
-                                                                        <th class="text-white bg-transparent border-bottom-0 w-20">Store From</th>
-                                                                        <th class="text-white bg-transparent border-bottom-0 w-20">Store To</th>
-                                                                        <th class="text-white bg-transparent border-bottom-0 w-5">Assets</th>
-                                                                        <th class="text-white bg-transparent border-bottom-0 w-20">Status</th>
-                                                                        <th class="text-white bg-transparent border-bottom-0 w-20 no-btn">Action</th>
+                                                                        <th class="text-white bg-transparent border-bottom-0 w-10">@Localizer["Date"]</th>
+                                                                        <th class="text-white bg-transparent border-bottom-0 w-20">@Localizer["StoreFrom"]</th>
+                                                                        <th class="text-white bg-transparent border-bottom-0 w-20">@Localizer["StoreTo"]</th>
+                                                                        <th class="text-white bg-transparent border-bottom-0 w-5">@Localizer["Assets"]</th>
+                                                                        <th class="text-white bg-transparent border-bottom-0 w-20">@Localizer["Status"]</th>
+                                                                        <th class="text-white bg-transparent border-bottom-0 w-20 no-btn">@Localizer["Action"]</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
@@ -173,12 +177,12 @@
                                                             </table>
                                                         </div>
                                                         <br />
-                                                        <a asp-action="CreateTransfer" asp-controller="Transfers" id="btnCreate" class="btn btn-outline-info pt-1"><i class="fe fe-plus-circle"></i>&nbsp;New Transfer</a>
+                                                        <a asp-action="CreateTransfer" asp-controller="Transfers" id="btnCreate" class="btn btn-outline-info pt-1"><i class="fe fe-plus-circle"></i>&nbsp;@Localizer["NewTransfer"]</a>
                                                     </div>
                                                     <div class="col-4 col-sm-4">
                                                         <div class="card">
                                                             <div class="card-header">
-                                                                <h4>Outgoing Transfers by Category</h4>
+                                                                <h4>@Localizer["OutgoingTransfersByCategory"]</h4>
                                                             </div>
                                                             <div class="card-body container">
                                                                 @* <div id="chartOutgoing"></div> *@
@@ -196,10 +200,10 @@
                                                     <div class="col-8 col-sm-8">
                                                         <div class="mb-4">
                                                             <div class="input-group">
-                                                                <label class="rdiobox" for="rd-incoming-0"><input onclick="return radioCallIncoming(0);" class="mr-5" name="rd-status-incoming" type="radio" id="rd-incoming-0" checked><span style="font-size:medium;">All Transfers</span></label>&nbsp;&nbsp;
-                                                                <label class="rdiobox" for="rd-incoming-2"><input onclick="return radioCallIncoming(2);" class="mr-5" name="rd-status-incoming" type="radio" id="rd-incoming-2"><span style="font-size:medium;">Awaiting Acknowledgement</span></label>&nbsp;&nbsp;
-                                                                <label class="rdiobox" for="rd-incoming-3"><input onclick="return radioCallIncoming(3);" class="mr-5" name="rd-status-incoming" type="radio" id="rd-incoming-3"><span style="font-size:medium;">Completed</span></label>&nbsp;&nbsp;
-                                                                <label class="rdiobox" for="rd-incoming-4"><input onclick="return radioCallIncoming(4);" class="mr-5" name="rd-status-incoming" type="radio" id="rd-incoming-4"><span style="font-size:medium;">Rejected</span></label>&nbsp;&nbsp;
+                                                                <label class="rdiobox" for="rd-incoming-0"><input onclick="return radioCallIncoming(0);" class="mr-5" name="rd-status-incoming" type="radio" id="rd-incoming-0" checked><span style="font-size:medium;">@Localizer["AllTransfers"]</span></label>&nbsp;&nbsp;
+                                                                <label class="rdiobox" for="rd-incoming-2"><input onclick="return radioCallIncoming(2);" class="mr-5" name="rd-status-incoming" type="radio" id="rd-incoming-2"><span style="font-size:medium;">@Localizer["AwaitingAcknowledgement"]</span></label>&nbsp;&nbsp;
+                                                                <label class="rdiobox" for="rd-incoming-3"><input onclick="return radioCallIncoming(3);" class="mr-5" name="rd-status-incoming" type="radio" id="rd-incoming-3"><span style="font-size:medium;">@Localizer["Completed"]</span></label>&nbsp;&nbsp;
+                                                                <label class="rdiobox" for="rd-incoming-4"><input onclick="return radioCallIncoming(4);" class="mr-5" name="rd-status-incoming" type="radio" id="rd-incoming-4"><span style="font-size:medium;">@Localizer["Rejected"]</span></label>&nbsp;&nbsp;
                                                             </div>
                                                         </div>
 
@@ -208,12 +212,12 @@
                                                                 <thead class="bg-primary-gradient ms-auto divShadow">
                                                                     <tr>
                                                                         <th class="text-white bg-transparent border-bottom-0 w-2">#</th>
-                                                                        <th class="text-white bg-transparent border-bottom-0 w-10">Date</th>
-                                                                        <th class="text-white bg-transparent border-bottom-0 w-20">Store From</th>
-                                                                        <th class="text-white bg-transparent border-bottom-0 w-20">Store To</th>
-                                                                        <th class="text-white bg-transparent border-bottom-0 w-5">Assets</th>
-                                                                        <th class="text-white bg-transparent border-bottom-0 w-20">Status</th>
-                                                                        <th class="text-white bg-transparent border-bottom-0 w-20 no-btn">Action</th>
+                                                                        <th class="text-white bg-transparent border-bottom-0 w-10">@Localizer["Date"]</th>
+                                                                        <th class="text-white bg-transparent border-bottom-0 w-20">@Localizer["StoreFrom"]</th>
+                                                                        <th class="text-white bg-transparent border-bottom-0 w-20">@Localizer["StoreTo"]</th>
+                                                                        <th class="text-white bg-transparent border-bottom-0 w-5">@Localizer["Assets"]</th>
+                                                                        <th class="text-white bg-transparent border-bottom-0 w-20">@Localizer["Status"]</th>
+                                                                        <th class="text-white bg-transparent border-bottom-0 w-20 no-btn">@Localizer["Action"]</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
@@ -251,7 +255,7 @@
                                                     <div class="col-4 col-sm-4">
                                                         <div class="card">
                                                             <div class="card-header">
-                                                                <h4>Incoming Transfers By Category</h4>
+                                                                <h4>@Localizer["IncomingTransfersByCategory"]</h4>
                                                             </div>
                                                             <div class="card-body container">
                                                                 <div style="width: 70%; margin: auto;">
@@ -275,7 +279,7 @@
                 <div class="row">
                     @*<hr class="customHR" />*@
                     <div class="col-sm-12">
-                        <a asp-action="Index" asp-controller="Home" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
+                        <a asp-action="Index" asp-controller="Home" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;@Localizer["Previous"]</a>
                     </div>
                 </div>
             </div>

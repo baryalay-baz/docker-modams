@@ -549,7 +549,7 @@ namespace MODAMS.ApplicationServices
                 var sFileName = assetDocument.DocumentUrl.Substring(16);
 
                 // Attempt to delete the file
-                if (!DeleteFile(sFileName, "assetdocuments"))
+                if (await DeleteFileAsync(sFileName, "assetdocuments") == false)
                 {
                     return Result<DeleteDocumentResultDTO>.Failure(_isSomali ? "Khalad ayaa dhacay xilliga la tirtirayay faylka kaydka" : "Error deleting file from storage");
                 }
@@ -662,7 +662,7 @@ namespace MODAMS.ApplicationServices
 
             // Remove file from disk
             string sFileName = assetPicture.ImageUrl.Substring(15); // Removes "/assetpictures/"
-            bool fileDeleted = DeleteFile(sFileName, "assetpictures");
+            bool fileDeleted = await DeleteFileAsync(sFileName, "assetpictures");
             if (!fileDeleted)
             {
                 return Result<string>.Failure(_isSomali ? "Khalad ayaa dhacay xilliga la tirtirayay sawirka kaydka!" : "Error deleting picture from storage!");
@@ -871,7 +871,6 @@ namespace MODAMS.ApplicationServices
             }
         }
 
-
         //Private functions
         private bool IsInRole(string role) => _httpContextAccessor.HttpContext.User.IsInRole(role);
         private async Task<List<vwAssetDocument>> GetDocumentListAsync(int AssetId)
@@ -884,41 +883,41 @@ namespace MODAMS.ApplicationServices
             {
                 var vwDocType = new vwAssetDocument()
                 {
-                    Id = GetAssetDocumentId(AssetId, documentType.Id),
+                    Id = await GetAssetDocumentIdAsync(AssetId, documentType.Id),
                     DocumentTypeId = documentType.Id,
                     Name = _isSomali ? documentType.NameSo : documentType.Name,
                     AssetId = AssetId,
-                    DocumentUrl = GetDocumentUrl(AssetId, documentType.Id)
+                    DocumentUrl = await GetDocumentUrlAsync(AssetId, documentType.Id)
                 };
                 documentList.Add(vwDocType);
             }
 
             return documentList;
         }
-        private string GetDocumentUrl(int assetId, int documentTypeId)
+        private async Task<string> GetDocumentUrlAsync(int assetId, int documentTypeId)
         {
-            var assetDocument = _db.AssetDocuments.Where(m => m.AssetId == assetId && m.DocumentTypeId == documentTypeId).FirstOrDefault();
-            if (assetDocument != null)
-            {
-                return assetDocument.DocumentUrl;
-            }
-            else
-            {
-                return _isSomali ? "Dukuminti lama heli karo!" : "Document not available!";
-            }
+            var assetDocument = await _db.AssetDocuments
+                .Where(m => m.AssetId == assetId && m.DocumentTypeId == documentTypeId)
+                .FirstOrDefaultAsync();
 
+            if (assetDocument != null)
+                return assetDocument.DocumentUrl;
+
+            return _isSomali ? "Dukuminti lama heli karo!" : "Document not available!";
         }
-        private int GetAssetDocumentId(int assetId, int documentTypeId)
+        private async Task<int> GetAssetDocumentIdAsync(int assetId, int documentTypeId)
         {
             int nResult = 0;
-            var assetDocument = _db.AssetDocuments.Where(m => m.AssetId == assetId && m.DocumentTypeId == documentTypeId).FirstOrDefault();
+            var assetDocument = await _db.AssetDocuments
+                .Where(m => m.AssetId == assetId && m.DocumentTypeId == documentTypeId)
+                .FirstOrDefaultAsync();
+
             if (assetDocument != null)
-            {
                 nResult = assetDocument.Id;
-            }
+
             return nResult;
         }
-        private bool DeleteFile(string fileName, string folderName)
+        private async Task<bool> DeleteFileAsync(string fileName, string folderName)
         {
             string wwwRootPath = _webHostEnvironment.WebRootPath;
             string folderPath = Path.Combine(wwwRootPath, folderName);
@@ -926,7 +925,7 @@ namespace MODAMS.ApplicationServices
 
             try
             {
-                System.IO.File.Delete(filePath);
+                await Task.Run(() => System.IO.File.Delete(filePath));
                 return true;
             }
             catch
