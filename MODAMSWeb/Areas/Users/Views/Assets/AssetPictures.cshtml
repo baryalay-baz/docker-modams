@@ -1,4 +1,8 @@
-﻿@model MODAMS.Models.ViewModels.Dto.AssetPicturesDTO
+﻿@using System.Globalization
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+@model MODAMS.Models.ViewModels.Dto.AssetPicturesDTO
 
 <style>
     .input-group {
@@ -8,7 +12,7 @@
 </style>
 <div class="page-header">
     <div>
-        <h1 class="page-title">Asset Pictures</h1>
+        <h1 class="page-title">@Localizer["AssetPictures"]</h1>
     </div>
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
@@ -43,13 +47,13 @@
                     <div class="row">
                         <div class="col-sm-6 col-md-6 col-xl-6">
                             <div class="form-group">
-                                <label class="form-label">Choose picture to upload</label>
+                                <label class="form-label">@Localizer["ChoosePicture"]</label>
                                 <div class="input-group">
                                     <input class="form-control file-input" type="file" id="file" name="file" required accept="image/*">
-                                    <button class="btn btn-primary btn-sm"><i class="fa fa-solid fa-upload"></i> Upload</button>
+                                    <button class="btn btn-primary btn-sm"><i class="fa fa-solid fa-upload"></i> @Localizer["Upload"]</button>
                                 </div>
                                 <div class="invalid-feedback">
-                                    Please choose a picture to upload.
+                                    @Localizer["ChoosePicture"]
                                 </div>
                             </div>
                         </div>
@@ -62,7 +66,7 @@
 
 <div class="card">
     <div class="card-header">
-        <h4>Asset Pictures</h4>
+        <h4>@Localizer["AssetPictures"]</h4>
     </div>
     <div class="card-body">
         <div class="row">
@@ -72,16 +76,17 @@
                     foreach (var pic in Model.AssetPictures)
                     {
                         <div class="col-md-3">
-                            <img src="@pic.ImageUrl"/>
-                            <div class="text-center"><a asp-action="DeletePicture" asp-controller="Assets" 
-                            asp-route-id="@pic.Id" asp-route-assetId="@pic.AssetId" class="text-danger"> <i class="fa fa-trash">&nbsp;</i>Delete</a></div>
+                            <img src="@pic.ImageUrl" />
+                            <div class="text-center pt-2">
+                                <a asp-action="DeletePicture" asp-controller="Assets" asp-route-id="@pic.Id" asp-route-assetId="@pic.AssetId" class="text-danger"> <i class="fa fa-trash">&nbsp;</i>@Localizer["Delete"]</a>
+                            </div>
                             <div class="text-center">&nbsp</div>
                         </div>
                     }
                 }
                 else
                 {
-                    <div class="col-md-12 text-center">No pictures available!</div>
+                    <div class="col-md-12 text-center">@Localizer["NoPicturesAvailable"]</div>
                 }
             }
         </div>

@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -22,16 +23,17 @@ namespace MODAMS.ApplicationServices
         private readonly ApplicationDbContext _db;
         private readonly IAMSFunc _func;
         private readonly ILogger<StoreService> _logger;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         private int _employeeId;
         private int _supervisorEmployeeId;
 
-        public StoreService(ApplicationDbContext db, IAMSFunc func, ILogger<StoreService> logger)
+        public StoreService(ApplicationDbContext db, IAMSFunc func, ILogger<StoreService> logger, IHttpContextAccessor httpContextAccessor)
         {
             _db = db;
             _func = func;
             _logger = logger;
-
+            _httpContextAccessor = httpContextAccessor;
             _employeeId = _func.GetEmployeeId();
         }
         public async Task<Result<StoresDTO>> GetIndexAsync()
@@ -148,6 +150,7 @@ namespace MODAMS.ApplicationServices
                 {
                     return Result<StoreDTO>.Failure("Store not available!");
                 }
+                
 
                 var dto = new StoreDTO
                 {
@@ -155,6 +158,10 @@ namespace MODAMS.ApplicationServices
                     employees = new List<Employee>(),
                     StoreOwnerInfo = await _func.GetStoreOwnerInfoAsync(storeId)
                 };
+
+                var empId = IsInRole("User") ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
+                if (empId == await _func.GetStoreOwnerIdAsync(storeId))
+                    dto.IsAuthorized = true;
 
                 var storeOwnerId = vwStore.EmployeeId;
                 if (storeOwnerId > 0)
@@ -199,6 +206,7 @@ namespace MODAMS.ApplicationServices
             }
         }
 
-        
+        //Private functions
+        private bool IsInRole(string role) => _httpContextAccessor.HttpContext.User.IsInRole(role);
     }
 }

@@ -135,6 +135,9 @@
   <data name="Handover" xml:space="preserve">
     <value>Handover</value>
   </data>
+  <data name="NewAsset" xml:space="preserve">
+    <value>Register New Asset</value>
+  </data>
   <data name="Previous" xml:space="preserve">
     <value>Previous</value>
   </data>

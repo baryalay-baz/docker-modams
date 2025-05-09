@@ -307,7 +307,9 @@
                                                                 @{
                                                                     if (doc.Id > 0)
                                                                     {
-                                                                        <a href="@doc.DocumentUrl" class="btn btn-link">Download</a>
+                                                                        <a href="@doc.DocumentUrl" class="btn btn-sm btn-outline-primary border me-2">
+                                                                            <i class="fe fe-download">&nbsp;@Localizer["Download"]</i>
+                                                                        </a>
                                                                     }
                                                                 }
                                                             </td>

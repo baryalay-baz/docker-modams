@@ -55,6 +55,7 @@ namespace MODAMS.Models.ViewModels.Dto
         [ValidateNever]
         public string StoreName { get; set; } = string.Empty;
 
-
+        [ValidateNever]
+        public bool IsAuthorized { get; set; } = false;
     }
 }

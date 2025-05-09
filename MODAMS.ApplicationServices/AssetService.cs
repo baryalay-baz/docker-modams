@@ -58,8 +58,6 @@ namespace MODAMS.ApplicationServices
                     Selected = (m.SubCategoryId == subCategoryId)
                 }).ToListAsync();
 
-                var empId = IsInRole("User") ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
-
                 var dto = new AssetsDTO()
                 {
                     assets = assets,
@@ -67,7 +65,7 @@ namespace MODAMS.ApplicationServices
                     StoreOwnerInfo = await _func.GetStoreOwnerInfoAsync(storeId),
                     CategorySelectList = categories
                 };
-
+                var empId = IsInRole("User") ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
                 if (empId == await _func.GetStoreOwnerIdAsync(storeId))
                     dto.IsAuthorized = true;
 
@@ -481,7 +479,7 @@ namespace MODAMS.ApplicationServices
                 }
             }
 
-            return Result.Failure(_isSomali? "Fadlan dooro fayl ansax ah oo dib isku day" : "Please select a valid file and try again");
+            return Result.Failure(_isSomali ? "Fadlan dooro fayl ansax ah oo dib isku day" : "Please select a valid file and try again");
         }
         public async Task<Result<AssetInfoDTO>> GetAssetInfoAsync(int id, int page = 1, int tab = 1, int categoryId = 0)
         {
@@ -501,7 +499,7 @@ namespace MODAMS.ApplicationServices
 
                 if (asset == null)
                 {
-                    return Result<AssetInfoDTO>.Failure(_isSomali? "Diiwaanka lama helin!" : "Record not found!");
+                    return Result<AssetInfoDTO>.Failure(_isSomali ? "Diiwaanka lama helin!" : "Record not found!");
                 }
 
                 // Fetch asset documents
@@ -538,13 +536,13 @@ namespace MODAMS.ApplicationServices
             {
                 if (documentId <= 0)
                 {
-                    return Result<DeleteDocumentResultDTO>.Failure(_isSomali? "Aqoonsiga dukumintiga ma ansax ah" : "Invalid document ID");
+                    return Result<DeleteDocumentResultDTO>.Failure(_isSomali ? "Aqoonsiga dukumintiga ma ansax ah" : "Invalid document ID");
                 }
 
                 var assetDocument = await _db.AssetDocuments.FirstOrDefaultAsync(m => m.Id == documentId);
                 if (assetDocument == null)
                 {
-                    return Result<DeleteDocumentResultDTO>.Failure(_isSomali? "Dukuminti lama helin!" : "Document not found!");
+                    return Result<DeleteDocumentResultDTO>.Failure(_isSomali ? "Dukuminti lama helin!" : "Document not found!");
                 }
 
                 // Extract the file name from the URL
@@ -553,7 +551,7 @@ namespace MODAMS.ApplicationServices
                 // Attempt to delete the file
                 if (!DeleteFile(sFileName, "assetdocuments"))
                 {
-                    return Result<DeleteDocumentResultDTO>.Failure(_isSomali? "Khalad ayaa dhacay xilliga la tirtirayay faylka kaydka" : "Error deleting file from storage");
+                    return Result<DeleteDocumentResultDTO>.Failure(_isSomali ? "Khalad ayaa dhacay xilliga la tirtirayay faylka kaydka" : "Error deleting file from storage");
                 }
 
                 // Remove the document from the database
@@ -610,7 +608,7 @@ namespace MODAMS.ApplicationServices
         {
             if (file == null)
             {
-                return Result<string>.Failure(_isSomali? "Faylka ma jiro" : "File not available");
+                return Result<string>.Failure(_isSomali ? "Faylka ma jiro" : "File not available");
             }
 
             string wwwRootPath = _webHostEnvironment.WebRootPath;
@@ -642,7 +640,7 @@ namespace MODAMS.ApplicationServices
                 string message = $"{employeeName} uploaded a picture for ({assetName}) in {storeName}";
                 await _func.LogNewsFeedAsync(message, "Users", "Assets", "AssetInfo", assetId);
 
-                return Result<string>.Success(_isSomali? "Sawirka si guul leh ayaa loo soo geliyey!" : "Picture uploaded successfully!");
+                return Result<string>.Success(_isSomali ? "Sawirka si guul leh ayaa loo soo geliyey!" : "Picture uploaded successfully!");
             }
             catch (Exception ex)
             {
@@ -653,13 +651,13 @@ namespace MODAMS.ApplicationServices
         {
             if (id == 0)
             {
-                return Result<string>.Failure(_isSomali? "Sawir lama helin!" : "Picture not found!");
+                return Result<string>.Failure(_isSomali ? "Sawir lama helin!" : "Picture not found!");
             }
 
             var assetPicture = await _db.AssetPictures.FirstOrDefaultAsync(m => m.Id == id);
             if (assetPicture == null)
             {
-                return Result<string>.Failure(_isSomali? "Sawir lama helin!" : "Picture not found!");
+                return Result<string>.Failure(_isSomali ? "Sawir lama helin!" : "Picture not found!");
             }
 
             // Remove file from disk
@@ -667,26 +665,26 @@ namespace MODAMS.ApplicationServices
             bool fileDeleted = DeleteFile(sFileName, "assetpictures");
             if (!fileDeleted)
             {
-                return Result<string>.Failure(_isSomali? "Khalad ayaa dhacay xilliga la tirtirayay sawirka kaydka!" : "Error deleting picture from storage!");
+                return Result<string>.Failure(_isSomali ? "Khalad ayaa dhacay xilliga la tirtirayay sawirka kaydka!" : "Error deleting picture from storage!");
             }
 
             // Remove from database
             _db.AssetPictures.Remove(assetPicture);
             await _db.SaveChangesAsync();
 
-            return Result<string>.Success(_isSomali? "Sawirka si guul leh ayaa loo tirtiray!" : "Picture deleted successfully!");
+            return Result<string>.Success(_isSomali ? "Sawirka si guul leh ayaa loo tirtiray!" : "Picture deleted successfully!");
         }
         public async Task<Result<string>> DeleteAssetAsync(int assetId)
         {
             if (assetId == 0)
             {
-                return Result<string>.Failure(_isSomali? "Hanti lama helin!" : "Asset not found!");
+                return Result<string>.Failure(_isSomali ? "Hanti lama helin!" : "Asset not found!");
             }
 
             var assetInDb = await _db.Assets.FirstOrDefaultAsync(m => m.Id == assetId);
             if (assetInDb == null)
             {
-                return Result<string>.Failure(_isSomali? "Hanti lama helin!" : "Asset not found!");
+                return Result<string>.Failure(_isSomali ? "Hanti lama helin!" : "Asset not found!");
             }
 
             // Mark asset as deleted
@@ -706,7 +704,7 @@ namespace MODAMS.ApplicationServices
             _db.AssetHistory.Add(assetHistory);
             await _db.SaveChangesAsync();
 
-            return Result<string>.Success(_isSomali? "Hantida si guul leh ayaa loo tirtiray!" : "Asset deleted successfully!");
+            return Result<string>.Success(_isSomali ? "Hantida si guul leh ayaa loo tirtiray!" : "Asset deleted successfully!");
         }
         public async Task<Result<string>> RecoverAssetAsync(int assetId)
         {
@@ -736,7 +734,7 @@ namespace MODAMS.ApplicationServices
             _db.AssetHistory.Add(assetHistory);
             await _db.SaveChangesAsync();
 
-            return Result<string>.Success(_isSomali? "Hantida si guul leh ayaa loo soo celiyey!" : "Asset recovered successfully!");
+            return Result<string>.Success(_isSomali ? "Hantida si guul leh ayaa loo soo celiyey!" : "Asset recovered successfully!");
         }
 
         //Populate Asset DTO
@@ -821,7 +819,7 @@ namespace MODAMS.ApplicationServices
         }
         public async Task<Result<string>> GetSubCategoriesAsync(int? categoryId)
         {
-            string result = _isSomali? "Xog lama heli karo!" : "Data not available!";
+            string result = _isSomali ? "Xog lama heli karo!" : "Data not available!";
             try
             {
                 var subCategories = await _db.SubCategories.ToListAsync();
@@ -888,7 +886,7 @@ namespace MODAMS.ApplicationServices
                 {
                     Id = GetAssetDocumentId(AssetId, documentType.Id),
                     DocumentTypeId = documentType.Id,
-                    Name = documentType.Name,
+                    Name = _isSomali ? documentType.NameSo : documentType.Name,
                     AssetId = AssetId,
                     DocumentUrl = GetDocumentUrl(AssetId, documentType.Id)
                 };
@@ -906,7 +904,7 @@ namespace MODAMS.ApplicationServices
             }
             else
             {
-                return _isSomali? "Dukuminti lama heli karo!" : "Document not available!";
+                return _isSomali ? "Dukuminti lama heli karo!" : "Document not available!";
             }
 
         }

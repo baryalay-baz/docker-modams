@@ -12,6 +12,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="AssetDocumentLabels.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AssetDocumentLabels.resx</DependentUpon>
+    </Compile>
     <Compile Update="CreateAssetLabels.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -25,6 +30,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Update="AssetDocumentLabels.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>AssetDocumentLabels.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Update="CreateAssetLabels.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>CreateAssetLabels.Designer.cs</LastGenOutput>

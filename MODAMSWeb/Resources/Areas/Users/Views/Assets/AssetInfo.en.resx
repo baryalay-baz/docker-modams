@@ -237,4 +237,7 @@
   <data name="DocumentName" xml:space="preserve">
     <value>Document Name</value>
   </data>
+  <data name="Download" xml:space="preserve">
+    <value>Download</value>
+  </data>
 </root>

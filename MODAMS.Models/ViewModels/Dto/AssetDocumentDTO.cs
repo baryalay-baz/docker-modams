@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using MODAMS.Localization;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -14,20 +15,28 @@ namespace MODAMS.Models.ViewModels.Dto
         [Key]
         public int Id { get; set; }
 
-        [Required]
-        [Display(Name = "Document Name")]
+        [Required(
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "Required")]
+        [Display(Name = "DocumentName", ResourceType = typeof(AssetDocumentLabels))]
         public string Name { get; set; } = string.Empty;
 
-        [Required]
-        [Display(Name = "Document Url")]
+        [Required(
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "Required")]
+        [Display(Name = "DocumentUrl", ResourceType = typeof(AssetDocumentLabels))]
         public string DocumentUrl { get; set; } = string.Empty;
 
-        [Required]
-        [Display(Name = "Asset")]
+        [Required(
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "Required")]
+        [Display(Name = "AssetName", ResourceType = typeof(AssetDocumentLabels))]
         public int AssetId { get; set; }
 
-        [Required]
-        [Display(Name = "Document Type")]
+        [Required(
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "Required")]
+        [Display(Name = "DocumentType", ResourceType = typeof(AssetDocumentLabels))]
         public int DocumentTypeId { get; set; }
 
         [ValidateNever]

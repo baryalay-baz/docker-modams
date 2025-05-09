@@ -1,4 +1,9 @@
-﻿@model MODAMS.Models.ViewModels.Dto.AssetDocumentDTO
+﻿@using System.Globalization
+@using Microsoft.AspNetCore.Mvc.Localization
+
+@model MODAMS.Models.ViewModels.Dto.AssetDocumentDTO
+@inject IViewLocalizer Localizer
+
 <style>
     cardHeight {
         min-height: 600px;
@@ -6,7 +11,7 @@
 </style>
 <div class="page-header">
     <div>
-        <h1 class="page-title">Asset Documents</h1>
+        <h1 class="page-title">@Localizer["AssetDocuments"]</h1>
     </div>
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
@@ -45,10 +50,10 @@
                                     <table id="tblDocuments" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
                                         <thead class="table-head">
                                             <tr>
-                                                <th class="bg-transparent border-bottom-0 w-5">S.No</th>
-                                                <th class="bg-transparent border-bottom-0">Document Name</th>
-                                                <th class="bg-transparent border-bottom-0">Download Link</th>
-                                                <th class="bg-transparent border-bottom-0">Action</th>
+                                                <th class="bg-transparent border-bottom-0 w-5">@Localizer["SNo"]</th>
+                                                <th class="bg-transparent border-bottom-0">@Localizer["DocumentName"]</th>
+                                                <th class="bg-transparent border-bottom-0">@Localizer["DocumentUrl"]</th>
+                                                <th class="bg-transparent border-bottom-0">@Localizer["Action"]</th>
                                             </tr>
                                         </thead>
                                         <tbody class="table-body">
@@ -62,11 +67,13 @@
                                                     <tr>
                                                         <td class="text-muted text-center fs-15 fw-semibold">@sCounter.</td>
                                                         <td class="text-muted fs-15 fw-semibold">@dt.Name</td>
-                                                        <td class="text-muted fs-15 fw-semibold">
+                                                        <td class="text-muted fs-15 fw-semibold text-center">
                                                             @{
                                                                 if (dt.Id > 0)
                                                                 {
-                                                                    <a href="@dt.DocumentUrl" class="btn btn-link">Download</a>
+                                                                    <a href="@dt.DocumentUrl" class="btn btn-sm btn-outline-primary border me-2">
+                                                                        <i class="fe fe-download">&nbsp;@Localizer["Download"]</i>
+                                                                    </a>
                                                                 }
                                                             }
                                                         </td>
@@ -90,9 +97,9 @@
                                                                         </a>
                                                                         <div class="dropdown-menu" style="">
                                                                             <div class="p-5">
-                                                                                <h4 class="dropdown-title text-secondary">Delete Document</h4><br />
-                                                                                <p>You will not be able to recover this document again<br /><br />Are you sure?</p>
-                                                                                <a asp-area="Users" asp-controller="Assets" asp-action="DeleteDocument" asp-route-id="@dt.Id" class="btn btn-secondary btn-sm"><i class="mdi mdi-checkbox-marked-circle-outline"></i> Delete Document</a>
+                                                                                <h4 class="dropdown-title text-secondary">@Localizer["DeleteDocument"]</h4><br />
+                                                                                <p>@Localizer["DeleteConfirmationMessage"]<br /><br />@Localizer["AreYouSure"]</p>
+                                                                                <a asp-area="Users" asp-controller="Assets" asp-action="DeleteDocument" asp-route-id="@dt.Id" class="btn btn-secondary btn-sm"><i class="mdi mdi-checkbox-marked-circle-outline"></i> @Localizer["DeleteDocument"]</a>
                                                                             </div>
                                                                         </div>
                                                                     }
@@ -114,7 +121,7 @@
                     <div class="col-md-6">
                         <div class="card" id="cardUpload" style="display:none;">
                             <div class="card-header">
-                                <h6>Upload Document</h6>
+                                <h6>@Localizer["UploadDocument"]</h6>
                             </div>
                             <div class="card-body">
                                 <form method="post" asp-action="UploadDocument" enctype="multipart/form-data">
@@ -125,13 +132,13 @@
                                         <label class="form-label" id="lblDocumentName"></label>
                                         <input class="form-control file-input form-control-sm" type="file" id="file" name="file" required>
                                         <div class="invalid-feedback">
-                                            Please choose a file to upload.
+                                            @Localizer["ChooseFile"]
                                         </div>
                                     </div>
 
                                     <div class="form-group">
-                                        <button class="btn btn-primary btn-sm"><i class="fa fa-solid fa-upload"></i> Upload</button>
-                                        <button class="btn btn-secondary btn-sm" id="btnCancel"><i class="fa fa-times-circle-o"></i> Cancel</button>
+                                        <button class="btn btn-primary btn-sm"><i class="fa fa-solid fa-upload"></i> @Localizer["Upload"]</button>
+                                        <button class="btn btn-secondary btn-sm" id="btnCancel"><i class="fa fa-times-circle-o"></i> @Localizer["Cancel"]</button>
                                     </div>
                                 </form>
 
@@ -145,7 +152,7 @@
                 <div class="row">
                     @*<hr class="customHR" />*@
                     <div class="col-sm-12">
-                        <a asp-action="Index" asp-controller="Assets" asp-route-id="@Model.StoreId" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
+                        <a asp-action="Index" asp-controller="Assets" asp-route-id="@Model.StoreId" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;@Localizer["Previous"]</a>
                     </div>
 
                 </div>
@@ -165,15 +172,7 @@
                 $("#document").val("");
                 $("#cardUpload").hide(400);
             });
-
-            $('#tblDocuments').DataTable({
-                language: {
-                    searchPlaceholder: 'Search...',
-                    sSearch: '',
-                }
-            });
-            $('.even').addClass("bg-light-transparent");
-            $('.odd').removeClass("bg-light-transparent");
+            makeDataTable("#tblDocuments","1");
         });
 
         const loadDocumentTypes = () => {
@@ -213,6 +212,7 @@
 
         const getDocumentName = (id) => {
             var sData = $("#dvDocumentTypesData").html();
+            var isSomali = getCurrentLanguage();
 
             var result = tryParseJson(sData, "Document Types");
             if (result.status === "success") {
@@ -220,7 +220,7 @@
                 data.forEach((e) => {
                     if (e.Id == id) {
                         $("#DocumentTypeId").val("").val(e.Id);
-                        $("#lblDocumentName").html("").html(e.Name);
+                        $("#lblDocumentName").html("").html(isSomali?e.NameSo:e.Name);
                     }
                 });
             } else {

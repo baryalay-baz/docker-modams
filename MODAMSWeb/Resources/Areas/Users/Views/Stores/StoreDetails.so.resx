@@ -135,6 +135,9 @@
   <data name="Handover" xml:space="preserve">
     <value>La-dhiibey</value>
   </data>
+  <data name="NewAsset" xml:space="preserve">
+    <value>Diiwaan geli Hanti Cusub</value>
+  </data>
   <data name="Previous" xml:space="preserve">
     <value>Hore</value>
   </data>

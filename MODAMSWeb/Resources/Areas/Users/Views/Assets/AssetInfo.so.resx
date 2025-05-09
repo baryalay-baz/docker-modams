@@ -237,4 +237,7 @@
   <data name="DocumentName" xml:space="preserve">
     <value>Magaca Dukumentiga</value>
   </data>
+  <data name="Download" xml:space="preserve">
+    <value>Soo dejiso</value>
+  </data>
 </root>
