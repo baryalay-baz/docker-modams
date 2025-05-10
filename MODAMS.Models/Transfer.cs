@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using MODAMS.Localization;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -15,41 +16,51 @@ namespace MODAMS.Models
         [Key]
         public int Id { get; set; }
 
-        [Display(Name = "Transfer Date")]
+        [Required(
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "Required")]
+        [Display(Name = "TransferDate", ResourceType = typeof(TransferLabels))]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         [Column(TypeName = "date")]
         [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
-        [Required]
         public DateTime? TransferDate { get; set; }
 
-        [Required]
-        [Display(Name ="Transfer from Store")]
+        [Required(
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "Required")]
+        [Display(Name = "TransferFrom", ResourceType = typeof(TransferLabels))]
         public int StoreFromId { get; set; }
 
-        [Required]
-        [Display(Name ="Transfer to Store")]
+        [Required(
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "Required")]
+        [Display(Name = "TransferTo", ResourceType = typeof(TransferLabels))]
         public int StoreId { get; set; }
 
-        [Required]
-        [Display(Name ="Transfer By")]
+        [Required(
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "Required")]
+        [Display(Name = "TransferBy", ResourceType = typeof(TransferLabels))]
         public int EmployeeId { get; set; }
 
-        [Required]
-        [Display(Name ="Transfer Number")]
+        [Required(
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "Required")]
+        [Display(Name = "TransferNumber", ResourceType = typeof(TransferLabels))]
         public string TransferNumber { get; set; } = string.Empty;
 
         [AllowNull]
-        [Display(Name ="Submission for Acknowledgement")]
+        [Display(Name = "SubmissionForAcknowledgementDate", ResourceType = typeof(TransferLabels))]
         public DateTime SubmissionForAcknowledgementDate { get; set;}
 
         [AllowNull]
-        [Display(Name ="Acknowledgement Date")]
+        [Display(Name = "AcknowledgementDate", ResourceType = typeof(TransferLabels))]
         public DateTime AcknowledgementDate { get; set; }
-
-        [Display(Name = "Transfer Status")]
+        
+        [Display(Name = "TransferStatus", ResourceType = typeof(TransferLabels))]
         public int TransferStatusId { get; set; }
 
-        [Display(Name ="Notes")]
+        [Display(Name = "TransferNotes", ResourceType = typeof(TransferLabels))]
         public string? Notes { get; set; }
 
         public string SenderBarcode { get; set; } = string.Empty;

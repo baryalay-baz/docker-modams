@@ -18,6 +18,7 @@ namespace MODAMS.Models.ViewModels
         public string Notes { get; set; }
         public string TransferNumber { get; set; }
         public string Status { get; set; }
+        public string StatusSo { get; set; }
         public string StoreTo { get; set; }
         public int NumberOfAssets { get; set; }
         public int StoreFromId { get; set; }

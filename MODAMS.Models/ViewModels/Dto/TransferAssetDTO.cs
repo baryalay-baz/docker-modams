@@ -13,6 +13,7 @@ namespace MODAMS.Models.ViewModels.Dto
         public string Barcode { get; set; } = string.Empty;
         public string SerialNumber { get; set; } = string.Empty;
         public string Condition { get; set; } = string.Empty;
+        public string ImageUrl { get; set; } = string.Empty;
         public decimal Cost { get; set; } = decimal.Zero;
         public decimal CurrentValue { get; set; } = decimal.Zero;
         public bool IsSelected { get; set; } = false;

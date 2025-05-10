@@ -1,4 +1,7 @@
-﻿@model MODAMS.Models.ViewModels.Dto.TransferCreateDTO
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+@model MODAMS.Models.ViewModels.Dto.TransferCreateDTO
 <style>
     input[type="date"]::-webkit-calendar-picker-indicator {
         display: none;
@@ -40,7 +43,7 @@
 </style>
 <div class="page-header">
     <div>
-        <h1 class="page-title">Asset Transfers</h1>
+        <h1 class="page-title">@Localizer["AssetTransfers"]</h1>
     </div>
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
@@ -55,7 +58,7 @@
         <div class="card divShadow">
             <div class="card-body p-4">
                 <div class="d-flex align-items-center justify-content-between">
-                    <h4 class="m-0">Create new Transfer</h4>
+                    <h4 class="m-0">@Localizer["CreateNewTransfer"]</h4>
                 </div>
             </div>
         </div>
@@ -72,9 +75,9 @@
                                             <input type="hidden" id="selectedAssets" name="selectedAssets" />
                                             <div class="mb-3 form-group">
                                                 <div class="mb-3 form-group">
-                                                    <label>Transfer from Store</label>
+                                                    <label asp-for="Transfer.StoreFromId"></label>
                                                     <input type="text" class="form-control" value="@Model.StoreFrom" readonly aria-required="true" autocomplete="off" />
-                                                    <span asp-validation-for="Transfer.TransferNumber" class="text-danger"></span>
+                                                    <span asp-validation-for="Transfer.StoreFromId" class="text-danger"></span>
                                                 </div>
                                             </div>
                                         </div>
@@ -99,7 +102,7 @@
                                                 <label asp-for="Transfer.StoreId"></label>
                                                 <select asp-for="Transfer.StoreId" asp-items="@Model.StoreList"
                                                         class="form-control select2 form-select">
-                                                    <option disabled selected>-Select Store-</option>
+                                                    <option disabled selected>-@Localizer["SelectStore"]-</option>
                                                 </select>
                                                 <span asp-validation-for="Transfer.StoreId" class="text-danger"></span>
                                             </div>
@@ -110,7 +113,7 @@
                                             <div aria-multiselectable="true" class="accordion-dark" id="accordion8" role="tablist">
                                                 <div class="card mb-0">
                                                     <div class="card-header border-bottom-0" id="heading8" role="tab">
-                                                        <a class="accor-style2 collapsed" aria-controls="collapse8" aria-expanded="false" data-bs-toggle="collapse" href="#collapse8"><i class="fe fe-plus-circle me-2"></i>Select Assets - <span id="spnSelection">(0 selected)</span></a>
+                                                        <a class="accor-style2 collapsed" aria-controls="collapse8" aria-expanded="false" data-bs-toggle="collapse" href="#collapse8"><i class="fe fe-plus-circle me-2"></i>@Localizer["SelectAssets"] - <span id="spnSelection">(0 @Localizer["Selected"])</span></a>
                                                     </div>
                                                     <div aria-labelledby="heading8" class="collapse" data-bs-parent="#accordion8" id="collapse8" role="tabpanel">
                                                         <div class="card-body">
@@ -119,12 +122,12 @@
                                                                     <thead class="bg-primary-gradient ms-auto divShadow">
                                                                         <tr>
                                                                             <th class="text-white bg-transparent border-bottom-0 w-2"></th>
-                                                                            <th class="text-white bg-transparent border-bottom-0 w-10">Category</th>
-                                                                            <th class="text-white bg-transparent border-bottom-0 w-20">Make</th>
-                                                                            <th class="text-white bg-transparent border-bottom-0 w-20">Model</th>
-                                                                            <th class="text-white bg-transparent border-bottom-0 w-20">Asset Name</th>
-                                                                            <th class="text-white bg-transparent border-bottom-0 w-20">Serial No</th>
-                                                                            <th class="text-white bg-transparent border-bottom-0 w-20">Barcode</th>
+                                                                            <th class="text-white bg-transparent border-bottom-0 w-10">@Localizer["Category"]</th>
+                                                                            <th class="text-white bg-transparent border-bottom-0 w-20">@Localizer["Make"]</th>
+                                                                            <th class="text-white bg-transparent border-bottom-0 w-20">@Localizer["Model"]</th>
+                                                                            <th class="text-white bg-transparent border-bottom-0 w-20">@Localizer["AssetName"]</th>
+                                                                            <th class="text-white bg-transparent border-bottom-0 w-20">@Localizer["SerialNo"]</th>
+                                                                            <th class="text-white bg-transparent border-bottom-0 w-20">@Localizer["Barcode"]</th>
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
@@ -178,11 +181,11 @@
                                         @{
                                             if (Model.Assets == null)
                                             {
-                                                        <button type="button" class="btn btn-info disabled" id="btnSubmit"><i class="fa fa-check-circle"></i>&nbsp;Save Transfer</button>
+                                                <button type="button" class="btn btn-info disabled" id="btnSubmit"><i class="fa fa-check-circle"></i>&nbsp;@Localizer["SaveTransfer"]</button>
                                             }
                                             else
                                             {
-                                                        <button type="button" class="btn btn-info" id="btnSubmit"><i class="fa fa-check-circle"></i>&nbsp;Save Transfer</button>
+                                                <button type="button" class="btn btn-info" id="btnSubmit"><i class="fa fa-check-circle"></i>&nbsp;@Localizer["SaveTransfer"]</button>
                                             }
                                         }
 
@@ -193,16 +196,18 @@
                         </div>
                         <div class="col-sm-4">
                             <div class="card">
-                                <div class="card-status bg-info br-tr-7 br-tl-7"></div>
+                                <div class="card-status bg-primary-gradient br-tr-7 br-tl-7"></div>
                                 <div class="card-header">
-                                    <div class="card-title">Your selection</div>
+                                    <div class="card-title">@Localizer["YourSelection"]</div>
                                     <hr />
                                 </div>
                                 <div class="card-body">
-                                    <div id="dvSelection"></div>
+                                    <table class="table table-bordered">
+                                        <tbody id="tbodySelection">
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </form>
@@ -211,7 +216,7 @@
                 <div class="row">
                     @*<hr class="customHR" />*@
                     <div class="col-sm-12">
-                        <a asp-action="Index" asp-controller="Transfers" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
+                        <a asp-action="Index" asp-controller="Transfers" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;@Localizer["Previous"]</a>
                     </div>
                 </div>
             </div>
@@ -260,42 +265,41 @@
             });
         });
         const selectAsset = (id, obj) => {
+            // Fetch the checkbox element and its checked status
+            const isChecked = $("#" + obj.id).prop("checked");
 
-            var obj = $("#" + obj.id);
-            var isChecked = obj.prop("checked");
+            // Find the asset by ID
+            const asset = Data.find(e => e.assetId === id);
 
-            Data.forEach(function (e) {
-                if (e.assetId == id) {
-                    if (isChecked) {
-                        e.isSelected = true;
-                        selection.push(e.make + " - " + e.assetName + " - " + e.serialNumber);
-                        selectionIds.push(id);
-                    } else {
-                        e.isSelected = false;
-                        let index = selection.indexOf(e.make + " - " + e.assetName + " - " + e.serialNumber);
-                        if (index !== -1) {
-                            selection.splice(index, 1);
-                        }
-                        index = selectionIds.indexOf(e.assetId);
-                        if (index !== -1) { 
-                            selectionIds.splice(index, 1);
-                        }
+            if (asset) {
+                if (isChecked) {
+                    // Add the asset to selection and render its row
+                    selectionIds.push(asset.assetId);
+                    asset.isSelected = true;
 
-                    }
+                    let sHtml = $("#tbodySelection").html();
+                    sHtml += `
+                        <tr data-id="${asset.assetId}">
+                            <td style="width: 90px; text-align: center;">
+                                <img src="${asset.imageUrl}" alt="" style="width: 80px; height: auto;">
+                            </td>
+                            <td style="width: auto;">
+                                <p style="margin: 2px 0;">Category: ${asset.subCategory}</p>
+                                <p style="margin: 2px 0; font-weight: bold;">Asset Name: ${asset.assetName}</p>
+                                <p style="margin: 2px 0;">Serial Number: ${asset.serialNumber}</p>
+                            </td>
+                        </tr>`;
+
+                    $("#tbodySelection").html(sHtml);
+                    $("#spnSelection").html("(" + selectionIds.length + " selected)");
+                } else {
+                    // Remove the asset from selection and delete its row
+                    selectionIds = selectionIds.filter(id => id !== asset.assetId);
+                    $(`#tbodySelection tr[data-id="${asset.assetId}"]`).remove();
+                    $("#spnSelection").html("(" + selectionIds.length + " selected)");
                 }
-            });
-            var sHtml = '<Table class="table table-bordered"><tbody>';
-            if (selection.length > 0) {
-                for (let i = 0; i < selection.length; i++) {
-                    sHtml += '<tr><td>' + (i + 1) + '. ' + selection[i] + '</td></tr>';
-                }
-                sHtml += '</tbody></table>';
-            } else {
-                sHtml += 'No Assets selected!';
             }
-            $("#dvSelection").html(sHtml);
-            $("#spnSelection").html("(" + selection.length + " selected)");
-        }
+        };
 
         const checkSelection = () => {
             var blnResult = false;

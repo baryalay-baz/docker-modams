@@ -12,6 +12,7 @@ using MODAMS.Models.ViewModels.Dto;
 using MODAMS.Utility;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -29,6 +30,7 @@ namespace MODAMS.ApplicationServices
         private int _employeeId;
         private int _supervisorId;
         private int _storeId;
+        private readonly bool _isSomali;
 
         public TransferService(ApplicationDbContext db, IAMSFunc func, IHttpContextAccessor httpContextAccessor, ILogger<TransferService> logger)
         {
@@ -39,6 +41,7 @@ namespace MODAMS.ApplicationServices
 
             _employeeId = _func.GetEmployeeId();
             _supervisorId = _func.GetSupervisorId(_employeeId);
+            _isSomali = CultureInfo.CurrentUICulture.Name == "so";
         }
         private bool IsInRole(string role) => _httpContextAccessor.HttpContext.User.IsInRole(role);
         public async Task<Result<TransferDTO>> GetIndexAsync(int id = 0, int transferStatusId = 0)
@@ -49,7 +52,6 @@ namespace MODAMS.ApplicationServices
                 transferStatusId = 0;
                 var stores = await _db.Stores.ToListAsync();
                 var dto = new TransferDTO();
-
 
                 if (id == 0)
                 {
@@ -181,12 +183,13 @@ namespace MODAMS.ApplicationServices
                         {
                             AssetId = asset.Id,
                             AssetName = asset.Name,
-                            Category = asset.SubCategory.Category.CategoryName,
-                            SubCategory = asset.SubCategory.SubCategoryName,
+                            Category = _isSomali ? asset.SubCategory.Category.CategoryNameSo : asset.SubCategory.Category.CategoryName,
+                            SubCategory = _isSomali ? asset.SubCategory.SubCategoryNameSo : asset.SubCategory.SubCategoryName,
                             Make = asset.Make,
                             Model = asset.Model,
-                            Barcode = asset.Barcode.ToString(),
+                            Barcode = asset.Barcode?.ToString() ?? "",
                             SerialNumber = asset.SerialNo,
+                            ImageUrl = await GetAssetImageAsync(asset.Id),
                             IsSelected = false
                         };
                         transferAssets.Add(transferAsset);
@@ -323,8 +326,8 @@ namespace MODAMS.ApplicationServices
                         {
                             AssetId = asset.Id,
                             AssetName = asset.Name,
-                            Category = asset.SubCategory.Category.CategoryName,
-                            SubCategory = asset.SubCategory.SubCategoryName,
+                            Category = _isSomali ? asset.SubCategory.Category.CategoryNameSo : asset.SubCategory.Category.CategoryName,
+                            SubCategory = _isSomali ? asset.SubCategory.SubCategoryNameSo : asset.SubCategory.SubCategoryName,
                             Make = asset.Make,
                             Model = asset.Model,
                             Barcode = asset.Barcode.ToString(),
@@ -892,7 +895,8 @@ namespace MODAMS.ApplicationServices
             if (maxIdTransfer != null)
             {
                 maxId = maxIdTransfer.Id;
-            };
+            }
+            ;
             maxId++;
 
             if (maxId < 10)
@@ -992,6 +996,16 @@ namespace MODAMS.ApplicationServices
             }
 
             return totalValue;
+        }
+        private async Task<string> GetAssetImageAsync(int assetId)
+        {
+            var imageUrl = await _db.AssetPictures
+                .Where(m => m.AssetId == assetId)
+                .OrderByDescending(m => m.Id)
+                .Select(m => m.ImageUrl)
+                .FirstOrDefaultAsync();
+
+            return imageUrl ?? "/assets/images/placeholders/pictureplaceholder.jpg";
         }
     }
 }

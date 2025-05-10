@@ -22,6 +22,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>CreateAssetLabels.resx</DependentUpon>
     </Compile>
+    <Compile Update="TransferLabels.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>TransferLabels.resx</DependentUpon>
+    </Compile>
     <Compile Update="ValidationMessages.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -37,6 +42,10 @@
     <EmbeddedResource Update="CreateAssetLabels.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>CreateAssetLabels.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="TransferLabels.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>TransferLabels.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="ValidationMessages.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

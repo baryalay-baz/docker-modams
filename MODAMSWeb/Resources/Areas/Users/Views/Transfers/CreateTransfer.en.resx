@@ -117,76 +117,49 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Action" xml:space="preserve">
-    <value>Tallaabo-qaad</value>
-  </data>
-  <data name="AllTransfers" xml:space="preserve">
-    <value>Dhammaan wareejinta</value>
-  </data>
-  <data name="Assets" xml:space="preserve">
-    <value>Hantida</value>
-  </data>
-  <data name="AssetsReceived" xml:space="preserve">
-    <value>Hantida La heley</value>
-  </data>
-  <data name="AssetsTransferred" xml:space="preserve">
-    <value>Hantida La wareejiyey</value>
+  <data name="AssetName" xml:space="preserve">
+    <value>Asset Name</value>
   </data>
   <data name="AssetTransfers" xml:space="preserve">
-    <value>Hanti Wareejin</value>
+    <value>Asset Transfers</value>
   </data>
-  <data name="AwaitingAcknowledgement" xml:space="preserve">
-    <value>Sugeysa aqbalaad</value>
+  <data name="Barcode" xml:space="preserve">
+    <value>Barcode</value>
   </data>
-  <data name="Completed" xml:space="preserve">
-    <value>La-dhammeystirey</value>
+  <data name="Category" xml:space="preserve">
+    <value>Category</value>
   </data>
-  <data name="Count" xml:space="preserve">
-    <value>Tiri</value>
+  <data name="CreateNewTransfer" xml:space="preserve">
+    <value>Create New Transfer</value>
   </data>
-  <data name="Date" xml:space="preserve">
-    <value>Taariikhda</value>
+  <data name="Make" xml:space="preserve">
+    <value>Make</value>
   </data>
-  <data name="EditTransfer" xml:space="preserve">
-    <value>Tafatir Wareejinta</value>
-  </data>
-  <data name="IncomingTransfers" xml:space="preserve">
-    <value>Soo wareejin</value>
-  </data>
-  <data name="IncomingTransfersByCategory" xml:space="preserve">
-    <value>Soo-wareejinta oo ku saleysan Nooc</value>
-  </data>
-  <data name="NewTransfer" xml:space="preserve">
-    <value>Wareejin Cusub</value>
-  </data>
-  <data name="OutgoingTransfers" xml:space="preserve">
-    <value>Sii wareejin</value>
-  </data>
-  <data name="OutgoingTransfersByCategory" xml:space="preserve">
-    <value>Sii-wareejinta oo ku saleysan Nooc</value>
-  </data>
-  <data name="Pending" xml:space="preserve">
-    <value>Weli Taagan</value>
-  </data>
-  <data name="PreviewTransfer" xml:space="preserve">
-    <value>Sii-eeg Wareejinta</value>
+  <data name="Model" xml:space="preserve">
+    <value>Model</value>
   </data>
   <data name="Previous" xml:space="preserve">
-    <value>Hore</value>
+    <value>Previous</value>
   </data>
-  <data name="Rejected" xml:space="preserve">
-    <value>La-diidey</value>
+  <data name="SaveTransfer" xml:space="preserve">
+    <value>Save Transfer</value>
   </data>
-  <data name="Status" xml:space="preserve">
-    <value>Heerka</value>
+  <data name="SelectAssets" xml:space="preserve">
+    <value>Select Assets</value>
   </data>
-  <data name="StoreFrom" xml:space="preserve">
-    <value>Bakhaarka ay ka timid</value>
+  <data name="Selected" xml:space="preserve">
+    <value>selected</value>
   </data>
-  <data name="StoreTo" xml:space="preserve">
-    <value>Bakhaarka ay u socoto</value>
+  <data name="SelectStore" xml:space="preserve">
+    <value>Select Store</value>
   </data>
-  <data name="Value" xml:space="preserve">
-    <value>Qiime</value>
+  <data name="SerialNo" xml:space="preserve">
+    <value>S.No</value>
+  </data>
+  <data name="TransferNotes" xml:space="preserve">
+    <value>Transfer Notes</value>
+  </data>
+  <data name="YourSelection" xml:space="preserve">
+    <value>Your Selection</value>
   </data>
 </root>

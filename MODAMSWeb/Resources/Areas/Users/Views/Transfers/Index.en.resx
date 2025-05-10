@@ -147,6 +147,9 @@
   <data name="Date" xml:space="preserve">
     <value>Date</value>
   </data>
+  <data name="EditTransfer" xml:space="preserve">
+    <value>Edit Transfer</value>
+  </data>
   <data name="IncomingTransfers" xml:space="preserve">
     <value>Incoming Transfers</value>
   </data>
@@ -164,6 +167,9 @@
   </data>
   <data name="Pending" xml:space="preserve">
     <value>Pending</value>
+  </data>
+  <data name="PreviewTransfer" xml:space="preserve">
+    <value>Preview Transfer</value>
   </data>
   <data name="Previous" xml:space="preserve">
     <value>Previous</value>

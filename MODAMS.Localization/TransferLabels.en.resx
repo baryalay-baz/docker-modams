@@ -117,76 +117,31 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Action" xml:space="preserve">
-    <value>Tallaabo-qaad</value>
+  <data name="AcknowledgementDate" xml:space="preserve">
+    <value>Acknowledgement Date</value>
   </data>
-  <data name="AllTransfers" xml:space="preserve">
-    <value>Dhammaan wareejinta</value>
+  <data name="SubmissionForAcknowledgementDate" xml:space="preserve">
+    <value>Submission for Acknowledgement Date</value>
   </data>
-  <data name="Assets" xml:space="preserve">
-    <value>Hantida</value>
+  <data name="TransferBy" xml:space="preserve">
+    <value>Transfer By</value>
   </data>
-  <data name="AssetsReceived" xml:space="preserve">
-    <value>Hantida La heley</value>
+  <data name="TransferDate" xml:space="preserve">
+    <value>Transfer Date</value>
   </data>
-  <data name="AssetsTransferred" xml:space="preserve">
-    <value>Hantida La wareejiyey</value>
+  <data name="TransferFrom" xml:space="preserve">
+    <value>Transfer from Store</value>
   </data>
-  <data name="AssetTransfers" xml:space="preserve">
-    <value>Hanti Wareejin</value>
+  <data name="TransferNotes" xml:space="preserve">
+    <value>Transfer Notes</value>
   </data>
-  <data name="AwaitingAcknowledgement" xml:space="preserve">
-    <value>Sugeysa aqbalaad</value>
+  <data name="TransferNumber" xml:space="preserve">
+    <value>Transfer Number</value>
   </data>
-  <data name="Completed" xml:space="preserve">
-    <value>La-dhammeystirey</value>
+  <data name="TransferStatus" xml:space="preserve">
+    <value>Transfer Status</value>
   </data>
-  <data name="Count" xml:space="preserve">
-    <value>Tiri</value>
-  </data>
-  <data name="Date" xml:space="preserve">
-    <value>Taariikhda</value>
-  </data>
-  <data name="EditTransfer" xml:space="preserve">
-    <value>Tafatir Wareejinta</value>
-  </data>
-  <data name="IncomingTransfers" xml:space="preserve">
-    <value>Soo wareejin</value>
-  </data>
-  <data name="IncomingTransfersByCategory" xml:space="preserve">
-    <value>Soo-wareejinta oo ku saleysan Nooc</value>
-  </data>
-  <data name="NewTransfer" xml:space="preserve">
-    <value>Wareejin Cusub</value>
-  </data>
-  <data name="OutgoingTransfers" xml:space="preserve">
-    <value>Sii wareejin</value>
-  </data>
-  <data name="OutgoingTransfersByCategory" xml:space="preserve">
-    <value>Sii-wareejinta oo ku saleysan Nooc</value>
-  </data>
-  <data name="Pending" xml:space="preserve">
-    <value>Weli Taagan</value>
-  </data>
-  <data name="PreviewTransfer" xml:space="preserve">
-    <value>Sii-eeg Wareejinta</value>
-  </data>
-  <data name="Previous" xml:space="preserve">
-    <value>Hore</value>
-  </data>
-  <data name="Rejected" xml:space="preserve">
-    <value>La-diidey</value>
-  </data>
-  <data name="Status" xml:space="preserve">
-    <value>Heerka</value>
-  </data>
-  <data name="StoreFrom" xml:space="preserve">
-    <value>Bakhaarka ay ka timid</value>
-  </data>
-  <data name="StoreTo" xml:space="preserve">
-    <value>Bakhaarka ay u socoto</value>
-  </data>
-  <data name="Value" xml:space="preserve">
-    <value>Qiime</value>
+  <data name="TransferTo" xml:space="preserve">
+    <value>Transfer to Store</value>
   </data>
 </root>

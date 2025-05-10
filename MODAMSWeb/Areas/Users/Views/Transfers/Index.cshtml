@@ -45,6 +45,9 @@
                         }
                     }
                 }
+                @{
+                    bool _isSomali = CultureInfo.CurrentUICulture.Name == "so";
+                }
                 <div class="row">
                     <div class="col-12 col-sm-12">
                         <div class="card">
@@ -161,14 +164,18 @@
                                                                                 <td>@transfer.StoreFrom</td>
                                                                                 <td>@transfer.StoreTo</td>
                                                                                 <td>@transfer.NumberOfAssets</td>
-                                                                                <td>@transfer.Status</td>
-                                                                                <td>
-                                                                                    <a asp-controller="Transfers" asp-action="EditTransfer" asp-route-id="@transfer.Id" class="btn btn-sm btn-outline-primary border me-2 @sDisabled" data-bs-toggle="tooltip" data-bs-original-title="Edit Transfer">
-                                                                                        <i class="fe fe-edit"></i>
-                                                                                    </a>
-                                                                                    <a asp-controller="Transfers" asp-action="PreviewTransfer" asp-route-id="@transfer.Id" class="btn btn-sm btn-outline-primary border me-2" data-bs-toggle="tooltip" data-bs-original-title="Preview Transfer">
-                                                                                        <i class="fe fe-eye"></i>
-                                                                                    </a>
+                                                                                <td>@(_isSomali ? transfer.StatusSo : transfer.Status)</td>
+                                                                                <td class="text-muted fs-15 fw-semibold">
+                                                                                    <div class="d-flex align-items-stretch">
+                                                                                        <a asp-controller="Transfers" asp-action="EditTransfer" asp-route-id="@transfer.Id"
+                                                                                           class="btn btn-sm btn-outline-info me-1 @sDisabled" data-bs-toggle="tooltip" data-bs-original-title="@Localizer["EditTransfer"]">
+                                                                                            <i class="fe fe-edit"></i>
+                                                                                        </a>
+                                                                                        <a asp-controller="Transfers" asp-action="PreviewTransfer" asp-route-id="@transfer.Id"
+                                                                                           class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="tooltip" data-bs-original-title="@Localizer["PreviewTransfer"]">
+                                                                                            <i class="fe fe-eye"></i>
+                                                                                        </a>
+                                                                                    </div>
                                                                                 </td>
                                                                             </tr>
                                                                         }
@@ -238,11 +245,13 @@
                                                                                 <td>@transfer.StoreFrom</td>
                                                                                 <td>@transfer.StoreTo</td>
                                                                                 <td>@transfer.NumberOfAssets</td>
-                                                                                <td>@transfer.Status</td>
-                                                                                <td>
-                                                                                    <a asp-controller="Transfers" asp-action="PreviewTransfer" asp-route-id="@transfer.Id" class="btn btn-sm btn-outline-primary border me-2" data-bs-toggle="tooltip" data-bs-original-title="Preview Transfer">
-                                                                                        <i class="fe fe-eye"></i>
-                                                                                    </a>
+                                                                                <td>@(_isSomali ? transfer.StatusSo : transfer.Status)</td>
+                                                                                <td class="text-muted fs-15 fw-semibold">
+                                                                                    <div class="d-flex align-items-stretch">
+                                                                                        <a asp-controller="Transfers" asp-action="PreviewTransfer" asp-route-id="@transfer.Id" class="btn btn-sm btn-outline-primary border me-2" data-bs-toggle="tooltip" data-bs-original-title="@Localizer["PreviewTransfer"]">
+                                                                                            <i class="fe fe-eye"></i>
+                                                                                        </a>
+                                                                                    </div>
                                                                                 </td>
                                                                             </tr>
                                                                         }
@@ -290,8 +299,10 @@
 @section scripts {
 
     <script>
+
         $(document).ready(function () {
             hideMenu();
+
 
             makeDataTable('#tblTransfers', 1)
             makeDataTable('#tblTransfersIncoming', 1)
@@ -392,7 +403,7 @@
         // }
 
         const radioCall = (id) => {
-            generateTableOutoing(id);
+            generateTableOutgoing(id);
         }
 
         const radioCallIncoming = (id) => {
@@ -403,26 +414,38 @@
             $("#rd-" + id).prop("checked", true);
         }
 
-        const generateTableOutoing = (id) => {
-
+        const generateTableOutgoing = (id) => {
+           const isSomali = getCurrentLanguage() === 'so';
             var sInitialDisabled = "";
             var sDisabled = "";
             var isAuthorized = '@Model.IsAuthorized';
-            if (isAuthorized)
+            if (!isAuthorized)
                 sInitialDisabled = "disabled"
 
             var sData = '@Json.Serialize(Model.OutgoingTransfers)';
             var Data = JSON.parse(sData);
+
+            var localizedStrings = {
+                date: '@Localizer["Date"]',
+                storeFrom: '@Localizer["StoreFrom"]',
+                storeTo: '@Localizer["StoreTo"]',
+                assets: '@Localizer["Assets"]',
+                status: '@Localizer["Status"]',
+                action: '@Localizer["Action"]',
+                editTransfer: '@Localizer["EditTransfer"]',
+                previewTransfer: '@Localizer["PreviewTransfer"]'
+            };
+
             var sHtml = `<table id="tblTransfers" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
                             <thead class="bg-info-gradient ms-auto divShadow">
                                 <tr>
                                     <th class="text-white bg-transparent border-bottom-0 w-5">#</th>
-                                    <th class="text-white bg-transparent border-bottom-0 w-10">Date</th>
-                                    <th class="text-white bg-transparent border-bottom-0 w-20">Store From</th>
-                                    <th class="text-white bg-transparent border-bottom-0 w-20">Store To</th>
-                                    <th class="text-white bg-transparent border-bottom-0 w-5">Assets</th>
-                                    <th class="text-white bg-transparent border-bottom-0 w-20">Status</th>
-                                    <th class="text-white bg-transparent border-bottom-0 w-20 no-btn">Action</th>
+                                    <th class="text-white bg-transparent border-bottom-0 w-10">${localizedStrings.date}</th>
+                                    <th class="text-white bg-transparent border-bottom-0 w-20">${localizedStrings.storeFrom}</th>
+                                    <th class="text-white bg-transparent border-bottom-0 w-20">${localizedStrings.storeTo}</th>
+                                    <th class="text-white bg-transparent border-bottom-0 w-5">${localizedStrings.assets}</th>
+                                    <th class="text-white bg-transparent border-bottom-0 w-20">${localizedStrings.status}</th>
+                                    <th class="text-white bg-transparent border-bottom-0 w-20 no-btn">${localizedStrings.action}</th>
                                 </tr>
                             </thead>
                             <tbody>`;
@@ -434,23 +457,25 @@
                 if (e.transferStatusId != 1) {
                     sDisabled = "disabled";
                 }
-
+                
                 if (id > 0) {
                     if (e.transferStatusId == id) {
                         sHtml += `<tr>
-                                        <td>${nCounter}</td>
-                                        <td>${formattedDate(e.transferDate)}</td>
-                                        <td>${e.storeFrom}</td>
-                                        <td>${e.storeTo}</td>
-                                        <td>${e.numberOfAssets}</td>
-                                        <td>${e.status}</td>
-                                    <td>
-                                        <a href="/Users/Transfers/EditTransfer/${e.id}" class="btn btn-sm btn-outline-primary border me-2 ` + sDisabled + ` " data-bs-toggle="tooltip" data-bs-original-title="Edit Transfer">
-                                            <i class="fe fe-edit"></i>
-                                        </a>
-                                                <a href="/Users/Transfers/PreviewTransfer/${e.id}" class="btn btn-sm btn-outline-primary border me-2" data-bs-toggle="tooltip" data-bs-original-title="Preview Transfer">
-                                            <i class="fe fe-eye"></i>
-                                        </a>
+                                    <td>${nCounter}</td>
+                                    <td>${formattedDate(e.transferDate)}</td>
+                                    <td>${e.storeFrom}</td>
+                                    <td>${e.storeTo}</td>
+                                    <td>${e.numberOfAssets}</td>
+                                    <td>${isSomali?e.statusSo:e.status}</td>
+                                    <td class="text-muted fs-15 fw-semibold">
+                                        <div class="d-flex align-items-stretch">
+                                            <a href="/Users/Transfers/EditTransfer/${e.id}" class="btn btn-sm btn-outline-info me-1 ` + sDisabled + ` " data-bs-toggle="tooltip" data-bs-original-title="@Localizer["EditTransfer"]">
+                                                <i class="fe fe-edit"></i>
+                                            </a>
+                                            <a href="/Users/Transfers/PreviewTransfer/${e.id}" class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="tooltip" data-bs-original-title="@Localizer["PreviewTransfer"]">
+                                                <i class="fe fe-eye"></i>
+                                            </a>
+                                        </div>
                                     </td>
                                 </tr>`;
                     }
@@ -461,14 +486,16 @@
                                 <td>${e.storeFrom}</td>
                                 <td>${e.storeTo}</td>
                                 <td>${e.numberOfAssets}</td>
-                                <td>${e.status}</td>
-                                <td>
-                                    <a ${sDisabled} href="/Users/Transfers/EditTransfer/${e.id}" class="btn btn-sm btn-outline-primary border me-2 ` + sDisabled + `" data-bs-toggle="tooltip" data-bs-original-title="Edit Transfer">
-                                        <i class="fe fe-edit"></i>
-                                    </a>
-                                    <a href="/Users/Transfers/PreviewTransfer/${e.id}" class="btn btn-sm btn-outline-primary border me-2" data-bs-toggle="tooltip" data-bs-original-title="Preview Transfer">
-                                        <i class="fe fe-eye"></i>
-                                    </a>
+                                <td>${isSomali?e.statusSo:e.status}</td>
+                                <td class="text-muted fs-15 fw-semibold">
+                                    <div class="d-flex align-items-stretch">
+                                        <a href="/Users/Transfers/EditTransfer/${e.id}" class="btn btn-sm btn-outline-info me-1 ` + sDisabled + ` " data-bs-toggle="tooltip" data-bs-original-title="@Localizer["EditTransfer"]">
+                                            <i class="fe fe-edit"></i>
+                                        </a>
+                                        <a href="/Users/Transfers/PreviewTransfer/${e.id}" class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="tooltip" data-bs-original-title="@Localizer["PreviewTransfer"]">
+                                            <i class="fe fe-eye"></i>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>`;
                 }
@@ -480,64 +507,66 @@
             setRadioButtons(id);
         }
         const generateTableIncoming = (id) => {
+            const sDisabled = "";
 
-            var sDisabled = "";
+            const isSomali = getCurrentLanguage() === 'so';
 
-            var sData = '@Json.Serialize(Model.IncomingTransfers)';
-            var Data = JSON.parse(sData);
-            var sHtml = `<table id="tblTransfersIncoming" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
-                            <thead class="bg-info-gradient ms-auto divShadow">
-                                <tr>
-                                    <th class="text-white bg-transparent border-bottom-0 w-5">#</th>
-                                    <th class="text-white bg-transparent border-bottom-0 w-10">Date</th>
-                                    <th class="text-white bg-transparent border-bottom-0 w-20">Store From</th>
-                                    <th class="text-white bg-transparent border-bottom-0 w-20">Store To</th>
-                                    <th class="text-white bg-transparent border-bottom-0 w-5">Assets</th>
-                                    <th class="text-white bg-transparent border-bottom-0 w-20">Status</th>
-                                    <th class="text-white bg-transparent border-bottom-0 w-20 no-btn">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>`;
-            var nCounter = 0;
-            Data.forEach(function (e) {
-                nCounter++;
-                if (id > 0) {
-                    if (e.transferStatusId == id) {
-                        sHtml += `<tr>
-                                        <td>${nCounter}</td>
-                                        <td>${formattedDate(e.transferDate)}</td>
-                                        <td>${e.storeFrom}</td>
-                                        <td>${e.storeTo}</td>
-                                        <td>${e.numberOfAssets}</td>
-                                        <td>${e.status}</td>
-                                        <a href="/Users/Transfers/PreviewTransfer/${e.id}" class="btn btn-sm btn-outline-primary border me-2 ` + sDisabled + `" data-bs-toggle="tooltip" data-bs-original-title="Preview Transfer">
-                                            <i class="fe fe-eye"></i>
-                                        </a>
-                                    </td>
-                                </tr>`;
-                    }
-                } else {
-                    sHtml += `<tr>
-                                <td>${nCounter}</td>
-                                <td>${formattedDate(e.transferDate)}</td>
-                                <td>${e.storeFrom}</td>
-                                <td>${e.storeTo}</td>
-                                <td>${e.numberOfAssets}</td>
-                                <td>${e.status}</td>
-                                <td>
-                                   <a href="/Users/Transfers/PreviewTransfer/${e.id}" class="btn btn-sm btn-outline-primary border me-2 ` + sDisabled + `" data-bs-toggle="tooltip" data-bs-original-title="Preview Transfer">
-                                       <i class="fe fe-eye"></i>
-                                   </a>
-                                </td>
-                            </tr>`;
+            const sData = '@Json.Serialize(Model.IncomingTransfers)';
+            const Data = JSON.parse(sData);
+
+            let sHtml = `
+            <table id="tblTransfersIncoming" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
+                <thead class="bg-info-gradient ms-auto divShadow">
+                    <tr>
+                        <th class="text-white bg-transparent border-bottom-0 w-5">#</th>
+                        <th class="text-white bg-transparent border-bottom-0 w-10">@Localizer["Date"]</th>
+                        <th class="text-white bg-transparent border-bottom-0 w-20">@Localizer["StoreFrom"]</th>
+                    <th class="text-white bg-transparent border-bottom-0 w-20">@Localizer["StoreTo"]</th>
+                    <th class="text-white bg-transparent border-bottom-0 w-5">@Localizer["Assets"]</th>
+                    <th class="text-white bg-transparent border-bottom-0 w-20">@Localizer["Status"]</th>
+                        <th class="text-white bg-transparent border-bottom-0 w-20 no-btn">@Localizer["Action"]</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+
+            let nCounter = 0;
+
+            Data.forEach((e) => {
+                if (id > 0 && e.transferStatusId !== id) {
+                    return; // skip this one
                 }
+
+                nCounter++;
+                const localizedStatus = translations[e.status] ?? e.status;
+
+                sHtml += `
+                    <tr>
+                        <td>${nCounter}</td>
+                        <td>${formattedDate(e.transferDate)}</td>
+                        <td>${e.storeFrom}</td>
+                        <td>${e.storeTo}</td>
+                        <td>${e.numberOfAssets}</td>
+                        <td>${isSomali?e.statusSo:e.status}</td>
+                        <td class="text-muted fs-15 fw-semibold">
+                            <div class="d-flex align-items-stretch">
+                                <a href="/Users/Transfers/PreviewTransfer/${e.id}" class="btn btn-sm btn-outline-primary border me-2 ${sDisabled}" data-bs-toggle="tooltip" data-bs-original-title="@Localizer["PreviewTransfer"]">
+                                    <i class="fe fe-eye"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>`;
             });
 
             sHtml += '</tbody></table>';
-            $("#dvTable-Responsive-Incoming").html("").html(sHtml);
+
+            // Render the table
+            $("#dvTable-Responsive-Incoming").html(sHtml);
+
+            // Initialize datatable & other UI
             makeDataTable('#tblTransfersIncoming', 1);
             setRadioButtons(id);
         }
+
 
     </script>
 }
