@@ -200,7 +200,7 @@ namespace MODAMS.ApplicationServices
                 dto.Disposals = await _db.Assets.Where(m => m.StoreId == storeId && m.AssetStatusId == SD.Asset_Disposed).CountAsync();
 
                 dto.StoreId = storeId;
-                dto.StoreName = vwStore.Name;
+                dto.StoreName = _isSomali ? vwStore.NameSo : vwStore.Name;
                 return Result<StoreDTO>.Success(dto);
             }
             catch (Exception ex)

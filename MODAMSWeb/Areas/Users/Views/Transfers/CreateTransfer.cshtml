@@ -284,19 +284,21 @@
                                 <img src="${asset.imageUrl}" alt="" style="width: 80px; height: auto;">
                             </td>
                             <td style="width: auto;">
-                                <p style="margin: 2px 0;">Category: ${asset.subCategory}</p>
-                                <p style="margin: 2px 0; font-weight: bold;">Asset Name: ${asset.assetName}</p>
-                                <p style="margin: 2px 0;">Serial Number: ${asset.serialNumber}</p>
+                                <td style="width: auto;">
+                                    <p style="margin: 2px 0;">@Localizer["Category"]:</span><span style="font-weight: bold;"> ${asset.subCategory}</p>
+                                    <span style="margin: 2px 0;">@Localizer["AssetName"]:</span><span style="font-weight: bold;"> ${asset.assetName}</span>
+                                    <p style="margin: 2px 0;">@Localizer["SerialNo"]:</span><span style="font-weight: bold;"> ${asset.serialNumber}</p>
+                                </td>
                             </td>
                         </tr>`;
 
                     $("#tbodySelection").html(sHtml);
-                    $("#spnSelection").html("(" + selectionIds.length + " selected)");
+                    $("#spnSelection").html("(" + selectionIds.length + " @Localizer["selected"])");
                 } else {
                     // Remove the asset from selection and delete its row
                     selectionIds = selectionIds.filter(id => id !== asset.assetId);
                     $(`#tbodySelection tr[data-id="${asset.assetId}"]`).remove();
-                    $("#spnSelection").html("(" + selectionIds.length + " selected)");
+                    $("#spnSelection").html("(" + selectionIds.length + " @Localizer["selected"])");
                 }
             }
         };

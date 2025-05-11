@@ -60,7 +60,7 @@ namespace MODAMS.ApplicationServices
                         _storeId = await _func.GetStoreIdByEmployeeIdAsync(_employeeId);
                         var storeList = stores.ToList().Select(m => new SelectListItem
                         {
-                            Text = m.Name,
+                            Text = _isSomali ? m.NameSo : m.Name,
                             Value = m.Id.ToString(),
                             Selected = (m.Id == _storeId)
                         });
@@ -203,7 +203,7 @@ namespace MODAMS.ApplicationServices
 
                 var storeList = await _db.Stores.Where(m => m.Id != currentStoreId).Select(m => new SelectListItem
                 {
-                    Text = m.Name,
+                    Text = _isSomali ? m.NameSo : m.Name,
                     Value = m.Id.ToString(),
                 }).ToListAsync();
 
@@ -306,7 +306,7 @@ namespace MODAMS.ApplicationServices
                 var transfer = await _db.Transfers.FirstOrDefaultAsync(m => m.Id == transferId);
                 if (transfer == null)
                 {
-                    return Result<TransferEditDTO>.Failure("Transfer not found!");
+                    return Result<TransferEditDTO>.Failure(_isSomali ? "Wareejin lama helin!" : "Transfer not found!");
                 }
                 var dto = new TransferEditDTO();
 
@@ -332,7 +332,8 @@ namespace MODAMS.ApplicationServices
                             Model = asset.Model,
                             Barcode = asset.Barcode.ToString(),
                             SerialNumber = asset.SerialNo,
-                            IsSelected = IsAssetSelected(asset.Id, transferDetails)
+                            IsSelected = IsAssetSelected(asset.Id, transferDetails),
+                            ImageUrl = await GetAssetImageAsync(asset.Id)
                         };
                         transferAssets.Add(transferAsset);
                     }
@@ -345,7 +346,7 @@ namespace MODAMS.ApplicationServices
 
                 var storeList = _db.Stores.Where(m => m.Id != currentStoreId).ToList().Select(m => new SelectListItem
                 {
-                    Text = m.Name,
+                    Text = _isSomali ? m.NameSo : m.Name,
                     Value = m.Id.ToString(),
                 });
 

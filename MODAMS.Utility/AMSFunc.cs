@@ -331,7 +331,7 @@ namespace MODAMS.Utility
             string storeName = "";
             if (storeId > 0)
             {
-                var store = await _db.Stores.Where(m => m.Id == storeId).Select(m => m.Name).FirstOrDefaultAsync();
+                var store = await _db.Stores.Where(m => m.Id == storeId).Select(m => _isSomali ? m.NameSo : m.Name).FirstOrDefaultAsync();
                 if (store != null)
                     storeName = store.ToString();
             }

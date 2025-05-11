@@ -79,7 +79,7 @@
                                             {
                                                 <a asp-action="EditAsset" asp-controller="Assets" asp-route-id="@Model.Asset.Id" class="ms-1" id="checkElement"><i class="fe fe-edit"></i></a>
                                             }
-                                            <span class="float-end">@Model.Asset.Store.Name</span>
+                                            <span class="float-end">@TempData["StoreName"]</span>
                                         }
                                     </h3>
                                 </div>

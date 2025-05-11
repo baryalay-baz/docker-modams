@@ -20,9 +20,11 @@ namespace MODAMS.Models.ViewModels
         public string Status { get; set; }
         public string StatusSo { get; set; }
         public string StoreTo { get; set; }
+        public string StoreToSo { get; set; }
         public int NumberOfAssets { get; set; }
         public int StoreFromId { get; set; }
         public string StoreFrom { get; set; }
+        public string StoreFromSo { get; set; }
         public string SenderBarcode { get; set; }
         public string ReceiverBarcode { get; set; }
     }

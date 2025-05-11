@@ -198,7 +198,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             {
                 var dto = result.Value;
                 TempData["storeId"] = dto.Asset.StoreId;
-                TempData["storeName"] = dto.Asset.Store.Name;
+                TempData["storeName"] = _isSomali ? dto.Asset.Store.NameSo : dto.Asset.Store.Name;
                 TempData["categoryId"] = categoryId;
                 TempData["tab"] = tab.ToString();
                 return View(dto);
@@ -298,7 +298,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             if (result.IsSuccess)
             {
-                TempData["success"] = _isSomali? "Hantida si guul leh ayaa loo soo celiyey!" : "Asset recovered successfuly!";
+                TempData["success"] = _isSomali ? "Hantida si guul leh ayaa loo soo celiyey!" : "Asset recovered successfuly!";
             }
             else
             {
@@ -361,7 +361,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             }
             else
             {
-                TempData["error"] = _isSomali? "Khalad ayaa dhacay marki la helayay Aqoonsiga Hantida ugu dambeysay" : "Error occurred getting last Asset Id";
+                TempData["error"] = _isSomali ? "Khalad ayaa dhacay marki la helayay Aqoonsiga Hantida ugu dambeysay" : "Error occurred getting last Asset Id";
                 return Json(0);
             }
         }
