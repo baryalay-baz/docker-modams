@@ -23,6 +23,7 @@ namespace MODAMS.Utility
         private readonly LinkGenerator _linkGenerator;
         private readonly ILogger<AMSFunc> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly bool _isSomali;
         public AMSFunc(ApplicationDbContext db, UserManager<IdentityUser> userManager, IHttpContextAccessor contextAccessor,
             LinkGenerator linkGenerator, ILogger<AMSFunc> logger, IEmailSender emailSender)
         {
@@ -32,6 +33,7 @@ namespace MODAMS.Utility
             _linkGenerator = linkGenerator;
             _logger = logger;
             _emailSender = emailSender;
+            _isSomali = CultureInfo.CurrentUICulture.Name == "so";
         }
         //public int GetEmployeeId()
         //{
@@ -226,7 +228,7 @@ namespace MODAMS.Utility
             var department = _db.Departments.Where(m => m.EmployeeId == nEmployeeId).FirstOrDefault();
             if (department != null)
             {
-                sResult = department.Name;
+                sResult = _isSomali ? department.NameSo : department.Name;
             }
             return sResult;
         }
@@ -236,7 +238,7 @@ namespace MODAMS.Utility
             var department = await _db.Departments.Where(m => m.Id == nDepartmentId).FirstOrDefaultAsync();
             if (department != null)
             {
-                sResult = department.Name;
+                sResult = _isSomali ? department.NameSo : department.Name;
             }
             return sResult;
         }
@@ -616,7 +618,8 @@ namespace MODAMS.Utility
         {
             var asset = await _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted && m.Barcode == search)
                 .Include(m => m.SubCategory).ThenInclude(m => m.Category)
-                .Select(m => new AssetSearchDTO {
+                .Select(m => new AssetSearchDTO
+                {
                     Id = m.Id,
                     Category = m.SubCategory.Category.CategoryName,
                     SubCategory = m.SubCategory.SubCategoryName,
@@ -708,8 +711,6 @@ namespace MODAMS.Utility
         }
         public async Task<List<vwCategoryAsset>> GetvwCategoryAssetsAsync()
         {
-            var isSomali = CultureInfo.CurrentUICulture.Name == "so";
-
             var result = await _db.Assets
                 .Include(m => m.Store)
                 .Include(m => m.SubCategory).ThenInclude(m => m.Category)
@@ -717,7 +718,7 @@ namespace MODAMS.Utility
                 .GroupBy(a => new
                 {
                     a.SubCategory.Category.Id,
-                    CategoryName = isSomali ? a.SubCategory.Category.CategoryNameSo : a.SubCategory.Category.CategoryName
+                    CategoryName = _isSomali ? a.SubCategory.Category.CategoryNameSo : a.SubCategory.Category.CategoryName
                 })
                 .Select(g => new vwCategoryAsset
                 {

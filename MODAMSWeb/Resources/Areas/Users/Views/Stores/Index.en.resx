@@ -132,6 +132,9 @@
   <data name="Members" xml:space="preserve">
     <value>Members</value>
   </data>
+  <data name="NoStoresAvailable" xml:space="preserve">
+    <value>No stores available!</value>
+  </data>
   <data name="Previous" xml:space="preserve">
     <value>Previous</value>
   </data>

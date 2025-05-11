@@ -124,13 +124,16 @@
     <value>Bakhaaro Hanti</value>
   </data>
   <data name="CurrentValue" xml:space="preserve">
-    <value>Qiimaha Waqtiga la joogo</value>
+    <value>Qiimaha Waqtiga</value>
   </data>
   <data name="InitialCost" xml:space="preserve">
     <value>Qiimaha Hore</value>
   </data>
   <data name="Members" xml:space="preserve">
     <value>Xubno</value>
+  </data>
+  <data name="NoStoresAvailable" xml:space="preserve">
+    <value>Ma jiraan bakhaarro la heli karo!</value>
   </data>
   <data name="Previous" xml:space="preserve">
     <value>Hore</value>

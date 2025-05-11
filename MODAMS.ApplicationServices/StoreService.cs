@@ -11,6 +11,7 @@ using MODAMS.Models.ViewModels.Dto;
 using MODAMS.Utility;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -27,7 +28,7 @@ namespace MODAMS.ApplicationServices
 
         private int _employeeId;
         private int _supervisorEmployeeId;
-
+        private bool _isSomali;
         public StoreService(ApplicationDbContext db, IAMSFunc func, ILogger<StoreService> logger, IHttpContextAccessor httpContextAccessor)
         {
             _db = db;
@@ -35,6 +36,7 @@ namespace MODAMS.ApplicationServices
             _logger = logger;
             _httpContextAccessor = httpContextAccessor;
             _employeeId = _func.GetEmployeeId();
+            _isSomali = CultureInfo.CurrentUICulture.Name == "so";
         }
         public async Task<Result<StoresDTO>> GetIndexAsync()
         {
@@ -101,31 +103,31 @@ namespace MODAMS.ApplicationServices
                     Text = m.Name,
                     Value = m.Id.ToString()
                 });
-                var categories = _db.Categories.ToList().Select(m => new SelectListItem
+                var categories = await _db.Categories.Select(m => new SelectListItem
                 {
-                    Text = m.CategoryName,
+                    Text = _isSomali ? m.CategoryNameSo : m.CategoryName,
                     Value = m.Id.ToString()
-                });
-                var subCategories = _db.SubCategories.ToList().Select(m => new SelectListItem
+                }).ToListAsync();
+                var subCategories = await _db.SubCategories.Select(m => new SelectListItem
                 {
-                    Text = m.SubCategoryName,
+                    Text = _isSomali ? m.SubCategoryNameSo : m.SubCategoryName,
                     Value = m.Id.ToString()
-                });
-                var assetStatuses = _db.AssetStatuses.ToList().Select(m => new SelectListItem
+                }).ToListAsync();
+                var assetStatuses = await _db.AssetStatuses.Select(m => new SelectListItem
                 {
-                    Text = m.StatusName,
+                    Text = _isSomali ? m.StatusNameSo : m.StatusName,
                     Value = m.Id.ToString()
-                });
-                var assetConditions = _db.Conditions.ToList().Select(m => new SelectListItem
+                }).ToListAsync();
+                var assetConditions = await _db.Conditions.Select(m => new SelectListItem
                 {
-                    Text = m.ConditionName,
+                    Text = _isSomali ? m.ConditionNameSo : m.ConditionName,
                     Value = m.Id.ToString()
-                });
-                var donors = _db.Donors.ToList().Select(m => new SelectListItem
+                }).ToListAsync();
+                var donors = await _db.Donors.Select(m => new SelectListItem
                 {
                     Text = m.Name,
                     Value = m.Id.ToString()
-                });
+                }).ToListAsync();
 
                 dto.dtoReporting.AssetStatuses = assetStatuses;
                 dto.dtoReporting.Categories = categories;
@@ -141,7 +143,8 @@ namespace MODAMS.ApplicationServices
                 return Result<StoresDTO>.Failure(ex.Message);
             }
         }
-        public async Task<Result<StoreDTO>> GetStoreDetailsAsync(int storeId) {
+        public async Task<Result<StoreDTO>> GetStoreDetailsAsync(int storeId)
+        {
             try
             {
                 var vwStore = await _db.vwStores.FirstOrDefaultAsync(m => m.Id == storeId);
@@ -150,7 +153,7 @@ namespace MODAMS.ApplicationServices
                 {
                     return Result<StoreDTO>.Failure("Store not available!");
                 }
-                
+
 
                 var dto = new StoreDTO
                 {
@@ -200,7 +203,8 @@ namespace MODAMS.ApplicationServices
                 dto.StoreName = vwStore.Name;
                 return Result<StoreDTO>.Success(dto);
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 _func.LogException(_logger, ex);
                 return Result<StoreDTO>.Failure(ex.Message);
             }

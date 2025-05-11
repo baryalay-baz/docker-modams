@@ -272,7 +272,6 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-
                                                     </div>
                                                 </div>
                                             </div>
@@ -299,27 +298,21 @@
 @section scripts {
 
     <script>
-
         $(document).ready(function () {
             hideMenu();
-
-
             makeDataTable('#tblTransfers', 1)
             makeDataTable('#tblTransfersIncoming', 1)
 
             $('.select2').select2();
-
             $('#StoreId').on("change", () => {
                 window.location.href = '/Users/Transfers/Index/' + $("#StoreId").val();
             });
             //setRadioButtons();
 
             $("#spnNew").html('@Html.Raw(sSpnNew)');
-
             pieChartOutgoing();
             pieChartIncoming();
         });
-
         const pieChartOutgoing = () => {
             var data = '@Html.Raw(Json.Serialize(Model.OutgoingChartData))';
             var ctx = document.getElementById('pieChartOutgoing').getContext('2d');
@@ -358,7 +351,6 @@
                 }
             });
         }
-
         const pieChartIncoming = () => {
             var data = '@Html.Raw(Json.Serialize(Model.IncomingChartData))';
             var ctx = document.getElementById('pieChartIncoming').getContext('2d');
@@ -397,23 +389,15 @@
                 }
             });
         }
-
-        // function toggle(id) {
-        //     chart.toggle(id);
-        // }
-
         const radioCall = (id) => {
             generateTableOutgoing(id);
         }
-
         const radioCallIncoming = (id) => {
             generateTableIncoming(id);
         }
-
         const setRadioButtons = (id) => {
             $("#rd-" + id).prop("checked", true);
         }
-
         const generateTableOutgoing = (id) => {
            const isSomali = getCurrentLanguage() === 'so';
             var sInitialDisabled = "";
@@ -566,7 +550,5 @@
             makeDataTable('#tblTransfersIncoming', 1);
             setRadioButtons(id);
         }
-
-
     </script>
 }
