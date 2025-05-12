@@ -8,6 +8,7 @@ using MODAMS.DataAccess.Data;
 using MODAMS.Models;
 using MODAMS.Models.ViewModels;
 using MODAMS.Models.ViewModels.Dto;
+using MODAMS.Utilities;
 using MODAMS.Utility;
 using Newtonsoft.Json;
 using System.Globalization;
@@ -72,7 +73,7 @@ namespace MODAMS.ApplicationServices
                 var subCategory = await _db.SubCategories.Where(m => m.Id == subCategoryId).FirstOrDefaultAsync();
 
                 dto.SubCategoryId = 0;
-                dto.SubCategoryName = "All Assets";
+                dto.SubCategoryName = _isSomali ? "Hantida oo Dhan" : "All Assets";
 
                 if (subCategory != null)
                 {
@@ -198,16 +199,16 @@ namespace MODAMS.ApplicationServices
                     // Create the new asset
                     var newAsset = new Asset
                     {
-                        Name = dto.Name,
-                        Make = dto.Make,
-                        Model = dto.Model,
-                        Year = dto.Year,
-                        ManufacturingCountry = dto.ManufacturingCountry,
-                        SerialNo = dto.SerialNo,
-                        Barcode = dto.Barcode,
-                        Engine = dto.Engine,
-                        Chasis = dto.Chasis,
-                        Plate = dto.Plate,
+                        Name = InputSanitizer.CleanText(dto.Name),
+                        Make = InputSanitizer.CleanText(dto.Make),
+                        Model = InputSanitizer.CleanText(dto.Model),
+                        Year = InputSanitizer.CleanText(dto.Year),
+                        ManufacturingCountry = InputSanitizer.CleanText(dto.ManufacturingCountry ?? ""),
+                        SerialNo = InputSanitizer.CleanText(dto.SerialNo),
+                        Barcode = InputSanitizer.CleanText(dto.Barcode ?? ""),
+                        Engine = InputSanitizer.CleanText(dto.Engine),
+                        Chasis = InputSanitizer.CleanText(dto.Chasis),
+                        Plate = InputSanitizer.CleanText(dto.Plate),
                         Specifications = dto.Specifications,
                         Cost = dto.Cost,
                         PurchaseDate = dto.PurchaseDate,
@@ -228,14 +229,18 @@ namespace MODAMS.ApplicationServices
                     // Log the action to the NewsFeed
                     string employeeName = await _func.GetEmployeeNameAsync();
                     string storeName = await _func.GetStoreNameByStoreIdAsync(newAsset.StoreId);
+
                     string message = $"{employeeName} registered a new asset ({newAsset.Name}) in {storeName}";
+                    if (_isSomali)
+                        message = $"{employeeName} waxa uu si rasmi ah uga diiwaangeliyey hanti cusub ({newAsset.Name}) gudaha {storeName}";
+
                     await _func.LogNewsFeedAsync(message, "Users", "Assets", "AssetInfo", newAsset.Id);
 
                     // Create asset history record
                     var assetHistory = new AssetHistory
                     {
                         AssetId = newAsset.Id,
-                        Description = "Asset Registered by " + employeeName,
+                        Description = _isSomali ? "Hantida waxaa si rasmi ah u diiwaangeliyey " : "Asset Registered by " + employeeName,
                         TimeStamp = DateTime.Now,
                         TransactionRecordId = newAsset.Id,
                         TransactionTypeId = SD.Transaction_Registration
@@ -371,7 +376,11 @@ namespace MODAMS.ApplicationServices
                 string employeeName = await _func.GetEmployeeNameAsync();
                 string assetName = assetInDb.Name;
                 string storeName = await _func.GetStoreNameByStoreIdAsync(assetInDb.StoreId);
+
                 string message = $"{employeeName} modified an asset ({assetName}) in {storeName}";
+                if (_isSomali)
+                    message = $"{employeeName} waxa uu si rasmi ah u beddelay hantida ({assetName}) ee ku jirta {storeName}";
+
                 await _func.LogNewsFeedAsync(message, "Users", "Assets", "AssetInfo", assetInDb.Id);
 
                 // Return success with populated DTO
@@ -468,6 +477,9 @@ namespace MODAMS.ApplicationServices
                     string assetName = await _func.GetAssetNameAsync(assetId);
                     string storeName = await _func.GetStoreNameByStoreIdAsync(await _func.GetStoreIdByAssetIdAsync(assetId));
                     string message = $"{employeeName} uploaded {sFileName} for ({assetName}) in {storeName}";
+                    if (_isSomali)
+                        message = $"{employeeName} waxa uu si rasmi ah ugu soo rogay {sFileName} hantida ({assetName}) ee ku jirta {storeName}";
+
                     await _func.LogNewsFeedAsync(message, "Users", "Assets", "AssetInfo", assetId);
 
                     return Result.Success();
@@ -638,6 +650,9 @@ namespace MODAMS.ApplicationServices
                 string assetName = await _func.GetAssetNameAsync(assetId);
                 string storeName = await _func.GetStoreNameByStoreIdAsync(await _func.GetStoreIdByAssetIdAsync(assetId));
                 string message = $"{employeeName} uploaded a picture for ({assetName}) in {storeName}";
+                if (_isSomali)
+                    message = $"{employeeName} waxa uu si rasmi ah ugu soo rogay sawir hantida ({assetName}) ee ku jirta {storeName}";
+
                 await _func.LogNewsFeedAsync(message, "Users", "Assets", "AssetInfo", assetId);
 
                 return Result<string>.Success(_isSomali ? "Sawirka si guul leh ayaa loo soo geliyey!" : "Picture uploaded successfully!");
@@ -696,7 +711,8 @@ namespace MODAMS.ApplicationServices
             var assetHistory = new AssetHistory
             {
                 AssetId = assetId,
-                Description = $"Asset Deleted by {await _func.GetEmployeeNameAsync()}",
+                Description = _isSomali ? $"Hantida waxaa si rasmi ah u tirtiray {await _func.GetEmployeeNameAsync()}"
+                : $"Asset Deleted by {await _func.GetEmployeeNameAsync()}",
                 TimeStamp = DateTime.Now,
                 TransactionRecordId = assetId,
                 TransactionTypeId = SD.Transaction_Delete
@@ -720,13 +736,15 @@ namespace MODAMS.ApplicationServices
             }
 
             assetInDb.AssetStatusId = SD.Asset_Available; // Will have to change it to the previous Asset Status ID Later
-            assetInDb.Remarks = $"Asset Recovered by {await _func.GetEmployeeNameAsync()}";
+            assetInDb.Remarks = _isSomali ? $"Hantida waxaa si rasmi ah dib u soo celiyey {await _func.GetEmployeeNameAsync()}"
+            : $"Asset Recovered by {await _func.GetEmployeeNameAsync()}";
             await _db.SaveChangesAsync();
 
             var assetHistory = new AssetHistory
             {
                 AssetId = assetId,
-                Description = $"Asset Recovered by {await _func.GetEmployeeNameAsync()}",
+                Description = _isSomali ? $"Hantida waxaa si rasmi ah dib u soo celiyey {await _func.GetEmployeeNameAsync()}"
+                : $"Asset Recovered by {await _func.GetEmployeeNameAsync()}",
                 TimeStamp = DateTime.Now,
                 TransactionRecordId = assetId,
                 TransactionTypeId = SD.Transaction_Recover

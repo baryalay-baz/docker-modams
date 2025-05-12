@@ -673,7 +673,7 @@ namespace MODAMS.ApplicationServices
                 }
                 else
                 {
-                    sMessage = $"Transfer Number: <b>{transfer.TransferNumber}</b> has been acknowledged by {employeeName}."
+                    sMessage = $"Transfer Number: <b>{transfer.TransferNumber}</b> has been acknowledged by {employeeName}.";
                 }
 
                 var notification = new Notification

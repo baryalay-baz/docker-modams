@@ -242,8 +242,8 @@
                                                                             <tr>
                                                                                 <td>@nCounterIncoming</td>
                                                                                 <td>@transfer.TransferDate?.ToString("dd-MMM-yyyy")</td>
-                                                                                <td>@transfer.StoreFrom</td>
-                                                                                <td>@transfer.StoreTo</td>
+                                                                                <td>@(_isSomali ? transfer.StoreFromSo : transfer.StoreFrom)</td>
+                                                                                <td>@(_isSomali ? transfer.StoreToSo : transfer.StoreTo)</td>
                                                                                 <td>@transfer.NumberOfAssets</td>
                                                                                 <td>@(_isSomali ? transfer.StatusSo : transfer.Status)</td>
                                                                                 <td class="text-muted fs-15 fw-semibold">
@@ -318,8 +318,6 @@
         const pieChartOutgoing = () => {
             
             var data = '@Html.Raw(Json.Serialize(Model.OutgoingChartData))';
-            
-            console.log(data);
             
             var ctx = document.getElementById('pieChartOutgoing').getContext('2d');
 
@@ -410,7 +408,7 @@
 
             const sData = '@Json.Serialize(Model.OutgoingTransfers)'.trim();
             const result = tryParseJson(sData, "OutgoingTransfers");
-
+            
             if (result.status === "error") {
                 Notify("error", result.message);
                 return;
@@ -451,8 +449,8 @@
                     <tr>
                         <td>${++nCounter}</td>
                         <td>${formattedDate(e.transferDate)}</td>
-                        <td>${e.storeFrom}</td>
-                        <td>${e.storeTo}</td>
+                        <td>${isSomali ? e.storeFromSo : e.storeFrom}</td>
+                        <td>${isSomali ? e.storeToSo : e.storeTo}</td>
                         <td>${e.numberOfAssets}</td>
                         <td>${isSomali ? e.statusSo : e.status}</td>
                         <td class="text-muted fs-15 fw-semibold">
@@ -489,7 +487,7 @@
         const generateTableIncoming = (id) => {
             const sData = '@Json.Serialize(Model.IncomingTransfers)'.trim();
             const result = tryParseJson(sData, "IncomingTransfers");
-
+            
             if (result.status === "error") {
                 Notify("error", result.message);
                 return;
@@ -518,8 +516,8 @@
                     <tr>
                         <td>${++nCounter}</td>
                         <td>${formattedDate(e.transferDate)}</td>
-                        <td>${e.storeFrom}</td>
-                        <td>${e.storeTo}</td>
+                        <td>${isSomali ? e.storeFromSo : e.storeFrom}</td>
+                        <td>${isSomali ? e.storeToSo : e.storeTo}</td>
                         <td>${e.numberOfAssets}</td>
                         <td>${isSomali ? e.statusSo : e.status}</td>
                         <td class="text-muted fs-15 fw-semibold">
