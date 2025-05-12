@@ -96,7 +96,7 @@ namespace MODAMS.ApplicationServices
                             {
                                 storeList.Add(new SelectListItem
                                 {
-                                    Text = "No Transfer available",
+                                    Text = _isSomali ? "Wax wareejin ah lama heli karo" : "No Transfer available",
                                     Value = "0",
                                     Selected = true // Select this item if there are no stores
                                 });
@@ -370,7 +370,7 @@ namespace MODAMS.ApplicationServices
                 var transfer = await _db.Transfers.Where(m => m.Id == transferDTO.Transfer.Id).FirstOrDefaultAsync();
                 if (transfer == null)
                 {
-                    return Result<TransferEditDTO>.Failure("Record not found!");
+                    return Result<TransferEditDTO>.Failure(_isSomali ? "Wareejin lama helin!" : "Transfer not found!");
                 }
                 using (var transaction = await _db.Database.BeginTransactionAsync())
                 {
@@ -465,7 +465,7 @@ namespace MODAMS.ApplicationServices
                     {
                         break;
                     }
-                    var sIdentification = (asset.CategoryName == "Vehicles") ? "Plate No: " + asset.Plate.ToString() : "SN: " + asset.SerialNo.ToString();
+                    var sIdentification = (asset.CategoryName == "Vehicles") ? _isSomali ? "Taariko" : "Plate No: " + asset.Plate.ToString() : _isSomali ? "L.T" : "S.N: " + asset.SerialNo.ToString();
 
                     var transferAsset = new TransferAssetDTO()
                     {
@@ -515,7 +515,7 @@ namespace MODAMS.ApplicationServices
 
                 if (transferToDelete == null)
                 {
-                    return Result<string>.Failure("Transfer record not found!");
+                    return Result<string>.Failure(_isSomali ? "Diiwaanka wareejinta lama helin!" : "Transfer record not found!");
                 }
                 try
                 {
@@ -545,7 +545,7 @@ namespace MODAMS.ApplicationServices
 
                 if (transfer == null)
                 {
-                    return Result.Failure("Transfer not found!");
+                    return Result.Failure(_isSomali ? "Diiwaanka wareejinta lama helin!" : "Transfer not found!");
                 }
 
                 int nEmployeeId = await _func.GetEmployeeIdAsync();
@@ -553,15 +553,26 @@ namespace MODAMS.ApplicationServices
                 transfer.SenderBarcode = await _func.GetEmployeeNameAsync(nEmployeeId);
 
                 await _db.SaveChangesAsync();
+                string sMessage = "";
+                if (_isSomali)
+                {
+                    sMessage = $"Wareejin cusub waxaa soo gudbiyay " +
+                        $"{await _func.GetEmployeeNameByIdAsync(_employeeId)}" +
+                        $" si aad u oggolaato. Fadlan guji xiriirka hoose oo raac tilmaamaha.";
+                }
+                else
+                {
+                    sMessage = $"A new transfer has been submitted by " +
+                        $"{await _func.GetEmployeeNameByIdAsync(_employeeId)}" +
+                        $" for your acknowledgement. Please click the following link and follow the instructions.";
+                }
 
                 Notification notification = new Notification()
                 {
                     EmployeeFrom = _employeeId,
                     EmployeeTo = await _func.GetStoreOwnerIdAsync(transfer.StoreId),
-                    Subject = "Transfer awaiting acknowledgement",
-                    Message = "A new transfer has been submitted by "
-                       + await _func.GetEmployeeNameByIdAsync(_employeeId) +
-                       " for your acknowledgement, please click the following link and follow the instructions",
+                    Subject = _isSomali ? "Wareejintu waxay sugaysaa oggolaansho" : "Transfer awaiting acknowledgement",
+                    Message = sMessage,
                     DateTime = DateTime.Now,
                     IsViewed = false,
                     TargetRecordId = transfer.Id,
@@ -573,8 +584,16 @@ namespace MODAMS.ApplicationServices
 
                 //Log NewsFeed
                 string employeeName = await _func.GetEmployeeNameAsync();
-                string message = $"{employeeName} submitted the transfer ({transfer.TransferNumber}) for acknowledgement";
-                await _func.LogNewsFeedAsync(message, "Users", "Transfers", "PreviewTransfer", transfer.Id);
+
+                if (_isSomali)
+                {
+                    sMessage = $"{employeeName} wuxuu soo gudbiyay wareejinta ({transfer.TransferNumber}) si loo oggolaado";
+                }
+                else
+                {
+                    sMessage = $"{employeeName} submitted the transfer ({transfer.TransferNumber}) for acknowledgement";
+                }
+                await _func.LogNewsFeedAsync(sMessage, "Users", "Transfers", "PreviewTransfer", transfer.Id);
 
                 return Result.Success();
             }
@@ -596,7 +615,7 @@ namespace MODAMS.ApplicationServices
 
                 if (transfer == null)
                 {
-                    return Result.Failure("Transfer not found!");
+                    return Result.Failure(_isSomali ? "Diiwaanka wareejinta lama helin!" : "Transfer not found!");
                 }
 
                 var transferDetails = await _db.TransferDetails
@@ -612,10 +631,19 @@ namespace MODAMS.ApplicationServices
                     var fromStoreName = await _func.GetStoreNameByStoreIdAsync(transfer.StoreFromId);
                     var toStoreName = await _func.GetStoreNameByStoreIdAsync(transfer.StoreId);
 
+                    string sDesc = "";
+                    if (_isSomali)
+                    {
+                        sDesc = $"Hanti ayaa laga wareejiyay {fromStoreName} loona wareejiyay {toStoreName}";
+                    }
+                    else
+                    {
+                        sDesc = $"Asset Transferred from {fromStoreName} to {toStoreName}";
+                    }
                     var assetHistory = new AssetHistory
                     {
                         AssetId = item.AssetId,
-                        Description = $"Asset Transferred from {fromStoreName} to {toStoreName}",
+                        Description = sDesc,
                         TimeStamp = DateTime.Now,
                         TransactionRecordId = item.TransferId,
                         TransactionTypeId = SD.Transaction_Transfer
@@ -638,13 +666,22 @@ namespace MODAMS.ApplicationServices
 
                 var ownerId = await _func.GetStoreOwnerIdAsync(transfer.StoreFromId);
                 var employeeName = await _func.GetEmployeeNameByIdAsync(_employeeId);
+                string sMessage = "";
+                if (_isSomali)
+                {
+                    sMessage = $"Lambarka Wareejinta: <b>{transfer.TransferNumber}</b> waxaa oggolaaday {employeeName}.";
+                }
+                else
+                {
+                    sMessage = $"Transfer Number: <b>{transfer.TransferNumber}</b> has been acknowledged by {employeeName}."
+                }
 
                 var notification = new Notification
                 {
                     EmployeeFrom = _employeeId,
                     EmployeeTo = ownerId,
-                    Subject = "Transfer acknowledged",
-                    Message = $"Transfer Number: <b>{transfer.TransferNumber}</b> has been acknowledged by {employeeName}.",
+                    Subject = _isSomali ? "Wareejinta waa la oggolaaday" : "Transfer acknowledged",
+                    Message = sMessage,
                     DateTime = DateTime.Now,
                     IsViewed = false,
                     TargetRecordId = transfer.Id,
@@ -655,8 +692,10 @@ namespace MODAMS.ApplicationServices
                 await _func.NotifyDepartmentAsync(departmentId, notification);
 
                 string message = $"{employeeName} acknowledged the transfer ({transfer.TransferNumber})";
-                await _func.LogNewsFeedAsync(message, "Users", "Transfers", "PreviewTransfer", transfer.Id);
+                if (_isSomali)
+                    message = $"{employeeName} ayaa oggolaaday wareejinta ({transfer.TransferNumber})";
 
+                await _func.LogNewsFeedAsync(message, "Users", "Transfers", "PreviewTransfer", transfer.Id);
                 await transaction.CommitAsync();
 
                 return Result.Success();
@@ -665,7 +704,8 @@ namespace MODAMS.ApplicationServices
             {
                 await transaction.RollbackAsync();
                 _func.LogException(_logger, ex);
-                return Result.Failure($"Error while acknowledging transfer: {ex.Message}");
+                var sError = (_isSomali) ? "Khalad ayaa dhacay inta lagu jiray oggolaanshaha wareejinta" : "Error acknowledging transfer";
+                return Result.Failure($"{sError}: {ex.Message}");
             }
         }
         public async Task<Result> RejectTransferAsync(int transferId, string txtReason = "")
@@ -676,7 +716,7 @@ namespace MODAMS.ApplicationServices
                 var transfer = _db.Transfers.FirstOrDefault(m => m.Id == transferId);
 
                 if (transfer == null)
-                    return Result.Failure("Transfer record not found!");
+                    return Result.Failure(_isSomali ? "Diiwaanka wareejinta lama helin!" : "Transfer record not found!");
 
 
                 transfer.TransferStatusId = SD.Transfer_Rejected;
@@ -688,12 +728,16 @@ namespace MODAMS.ApplicationServices
                 var ownerId = await _func.GetStoreOwnerIdAsync(transfer.StoreFromId);
                 var employeeName = await _func.GetEmployeeNameByIdAsync(_employeeId);
 
+                var sMessage = $"Transfer Number: <b>{transfer.TransferNumber}</b> has been rejected by {employeeName}, please click the following link for details";
+                if (_isSomali)
+                    sMessage = $"Lambarka Wareejinta: <b>{transfer.TransferNumber}</b> waxaa diiday {employeeName}, fadlan guji xiriirka hoose si aad u aragto faahfaahinta.";
+
                 var notification = new Notification
                 {
                     EmployeeFrom = _employeeId,
                     EmployeeTo = ownerId,
-                    Subject = "Transfer rejected",
-                    Message = $"Transfer Number: <b>{transfer.TransferNumber}</b> has been rejected by {employeeName}, please click the following link for details",
+                    Subject = _isSomali ? "Wareejinta waa la diiday" : "Transfer rejected",
+                    Message = sMessage,
                     DateTime = DateTime.Now,
                     IsViewed = false,
                     TargetRecordId = transfer.Id,
@@ -704,8 +748,11 @@ namespace MODAMS.ApplicationServices
                 await _func.NotifyDepartmentAsync(departmentId, notification);
 
                 //Log NewsFeed
-                string message = $"{employeeName} rejected the transfer ({transfer.TransferNumber})";
-                await _func.LogNewsFeedAsync(message, "Users", "Transfers", "PreviewTransfer", transfer.Id);
+                sMessage = $"{employeeName} rejected the transfer ({transfer.TransferNumber})";
+                if (_isSomali)
+                    sMessage = $"{employeeName} ayaa diiday wareejinta ({transfer.TransferNumber})";
+
+                await _func.LogNewsFeedAsync(sMessage, "Users", "Transfers", "PreviewTransfer", transfer.Id);
 
                 return Result.Success();
             }
@@ -728,6 +775,7 @@ namespace MODAMS.ApplicationServices
 
                 var assets = await _db.Assets
                     .Include(asset => asset.SubCategory.Category)
+                    .Include(asset => asset.Condition)
                     .Where(asset => assetIds.Contains(asset.Id))
                     .ToListAsync();
 
@@ -739,19 +787,29 @@ namespace MODAMS.ApplicationServices
 
                     if (transferAsset != null)
                     {
+                        var subCategory = transferAsset.SubCategory;
+                        var category = subCategory?.Category;
+                        var condition = transferAsset.Condition;
+
                         var outgoingAsset = new TransfersOutgoingAssetDTO
                         {
                             TransferDate = td.Transfer.TransferDate,
                             StoreFrom = await _func.GetStoreNameByStoreIdAsync(td.Transfer.StoreFromId),
                             StoreTo = await _func.GetStoreNameByStoreIdAsync(td.Transfer.StoreId),
                             AssetId = td.AssetId,
-                            Category = transferAsset.SubCategory?.Category?.CategoryName,
-                            SubCategory = transferAsset.SubCategory?.SubCategoryName,
+                            Category = _isSomali
+                                ? category?.CategoryNameSo ?? ""
+                                : category?.CategoryName ?? "",
+                            SubCategory = _isSomali
+                                ? subCategory?.SubCategoryNameSo ?? ""
+                                : subCategory?.SubCategoryName ?? "",
                             Make = transferAsset.Make,
                             Model = transferAsset.Model,
                             AssetName = transferAsset.Name,
-                            Barcode = transferAsset.Barcode,
-                            Condition = transferAsset.Condition?.ToString(),
+                            Barcode = transferAsset.Barcode ?? "",
+                            Condition = _isSomali
+                                ? condition?.ConditionNameSo ?? ""
+                                : condition?.ConditionName ?? "",
                             SerialNumber = transferAsset.SerialNo,
                             Cost = transferAsset.Cost,
                             CurrentValue = await _func.GetDepreciatedCostAsync(td.AssetId)
@@ -793,19 +851,29 @@ namespace MODAMS.ApplicationServices
 
                     if (transferAsset != null)
                     {
+                        var subCategory = transferAsset.SubCategory;
+                        var category = subCategory?.Category;
+                        var condition = transferAsset.Condition;
+
                         var incomingAssets = new TransfersIncomingAssetDTO
                         {
                             TransferDate = td.Transfer.TransferDate,
                             StoreFrom = await _func.GetStoreNameByStoreIdAsync(td.Transfer.StoreFromId),
                             StoreTo = await _func.GetStoreNameByStoreIdAsync(td.Transfer.StoreId),
                             AssetId = td.AssetId,
-                            Category = transferAsset.SubCategory?.Category?.CategoryName,
-                            SubCategory = transferAsset.SubCategory?.SubCategoryName,
+                            Category = _isSomali
+                                ? category?.CategoryNameSo ?? ""
+                                : category?.CategoryName ?? "",
+                            SubCategory = _isSomali
+                                ? subCategory?.SubCategoryNameSo ?? ""
+                                : subCategory?.SubCategoryName ?? "",
                             Make = transferAsset.Make,
                             Model = transferAsset.Model,
                             AssetName = transferAsset.Name,
-                            Barcode = transferAsset.Barcode,
-                            Condition = transferAsset.Condition?.ToString(),
+                            Barcode = transferAsset.Barcode ?? "",
+                            Condition = _isSomali
+                                ? condition?.ConditionNameSo ?? ""
+                                : condition?.ConditionName ?? "",
                             SerialNumber = transferAsset.SerialNo,
                             Cost = transferAsset.Cost,
                             CurrentValue = await _func.GetDepreciatedCostAsync(td.AssetId)
@@ -828,51 +896,48 @@ namespace MODAMS.ApplicationServices
             List<TransferChartDTO> dtoTransferCharts = new List<TransferChartDTO>();
 
             var result = await _db.SubCategories
-            .Join(_db.Assets, subCategory => subCategory.Id, asset => asset.SubCategoryId, (subCategory, asset) => new { subCategory, asset })
-            .Join(_db.TransferDetails, combined => combined.asset.Id, transferDetail => transferDetail.AssetId, (combined, transferDetail) => new { combined.subCategory, combined.asset, transferDetail })
-            .Join(_db.Transfers, combined => combined.transferDetail.TransferId, transfer => transfer.Id, (combined, transfer) => new { combined.subCategory, combined.asset, combined.transferDetail, transfer })
-            .Where(combined => combined.transfer.TransferStatusId == 3)
-            .GroupBy(combined => new
-            {
-                combined.subCategory.Id,
-                combined.subCategory.SubCategoryName,
-                combined.transfer.StoreFromId,
-                combined.transfer.StoreId
-            })
-            .Select(grouped => new
-            {
-                Id = grouped.Key.Id,
-                SubCategoryName = grouped.Key.SubCategoryName,
-                TotalAssets = grouped.Count(),
-                StoreFromId = grouped.Key.StoreFromId,
-                StoreToId = grouped.Key.StoreId
-            })
-            .ToListAsync();
+                .Join(_db.Assets, subCategory => subCategory.Id, asset => asset.SubCategoryId, (subCategory, asset) => new { subCategory, asset })
+                .Join(_db.TransferDetails, combined => combined.asset.Id, transferDetail => transferDetail.AssetId, (combined, transferDetail) => new { combined.subCategory, combined.asset, transferDetail })
+                .Join(_db.Transfers, combined => combined.transferDetail.TransferId, transfer => transfer.Id, (combined, transfer) => new { combined.subCategory, combined.asset, combined.transferDetail, transfer })
+                .Where(combined => combined.transfer.TransferStatusId == SD.Transfer_Completed)
+                .GroupBy(combined => new
+                {
+                    combined.subCategory.Id,
+                    combined.subCategory.SubCategoryName,
+                    combined.subCategory.SubCategoryNameSo,
+                    combined.transfer.StoreFromId,
+                    combined.transfer.StoreId
+                })
+                .Select(grouped => new
+                {
+                    Id = grouped.Key.Id,
+                    SubCategoryName = _isSomali ? grouped.Key.SubCategoryNameSo : grouped.Key.SubCategoryName,
+                    TotalAssets = grouped.Count(),
+                    StoreFromId = grouped.Key.StoreFromId,
+                    StoreToId = grouped.Key.StoreId
+                })
+                .ToListAsync();
 
             foreach (var item in result)
             {
-                TransferChartDTO dto = new TransferChartDTO()
+                dtoTransferCharts.Add(new TransferChartDTO
                 {
                     Id = item.Id,
                     SubCategoryName = item.SubCategoryName,
                     TotalAssets = item.TotalAssets,
                     StoreFromId = item.StoreFromId,
                     StoreToId = item.StoreToId
-                };
-                dtoTransferCharts.Add(dto);
+                });
             }
 
             if (type == 1)
-            {
                 dtoTransferCharts = dtoTransferCharts.Where(m => m.StoreFromId == _storeId).ToList();
-            }
             else
-            {
                 dtoTransferCharts = dtoTransferCharts.Where(m => m.StoreToId == _storeId).ToList();
-            }
 
             return dtoTransferCharts;
         }
+
 
         //Private Functions
         private bool IsAssetSelected(int assetId, List<TransferDetail> transferDetails)
@@ -887,45 +952,15 @@ namespace MODAMS.ApplicationServices
         }
         private async Task<string> GetTransferNumberAsync(int currentStoreId)
         {
-            string sResult = "";
+            var maxId = await _db.Transfers
+                .Where(m => m.EmployeeId == _employeeId)
+                .MaxAsync(m => (int?)m.Id) ?? 0;
 
-            var transfers = await _db.Transfers.Where(m => m.EmployeeId == _employeeId).ToListAsync();
-            var maxIdTransfer = transfers.OrderByDescending(m => m.Id).FirstOrDefault();
+            maxId++; // Increment for the next transfer
 
-            int maxId = 0;
-            if (maxIdTransfer != null)
-            {
-                maxId = maxIdTransfer.Id;
-            }
-            ;
-            maxId++;
+            string paddedNumber = maxId.ToString("D5"); // Pads with leading zeros to make 5 digits
 
-            if (maxId < 10)
-            {
-                sResult = "0000" + maxId;
-            }
-            else if (maxId > 10 && maxId < 100)
-            {
-                sResult = "000" + maxId;
-            }
-            else if (maxId > 100 && maxId < 1000)
-            {
-                sResult = "00" + maxId;
-            }
-            else if (maxId > 1000 && maxId < 10000)
-            {
-                sResult = "0" + maxId;
-            }
-            else if (maxId > 10000 && maxId < 100000)
-            {
-                sResult = maxId.ToString();
-            }
-            else
-            {
-                sResult = maxId.ToString();
-            }
-
-            return currentStoreId + "-" + sResult;
+            return $"{currentStoreId}-{paddedNumber}";
         }
         private async Task<List<MODAMS.Models.Asset>> GetAssetsAsync([CallerMemberName] string caller = "")
         {

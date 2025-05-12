@@ -1,16 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MODAMS.ApplicationServices.IServices;
 using MODAMS.DataAccess.Data;
-using MODAMS.Models;
-using MODAMS.Models.ViewModels;
 using MODAMS.Models.ViewModels.Dto;
 using MODAMS.Utility;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using Notification = MODAMS.Models.Notification;
+using System.Globalization;
 
 namespace MODAMSWeb.Areas.Users.Controllers
 {
@@ -25,6 +20,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
         private int _employeeId;
         private int _supervisorId;
         private int _storeId;
+        private readonly bool _isSomali;
+
         public TransfersController(ApplicationDbContext db, IAMSFunc func, ITransferService transferService)
         {
             _db = db;
@@ -33,6 +30,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             _employeeId = _func.GetEmployeeId();
             _supervisorId = _func.GetSupervisorId(_employeeId);
+            _isSomali = CultureInfo.CurrentUICulture.Name == "so";
         }
         [HttpGet]
         public async Task<IActionResult> Index(int id = 0, int transferStatusId = 0)
@@ -44,7 +42,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
             {
                 return View(dto);
             }
-            else {
+            else
+            {
                 TempData["error"] = result.ErrorMessage;
                 return View(new TransferDTO());
             }
@@ -61,7 +60,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
             {
                 return View(dto);
             }
-            else {
+            else
+            {
                 TempData["error"] = result.ErrorMessage;
                 return RedirectToAction("Index", "Transfers");
             }
@@ -73,7 +73,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
         {
             if (!ModelState.IsValid)
             {
-                TempData["error"] = "Please fill all the mandatory fields";
+                TempData["error"] = _isSomali ? "Fadlan buuxi dhammaan meelaha khasabka ah." : "Please fill all the mandatory fields";
                 return RedirectToAction("CreateTransfer", "Transfers");
             }
 
@@ -82,11 +82,12 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             if (result.IsSuccess)
             {
-                TempData["success"] = "Transfer created successfuly!";
+                TempData["success"] = _isSomali ? "Wareejintu si guul leh ayaa loo sameeyay!" : "Transfer created successfuly!";
                 return RedirectToAction("PreviewTransfer", "Transfers", new { id = dto.Transfer.Id });
             }
-            else {
-                TempData["error"] = "Transaction failed: " + result.ErrorMessage;
+            else
+            {
+                TempData["error"] = _isSomali ? "Hawlgalka wuu fashilmay. Faahfaahin: " + result.ErrorMessage : "Transaction failed. Details: " + result.ErrorMessage;
                 return RedirectToAction("CreateTransfer", "Transfers");
             }
         }
@@ -101,7 +102,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
             {
                 return View(dto);
             }
-            else {
+            else
+            {
                 TempData["error"] = result.ErrorMessage;
                 return RedirectToAction("Index", "Transfers");
             }
@@ -113,7 +115,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
         {
             if (!ModelState.IsValid)
             {
-                TempData["error"] = "Please fill all the mandatory fields";
+                TempData["error"] = _isSomali ? "Fadlan buuxi dhammaan meelaha khasabka ah." : "Please fill all the mandatory fields";
                 return RedirectToAction("EditTransfer", "Transfers", new { id = transferDTO.Transfer.Id });
             }
 
@@ -122,9 +124,10 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             if (result.IsSuccess)
             {
-                TempData["success"] = "Changes saved successfuly!";
+                TempData["success"] = _isSomali ? "Isbeddellada si guul leh ayaa loo kaydiyay!" : "Changes saved successfuly!";
             }
-            else {
+            else
+            {
                 TempData["error"] = result.ErrorMessage;
             }
 
@@ -140,7 +143,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
             {
                 return View(dto);
             }
-            else {
+            else
+            {
                 TempData["error"] = result.ErrorMessage;
                 return View(new TransferPreviewDTO());
             }
@@ -152,10 +156,11 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             if (result.IsSuccess)
             {
-                TempData["success"] = "Transfer deleted successfuly!";
+                TempData["success"] = _isSomali ? "Wareejinta si guul leh ayaa loo tirtiray!" : "Transfer deleted successfuly!";
                 return RedirectToAction("Index", "Transfers");
             }
-            else {
+            else
+            {
                 TempData["error"] = result.ErrorMessage;
             }
 
@@ -170,7 +175,15 @@ namespace MODAMSWeb.Areas.Users.Controllers
             {
                 _db.Transfers.Remove(transferToDelete);
                 _db.SaveChanges();
-                TempData["success"] = $"Transfer: {transferToDelete.TransferNumber} deleted successfully!";
+
+                if (_isSomali)
+                {
+                    TempData["success"] = $"Wareejinta: {transferToDelete.TransferNumber} si guul leh ayaa loo tirtiray!";
+                }
+                else
+                {
+                    TempData["success"] = $"Transfer: {transferToDelete.TransferNumber} deleted successfully!";
+                }
             }
             catch (Exception ex)
             {
@@ -189,10 +202,11 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             if (result.IsSuccess)
             {
-                TempData["success"] = "Transfer Submitted for Acknowledgement";
+                TempData["success"] = _isSomali ? "Wareejinta waxaa loo gudbiyay oggolaansho." : "Transfer Submitted for Acknowledgement";
                 return RedirectToAction("PreviewTransfer", "Transfers", new { id = id });
             }
-            else {
+            else
+            {
                 TempData["error"] = result.ErrorMessage;
                 return RedirectToAction("PreviewTransfer", "Transfers", new { id = id });
             }
@@ -206,10 +220,11 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             if (result.IsSuccess)
             {
-                TempData["success"] = "Transfer Acknowledged";
+                TempData["success"] = _isSomali ? "Wareejinta si guul leh ayaa loo oggolaaday!" : "Transfer Acknowledged Successfully!";
                 return RedirectToAction("PreviewTransfer", "Transfers", new { id = id });
             }
-            else {
+            else
+            {
                 TempData["error"] = result.ErrorMessage;
                 return RedirectToAction("PreviewTransfer", "Transfers", new { id = id });
             }
@@ -223,9 +238,10 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             if (result.IsSuccess)
             {
-                TempData["success"] = "Transfer Rejected Successfuly!";
+                TempData["success"] =_isSomali? "Wareejinta si guul leh ayaa loo diiday!" : "Transfer Rejected Successfully!";
             }
-            else {
+            else
+            {
                 TempData["error"] = result.ErrorMessage;
             }
             return RedirectToAction("PreviewTransfer", "Transfers", new { id = id });
@@ -233,7 +249,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
         public async Task<List<TransferChartDTO>> GetChartData(int type)
         {
             var dto = await _transferService.GetChartDataAsync(type);
-            return dto;          
+            return dto;
         }
         [HttpGet]
         public async Task<IActionResult> TransferredAssets(int id)
@@ -245,7 +261,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
             {
                 return View(dto);
             }
-            else {
+            else
+            {
                 TempData["error"] = result.ErrorMessage;
                 return View(new List<TransfersOutgoingAssetDTO>());
             }
@@ -260,7 +277,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
             {
                 return View(dto);
             }
-            else {
+            else
+            {
                 TempData["error"] = result.ErrorMessage;
                 return View(new List<List<TransfersIncomingAssetDTO>>());
             }
