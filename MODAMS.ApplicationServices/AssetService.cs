@@ -349,16 +349,16 @@ namespace MODAMS.ApplicationServices
                 }
                 // Update the record
                 assetInDb.SubCategoryId = dto.SubCategoryId;
-                assetInDb.Name = dto.Name;
-                assetInDb.Make = dto.Make;
-                assetInDb.Model = dto.Model;
+                assetInDb.Name = InputSanitizer.CleanText(dto.Name);
+                assetInDb.Make = InputSanitizer.CleanText(dto.Make);
+                assetInDb.Model = InputSanitizer.CleanText(dto.Model);
                 assetInDb.Year = dto.Year;
-                assetInDb.Engine = dto.Engine;
-                assetInDb.Chasis = dto.Chasis;
-                assetInDb.Plate = dto.Plate;
-                assetInDb.ManufacturingCountry = dto.ManufacturingCountry;
-                assetInDb.SerialNo = dto.SerialNo;
-                assetInDb.Barcode = dto.Barcode;
+                assetInDb.Engine = InputSanitizer.CleanText(dto.Engine);
+                assetInDb.Chasis = InputSanitizer.CleanText(dto.Chasis);
+                assetInDb.Plate = InputSanitizer.CleanText(dto.Plate);
+                assetInDb.ManufacturingCountry = InputSanitizer.CleanText(dto.ManufacturingCountry??"");
+                assetInDb.SerialNo = InputSanitizer.CleanText(dto.SerialNo);
+                assetInDb.Barcode = InputSanitizer.CleanText(dto.Barcode??"");
                 assetInDb.Specifications = dto.Specifications;
                 assetInDb.Cost = dto.Cost;
                 assetInDb.PurchaseDate = dto.PurchaseDate;

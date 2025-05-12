@@ -447,12 +447,15 @@ namespace MODAMS.ApplicationServices
                     m.Id,
                     m.Name,
                     m.SubCategory.Category.CategoryName,
+                    m.SubCategory.Category.CategoryNameSo,
                     m.SubCategory.SubCategoryName,
+                    m.SubCategory.SubCategoryNameSo,
                     m.Make,
                     m.Model,
                     m.Barcode,
                     m.SerialNo,
                     m.Condition.ConditionName,
+                    m.Condition.ConditionNameSo,
                     m.Plate
                 }).ToListAsync();
 
@@ -471,13 +474,13 @@ namespace MODAMS.ApplicationServices
                     {
                         AssetId = asset.Id,
                         AssetName = asset.Name,
-                        Category = asset.CategoryName,
-                        SubCategory = asset.SubCategoryName,
+                        Category = _isSomali ? asset.CategoryNameSo : asset.CategoryName,
+                        SubCategory = _isSomali ? asset.SubCategoryNameSo : asset.SubCategoryName,
                         Make = asset.Make,
                         Model = asset.Model,
                         Barcode = asset.Barcode.ToString(),
                         SerialNumber = sIdentification,
-                        Condition = asset.ConditionName,
+                        Condition = _isSomali ? asset.ConditionNameSo : asset.ConditionName,
                         IsSelected = true
                     };
                     transferAssets.Add(transferAsset);

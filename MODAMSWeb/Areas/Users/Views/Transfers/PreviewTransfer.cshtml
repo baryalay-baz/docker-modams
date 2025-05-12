@@ -1,6 +1,13 @@
 ﻿@model MODAMS.Models.ViewModels.Dto.TransferPreviewDTO
-@using MODAMS.Utility
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 
+@using MODAMS.Utility
+@using System.Globalization
+
+@{
+    bool _isSomali = CultureInfo.CurrentCulture.Name == "so" ? true : false;
+}
 <style>
     .table-bordered tr {
         height: 30px; /* Set the desired height */
@@ -72,7 +79,7 @@
 </style>
 <div class="page-header">
     <div>
-        <h1 class="page-title">Asset Transfers</h1>
+        <h1 class="page-title">@Localizer["AssetTransfers"]</h1>
     </div>
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
@@ -101,7 +108,7 @@
                                 </tr>
                                 <tr>
                                     <td class="center-align">
-                                        <h5>Transfer Voucher</h5>
+                                        <h5>@Localizer["TransferVoucher"]</h5>
                                     </td>
                                 </tr>
                                 <tr><td class="align-center w-100"><hr class="customHR w-100" /></td></tr>
@@ -111,38 +118,38 @@
                                             <div class="card-body">
                                                 <table class="w-100">
                                                     <tr>
-                                                        <td>Transfer Number: <b>@Model.vwTransfer.TransferNumber</b></td>
+                                                        <td>@Localizer["TransferNumber"]: <b>@Model.vwTransfer.TransferNumber</b></td>
                                                         <td><span class="text-bold"></span></td>
-                                                        <td style="text-align: right;">Transfer Date: <b>@Model.vwTransfer.TransferDate?.ToString("dd-MMM-yyyy")</b></td>
+                                                        <td style="text-align: right;">@Localizer["TransferDate"]: <b>@Model.vwTransfer.TransferDate?.ToString("dd-MMM-yyyy")</b></td>
                                                     </tr>
                                                 </table>
                                                 <br /><br /><br /><br /><br />
                                                 <table class="w-100 table-bordered">
                                                     <tr>
-                                                        <td>Store From:&nbsp;<b>@Model.vwTransfer.StoreFrom</b></td>
-                                                        <td>Store To:&nbsp;<b>@Model.vwTransfer.StoreTo</b></td>
+                                                        <td>@Localizer["StoreFrom"]:&nbsp;<b>@(_isSomali ? Model.vwTransfer.StoreFromSo : Model.vwTransfer.StoreFrom)</b></td>
+                                                        <td>@Localizer["StoreTo"]:&nbsp;<b>@(_isSomali ? Model.vwTransfer.StoreToSo : Model.vwTransfer.StoreTo)</b></td>
                                                     </tr>
                                                     <tr>
-                                                        <td>Assets:&nbsp;<b>@Model.vwTransfer.NumberOfAssets</b></td>
+                                                        <td>@Localizer["Assets"]:&nbsp;<b>@Model.vwTransfer.NumberOfAssets</b></td>
                                                         @{
-                                                            var sTransferStatus = Model.vwTransfer.Status;
+                                                            var sTransferStatus = _isSomali ? Model.vwTransfer.StatusSo : Model.vwTransfer.Status;
                                                             string sStatus =
-                                                            sTransferStatus == "Rejected" ? "<span class=\"text-danger\">" + sTransferStatus + "</span>" : "<span class=\"text-success\">" + sTransferStatus + "</span>";
+                                                            Model.vwTransfer.Status == "Rejected" ? "<span class=\"text-danger\">" + sTransferStatus + "</span>" : "<span class=\"text-success\">" + sTransferStatus + "</span>";
 
                                                         }
-                                                        <td>Status:&nbsp;<b>@Html.Raw(sStatus)</b></td>
+                                                        <td>@Localizer["Status"]:&nbsp;<b>@Html.Raw(sStatus)</b></td>
                                                     </tr>
                                                 </table>
                                                 <table class="table table-bordered w-100">
                                                     <thead>
                                                         <tr>
-                                                            <td>S.No</td>
-                                                            <td>Category</td>
-                                                            <td>Make</td>
-                                                            <td>Model</td>
-                                                            <td>Asset Name</td>
-                                                            <td>Identification</td>
-                                                            <td>Condition</td>
+                                                            <th>@Localizer["SNo"]</th>
+                                                            <th>@Localizer["Category"]</th>
+                                                            <th>@Localizer["Make"] </th>
+                                                            <th>@Localizer["Model"] </th>
+                                                            <th>@Localizer["AssetName"]</th>
+                                                            <th>@Localizer["Identification"]</th>
+                                                            <th>@Localizer["Condition"]</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -154,15 +161,15 @@
                                                             {
                                                                 nCounter++;
                                                                 sCounter = (nCounter < 10) ? "0" + nCounter.ToString() + "." : nCounter.ToString() + ".";
-                                                                        <tr>
-                                                                            <td>@sCounter</td>
-                                                                            <td>@asset.SubCategory</td>
-                                                                            <td>@asset.Make</td>
-                                                                            <td>@asset.Model</td>
-                                                                            <td>@asset.AssetName</td>
-                                                                            <td>@asset.SerialNumber</td>
-                                                                            <td>@asset.Condition</td>
-                                                                        </tr>
+                                                                <tr>
+                                                                    <td>@sCounter</td>
+                                                                    <td>@asset.SubCategory</td>
+                                                                    <td>@asset.Make</td>
+                                                                    <td>@asset.Model</td>
+                                                                    <td>@asset.AssetName</td>
+                                                                    <td>@asset.SerialNumber</td>
+                                                                    <td>@asset.Condition</td>
+                                                                </tr>
                                                             }
                                                         }
 
@@ -175,15 +182,15 @@
                                                             @{
                                                                 if (Model.vwTransfer.TransferStatusId > SD.Transfer_Pending)
                                                                 {
-                                                                            <div class="barcode-container">
-                                                                                <div class="barcode-text">Transfer By</div>
-                                                                                <span style="font-family: Freestyle Script; font-size: 25pt;">
-                                                                                    @Model.vwTransfer.SenderBarcode
-                                                                                </span>
-                                                                                <div class="barcode-text">
-                                                                                    @Model.vwTransfer.SubmissionforAcknowledgementDate?.ToString("D")
-                                                                                </div>
-                                                                            </div>
+                                                                    <div class="barcode-container">
+                                                                        <div class="barcode-text">@Localizer["TransferBy"]</div>
+                                                                        <span style="font-family: Freestyle Script; font-size: 25pt;">
+                                                                            @Model.vwTransfer.SenderBarcode
+                                                                        </span>
+                                                                        <div class="barcode-text">
+                                                                            @Model.vwTransfer.SubmissionforAcknowledgementDate?.ToString("D")
+                                                                        </div>
+                                                                    </div>
                                                                 }
                                                             }
                                                         </div>
@@ -191,20 +198,20 @@
                                                             @{
                                                                 if (Model.vwTransfer.TransferStatusId > SD.Transfer_SubmittedForAcknowledgement)
                                                                 {
-                                                                            <div class="barcode-container">
-                                                                                @{
-                                                                            string barcodeText = "Received By";
-                                                                            string sClass = "";
-                                                                            if (sTransferStatus == "Rejected")
+                                                                    <div class="barcode-container">
+                                                                        @{
+                                                                            var barcodeText = Localizer["ReceivedBy"];
+                                                                            var sClass = "";
+                                                                            if (Model.vwTransfer.TransferStatusId == SD.Transfer_Rejected)
                                                                                 sClass = "text-danger";
-                                                                                }
+                                                                        }
 
-                                                                                <div class="barcode-text @sClass">@barcodeText</div>
-                                                                                <span class="@sClass" style="font-family: Freestyle Script; font-size: 25pt;">
-                                                                                    @Model.vwTransfer.ReceiverBarcode
-                                                                                </span>
-                                                                                <div class="barcode-text @sClass">@Model.vwTransfer.AcknowledgementDate?.ToString("D")</div>
-                                                                            </div>
+                                                                        <div class="barcode-text @sClass">@barcodeText</div>
+                                                                        <span class="@sClass" style="font-family: Freestyle Script; font-size: 25pt;">
+                                                                            @Model.vwTransfer.ReceiverBarcode
+                                                                        </span>
+                                                                        <div class="barcode-text @sClass">@Model.vwTransfer.AcknowledgementDate?.ToString("D")</div>
+                                                                    </div>
                                                                 }
                                                             }
                                                         </div>
@@ -227,7 +234,7 @@
                 <div class="row">
                     @*<hr class="customHR" />*@
                     <div class="col-sm-12">
-                        <a asp-action="Index" asp-controller="Transfers" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
+                        <a asp-action="Index" asp-controller="Transfers" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;@Localizer["Previous"]</a>
                     </div>
                 </div>
             </div>
@@ -271,11 +278,11 @@
         }
 </style>")
 <button id="actionButton" class="btn btn-primary btn-floating" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasActions" aria-controls="offcanvasActions">
-    <i class="fa fa-cogs"></i> Actions
+    <i class="fa fa-cogs"></i> @Localizer["Actions"]
 </button>
 <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasActions" aria-labelledby="offcanvasActionsLabel">
     <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="offcanvasActionsLabel">Actions</h5>
+        <h5 class="offcanvas-title" id="offcanvasActionsLabel">@Localizer["Actions"]</h5>
         <button id="closeOffcanvasButton" type="button" class="btn-close" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body">
@@ -287,44 +294,44 @@
                         {
                             if (Model.IsSender)
                             {
-                                    <form method="post" asp-action="SubmitForAcknowledgement" id="frmSubmitForAcknowledgement">
-                                        <input type="hidden" name="id" value="@Model.vwTransfer.Id" />
-                                        <button type="submit" class="btn btn-info-gradient " id="btnSubmitTransfer">
-                                            <i class="fa fa-check-circle"></i><span class="loading">&nbsp;Submit for Acknowledgement</span>
-                                        </button>
-                                    </form>
+                                <form method="post" asp-action="SubmitForAcknowledgement" id="frmSubmitForAcknowledgement">
+                                    <input type="hidden" name="id" value="@Model.vwTransfer.Id" />
+                                    <button type="submit" class="btn btn-info-gradient " id="btnSubmitTransfer">
+                                        <i class="fa fa-check-circle"></i><span class="loading">&nbsp;@Localizer["SubmitForAcknowledgement"]</span>
+                                    </button>
+                                </form>
                             }
                             else
                             {
-                                    @Html.Raw("<span id=\"spnAction\">No action required</span>")
+                                @Html.Raw($"<span id=\"spnAction\">")@Localizer["NoActionRequired"] @Html.Raw("</span>")
                             }
                         }
                         else if (Model.vwTransfer.TransferStatusId == SD.Transfer_SubmittedForAcknowledgement)
                         {
                             if (Model.IsReceiver)
                             {
-                                    <form method="post" asp-action="AcknowledgeTransfer" id="frmAcknowledgeTransfer">
-                                        <input type="hidden" name="id" value="@Model.vwTransfer.Id" />
-                                        <button type="submit" class="btn btn-info-gradient" id="btnAcknowledgeTransfer">
-                                            <i class="fa fa-check-circle"></i><span class="loading">&nbsp;Acknowledge Transfer</span>
-                                        </button>
-                                    </form>
-                                    @Html.Raw("&nbsp;&nbsp;")
-                                    <form method="post" asp-action="RejectTransfer" id="frmRejectTransfer">
-                                        <input type="hidden" name="id" value="@Model.vwTransfer.Id" />
-                                        <button type="submit" class="btn btn-secondary-gradient" id="btnRejectTransfer">
-                                            <i class="fa fa-close"></i><span class="loading">&nbsp;Reject Transfer</span>
-                                        </button>
-                                    </form>
+                                <form method="post" asp-action="AcknowledgeTransfer" id="frmAcknowledgeTransfer">
+                                    <input type="hidden" name="id" value="@Model.vwTransfer.Id" />
+                                    <button type="submit" class="btn btn-info-gradient" id="btnAcknowledgeTransfer">
+                                        <i class="fa fa-check-circle"></i><span class="loading">&nbsp;@Localizer["AcknowledgeTransfer"]</span>
+                                    </button>
+                                </form>
+                                @Html.Raw("&nbsp;&nbsp;")
+                                <form method="post" asp-action="RejectTransfer" id="frmRejectTransfer">
+                                    <input type="hidden" name="id" value="@Model.vwTransfer.Id" />
+                                    <button type="submit" class="btn btn-secondary-gradient" id="btnRejectTransfer">
+                                        <i class="fa fa-close"></i><span class="loading">&nbsp;@Localizer["RejectTransfer"]</span>
+                                    </button>
+                                </form>
                             }
                             else
                             {
-                                    @Html.Raw("<span id=\"spnAction\">No action required</span>")
+                                @Html.Raw($"<span id=\"spnAction\">")@Localizer["NoActionRequired"] @Html.Raw("</span>")
                             }
                         }
                         else
                         {
-                                @Html.Raw("<span id=\"spnAction\">No action required</span>")
+                            @Html.Raw($"<span id=\"spnAction\">")@Localizer["NoActionRequired"] @Html.Raw("</span>")
                         }
                     }
                 </div>
@@ -332,12 +339,12 @@
             <div class="card">
                 <div class="card-body divShadow center-align">
                     @{
-                            <form method="post" target="_blank" asp-action="PrintVoucher" id="frmPrintVoucher">
-                                <input type="hidden" name="id" value="@Model.vwTransfer.Id" />
-                                <button type="submit" class="btn btn-gray" id="btnPrintVoucher">
-                                    <i class="fa fa-print"></i>&nbsp;<span class="loading">&nbsp;Print Transfer Voucher</span>
-                                </button>
-                            </form>
+                        <form method="post" target="_blank" asp-action="PrintVoucher" id="frmPrintVoucher">
+                            <input type="hidden" name="id" value="@Model.vwTransfer.Id" />
+                            <button type="submit" class="btn btn-gray" id="btnPrintVoucher">
+                                <i class="fa fa-print"></i>&nbsp;<span class="loading">&nbsp;@Localizer["PrintTransferVoucher"]</span>
+                            </button>
+                        </form>
                     }
                 </div>
             </div>
@@ -357,7 +364,7 @@
 
                 // Open a new window without window controls and set it to the screen size
                 var newWindow = window.open("", "PrintWindow", `toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,directories=no,status=no,width=${width},height=${height}`);
-                
+
                 //move window to top-left of the screen
                 newWindow.moveTo(0, 0);
 
@@ -400,7 +407,7 @@
 
         });
 
-        
+
 
         const checkForAction = () => {
 
