@@ -13,6 +13,7 @@ using MODAMS.Models.ViewModels.Dto;
 using MODAMS.Utility;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,6 +27,8 @@ namespace MODAMS.ApplicationServices
         private readonly ILogger<DisposalService> _logger;
         private int _employeeId;
         private int _storeId;
+        private bool _isSomali;
+
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IHttpContextAccessor _httpContextAccessor;
         public DisposalService(ApplicationDbContext db, IAMSFunc func, IWebHostEnvironment webHostEnvironment,
@@ -38,6 +41,7 @@ namespace MODAMS.ApplicationServices
             _httpContextAccessor = httpContextAccessor;
 
             _employeeId = _func.GetEmployeeId();
+            _isSomali = CultureInfo.CurrentUICulture.Name == "so";
         }
 
 
@@ -54,9 +58,10 @@ namespace MODAMS.ApplicationServices
                     dto.IsAuthorized = true;
 
                 var disposals = await _db.Disposals
-                    .Include(m => m.DisposalType).Include(m => m.Asset).Include(m => m.Asset.Store)
-                    .Include(m => m.Asset.SubCategory).Include(m => m.Asset.SubCategory.Category)
-                .ToListAsync();
+                    .Include(m => m.DisposalType)
+                    .Include(m => m.Asset).ThenInclude(a => a.Store)
+                    .Include(m => m.Asset.SubCategory).ThenInclude(sc => sc.Category)
+                    .ToListAsync();
 
                 if (IsInRole("User") || IsInRole("StoreOwner"))
                 {
@@ -66,56 +71,49 @@ namespace MODAMS.ApplicationServices
                 dto.Disposals = disposals;
                 dto.StoreId = _storeId;
                 dto.StoreName = await _func.GetStoreNameByStoreIdAsync(_storeId);
+                dto.IsAuthorized = (await _func.GetStoreOwnerIdAsync(_storeId) == _employeeId);
 
-                if (await _func.GetStoreOwnerIdAsync(_storeId) == _employeeId)
-                {
-                    dto.IsAuthorized = true;
-                }
-                else
-                {
-                    dto.IsAuthorized = false;
-                }
-
-                var disposalChart = await _db.Disposals
-                    .Join(
-                        _db.DisposalTypes,
+                var groupedDisposals = await _db.Disposals
+                    .Join(_db.DisposalTypes,
                         disposal => disposal.DisposalTypeId,
                         disposalType => disposalType.Id,
-                        (disposal, disposalType) => new { Disposal = disposal, DisposalType = disposalType }
-                    )
+                        (disposal, disposalType) => new { disposal, disposalType })
                     .GroupBy(
-                        joined => new { joined.DisposalType.Type, joined.Disposal.EmployeeId },
-                        (key, grouped) => new DisposalChart
-                        {
-                            Type = key.Type,
-                            EmployeeId = key.EmployeeId,
-                            Count = grouped.Count()
-                        }
-                )
-                .ToListAsync();
+                        x => new { x.disposalType.Type, x.disposal.EmployeeId })
+                    .Select(g => new
+                    {
+                        Type = g.Key.Type,
+                        EmployeeId = g.Key.EmployeeId,
+                        Count = g.Count()
+                    })
+                    .ToListAsync();
 
                 if (IsInRole("User") || IsInRole("StoreOwner"))
                 {
-                    disposalChart = disposalChart.Where(m => m.EmployeeId == _employeeId).ToList();
+                    groupedDisposals = groupedDisposals
+                        .Where(m => m.EmployeeId == _employeeId)
+                        .ToList();
                 }
+
                 var disposalTypes = await _db.DisposalTypes.ToListAsync();
+
+                // Create a dictionary for quick lookup
+                var countsDict = groupedDisposals
+                    .ToDictionary(k => k.Type, v => v.Count);
+
+                var chartData = new List<DisposalChart>();
 
                 foreach (var type in disposalTypes)
                 {
-                    var chartItem = disposalChart.FirstOrDefault(m => m.Type == type.Type);
-                    if (chartItem == null)
+                    chartData.Add(new DisposalChart
                     {
-                        DisposalChart item = new DisposalChart()
-                        {
-                            Type = type.Type,
-                            EmployeeId = _employeeId,
-                            Count = 0
-                        };
-                        disposalChart.Add(item);
-                    }
+                        Type = _isSomali ? type.TypeSo : type.Type,
+                        EmployeeId = _employeeId,
+                        Count = countsDict.TryGetValue(type.Type, out var count) ? count : 0
+                    });
                 }
 
-                dto.ChartData = disposalChart;
+                dto.ChartData = chartData;
 
                 return Result<DisposalsDTO>.Success(dto);
             }
@@ -125,6 +123,7 @@ namespace MODAMS.ApplicationServices
                 return Result<DisposalsDTO>.Failure(ex.Message);
             }
         }
+
         public async Task<Result<DisposalCreateDTO>> GetCreateDisposalAsync()
         {
             try
@@ -340,7 +339,7 @@ namespace MODAMS.ApplicationServices
 
                     int assetId = disposalInDb.AssetId;
                     var assetInDb = await _db.Assets
-                        .Include(m=>m.Store)
+                        .Include(m => m.Store)
                         .FirstOrDefaultAsync(m => m.Id == assetId);
                     if (assetInDb != null)
                     {

@@ -22,6 +22,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>CreateAssetLabels.resx</DependentUpon>
     </Compile>
+    <Compile Update="DisposalLabels.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DisposalLabels.resx</DependentUpon>
+    </Compile>
     <Compile Update="TransferLabels.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -42,6 +47,10 @@
     <EmbeddedResource Update="CreateAssetLabels.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>CreateAssetLabels.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="DisposalLabels.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>DisposalLabels.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="TransferLabels.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

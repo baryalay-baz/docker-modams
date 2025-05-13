@@ -417,24 +417,86 @@ namespace MODAMS.Utility
             var employee = await _db.Employees.FirstOrDefaultAsync(m => m.Id == employeeId);
             return employee?.ImageUrl ?? "";
         }
-        public string FormatMessage(string title, string message, string email, string returnUrl, string btntext)
+        public string FormatMessage(string title, string message, string fullNameOrEmail, string returnUrl, string btntext)
         {
-            string emailMessage = "";
-            string initials = email.Substring(0, 1).ToUpper();
+            string emailMessage = string.Empty;
             string src = SD.WebAddress;
 
-            emailMessage = "<div class=\"container\"> <div class=\"row\"><div class=\"col-md-12\"><br><br /></div> </div> <div class=\"row\"><div class=\"col-lg-12\"><table class=\"body-wrap\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; width: 100%; background-color: transparent; margin: 0;\" bgcolor=\"transparent\"> <tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\"><td style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0;\" valign=\"top\"></td><td class=\"container\" width=\"600\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; display: block !important; max-width: 600px !important; clear: both !important; margin: 0 auto;\" valign=\"top\"><div class=\"content\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; max-width: 600px; display: block; margin: 0 auto; padding: 20px;\"> <table class=\"main\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" itemprop=\"action\" itemscope itemtype=\"http://schema.org/ConfirmAction\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; border-radius: 3px; background-color: transparent; margin: 0; border: 1px dashed #4d79f6;\" bgcolor=\"#fff\"><tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\"><td class=\"content-wrap\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 20px;\" valign=\"top\"> <meta itemprop=\"name\" content=\"Confirm Email\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\" /> <table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\">" +
-                 "<tr><img src=\"" + src + "/assets/images/brand/FGS_Small.png\" alt=\"\" style=\"margin-left: auto; margin-right: auto; display:block; margin-bottom: 10px; height: 100px;\"></td></tr><tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\"><td class=\"content-block\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; color: #4e5e69; font-size: 24px; font-weight: 700; text-align: center; vertical-align: top; margin: 0; padding: 0 0 10px;\" valign=\"top\"> <hr style=\"border-color: #2541f7; border-style:dashed; border-width:0.5px;\" /></td></tr><tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\"><td class=\"content-block\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; color: #3f5db3; font-size: 18px; vertical-align: top; margin: 0; padding: 10px 10px;\" valign=\"top\" align=\"center\">" +
-                title +
-                "</td></tr><tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\"><td class=\"content-block\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 10px 10px;\" valign=\"top\" align=\"left\"><br />" +
-                "Dear " + email + ", <br /><br />" + message +
-                "<br /><br /><span style=\"font-size: 10px;\">" +
-                "Note: This email is generated automatically, please do not reply" +
-                "<br><br></span></td></tr><tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\"><td class=\"content-block\" itemprop=\"handler\" itemscope itemtype=\"http://schema.org/HttpActionHandler\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 10px 10px;\" valign=\"top\">" +
-                "<a href=\"" + returnUrl + "\" class=\"btn btn-primary\" style=\"color:white; background-color:#2541f7; font-size: 14px; text-decoration: none; line-height: 2em; font-weight: bold; text-align: center; cursor: pointer; display: block; border-radius: 5px; text-transform: capitalize; border: none; padding: 10px 20px;\">" + btntext + " </a></td></tr><tr style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;\"><td class=\"content-block\" style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; padding-top: 5px; vertical-align: top; margin: 0; text-align: center;\" valign=\"top\"> <br /> <div><img src=\"" + src + "/assets/images/brand/ams_small.png\" /></div></td></tr> </table></td></tr> </table><!--end table--></div><!--end content--></td><td style=\"font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0;\" valign=\"top\"></td> </tr></table><!--end table--></div><!--end col--> </div><!--end row--></div>";
+            // Generate salutation
+            string salutation = _isSomali
+                ? $"{fullNameOrEmail} sharafta leh,"
+                : $"Dear {fullNameOrEmail},";
+
+            string noteLine = _isSomali
+                ? "Fiiro gaar ah: Email-kan si toos ah ayaa loo soo diray, fadlan ha ka jawaabin."
+                : "Note: This email is generated automatically, please do not reply.";
+            emailMessage = $@"
+                <div class='container'>
+                  <div class='row'>
+                    <div class='col-md-12'><br><br /></div>
+                  </div>
+                  <div class='row'>
+                    <div class='col-lg-12'>
+                      <table class='body-wrap' style='font-family: Helvetica Neue,Helvetica,Arial,sans-serif; font-size: 14px; width: 100%; background-color: transparent; margin: 0;'>
+                        <tr>
+                          <td></td>
+                          <td class='container' width='600' style='max-width: 600px; margin: 0 auto; display: block; clear: both;'>
+                            <div class='content' style='padding: 20px;'>
+                              <table class='main' width='100%' cellpadding='0' cellspacing='0' style='border-radius: 3px; border: 1px dashed #4d79f6; background-color: #fff;'>
+                                <tr>
+                                  <td class='content-wrap' style='padding: 20px;'>
+                                    <table width='100%' cellpadding='0' cellspacing='0'>
+                                      <tr>
+                                        <td align='center'>
+                                          <img src='{src}/assets/images/brand/FGS_Small.png' alt='FGS Logo' style='display:block; margin: 0 auto 10px; height: 100px;' />
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td align='center' style='font-size: 24px; font-weight: 700; color: #4e5e69;'>
+                                          <hr style='border-color: #2541f7; border-style:dashed; border-width:0.5px;' />
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td align='center' style='font-size: 18px; color: #3f5db3; padding: 10px 10px;'>
+                                          {title}
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td align='left' style='padding: 10px 10px; font-size: 14px;'>
+                                          <br />
+                                          {salutation}<br /><br />
+                                          {message}
+                                          <br /><br />
+                                          <span style='font-size: 10px; color: #888;'>{noteLine}</span>
+                                          <br><br />
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td align='center' style='padding: 10px 10px;'>
+                                          <a href='{returnUrl}' class='btn btn-primary' style='color:white; background-color:#2541f7; font-size: 14px; text-decoration: none; font-weight: bold; border-radius: 5px; padding: 10px 20px; display: inline-block;'>{btntext}</a>
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td align='center' style='padding-top: 10px;'>
+                                          <img src='{src}/assets/images/brand/ams_small.png' alt='AMS Footer Logo' />
+                                        </td>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                </tr>
+                              </table>
+                            </div>
+                          </td>
+                          <td></td>
+                        </tr>
+                      </table>
+                    </div>
+                  </div>
+                </div>";
 
             return emailMessage;
         }
+
         public async Task<int> GetStoreOwnerIdAsync(int storeId)
         {
             int departmentId = 0;
