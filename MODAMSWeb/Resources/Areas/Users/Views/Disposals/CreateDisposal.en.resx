@@ -117,88 +117,43 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Action" xml:space="preserve">
-    <value>Tallaabo-qaad</value>
+  <data name="AssetName" xml:space="preserve">
+    <value>Asset Name</value>
   </data>
-  <data name="AllTransfers" xml:space="preserve">
-    <value>Dhammaan wareejinta</value>
+  <data name="Barcode" xml:space="preserve">
+    <value>Barcode</value>
   </data>
-  <data name="Assets" xml:space="preserve">
-    <value>Hantida</value>
+  <data name="Category" xml:space="preserve">
+    <value>Category</value>
   </data>
-  <data name="AssetsReceived" xml:space="preserve">
-    <value>Hantida La heley</value>
+  <data name="CreateDisposal" xml:space="preserve">
+    <value>Create Disposal</value>
   </data>
-  <data name="AssetsTransferred" xml:space="preserve">
-    <value>Hantida La wareejiyey</value>
+  <data name="CreateNewDisposal" xml:space="preserve">
+    <value>Create New Disposal</value>
   </data>
-  <data name="AssetTransfers" xml:space="preserve">
-    <value>Hanti Wareejin</value>
+  <data name="Identification" xml:space="preserve">
+    <value>Identification</value>
   </data>
-  <data name="AwaitingAcknowledgement" xml:space="preserve">
-    <value>Sugeysa aqbalaad</value>
+  <data name="Make" xml:space="preserve">
+    <value>Make</value>
   </data>
-  <data name="Cancel" xml:space="preserve">
-    <value>Jooji</value>
+  <data name="Model" xml:space="preserve">
+    <value>Model</value>
   </data>
-  <data name="Completed" xml:space="preserve">
-    <value>La-dhammeystirey</value>
+  <data name="SaveDisposal" xml:space="preserve">
+    <value>Save Disposal</value>
   </data>
-  <data name="Confirm" xml:space="preserve">
-    <value>Xaqiiji</value>
+  <data name="SelectAssetToDispose" xml:space="preserve">
+    <value>Select asset to dispose</value>
   </data>
-  <data name="Count" xml:space="preserve">
-    <value>Tiri</value>
+  <data name="SelectDisposalType" xml:space="preserve">
+    <value>Select Disposal Type</value>
   </data>
-  <data name="Date" xml:space="preserve">
-    <value>Taariikhda</value>
+  <data name="Store" xml:space="preserve">
+    <value>Store</value>
   </data>
-  <data name="DeleteConfirmationMessage" xml:space="preserve">
-    <value>Ma hubtaa inaad xaqiijiso tirtirka wareejintan?</value>
-  </data>
-  <data name="DeleteTransfer" xml:space="preserve">
-    <value>Tirtiridda Wareejinta</value>
-  </data>
-  <data name="EditTransfer" xml:space="preserve">
-    <value>Tafatir Wareejinta</value>
-  </data>
-  <data name="IncomingTransfers" xml:space="preserve">
-    <value>Soo wareejin</value>
-  </data>
-  <data name="IncomingTransfersByCategory" xml:space="preserve">
-    <value>Soo-wareejinta oo ku saleysan Nooc</value>
-  </data>
-  <data name="NewTransfer" xml:space="preserve">
-    <value>Wareejin Cusub</value>
-  </data>
-  <data name="OutgoingTransfers" xml:space="preserve">
-    <value>Sii wareejin</value>
-  </data>
-  <data name="OutgoingTransfersByCategory" xml:space="preserve">
-    <value>Sii-wareejinta oo ku saleysan Nooc</value>
-  </data>
-  <data name="Pending" xml:space="preserve">
-    <value>Weli Taagan</value>
-  </data>
-  <data name="PreviewTransfer" xml:space="preserve">
-    <value>Sii-eeg Wareejinta</value>
-  </data>
-  <data name="Previous" xml:space="preserve">
-    <value>Hore</value>
-  </data>
-  <data name="Rejected" xml:space="preserve">
-    <value>La-diidey</value>
-  </data>
-  <data name="Status" xml:space="preserve">
-    <value>Heerka</value>
-  </data>
-  <data name="StoreFrom" xml:space="preserve">
-    <value>Bakhaarka ay ka timid</value>
-  </data>
-  <data name="StoreTo" xml:space="preserve">
-    <value>Bakhaarka ay u socoto</value>
-  </data>
-  <data name="Value" xml:space="preserve">
-    <value>Qiime</value>
+  <data name="StoreOwner" xml:space="preserve">
+    <value>Store Owner</value>
   </data>
 </root>

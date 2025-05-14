@@ -126,8 +126,14 @@
   <data name="AssetName" xml:space="preserve">
     <value>Magaca Hantida</value>
   </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Jooji</value>
+  </data>
   <data name="Category" xml:space="preserve">
     <value>Qayb</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>Xaqiiji</value>
   </data>
   <data name="Date" xml:space="preserve">
     <value>Taariikhda</value>
@@ -135,11 +141,11 @@
   <data name="Delete" xml:space="preserve">
     <value>Tir</value>
   </data>
-  <data name="DeleteConfirmation" xml:space="preserve">
-    <value>Ma awoodi doontid inaad dib u celiso ficilkan, ma hubtaa?</value>
+  <data name="DeleteConfirmationMessage" xml:space="preserve">
+    <value>Ma hubtaa inaad xaqiijiso tirtirka bixintan?</value>
   </data>
   <data name="DeleteDisposal" xml:space="preserve">
-    <value>Tir Dafaac</value>
+    <value>Tirtir Qashinka Hantida</value>
   </data>
   <data name="Disposals" xml:space="preserve">
     <value>Dafaacyada</value>

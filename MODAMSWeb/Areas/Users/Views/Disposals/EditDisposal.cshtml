@@ -1,4 +1,8 @@
-﻿@model MODAMS.Models.ViewModels.Dto.DisposalEditDTO
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization
+@inject IViewLocalizer Localizer
+
+@model MODAMS.Models.ViewModels.Dto.DisposalEditDTO
 
 <style>
     input[type="date"]::-webkit-calendar-picker-indicator {
@@ -82,10 +86,12 @@
     }
 
 </style>
-
+@{
+    bool _isSomali = CultureInfo.CurrentUICulture.Name == "so";
+}
 <div class="page-header">
     <div>
-        <h1 class="page-title">Edit Disposal</h1>
+        <h1 class="page-title">@Localizer["EditDisposal"]</h1>
     </div>
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
@@ -97,7 +103,9 @@
 </div>
 @{
     string sDisposalLabel = Model.CurrentDisposedAsset.Make + " - " + Model.CurrentDisposedAsset.Model + " - " + Model.CurrentDisposedAsset.Name;
-    string sIdentification = Model.CurrentDisposedAsset.SubCategory.Category.CategoryName == "Vehicles" ? "Plate No: " + Model.CurrentDisposedAsset.Plate : "Serial No: " + Model.CurrentDisposedAsset.SerialNo;
+    string sIdentification = Model.CurrentDisposedAsset.SubCategory.Category.CategoryName == "Vehicles"
+                        ? (_isSomali ? "Taarikada: " : "Plate No: ") + Model.CurrentDisposedAsset.Plate
+                        : (_isSomali ? "Sereelka: " : "SN: ") + Model.CurrentDisposedAsset.SerialNo;
 }
 
 <div class="row">
@@ -130,13 +138,13 @@
                                         <div class="col-md-6">
                                             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
                                             <div class="mb-3 form-group">
-                                                <label>Store</label>
+                                                <label>@Localizer["Store"]</label>
                                                 <span id="StoreName" type="text" class="form-control" readonly>@Model.StoreName</span>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="mb-3 form-group">
-                                                <label>Store Owner</label>
+                                                <label>@Localizer["StoreOwner"]</label>
                                                 <span id="StoreOwner" type="text" class="form-control" readonly>@Model.StoreOwner</span>
                                             </div>
 
@@ -176,7 +184,7 @@
                                                 <div class="card mb-0">
                                                     <div class="card-header border-bottom-0" id="heading8" role="tab">
                                                         <a id="collapse-button" class="accor-style2 collapsed" aria-controls="collapse8" aria-expanded="true" data-bs-toggle="collapse" href="#collapse8">
-                                                            <i class="fe fe-plus-circle me-2"></i>Select Asset to dispose (The list shows assets with Available status only)
+                                                            <i class="fe fe-plus-circle me-2"></i>@Localizer["SelectAssetToDispose"]
                                                         </a>
                                                     </div>
                                                     <div aria-labelledby="heading8" class="collapse" data-bs-parent="#accordion8" id="collapse8" role="tabpanel">
@@ -185,13 +193,13 @@
                                                                 <table id="tblAssets" class="table text-nowrap mb-0 table-bordered key-buttons border-top border-bottom project-list-main">
                                                                     <thead class="bg-primary-gradient ms-auto divShadow">
                                                                         <tr>
-                                                                            <th class="text-white bg-transparent border-bottom-0 w-2"></th>
-                                                                            <th class="text-white bg-transparent border-bottom-0 w-10">Category</th>
-                                                                            <th class="text-white bg-transparent border-bottom-0 w-20">Make</th>
-                                                                            <th class="text-white bg-transparent border-bottom-0 w-20">Model</th>
-                                                                            <th class="text-white bg-transparent border-bottom-0 w-20">Asset Name</th>
-                                                                            <th class="text-white bg-transparent border-bottom-0 w-20">Identification</th>
-                                                                            <th class="text-white bg-transparent border-bottom-0 w-20">Barcode</th>
+                                                                            <th class="text-white bg-transparent border-bottom-0 w-2">#</th>
+                                                                            <th class="text-white bg-transparent border-bottom-0 w-10">@Localizer["Category"]</th>
+                                                                            <th class="text-white bg-transparent border-bottom-0 w-20">@Localizer["Make"]</th>
+                                                                            <th class="text-white bg-transparent border-bottom-0 w-20">@Localizer["Model"]</th>
+                                                                            <th class="text-white bg-transparent border-bottom-0 w-20">@Localizer["AssetName"]</th>
+                                                                            <th class="text-white bg-transparent border-bottom-0 w-20">@Localizer["Identification"]</th>
+                                                                            <th class="text-white bg-transparent border-bottom-0 w-20">@Localizer["Barcode"]</th>
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
@@ -225,13 +233,13 @@
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="mb-3 form-group">
-                                                    <label>Make</label>
+                                                    <label>@Localizer["Make"]</label>
                                                     <span id="spnMake" type="text" class="form-control mb-4" placeholder="Make" readonly>@Model.CurrentDisposedAsset.Make</span>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="mb-3 form-group">
-                                                    <label>Model</label>
+                                                    <label>@Localizer["Model"]</label>
                                                     <span id="spnModel" type="text" class="form-control mb-4" placeholder="Model" readonly>@Model.CurrentDisposedAsset.Model</span>
                                                 </div>
                                             </div>
@@ -239,13 +247,13 @@
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="mb-3 form-group">
-                                                    <label>Asset Name</label>
+                                                    <label>@Localizer["AssetName"]</label>
                                                     <span id="spnAssetName" type="text" class="form-control mb-4" placeholder="Asset Name" readonly>@Model.CurrentDisposedAsset.Name</span>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="mb-3 form-group">
-                                                    <label>Identification</label>
+                                                    <label>@Localizer["Identification"]</label>
                                                     <span id="spnIdentification" type="text" class="form-control mb-4" placeholder="Identification" readonly>@sIdentification</span>
                                                 </div>
                                             </div>
@@ -257,8 +265,11 @@
                                             {
                                                 sDisabled = "disabled";
                                             }
-                                            <button type="button" class="btn btn-info-gradient @sDisabled" id="btnSubmit">
-                                                <i class="fa fa-check-circle"></i>&nbsp;Save Changes
+                                            <button type="button" class="btn btn-info @sDisabled" id="btnSubmit">
+                                                <i class="fa fa-check-circle me-1 align-middle" style="font-size: 1rem;"></i>&nbsp;@Localizer["SaveChanges"]
+                                            </button>
+                                            <button type="button" class="btn btn-secondary @sDisabled" id="btnDeleteDisposal">
+                                                <i class="fe fe-trash me-1 align-middle" style="font-size: 1rem;"></i>&nbsp;@Localizer["DeleteDisposal"]
                                             </button>
                                         }
 
@@ -276,13 +287,13 @@
                                             @if (Model.Disposal.ImageUrl != null)
                                             {
                                                 <img onclick="return showImageLoader(event);" src="/disposaldocuments/@Model.Disposal.ImageUrl" alt="Uploaded Picture" class="image" />
-                                                <a href="#" class="change-picture-link" onclick="return showImageLoader(event);">Change Picture</a>
+                                                <a href="#" class="change-picture-link" onclick="return showImageLoader(event);">@Localizer["ChangePicture"]</a>
                                             }
                                         </div>
                                         <div class="button-container">
                                             @if (Model.Disposal.ImageUrl == null)
                                             {
-                                                <button id="btnUpload-Image" class="btn btn-outline-info btn-sm" onclick="return showImageLoader(event);"><i class="fe fe-upload"></i>&nbsp;Upload Picture</button>
+                                                <button id="btnUpload-Image" class="btn btn-outline-info btn-sm" onclick="return showImageLoader(event);"><i class="fe fe-upload"></i>&nbsp;@Localizer["UploadPicture"]</button>
                                             }
                                         </div>
 
@@ -290,9 +301,9 @@
                                             <input asp-for="file" type="file" class="dropify" data-height="400" /><br />
                                             <center>
                                                 <button type="button" class="btn btn-info btn-sm @sDisabled" id="btnSubmitPic">
-                                                    <i class="fa fa-check-circle"></i>&nbsp;Save
+                                                    <i class="fa fa-check-circle"></i>&nbsp;@Localizer["Save"]
                                                 </button>
-                                                <a href="#" class="btn btn-outline-secondary btn-sm" onclick="return cancelImageLoad(event);">Cancel</a>
+                                                <a href="#" class="btn btn-outline-secondary btn-sm" onclick="return cancelImageLoad(event);">@Localizer["Cancel"]</a>
                                             </center>
                                         </div>
                                     </div>
@@ -307,6 +318,10 @@
         </div>
     </div>
 </div>
+
+@await Html.PartialAsync("~/Views/Shared/_Confirmation.cshtml")
+
+
 
 <!--Internal Fancy uploader js-->
 <script src="~/assets/plugins/fancyuploder/jquery.ui.widget.js"></script>
@@ -331,13 +346,14 @@
             // $('.picker').datepicker('setDate', currentDate).val("");
 
             makeDataTable('#tblAssets', "1");
-            
+            const isSomali = getCurrentLanguage() === "so";
+
             $("#btnSubmit").on("click", (e) => {
                 e.preventDefault();
                 if ($("#Disposal_AssetId").val() == 0) {
                     notif({
                         type: "error",
-                        msg: "<b>Error: </b>No asset selected!",
+                        msg: isSomali ? "<b>Khalad: </b>Hanti lama dooran: ":"<b>Error: </b>No asset selected!",
                         position: "center",
                         width: 500,
                         height: 60,
@@ -350,16 +366,48 @@
             $("#btnSubmitPic").on("click", (e) => {
                 $("#frmDisposal").submit();
             })
+            $("#btnDeleteDisposal").on("click", (e) => {
+                e.preventDefault();
+                const options = {
+                    actionUrl: '@Url.Action("DeleteDisposal", "Disposals", new { area = "Users", id = Model.Disposal.Id })',
+                    title: '@Localizer["DeleteDisposal"]',
+                    message: '@Localizer["DeleteConfirmationMessage"]',
+                    btnConfirmText: '@Localizer["Confirm"]',
+                    btnCancelText: '@Localizer["Cancel"]'
+                };
+                openConfirmation(options);
+            });
             loadSelection();
+            //localizeDropify(isSomali);
         });
+        const localizeDropify = (isSomali) => {
+            const $original = $('#file');
+            const $clone = $original.clone(); // clean clone
 
+            // Replace original with clone
+            $original.replaceWith($clone);
+
+            // Re-initialize dropify
+            $clone.dropify({
+                messages: isSomali ? {
+                    default: 'Jiid oo dhig faylka ama guji',
+                    replace: 'Jiid oo dhig si aad u beddesho faylka',
+                    remove:  'Tirtir',
+                    error:   'Khalad ayaa dhacay'
+                } : {
+                    default: 'Drag and drop a file or click',
+                    replace: 'Drag and drop or click to replace',
+                    remove:  'Remove',
+                    error:   'Oops, something wrong happened.'
+                }
+            });
+        };
         const showImageLoader = (e) => {
             e.preventDefault();
             $(".image-container").hide();
             $("#btnUpload-Image").hide();
             $("#dvImageLoader").show();
         }
-
         const cancelImageLoad = (e) => {
             e.preventDefault();
             $(".image-container").show();
@@ -390,7 +438,6 @@
                 }
             }
         }
-
         const selectAsset = (id, e) => {
             e.preventDefault();
 
@@ -416,7 +463,6 @@
 
             $("#card-body-file").css("height", "575px");
         };
-
 
     </script>
 }

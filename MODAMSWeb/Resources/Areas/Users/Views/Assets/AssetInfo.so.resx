@@ -240,4 +240,13 @@
   <data name="Download" xml:space="preserve">
     <value>Soo dejiso</value>
   </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Jooji</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>Xaqiiji</value>
+  </data>
+  <data name="DeleteConfirmationMessage" xml:space="preserve">
+    <value>Ma hubtaa inaad xaqiijiso tirtirka hantidan?</value>
+  </data>
 </root>

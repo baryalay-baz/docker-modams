@@ -129,8 +129,14 @@
   <data name="Barcode" xml:space="preserve">
     <value>Barcode-ka</value>
   </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Jooji</value>
+  </data>
   <data name="Category" xml:space="preserve">
     <value>Qayb</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>Xaqiiji</value>
   </data>
   <data name="CreateNewTransfer" xml:space="preserve">
     <value>Abuur Wareejin Cusub</value>
@@ -138,8 +144,8 @@
   <data name="DeleteTransfer" xml:space="preserve">
     <value>Tirtir Wareejinta</value>
   </data>
-  <data name="DeleteTransferConfirmation" xml:space="preserve">
-    <value>Ma awoodi doontid inaad soo celiso wareejintan!</value>
+  <data name="DeleteConfirmationMessage" xml:space="preserve">
+    <value>Ma hubtaa inaad xaqiijiso tirtirka wareejintan?</value>
   </data>
   <data name="EditTransfer" xml:space="preserve">
     <value>Beddel Wareejinta</value>

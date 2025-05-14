@@ -167,14 +167,17 @@
                                                                                 <td>@(_isSomali ? transfer.StatusSo : transfer.Status)</td>
                                                                                 <td class="text-muted fs-15 fw-semibold">
                                                                                     <div class="d-flex align-items-stretch">
-                                                                                        <a asp-controller="Transfers" asp-action="EditTransfer" asp-route-id="@transfer.Id"
-                                                                                           class="btn btn-sm btn-outline-info me-1 @sDisabled" data-bs-toggle="tooltip" data-bs-original-title="@Localizer["EditTransfer"]">
-                                                                                            <i class="fe fe-edit"></i>
-                                                                                        </a>
                                                                                         <a asp-controller="Transfers" asp-action="PreviewTransfer" asp-route-id="@transfer.Id"
                                                                                            class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="tooltip" data-bs-original-title="@Localizer["PreviewTransfer"]">
                                                                                             <i class="fe fe-eye"></i>
                                                                                         </a>
+                                                                                        <a asp-controller="Transfers" asp-action="EditTransfer" asp-route-id="@transfer.Id"
+                                                                                           class="btn btn-sm btn-outline-info me-1 @sDisabled" data-bs-toggle="tooltip" data-bs-original-title="@Localizer["EditTransfer"]">
+                                                                                            <i class="fe fe-edit"></i>
+                                                                                        </a>
+                                                                                        <button class="btn btn-sm btn-outline-secondary me-1 @sDisabled" id="btnDeleteTransfer" onclick="deleteTransfer('@transfer.Id');">
+                                                                                            <i class="fe fe-trash"></i>
+                                                                                        </button>
                                                                                     </div>
                                                                                 </td>
                                                                             </tr>
@@ -184,7 +187,7 @@
                                                             </table>
                                                         </div>
                                                         <br />
-                                                        <a asp-action="CreateTransfer" asp-controller="Transfers" id="btnCreate" class="btn btn-outline-info pt-1"><i class="fe fe-plus-circle"></i>&nbsp;@Localizer["NewTransfer"]</a>
+                                                        <a asp-action="CreateTransfer" asp-controller="Transfers" id="btnCreate" class="btn btn-info-gradient pt-1"><i class="fe fe-plus-circle"></i>&nbsp;@Localizer["NewTransfer"]</a>
                                                     </div>
                                                     <div class="col-4 col-sm-4">
                                                         <div class="card">
@@ -294,6 +297,8 @@
         </div>
     </div>
 </div>
+@await Html.PartialAsync("~/Views/Shared/_Confirmation.cshtml")
+
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/c3@0.7.20/c3.min.css">
 @section scripts {
 
@@ -545,6 +550,15 @@
             makeDataTable('#tblTransfersIncoming', 1);
             setRadioButtons(id);
         };
-
+        const deleteTransfer = (id) =>{
+            const options = {
+                    actionUrl: `/Users/Transfers/DeleteTransfer/${id}`,
+                    title: '@Localizer["DeleteTransfer"]',
+                    message: '@Localizer["DeleteConfirmationMessage"]',
+                    btnConfirmText: '@Localizer["Confirm"]',
+                    btnCancelText: '@Localizer["Cancel"]'
+                };
+            openConfirmation(options);
+        }
     </script>
 }

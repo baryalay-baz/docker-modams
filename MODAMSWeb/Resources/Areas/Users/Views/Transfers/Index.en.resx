@@ -138,14 +138,26 @@
   <data name="AwaitingAcknowledgement" xml:space="preserve">
     <value>Awaiting Acknowledgement</value>
   </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
   <data name="Completed" xml:space="preserve">
     <value>Completed</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>Confirm</value>
   </data>
   <data name="Count" xml:space="preserve">
     <value>Count</value>
   </data>
   <data name="Date" xml:space="preserve">
     <value>Date</value>
+  </data>
+  <data name="DeleteConfirmationMessage" xml:space="preserve">
+    <value>Are you sure you want to delete this transfer?</value>
+  </data>
+  <data name="DeleteTransfer" xml:space="preserve">
+    <value>Delete Transfer</value>
   </data>
   <data name="EditTransfer" xml:space="preserve">
     <value>Edit Transfer</value>

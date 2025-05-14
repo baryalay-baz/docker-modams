@@ -142,9 +142,9 @@
                                             if (User.IsInRole("Administrator"))
                                             {
                                                 <div class="grid-item full-width">
-                                                    <a asp-action="DeleteAsset" asp-controller="Assets" asp-route-id="@Model.Asset.Id" class="btn btn-secondary-gradient">
+                                                    <button class="btn btn-outline-secondary" id="btnDeleteAsset" onclick="deleteAsset('@Model.Asset.Id')">
                                                         <i class="fa fa-trash"></i>&nbsp;@Localizer["DeleteAsset"]
-                                                    </a>
+                                                    </button>
                                                 </div>
                                             }
                                         }
@@ -415,6 +415,7 @@
 
     </div>
 </div>
+@await Html.PartialAsync("~/Views/Shared/_Confirmation.cshtml");
 
 @section scripts {
     <!-- GALLERY JS -->
@@ -435,9 +436,21 @@
             makeDataTable('#tblDocuments', 10);
             adjustMainContainerHeight();
 
+
+
             setTab();
         });
-
+        const deleteAsset = (id) =>{
+            const options = {
+                    actionUrl: `/Users/Assets/DeleteAsset/${id}`,
+                    title: '@Localizer["DeleteAsset"]',
+                    message: '@Localizer["DeleteConfirmationMessage"]',
+                    btnConfirmText: '@Localizer["Confirm"]',
+                    btnCancelText: '@Localizer["Cancel"]'
+                };
+                //console.log(options);
+                openConfirmation(options);
+        }
         function adjustMainContainerHeight() {
             const mainContainer = document.getElementById('dvMainContainer');
             mainContainer.style.height = 'auto'; // Reset height

@@ -37,6 +37,7 @@
             {
                 sDisabled = "";
             }
+            bool _isSomali = CultureInfo.CurrentUICulture.Name == "so";
         }
         <div class="row">
 
@@ -146,34 +147,24 @@
                                                 nCounter++;
                                                 sCounter = nCounter < 10 ? '0' + nCounter.ToString() : nCounter.ToString();
                                                 sIdentification = disposal.Asset.SubCategory.Category.CategoryName == "Vehicles"
-                                                ? "Plate: " + disposal.Asset.Plate
-                                                : "SN: " + disposal.Asset.SerialNo;
+                                                ? (_isSomali ? "Taarikada: " : "Plate No: ") + disposal.Asset.Plate
+                                                : (_isSomali ? "Sereelka: " : "SN: ") + disposal.Asset.SerialNo;
 
                                                 <tr>
                                                     <td>@sCounter</td>
                                                     <td>@disposal.DisposalDate.ToString("dd-MMM-yyyy")</td>
-                                                    <td>@disposal.DisposalType.Type</td>
-                                                    <td>@disposal.Asset.SubCategory.SubCategoryName</td>
+                                                    <td>@(_isSomali? disposal.DisposalType.TypeSo : disposal.DisposalType.Type)</td>
+                                                    <td>@(_isSomali? disposal.Asset.SubCategory.SubCategoryNameSo : disposal.Asset.SubCategory.SubCategoryName)</td>
                                                     <td>@disposal.Asset.Name</td>
                                                     <td>@sIdentification</td>
-                                                    <td>
-                                                        <a asp-controller="Disposals" asp-action="EditDisposal" asp-route-id="@disposal.Id" class="btn btn-sm btn-outline-primary border me-2 @sDisabled" data-bs-toggle="tooltip" data-bs-original-title="Edit Disposal">
-                                                            <i class="fe fe-edit"></i>
-                                                        </a>
-                                                        <button data-bs-toggle="dropdown" area-expanded="false" class="btn btn-sm btn-outline-danger border me-2">
-                                                            <i class="fe fe-trash"></i>
-                                                        </button>
-                                                        <div class="dropdown-menu" style="">
-                                                            <div class="p-5">
-                                                                <h4 class="dropdown-title bolder text-danger">@Localizer["DeleteDisposal"]?</h4>
-                                                                <p class="text-muted">You will not be able to undo this action, are you sure?</p>
-                                                                <form asp-action="DeleteDisposal" id="frmDeleteDisposal" method="post">
-                                                                    <input type="hidden" id="id" name="id" value="@disposal.Id" />
-                                                                    <button type="submit" id="btnSubmitDeleteDisposal" class="btn btn-outline-danger btn-sm">
-                                                                        <i class="fa fa-check-square"></i> @Localizer["Delete"]
-                                                                    </button>
-                                                                </form>
-                                                            </div>
+                                                    <td class="text-muted fs-15 fw-semibold">
+                                                        <div class="d-flex align-items-stretch">
+                                                            <a asp-controller="Disposals" asp-action="EditDisposal" asp-route-id="@disposal.Id" class="btn btn-sm btn-outline-info me-1 @sDisabled" data-bs-toggle="tooltip" data-bs-original-title="Edit Disposal">
+                                                                <i class="fe fe-edit"></i>
+                                                            </a>
+                                                            <button class="btn btn-sm btn-outline-secondary me-1 @sDisabled" id="btnDeleteDisposal" onclick="deleteDisposal('@disposal.Id');">
+                                                                <i class="fe fe-trash"></i>
+                                                            </button>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -197,6 +188,9 @@
         </div>
     </div>
 </div>
+
+@await Html.PartialAsync("~/Views/Shared/_Confirmation.cshtml")
+
 @section scripts {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/c3@0.7.20/c3.min.css">
     <script>
@@ -207,8 +201,19 @@
             hideMenu();
             makeDataTable('#tblDisposals', 1, 5);
             pieChartDisposals();
-        });
 
+        });
+        const deleteDisposal = (id) =>{
+            const options = {
+                    actionUrl: `/Users/Disposals/DeleteDisposal/${id}`,
+                    title: '@Localizer["DeleteDisposal"]',
+                    message: '@Localizer["DeleteConfirmationMessage"]',
+                    btnConfirmText: '@Localizer["Confirm"]',
+                    btnCancelText: '@Localizer["Cancel"]'
+                };
+                //console.log(options);
+                openConfirmation(options);
+        }
         const pieChartDisposals = () => {
             var data = '@Html.Raw(Json.Serialize(Model.ChartData))';
             var ctx = document.getElementById('pieChartDisposals').getContext('2d');

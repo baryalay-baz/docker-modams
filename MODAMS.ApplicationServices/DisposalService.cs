@@ -189,7 +189,9 @@ namespace MODAMS.ApplicationServices
                     AssetId = disposal.AssetId,
                     TransactionRecordId = disposal.AssetId,
                     TransactionTypeId = SD.Transaction_Disposal,
-                    Description = "Asset disposed by " + await _func.GetEmployeeNameAsync()
+                    Description = _isSomali
+                    ? "Hantida waxaa baabi’iyay " + await _func.GetEmployeeNameAsync()
+                    : "Asset disposed by " + await _func.GetEmployeeNameAsync()
                 };
                 await _db.AssetHistory.AddAsync(assetHistory);
                 await _db.SaveChangesAsync();
@@ -198,7 +200,9 @@ namespace MODAMS.ApplicationServices
                 string employeeName = await _func.GetEmployeeNameAsync();
                 string assetName = await _func.GetAssetNameAsync(disposal.AssetId);
                 string storeName = await _func.GetStoreNameByStoreIdAsync(await _func.GetStoreIdByAssetIdAsync(disposal.AssetId));
-                string message = $"{employeeName} disposed an asset ({assetName}) in {storeName}";
+                string message = _isSomali
+                ? $"{employeeName} wuxuu baabi’iyay hanti ({assetName}) oo ku taal {storeName}"
+                : $"{employeeName} disposed an asset ({assetName}) in {storeName}";
                 await _func.LogNewsFeedAsync(message, "Users", "Disposals", "EditDisposal", disposal.AssetId);
 
                 // Commit the transaction
@@ -231,7 +235,7 @@ namespace MODAMS.ApplicationServices
                     .FirstOrDefaultAsync();
 
                 if (disposal == null)
-                    return Result<DisposalEditDTO>.Failure("Disposal not found!");
+                    return Result<DisposalEditDTO>.Failure(_isSomali ? "Baabi’intii lama helin!" : "Disposal not found!");
 
 
                 var dto = new DisposalEditDTO
@@ -273,7 +277,7 @@ namespace MODAMS.ApplicationServices
                     sFileName = await UploadFileAsync(dto.file);
                     if (string.IsNullOrEmpty(sFileName))
                     {
-                        return Result<DisposalEditDTO>.Failure("File upload failed.");
+                        return Result<DisposalEditDTO>.Failure(_isSomali ? "Soo gelinta faylka way guuldareysatay" : "File upload failed");
                     }
                 }
 
@@ -281,7 +285,7 @@ namespace MODAMS.ApplicationServices
                 var disposalInDb = await _db.Disposals.FirstOrDefaultAsync(d => d.Id == dto.Disposal.Id);
                 if (disposalInDb == null)
                 {
-                    return Result<DisposalEditDTO>.Failure("Record not found!");
+                    return Result<DisposalEditDTO>.Failure(_isSomali ? "Diiwaanka lama helin!" : "Record not found!");
                 }
 
                 int prevAssetId = disposalInDb.AssetId;
@@ -299,10 +303,14 @@ namespace MODAMS.ApplicationServices
                 {
                     // Update previous asset status
                     await UpdateAssetStatusAsync(prevAssetId, SD.Asset_Available);
-                    await AddAssetHistoryAsync(prevAssetId, "Asset un-disposed by " + await _func.GetEmployeeNameAsync());
+                    await AddAssetHistoryAsync(prevAssetId, _isSomali
+                    ? $"Hantida waxaa dib loo joojiyay baabi’inteeda ee uu sameeyay {await _func.GetEmployeeNameAsync()}"
+                    : $"Asset un-disposed by {await _func.GetEmployeeNameAsync()}");
 
                     // Update new asset history
-                    await AddAssetHistoryAsync(dto.Disposal.AssetId, "Asset disposed by " + await _func.GetEmployeeNameAsync());
+                    await AddAssetHistoryAsync(dto.Disposal.AssetId, _isSomali
+                    ? $"Hantida waxaa baabi’iyay {await _func.GetEmployeeNameAsync()}"
+                    : $"Asset disposed by {await _func.GetEmployeeNameAsync()}");
                 }
 
                 // Update current asset status if associated
@@ -334,7 +342,7 @@ namespace MODAMS.ApplicationServices
                     var disposalInDb = await _db.Disposals.FirstOrDefaultAsync(m => m.Id == id);
                     if (disposalInDb == null)
                     {
-                        return Result<bool>.Failure("Disposal not found.");
+                        return Result<bool>.Failure(_isSomali ? "Baabi’in lama helin" : "Disposal not found.");
                     }
 
                     int assetId = disposalInDb.AssetId;
@@ -351,11 +359,16 @@ namespace MODAMS.ApplicationServices
                     // Log NewsFeed
                     string employeeName = await _func.GetEmployeeNameAsync();
                     string assetName = assetInDb?.Name ?? "-";
-                    string storeName = assetInDb?.Store?.Name ?? "-";
+                    var storeName = _isSomali ? assetInDb?.Store?.NameSo : assetInDb?.Store?.Name ?? "-";
 
-                    string message = $"{employeeName} un-disposed an asset ({assetName}) in {storeName}";
+                    string message = _isSomali
+                    ? $"{employeeName} wuxuu joojiyay baabi’inta hanti ({assetName}) oo ku taal {storeName}"
+                    : $"{employeeName} un-disposed an asset ({assetName}) in {storeName}";
+
                     await _func.LogNewsFeedAsync(message, "Users", "Disposals", "Index", assetId);
-                    await AddAssetHistoryAsync(assetId, $"Asset Un-Disposed by {employeeName}");
+                    await AddAssetHistoryAsync(assetId, _isSomali
+                    ? $"Hantida waxaa dib loo furay uu sameeyay {employeeName}"
+                    : $"Asset Un-Disposed by {employeeName}");
                     await transaction.CommitAsync();
 
                     var result = await DeletePictureAsync(id);
@@ -391,13 +404,15 @@ namespace MODAMS.ApplicationServices
                     .Select(a => new DisposalAssetDto
                     {
                         Id = a.Id,
-                        CategoryName = a.SubCategory.Category.CategoryName,
-                        SubCategoryName = a.SubCategory.SubCategoryName,
+                        CategoryName = _isSomali ? a.SubCategory.Category.CategoryNameSo : a.SubCategory.Category.CategoryName,
+                        SubCategoryName = _isSomali ? a.SubCategory.SubCategoryNameSo : a.SubCategory.SubCategoryName,
                         AssetName = a.Name,
                         Make = a.Make,
                         Model = a.Model,
                         Barcode = a.Barcode,
-                        Identification = a.SubCategory.Category.CategoryName == "Vehicles" ? "Plate No: " + a.Plate : "SN: " + a.SerialNo
+                        Identification = a.SubCategory.Category.CategoryName == "Vehicles"
+                        ? (_isSomali ? "Taarikada: " : "Plate No: ") + a.Plate
+                        : (_isSomali ? "Sereelka: " : "SN: ") + a.SerialNo
                     }).ToListAsync();
 
                 assetsField.SetValue(dto, assetList);
@@ -429,7 +444,7 @@ namespace MODAMS.ApplicationServices
             {
                 var disposalTypeList = _db.DisposalTypes.ToList().Select(m => new SelectListItem
                 {
-                    Text = m.Type,
+                    Text = _isSomali ? m.TypeSo : m.Type,
                     Value = m.Id.ToString()
                 });
                 disposalTypeListField.SetValue(dto, disposalTypeList);
@@ -444,13 +459,13 @@ namespace MODAMS.ApplicationServices
         {
             if (disposalId == 0)
             {
-                return Result<string>.Failure("Disposal not found!");
+                return Result<string>.Failure(_isSomali? "Baabi’in lama helin!" : "Disposal not found!");
             }
 
             var disposalInDb = await _db.Disposals.FirstOrDefaultAsync(m => m.Id == disposalId);
             if (disposalInDb == null)
             {
-                return Result<string>.Failure("Disposal not found!");
+                return Result<string>.Failure(_isSomali ? "Baabi’in lama helin!" : "Disposal not found!");
             }
 
             // Remove file from disk
@@ -458,10 +473,10 @@ namespace MODAMS.ApplicationServices
             bool fileDeleted = DeleteFile(sFileName, "disposaldocuments");
             if (!fileDeleted)
             {
-                return Result<string>.Failure("Error deleting picture from storage!");
+                return Result<string>.Failure(_isSomali? "Khalad ayaa ka dhacay tirtirka sawirka kaydka!" : "Error deleting picture from storage!");
             }
 
-            return Result<string>.Success("Picture deleted successfully!");
+            return Result<string>.Success(_isSomali? "Sawirku si guul leh ayaa loo tirtiray!" : "Picture deleted successfully!");
         }
         private bool DeleteFile(string fileName, string folderName)
         {
@@ -523,7 +538,10 @@ namespace MODAMS.ApplicationServices
             string employeeName = await _func.GetEmployeeNameAsync();
             string assetName = await _func.GetAssetNameAsync(assetId);
             string storeName = await _func.GetStoreNameByStoreIdAsync(await _func.GetStoreIdByAssetIdAsync(assetId));
-            string message = $"{employeeName} modified disposal record for an asset ({assetName}) in {storeName}";
+            string message = _isSomali
+            ? $"{employeeName} wuxuu wax ka beddelay diiwaanka baabi’inta ee hanti ({assetName}) oo ku taal {storeName}"
+            : $"{employeeName} modified disposal record for an asset ({assetName}) in {storeName}";
+
             await _func.LogNewsFeedAsync(message, "Users", "Disposals", "EditDisposal", disposalId);
         }
     }

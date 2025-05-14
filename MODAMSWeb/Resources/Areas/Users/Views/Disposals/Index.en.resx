@@ -126,8 +126,14 @@
   <data name="AssetName" xml:space="preserve">
     <value>Asset Name</value>
   </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
   <data name="Category" xml:space="preserve">
     <value>Category</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>Confirm</value>
   </data>
   <data name="Date" xml:space="preserve">
     <value>Date</value>
@@ -135,8 +141,8 @@
   <data name="Delete" xml:space="preserve">
     <value>Delete</value>
   </data>
-  <data name="DeleteConfirmation" xml:space="preserve">
-    <value>You will not be able to undo this action, are you sure?</value>
+  <data name="DeleteConfirmationMessage" xml:space="preserve">
+    <value>Are you sure you confirm the deletion of this disposal?</value>
   </data>
   <data name="DeleteDisposal" xml:space="preserve">
     <value>Delete Disposal</value>

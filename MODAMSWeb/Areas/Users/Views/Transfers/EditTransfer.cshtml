@@ -184,20 +184,11 @@
                                             {
                                                 <button type="submit" class="btn btn-info-gradient " id="btnSubmit"><i class="fa fa-check-circle"></i>&nbsp;@Localizer["SaveTransfer"]</button>
 
-                                                <button class="btn btn-secondary btn-secondary" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <button class="btn btn-secondary btn-secondary" id="btnDeleteTransfer">
                                                     <i class="fe fe-trash"></i> @Localizer["DeleteTransfer"]<i class="icon ion-ios-arrow-down text-12"></i>
                                                 </button>
 
-                                                <div class="dropdown-menu" style="">
-                                                    <div class="p-3">
-                                                        <h4 class="dropdown-title">@Localizer["DeleteTransfer"]</h4><br />
-                                                        <p>
-                                                            @(Localizer["DeleteTransferConfirmation"])
-                                                            <br /><br />@Localizer["AreYouSure"]
-                                                        </p>
-                                                        <a asp-area="Users" asp-action="DeleteTransfer" asp-controller="Transfers" asp-route-id="@Model.Transfer.Id" class="btn btn-outline-danger"><i class="fe fe-trash"></i> @Localizer["DeleteTransfer"]</a>
-                                                    </div>
-                                                </div>
+                                                
                                             }
                                         }
 
@@ -239,7 +230,7 @@
         </div>
     </div>
 </div>
-
+@await Html.PartialAsync("~/Views/Shared/_Confirmation.cshtml")
 @section Scripts {
 
     <script>
@@ -263,7 +254,6 @@
             makeDataTable("#tblTransfers", "1");
             loadSelection();
 
-
             $("#btnSubmit").on("click", (e) => {
                 e.preventDefault();
                 if (checkSelection()) {
@@ -279,6 +269,17 @@
                         autohide: false
                     });
                 }
+            });
+            $("#btnDeleteTransfer").on("click", (e) => {
+                e.preventDefault();
+                const options = {
+                    actionUrl: '@Url.Action("DeleteTransfer", "Transfers", new { area = "Users", id = Model.Transfer.Id })',
+                    title: '@Localizer["DeleteTransfer"]',
+                    message: '@Localizer["DeleteConfirmationMessage"]',
+                    btnConfirmText: '@Localizer["Confirm"]',
+                    btnCancelText: '@Localizer["Cancel"]'
+                };
+                openConfirmation(options);
             });
         });
         const loadSelection = () => {

@@ -1,0 +1,44 @@
+﻿
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <form id="confirmationForm" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmTitle"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="d-flex align-items-center" id="confirmMessage">
+                        <i class="bi bi-exclamation-triangle-fill text-warning me-2" style="font-size: 1.5rem;"></i>
+                        <!-- Dynamic content goes here -->
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-outline-danger d-flex align-items-center justify-content-center">
+                        <i class="fe fe-trash me-1 align-middle" style="font-size: 1rem;"></i>
+                        <span class="align-middle" id="btnConrfirmText">Confirm</span>
+                    </button>
+                    <button type="button" class="btn btn-outline-info d-flex align-items-center justify-content-center" data-bs-dismiss="modal">
+                        <i class="fe fe-x-circle me-1 align-middle" style="font-size: 1rem;"></i>
+                        <span class="align-middle" id="btnCancelText">Cancel</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openConfirmation({actionUrl, title, message, btnConfirmText, btnCancelText}) {
+        $('#confirmationForm').attr('action', actionUrl);
+        $('#confirmTitle').html(title)
+        $('#btnConrfirmText').html(btnConfirmText);
+        $('#btnCancelText').html(btnCancelText);
+        $('#confirmMessage').html(`
+            <i class="bi bi-exclamation-triangle-fill text-warning me-2" style="font-size: 1.5rem;"></i>
+            ${message}
+        `);
+        $('#confirmModal').modal('show');
+    }
+</script>
