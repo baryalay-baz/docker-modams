@@ -175,7 +175,7 @@
                                                                                            class="btn btn-sm btn-outline-info me-1 @sDisabled" data-bs-toggle="tooltip" data-bs-original-title="@Localizer["EditTransfer"]">
                                                                                             <i class="fe fe-edit"></i>
                                                                                         </a>
-                                                                                        <button class="btn btn-sm btn-outline-secondary me-1 @sDisabled" id="btnDeleteTransfer" onclick="deleteTransfer('@transfer.Id');">
+                                                                                        <button class="btn btn-sm btn-outline-danger me-1 @sDisabled" id="btnDeleteTransfer" onclick="deleteTransfer('@transfer.Id');">
                                                                                             <i class="fe fe-trash"></i>
                                                                                         </button>
                                                                                     </div>
@@ -557,7 +557,7 @@
                     message: '@Localizer["DeleteConfirmationMessage"]',
                     btnConfirmText: '@Localizer["Confirm"]',
                     btnCancelText: '@Localizer["Cancel"]'
-                };
+                    };
             openConfirmation(options);
         }
     </script>

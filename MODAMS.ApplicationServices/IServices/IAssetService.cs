@@ -22,7 +22,7 @@ namespace MODAMS.ApplicationServices.IServices
         Task<Result<DeleteDocumentResultDTO>> DeleteDocumentAsync(int documentId);
         Task<Result<AssetPicturesDTO>> GetAssetPicturesAsync(int assetId);
         Task<Result<string>> UploadPictureAsync(int assetId, IFormFile? file);
-        Task<Result<string>> DeletePictureAsync(int id, int assetId);
+        Task<Result<string>> DeletePictureAsync(int id);
         Task<Result<string>> DeleteAssetAsync(int assetId);
         Task<Result<string>> RecoverAssetAsync(int assetId);
 

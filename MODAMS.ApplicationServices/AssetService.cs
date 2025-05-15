@@ -662,7 +662,7 @@ namespace MODAMS.ApplicationServices
                 return Result<string>.Failure(ex.Message);
             }
         }
-        public async Task<Result<string>> DeletePictureAsync(int id, int assetId)
+        public async Task<Result<string>> DeletePictureAsync(int id)
         {
             if (id == 0)
             {

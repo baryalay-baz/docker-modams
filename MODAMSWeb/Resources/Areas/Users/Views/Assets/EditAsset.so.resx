@@ -237,4 +237,7 @@
   <data name="EditAsset" xml:space="preserve">
     <value>Wax ka beddel Faahfaahinta Hantida</value>
   </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Jooji</value>
+  </data>
 </root>

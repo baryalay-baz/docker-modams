@@ -132,6 +132,9 @@
   <data name="ChooseFile" xml:space="preserve">
     <value>Xulo sawir aad geliso</value>
   </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>Xaqiiji</value>
+  </data>
   <data name="DeleteConfirmationMessage" xml:space="preserve">
     <value>Ma awoodi doontid in aad mar kale soo ceshato dokumentigan</value>
   </data>

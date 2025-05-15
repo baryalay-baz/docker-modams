@@ -66,7 +66,7 @@
     .image {
         max-width: 80%;
         max-height: 80%;
-        cursor:pointer;
+        cursor: pointer;
     }
 
     .change-picture-link {
@@ -130,7 +130,7 @@
             <div class="card-body">
                 <form method="post" asp-action="EditDisposal" id="frmDisposal" enctype="multipart/form-data">
                     <div class="row">
-                        <div class="col-md-7">
+                        <div class="col-md-8">
                             <div class="card">
                                 <div class="card-status bg-primary br-tr-7 br-tl-7"></div>
                                 <div class="card-body" id="dvMain">
@@ -210,7 +210,7 @@
                                                                             {
                                                                                 sCounter = nCounter < 10 ? "0" + nCounter.ToString() : nCounter.ToString();
                                                                                 <tr>
-                                                                                    <td><a class="btn btn-primary btn-sm" onclick="return selectAsset(@asset.Id,event);">select</a></td>
+                                                                                    <td><button class="selectionButton btn btn-primary btn-sm" onclick="return selectAsset(@asset.Id,this,event);">select</button></td>
                                                                                     <td>@asset.CategoryName</td>
                                                                                     <td>@asset.Make</td>
                                                                                     <td>@asset.Model</td>
@@ -261,16 +261,15 @@
                                     </div>
                                     <div class="flex">
                                         @{
-                                            if (Model.Assets == null)
-                                            {
-                                                sDisabled = "disabled";
-                                            }
+                                            sDisabled = (Model.Assets == null) ? "disabled" : "";
+
                                             <button type="button" class="btn btn-info @sDisabled" id="btnSubmit">
-                                                <i class="fa fa-check-circle me-1 align-middle" style="font-size: 1rem;"></i>&nbsp;@Localizer["SaveChanges"]
+                                                <i class="fa fa-check-circle me-1"></i>&nbsp;@Localizer["SaveChanges"]
                                             </button>
                                             <button type="button" class="btn btn-secondary @sDisabled" id="btnDeleteDisposal">
-                                                <i class="fe fe-trash me-1 align-middle" style="font-size: 1rem;"></i>&nbsp;@Localizer["DeleteDisposal"]
+                                                <i class="fa fa-trash me-1"></i>&nbsp;@Localizer["DeleteDisposal"]
                                             </button>
+                                            <a asp-action="Index" asp-controller="Disposals" id="btnCancel" class="btn btn-gray"><i class="fa fa-close"></i>&nbsp;@Localizer["Cancel"]</a>
                                         }
 
                                     </div>
@@ -278,7 +277,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-5">
+                        <div class="col-md-4">
                             <div class="card">
                                 <div class="card-status bg-info br-tr-7 br-tl-7"></div>
                                 <div class="card-body">
@@ -333,7 +332,7 @@
 <script src="~/assets/plugins/fileuploads/js/fileupload.js"></script>
 <script src="~/assets/plugins/fileuploads/js/file-upload.js"></script>
 
-@section scripts{
+@section scripts {
     <script>
         $(document).ready(() => {
             hideMenu();
@@ -438,8 +437,10 @@
                 }
             }
         }
-        const selectAsset = (id, e) => {
+        const selectAsset = (id, btn, e) => {
             e.preventDefault();
+            $('.selectionButton').prop('disabled', false);
+            $(btn).prop('disabled', true); // jQuery way
 
             const assets = JSON.parse('@Html.Raw(Json.Serialize(Model.Assets))');
             if (assets && assets.length > 0) {

@@ -978,7 +978,7 @@ namespace MODAMS.ApplicationServices
                 .Where(m => m.Transfer.TransferStatusId == SD.Transfer_Pending ||
                 m.Transfer.TransferStatusId == SD.Transfer_SubmittedForAcknowledgement)
                 .ToListAsync();
-            if (caller == "CreateTransfer")
+            if (caller == "GetCreateTransferAsync")
             {
                 assets = assets
                 .Where(m => !transferDetails.Any(detail => detail.AssetId == m.Id))

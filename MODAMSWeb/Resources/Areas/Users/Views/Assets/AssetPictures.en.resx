@@ -120,11 +120,23 @@
   <data name="AssetPictures" xml:space="preserve">
     <value>Asset Pictures</value>
   </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
   <data name="ChoosePicture" xml:space="preserve">
     <value>Choose a picture to upload</value>
   </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>Confirm</value>
+  </data>
   <data name="Delete" xml:space="preserve">
     <value>Delete</value>
+  </data>
+  <data name="DeleteConfirmationMessage" xml:space="preserve">
+    <value>You will not be able to recover this picture, Are you sure?</value>
+  </data>
+  <data name="DeletePicture" xml:space="preserve">
+    <value>Delete Picture</value>
   </data>
   <data name="NoPicturesAvailable" xml:space="preserve">
     <value>No pictures available</value>

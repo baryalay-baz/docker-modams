@@ -132,6 +132,9 @@
   <data name="ChooseFile" xml:space="preserve">
     <value>Choose a file to upload</value>
   </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>Confirm</value>
+  </data>
   <data name="DeleteConfirmationMessage" xml:space="preserve">
     <value>You will not be able to recover this document again</value>
   </data>

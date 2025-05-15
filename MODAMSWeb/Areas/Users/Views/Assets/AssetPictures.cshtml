@@ -78,7 +78,7 @@
                         <div class="col-md-3">
                             <img src="@pic.ImageUrl" />
                             <div class="text-center pt-2">
-                                <a asp-action="DeletePicture" asp-controller="Assets" asp-route-id="@pic.Id" asp-route-assetId="@pic.AssetId" class="text-danger"> <i class="fa fa-trash">&nbsp;</i>@Localizer["Delete"]</a>
+                                <a onclick="deletePicture(@pic.Id, @pic.AssetId);" class="btn btn-secondary"> <i class="fa fa-trash">&nbsp;</i>@Localizer["Delete"]</a>
                             </div>
                             <div class="text-center">&nbsp</div>
                         </div>
@@ -92,4 +92,26 @@
         </div>
     </div>
 </div>
+@await Html.PartialAsync("~/Views/Shared/_Confirmation.cshtml")
 
+@section Scripts
+{
+    <script>
+        $(document).ready(function () {
+            
+        });
+
+        const deletePicture = (id, assetId) =>{
+            const options = {
+                    actionUrl: `/Users/Assets/DeletePicture/${id}`,
+                    title: '@Localizer["DeletePicture"]',
+                    message: '@Localizer["DeleteConfirmationMessage"]',
+                    btnConfirmText: '@Localizer["Confirm"]',
+                    btnCancelText: '@Localizer["Cancel"]',
+                    data: assetId
+                };
+                //console.log(options);
+                openConfirmation(options);
+        }
+    </script>
+}

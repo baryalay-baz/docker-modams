@@ -179,14 +179,9 @@
                                     </div>
                                     <div class="flex">
                                         @{
-                                            if (Model.Assets == null)
-                                            {
-                                                <button type="button" class="btn btn-info disabled" id="btnSubmit"><i class="fa fa-check-circle"></i>&nbsp;@Localizer["SaveTransfer"]</button>
-                                            }
-                                            else
-                                            {
-                                                <button type="button" class="btn btn-info" id="btnSubmit"><i class="fa fa-check-circle"></i>&nbsp;@Localizer["SaveTransfer"]</button>
-                                            }
+                                            var sDisabled = (Model.Assets == null) ? "disabled" : "";
+                                            <button type="button" class="btn btn-info @sDisabled" id="btnSubmit"><i class="fa fa-check-circle"></i>&nbsp;@Localizer["SaveTransfer"]</button>
+                                            <a asp-action="Index" asp-controller="Transfers" id="btnCancel" class="btn btn-gray"><i class="fa fa-close"></i>&nbsp;@Localizer["Cancel"]</a>
                                         }
 
                                     </div>

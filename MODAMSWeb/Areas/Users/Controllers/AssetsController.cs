@@ -258,10 +258,13 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             return RedirectToAction("AssetPictures", "Assets", new { area = "Users", id = AssetId });
         }
+
+        [HttpPost]
         [Authorize(Roles = "StoreOwner, User")]
+        [IgnoreAntiforgeryToken]
         public async Task<IActionResult> DeletePicture(int id, int assetId)
         {
-            var result = await _assetService.DeletePictureAsync(id, assetId);
+            var result = await _assetService.DeletePictureAsync(id);
 
             if (result.IsSuccess)
             {

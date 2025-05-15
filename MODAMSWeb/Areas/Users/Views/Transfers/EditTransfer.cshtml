@@ -185,15 +185,13 @@
                                                 <button type="submit" class="btn btn-info-gradient " id="btnSubmit"><i class="fa fa-check-circle"></i>&nbsp;@Localizer["SaveTransfer"]</button>
 
                                                 <button class="btn btn-secondary btn-secondary" id="btnDeleteTransfer">
-                                                    <i class="fe fe-trash"></i> @Localizer["DeleteTransfer"]<i class="icon ion-ios-arrow-down text-12"></i>
-                                                </button>
-
-                                                
+                                                    <i class="fa fa-trash"></i> @Localizer["DeleteTransfer"]<i class="icon ion-ios-arrow-down text-12"></i>
+                                                </button>                                               
                                             }
                                         }
 
                                         <a asp-area="Users" asp-controller="Transfers" asp-action="PreviewTransfer" asp-route-id="@Model.Transfer.Id" class="btn btn-gray">
-                                            <i class="fe fe-eye"></i>&nbsp;@Localizer["PreviewTransfer"]
+                                            <i class="fa fa-eye"></i>&nbsp;@Localizer["PreviewTransfer"]
                                         </a>
                                     </div>
 

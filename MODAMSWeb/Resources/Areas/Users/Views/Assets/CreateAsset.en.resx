@@ -231,4 +231,7 @@
   <data name="SelectCategory" xml:space="preserve">
     <value>Select Category</value>
   </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
 </root>

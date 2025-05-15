@@ -231,4 +231,7 @@
   <data name="SelectCategory" xml:space="preserve">
     <value>Dooro Qayb</value>
   </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Jooji</value>
+  </data>
 </root>

@@ -291,10 +291,13 @@ namespace MODAMS.ApplicationServices
                 int prevAssetId = disposalInDb.AssetId;
 
                 // Update disposal details
-                if (dto.file != null)
+                if (dto.file != null && disposalInDb.ImageUrl != null)
                 {
-                    dto.Disposal.ImageUrl = sFileName;
+                    // Delete the old file if a new one is uploaded
+                    string oldFileName = disposalInDb.ImageUrl.Substring(19); // Removes "/disposaldocuments/"
+                    DeleteFile(oldFileName, "disposaldocuments");
                 }
+                dto.Disposal.ImageUrl = sFileName != string.Empty ? sFileName : disposalInDb.ImageUrl;
                 dto.Disposal.EmployeeId = _employeeId;
                 _db.Entry(disposalInDb).CurrentValues.SetValues(dto.Disposal);
 
@@ -459,7 +462,7 @@ namespace MODAMS.ApplicationServices
         {
             if (disposalId == 0)
             {
-                return Result<string>.Failure(_isSomali? "Baabi’in lama helin!" : "Disposal not found!");
+                return Result<string>.Failure(_isSomali ? "Baabi’in lama helin!" : "Disposal not found!");
             }
 
             var disposalInDb = await _db.Disposals.FirstOrDefaultAsync(m => m.Id == disposalId);
@@ -473,10 +476,10 @@ namespace MODAMS.ApplicationServices
             bool fileDeleted = DeleteFile(sFileName, "disposaldocuments");
             if (!fileDeleted)
             {
-                return Result<string>.Failure(_isSomali? "Khalad ayaa ka dhacay tirtirka sawirka kaydka!" : "Error deleting picture from storage!");
+                return Result<string>.Failure(_isSomali ? "Khalad ayaa ka dhacay tirtirka sawirka kaydka!" : "Error deleting picture from storage!");
             }
 
-            return Result<string>.Success(_isSomali? "Sawirku si guul leh ayaa loo tirtiray!" : "Picture deleted successfully!");
+            return Result<string>.Success(_isSomali ? "Sawirku si guul leh ayaa loo tirtiray!" : "Picture deleted successfully!");
         }
         private bool DeleteFile(string fileName, string folderName)
         {

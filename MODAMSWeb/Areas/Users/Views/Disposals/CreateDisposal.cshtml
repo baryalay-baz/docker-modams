@@ -84,7 +84,7 @@
             <div class="card-body">
                 <form method="post" asp-action="CreateDisposal" id="frmDisposal" enctype="multipart/form-data">
                     <div class="row">
-                        <div class="col-md-7">
+                        <div class="col-md-8">
                             <div class="card">
                                 <div class="card-status bg-primary br-tr-7 br-tl-7"></div>
                                 <div class="card-body">
@@ -164,7 +164,7 @@
                                                                             {
                                                                                 sCounter = nCounter < 10 ? "0" + nCounter.ToString() : nCounter.ToString();
                                                                                 <tr>
-                                                                                    <td><a class="btn btn-primary btn-sm" onclick="return selectAsset(@asset.Id,event);">select</a></td>
+                                                                                    <td><button type="button" class="selectionButton btn btn-primary btn-sm" onclick="return selectAsset(@asset.Id,this,event);">select</button></td>
                                                                                     <td>@asset.CategoryName</td>
                                                                                     <td>@asset.Make</td>
                                                                                     <td>@asset.Model</td>
@@ -215,13 +215,11 @@
                                     </div>
                                     <div class="flex">
                                         @{
-                                            if (Model.Assets.Count < 1)
-                                            {
-                                                sDisabled = "disabled";
-                                            }
+                                            sDisabled = Model.Assets.Count<1? "disabled" : "";
                                             <button type="button" class="btn btn-info-gradient @sDisabled" id="btnSubmit">
                                                 <i class="fa fa-check-circle"></i>&nbsp;@Localizer["SaveDisposal"]
                                             </button>
+                                            <a asp-action="Index" asp-controller="Disposals" id="btnCancel" class="btn btn-gray"><i class="fa fa-close"></i>&nbsp;@Localizer["Cancel"]</a>
                                         }
 
                                     </div>
@@ -229,7 +227,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-5">
+                        <div class="col-md-4">
                             <div class="card">
                                 <div class="card-status bg-info br-tr-7 br-tl-7"></div>
                                 <div id="card-body-file" class="card-body table-bordered" style="height: 412px; display: flex; justify-content: center; align-items: center;">
@@ -245,16 +243,6 @@
     </div>
 </div>
 
-<!--Internal Fancy uploader js-->
-@* <script src="~/assets/plugins/fancyuploder/jquery.ui.widget.js"></script>
-<script src="~/assets/plugins/fancyuploder/jquery.fileupload.js"></script>
-<script src="~/assets/plugins/fancyuploder/jquery.iframe-transport.js"></script>
-<script src="~/assets/plugins/fancyuploder/jquery.fancy-fileupload.js"></script>
-<script src="~/assets/plugins/fancyuploder/fancy-uploader.js"></script>
-
-<script src="~/assets/plugins/fileuploads/js/fileupload.js"></script>
-<script src="~/assets/plugins/fileuploads/js/file-upload.js"></script>
- *@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dropify/dist/css/dropify.min.css">
 <script src="https://cdn.jsdelivr.net/npm/dropify/dist/js/dropify.min.js"></script>
 
@@ -314,9 +302,10 @@
                 }
             });
         };
-
-        const selectAsset = (id, e) => {
+        const selectAsset = (id,btn,e) => {
             e.preventDefault();
+            $('.selectionButton').prop('disabled', false);
+            $(btn).prop('disabled', true); // jQuery way
 
             const assets = JSON.parse('@Html.Raw(Json.Serialize(Model.Assets))');
             if (assets && assets.length > 0) {
