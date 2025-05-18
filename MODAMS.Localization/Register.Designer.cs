@@ -22,14 +22,14 @@ namespace MODAMS.Localization {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class ValidationMessages {
+    public class Register {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal ValidationMessages() {
+        internal Register() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace MODAMS.Localization {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("MODAMS.Localization.ValidationMessages", typeof(ValidationMessages).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("MODAMS.Localization.Register", typeof(Register).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,47 +61,38 @@ namespace MODAMS.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The {0} field is not a valid email address..
+        ///   Looks up a localized string similar to Confirm Password.
         /// </summary>
-        public static string InvalidEmail {
+        public static string ConfirmPassword {
             get {
-                return ResourceManager.GetString("InvalidEmail", resourceCulture);
+                return ResourceManager.GetString("ConfirmPassword", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Special characters are not allowed..
+        ///   Looks up a localized string similar to Email.
         /// </summary>
-        public static string InvalidPattern {
+        public static string Email {
             get {
-                return ResourceManager.GetString("InvalidPattern", resourceCulture);
+                return ResourceManager.GetString("Email", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The {0} field must be between {1} and {2}..
+        ///   Looks up a localized string similar to Password.
         /// </summary>
-        public static string InvalidRange {
+        public static string Password {
             get {
-                return ResourceManager.GetString("InvalidRange", resourceCulture);
+                return ResourceManager.GetString("Password", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The {0} field is required..
+        ///   Looks up a localized string similar to The password and confirmation password do not match..
         /// </summary>
-        public static string Required {
+        public static string PasswordsDoNotMatch {
             get {
-                return ResourceManager.GetString("Required", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The {0} must be at least {2} and at most {1} characters long..
-        /// </summary>
-        public static string StringLength {
-            get {
-                return ResourceManager.GetString("StringLength", resourceCulture);
+                return ResourceManager.GetString("PasswordsDoNotMatch", resourceCulture);
             }
         }
     }

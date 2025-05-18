@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="InvalidEmail" xml:space="preserve">
-    <value>Goobta {0} ma aha iimayl sax ah.</value>
+    <value>Goobta {0} ma aha ciwaanka sax ah.</value>
   </data>
   <data name="InvalidPattern" xml:space="preserve">
     <value>Calaamadaha khaaska ah lama ogola.</value>
@@ -128,5 +128,8 @@
   </data>
   <data name="Required" xml:space="preserve">
     <value>Goobta {0} waa qasab.</value>
+  </data>
+  <data name="StringLength" xml:space="preserve">
+    <value>{0} waa inuu ahaadaa ugu yaraan {2} xaraf oo ugu badnaan {1} xaraf.</value>
   </data>
 </root>

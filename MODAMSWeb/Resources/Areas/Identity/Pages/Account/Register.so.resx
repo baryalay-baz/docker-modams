@@ -117,19 +117,30 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="InvalidEmail" xml:space="preserve">
-    <value>The {0} field is not a valid email address.</value>
+  <data name="AccountRegistration" xml:space="preserve">
+    <value>Diiwaangelinta Akoonka</value>
   </data>
-  <data name="InvalidPattern" xml:space="preserve">
-    <value>Special characters are not allowed.</value>
+  <data name="AlreadyHaveAccount" xml:space="preserve">
+    <value>Horey ma u leedahay akoont?</value>
+    <comment>\</comment>
   </data>
-  <data name="InvalidRange" xml:space="preserve">
-    <value>The {0} field must be between {1} and {2}.</value>
+  <data name="ConfirmPassword" xml:space="preserve">
+    <value>Xaqiiji furaha sirta</value>
   </data>
-  <data name="Required" xml:space="preserve">
-    <value>The {0} field is required.</value>
+  <data name="DevelopedBy" xml:space="preserve">
+    <value>Waxaa sameeyay</value>
+    <comment>Waxaa sameeyay</comment>
   </data>
-  <data name="StringLength" xml:space="preserve">
-    <value>The {0} must be at least {2} and at most {1} characters long.</value>
+  <data name="Email" xml:space="preserve">
+    <value>Iimayl</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Furaha sirta</value>
+  </data>
+  <data name="Register" xml:space="preserve">
+    <value>Diiwaangeli</value>
+  </data>
+  <data name="SignIn" xml:space="preserve">
+    <value>Soo gal</value>
   </data>
 </root>

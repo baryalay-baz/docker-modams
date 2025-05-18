@@ -1,5 +1,8 @@
 ﻿@page
+@using Microsoft.AspNetCore.Mvc.Localization
 @model RegisterModel
+
+@inject IViewLocalizer Localizer
 
 @{
     Layout = "_Layout1";
@@ -14,12 +17,15 @@
                 <img src="~/assets/images/brand/FGS.png" class="h-8" alt="">
             </span>
             <div class="text-center pb-3">
-                <p class="text-blue mb-0" style="font-size:small;">Account Registration</p>
+                <p class="text-blue mb-0" style="font-size:small;">@Localizer["AccountRegistration"]</p>
             </div>
-            <form class="login100-form validate-form" id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">           
+            <input type="text" style="display:none">
+            <input type="password" style="display:none">
+
+            <form class="login100-form validate-form" id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
                 <div asp-validation-summary="ModelOnly" class="text-danger text-center text-wrap" role="alert"></div>
                 <div class="wrap-input100 validate-input" data-bs-validate="Valid email is required: ex@abc.xyz">
-                    <input asp-for="Input.Email" class="input100" placeholder="Email" />
+                    <input asp-for="Input.Email" class="input100" placeholder="@Localizer["Email"]" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');" />
                     <span class="focus-input100"></span>
                     <span class="symbol-input100">
                         <i class="zmdi zmdi-email" aria-hidden="true"></i>
@@ -27,7 +33,7 @@
                     <span asp-validation-for="Input.Email" class="text-danger"></span>
                 </div>
                 <div class="wrap-input100 validate-input" data-bs-validate="Password is required">
-                    <input asp-for="Input.Password" class="input100" type="password" placeholder="Password" />
+                    <input asp-for="Input.Password" class="input100" type="password" placeholder="@Localizer["Password"]" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly');" />
                     <span class="focus-input100"></span>
                     <span class="symbol-input100">
                         <i class="zmdi zmdi-lock" aria-hidden="true"></i>
@@ -35,7 +41,7 @@
                     <span asp-validation-for="Input.Password" class="text-danger"></span>
                 </div>
                 <div class="wrap-input100 validate-input" data-bs-validate="Password is required">
-                    <input asp-for="Input.ConfirmPassword" class="input100" type="password" placeholder="Confirm Password" />
+                    <input asp-for="Input.ConfirmPassword" class="input100" type="password" placeholder="@Localizer["ConfirmPassword"]" />
                     <span class="focus-input100"></span>
                     <span class="symbol-input100">
                         <i class="zmdi zmdi-lock" aria-hidden="true"></i>
@@ -44,18 +50,18 @@
                 </div>
                 <div class="container-login100-form-btn">
                     <button type="submit" class="login100-form-btn btn-primary">
-                        Register
+                        @Localizer["Register"]
                     </button>
                 </div>
                 <div class="text-center pt-3">
-                    <p class="text-dark mb-0">Already have account?<a asp-area="" asp-page="/Login/Index" class="text-primary ms-1">Sign In</a></p>
-                
+                    <p class="text-dark mb-0">@Localizer["AlreadyHaveAccount"]?<a asp-area="" asp-page="/Login/Index" class="text-primary ms-1">@Localizer["SignIn"]</a></p>
+
                 </div>
             </form>
         </div>
         <div class="card-footer">
             <div class="col-md-12 col-sm-12 text-center text-darkgray">
-                <span style="font-size:12px;">Developed by&nbsp;|&nbsp;</span><img src="~/assets/images/brand/unops_footer_logo.png">&nbsp;
+                <span style="font-size:12px;">@Localizer["DevelopedBy"]&nbsp;|&nbsp;</span><img src="~/assets/images/brand/unops_footer_logo.png">&nbsp;
             </div>
 
         </div>
@@ -64,4 +70,12 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function(){
+            setTimeout(function () {
+                $('.input100').val('');
+            }, 100);
+        });
+    </script>
+
 }
