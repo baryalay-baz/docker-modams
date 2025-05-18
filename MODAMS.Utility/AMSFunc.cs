@@ -850,7 +850,7 @@ namespace MODAMS.Utility
             }
 
             var returnUrl = GenerateUrl(sectionId, recordId);
-            string sEmailMessage = FormatMessage(subject, message, sFullName, returnUrl, "click here");
+            string sEmailMessage = FormatMessage(subject, message, sFullName, returnUrl, _isSomali? "Guji halkan" : "click here");
 
             try
             {

@@ -4,6 +4,12 @@
 
 @model MODAMS.Models.ViewModels.Dto.TransferDTO
 
+<style>
+    .rd {
+        cursor: pointer;
+    }
+</style>
+
 <div class="page-header">
     <div>
         <h1 class="page-title">@Localizer["AssetTransfers"]</h1>
@@ -95,183 +101,183 @@
                                     </div>
 
                                 </div>
-                            </div>
-                        </div>
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="panel panel-primary tab-style-underline">
-                                    <div class=" tab-menu-heading border-bottom-0">
-                                        <div class="tabs-menu1 ">
-                                            <!-- Tabs -->
-                                            <ul class="nav panel-tabs">
-                                                <li><a href="#tabOutgoing" class="active me-1 text-default my-1" data-bs-toggle="tab">@Localizer["OutgoingTransfers"]</a></li>
-                                                <li>
-                                                    <a href="#tabIncoming" data-bs-toggle="tab" class="me-1 text-default my-1">@Localizer["IncomingTransfers"] &nbsp;<span id="spnNew" class="badge bg-danger"></span></a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                    <div class="panel-body tabs-menu-body">
-                                        <div class="tab-content">
-                                            <div class="tab-pane active " id="tabOutgoing">
-                                                <div class="row">
-                                                    <div class="col-8 col-sm-8">
-                                                        <div class="mb-4">
-                                                            <div class="input-group">
-                                                                <label class="rdiobox" for="rd-0"><input onclick="return radioCall(0);" class="mr-5" name="rd-status" type="radio" id="rd-0" checked><span style="font-size:medium;">@Localizer["AllTransfers"]</span></label>&nbsp;&nbsp;
-                                                                <label class="rdiobox" for="rd-1"><input onclick="return radioCall(1);" class="mr-5" name="rd-status" type="radio" id="rd-1"><span style="font-size:medium;">@Localizer["Pending"]</span></label>&nbsp;&nbsp;
-                                                                <label class="rdiobox" for="rd-2"><input onclick="return radioCall(2);" class="mr-5" name="rd-status" type="radio" id="rd-2"><span style="font-size:medium;">@Localizer["AwaitingAcknowledgement"]</span></label>&nbsp;&nbsp;
-                                                                <label class="rdiobox" for="rd-3"><input onclick="return radioCall(3);" class="mr-5" name="rd-status" type="radio" id="rd-3"><span style="font-size:medium;">@Localizer["Completed"]</span></label>&nbsp;&nbsp;
-                                                                <label class="rdiobox" for="rd-4"><input onclick="return radioCall(4);" class="mr-5" name="rd-status" type="radio" id="rd-4"><span style="font-size:medium;">@Localizer["Rejected"]</span></label>&nbsp;&nbsp;
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="table-responsive" id="dvTable-Responsive">
-                                                            <table id="tblTransfers" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
-                                                                <thead class="bg-primary-gradient ms-auto divShadow">
-                                                                    <tr>
-                                                                        <th class="text-white bg-transparent border-bottom-0 w-2">#</th>
-                                                                        <th class="text-white bg-transparent border-bottom-0 w-10">@Localizer["Date"]</th>
-                                                                        <th class="text-white bg-transparent border-bottom-0 w-20">@Localizer["StoreFrom"]</th>
-                                                                        <th class="text-white bg-transparent border-bottom-0 w-20">@Localizer["StoreTo"]</th>
-                                                                        <th class="text-white bg-transparent border-bottom-0 w-5">@Localizer["Assets"]</th>
-                                                                        <th class="text-white bg-transparent border-bottom-0 w-20">@Localizer["Status"]</th>
-                                                                        <th class="text-white bg-transparent border-bottom-0 w-20 no-btn">@Localizer["Action"]</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    @{
-                                                                        int nCounter = 0;
-
-                                                                        string sInitialDisable = "disabled";
-                                                                        string sDisabled = "disabled";
-
-                                                                        if (Model.IsAuthorized)
-                                                                            sInitialDisable = "";
-
-                                                                        foreach (var transfer in Model.OutgoingTransfers)
-                                                                        {
-                                                                            sDisabled = sInitialDisable;
-                                                                            if (transfer.TransferStatusId != 1)
-                                                                            {
-                                                                                sDisabled = "disabled";
-                                                                            }
-
-                                                                            nCounter++;
-                                                                            <tr>
-                                                                                <td>@nCounter</td>
-                                                                                <td>@transfer.TransferDate?.ToString("dd-MMM-yyyy")</td>
-                                                                                <td>@(_isSomali ? transfer.StoreFromSo : transfer.StoreFrom)</td>
-                                                                                <td>@(_isSomali ? transfer.StoreToSo : transfer.StoreTo)</td>
-                                                                                <td>@transfer.NumberOfAssets</td>
-                                                                                <td>@(_isSomali ? transfer.StatusSo : transfer.Status)</td>
-                                                                                <td class="text-muted fs-15 fw-semibold">
-                                                                                    <div class="d-flex align-items-stretch">
-                                                                                        <a asp-controller="Transfers" asp-action="PreviewTransfer" asp-route-id="@transfer.Id"
-                                                                                           class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="tooltip" data-bs-original-title="@Localizer["PreviewTransfer"]">
-                                                                                            <i class="fe fe-eye"></i>
-                                                                                        </a>
-                                                                                        <a asp-controller="Transfers" asp-action="EditTransfer" asp-route-id="@transfer.Id"
-                                                                                           class="btn btn-sm btn-outline-info me-1 @sDisabled" data-bs-toggle="tooltip" data-bs-original-title="@Localizer["EditTransfer"]">
-                                                                                            <i class="fe fe-edit"></i>
-                                                                                        </a>
-                                                                                        <button class="btn btn-sm btn-outline-danger me-1 @sDisabled" id="btnDeleteTransfer" onclick="deleteTransfer('@transfer.Id');">
-                                                                                            <i class="fe fe-trash"></i>
-                                                                                        </button>
-                                                                                    </div>
-                                                                                </td>
-                                                                            </tr>
-                                                                        }
-                                                                    }
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                        <br />
-                                                        <a asp-action="CreateTransfer" asp-controller="Transfers" id="btnCreate" class="btn btn-info-gradient pt-1"><i class="fe fe-plus-circle"></i>&nbsp;@Localizer["NewTransfer"]</a>
-                                                    </div>
-                                                    <div class="col-4 col-sm-4">
-                                                        <div class="card">
-                                                            <div class="card-header">
-                                                                <h4>@Localizer["OutgoingTransfersByCategory"]</h4>
-                                                            </div>
-                                                            <div class="card-body container">
-                                                                @* <div id="chartOutgoing"></div> *@
-                                                                <div style="width: 70%; margin: auto;">
-                                                                    <canvas id="pieChartOutgoing"></canvas>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                    </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="panel panel-primary tab-style-underline">
+                                            <div class=" tab-menu-heading border-bottom-0">
+                                                <div class="tabs-menu1 ">
+                                                    <!-- Tabs -->
+                                                    <ul class="nav panel-tabs">
+                                                        <li><a href="#tabOutgoing" class="active me-1 text-default my-1" data-bs-toggle="tab">@Localizer["OutgoingTransfers"]</a></li>
+                                                        <li>
+                                                            <a href="#tabIncoming" data-bs-toggle="tab" class="me-1 text-default my-1">@Localizer["IncomingTransfers"] &nbsp;<span id="spnNew" class="badge bg-danger"></span></a>
+                                                        </li>
+                                                    </ul>
                                                 </div>
                                             </div>
-                                            <div class="tab-pane " id="tabIncoming">
-                                                <div class="row">
-                                                    <div class="col-8 col-sm-8">
-                                                        <div class="mb-4">
-                                                            <div class="input-group">
-                                                                <label class="rdiobox" for="rd-incoming-0"><input onclick="return radioCallIncoming(0);" class="mr-5" name="rd-status-incoming" type="radio" id="rd-incoming-0" checked><span style="font-size:medium;">@Localizer["AllTransfers"]</span></label>&nbsp;&nbsp;
-                                                                <label class="rdiobox" for="rd-incoming-2"><input onclick="return radioCallIncoming(2);" class="mr-5" name="rd-status-incoming" type="radio" id="rd-incoming-2"><span style="font-size:medium;">@Localizer["AwaitingAcknowledgement"]</span></label>&nbsp;&nbsp;
-                                                                <label class="rdiobox" for="rd-incoming-3"><input onclick="return radioCallIncoming(3);" class="mr-5" name="rd-status-incoming" type="radio" id="rd-incoming-3"><span style="font-size:medium;">@Localizer["Completed"]</span></label>&nbsp;&nbsp;
-                                                                <label class="rdiobox" for="rd-incoming-4"><input onclick="return radioCallIncoming(4);" class="mr-5" name="rd-status-incoming" type="radio" id="rd-incoming-4"><span style="font-size:medium;">@Localizer["Rejected"]</span></label>&nbsp;&nbsp;
-                                                            </div>
-                                                        </div>
+                                            <div class="panel-body tabs-menu-body">
+                                                <div class="tab-content">
+                                                    <div class="tab-pane active " id="tabOutgoing">
+                                                        <div class="row">
+                                                            <div class="col-8 col-sm-8">
+                                                                <div class="mb-4">
+                                                                    <div class="input-group">
+                                                                        <label class="rdiobox rd" for="rd-0"><input onclick="return radioCall(0);" class="mr-5 rd" name="rd-status" type="radio" id="rd-0" checked><span style="font-size:medium;">@Localizer["AllTransfers"]</span></label>&nbsp;&nbsp;
+                                                                        <label class="rdiobox rd" for="rd-1"><input onclick="return radioCall(1);" class="mr-5 rd" name="rd-status" type="radio" id="rd-1"><span style="font-size:medium;">@Localizer["Pending"]</span></label>&nbsp;&nbsp;
+                                                                        <label class="rdiobox rd" for="rd-2"><input onclick="return radioCall(2);" class="mr-5 rd" name="rd-status" type="radio" id="rd-2"><span style="font-size:medium;">@Localizer["AwaitingAcknowledgement"]</span></label>&nbsp;&nbsp;
+                                                                        <label class="rdiobox rd" for="rd-3"><input onclick="return radioCall(3);" class="mr-5 rd" name="rd-status" type="radio" id="rd-3"><span style="font-size:medium;">@Localizer["Completed"]</span></label>&nbsp;&nbsp;
+                                                                        <label class="rdiobox rd" for="rd-4"><input onclick="return radioCall(4);" class="mr-5 rd" name="rd-status" type="radio" id="rd-4"><span style="font-size:medium;">@Localizer["Rejected"]</span></label>&nbsp;&nbsp;
+                                                                    </div>
+                                                                </div>
 
-                                                        <div class="table-responsive" id="dvTable-Responsive-Incoming">
-                                                            <table id="tblTransfersIncoming" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
-                                                                <thead class="bg-primary-gradient ms-auto divShadow">
-                                                                    <tr>
-                                                                        <th class="text-white bg-transparent border-bottom-0 w-2">#</th>
-                                                                        <th class="text-white bg-transparent border-bottom-0 w-10">@Localizer["Date"]</th>
-                                                                        <th class="text-white bg-transparent border-bottom-0 w-20">@Localizer["StoreFrom"]</th>
-                                                                        <th class="text-white bg-transparent border-bottom-0 w-20">@Localizer["StoreTo"]</th>
-                                                                        <th class="text-white bg-transparent border-bottom-0 w-5">@Localizer["Assets"]</th>
-                                                                        <th class="text-white bg-transparent border-bottom-0 w-20">@Localizer["Status"]</th>
-                                                                        <th class="text-white bg-transparent border-bottom-0 w-20 no-btn">@Localizer["Action"]</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    @{
-                                                                        int nCounterIncoming = 0;
-                                                                        int spnNew = 0;
-                                                                        string sSpnNew = "";
-                                                                        foreach (var transfer in Model.IncomingTransfers)
-                                                                        {
-                                                                            nCounterIncoming++;
-                                                                            if (transfer.TransferStatusId == 2)
-                                                                            {
-                                                                                spnNew++;
-                                                                            }
+                                                                <div class="table-responsive" id="dvTable-Responsive">
+                                                                    <table id="tblTransfers" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
+                                                                        <thead class="bg-primary-gradient ms-auto divShadow">
                                                                             <tr>
-                                                                                <td>@nCounterIncoming</td>
-                                                                                <td>@transfer.TransferDate?.ToString("dd-MMM-yyyy")</td>
-                                                                                <td>@(_isSomali ? transfer.StoreFromSo : transfer.StoreFrom)</td>
-                                                                                <td>@(_isSomali ? transfer.StoreToSo : transfer.StoreTo)</td>
-                                                                                <td>@transfer.NumberOfAssets</td>
-                                                                                <td>@(_isSomali ? transfer.StatusSo : transfer.Status)</td>
-                                                                                <td class="text-muted fs-15 fw-semibold">
-                                                                                    <div class="d-flex align-items-stretch">
-                                                                                        <a asp-controller="Transfers" asp-action="PreviewTransfer" asp-route-id="@transfer.Id" class="btn btn-sm btn-outline-primary border me-2" data-bs-toggle="tooltip" data-bs-original-title="@Localizer["PreviewTransfer"]">
-                                                                                            <i class="fe fe-eye"></i>
-                                                                                        </a>
-                                                                                    </div>
-                                                                                </td>
+                                                                                <th class="text-white bg-transparent border-bottom-0 w-2">#</th>
+                                                                                <th class="text-white bg-transparent border-bottom-0 w-10">@Localizer["Date"]</th>
+                                                                                <th class="text-white bg-transparent border-bottom-0 w-20">@Localizer["StoreFrom"]</th>
+                                                                                <th class="text-white bg-transparent border-bottom-0 w-20">@Localizer["StoreTo"]</th>
+                                                                                <th class="text-white bg-transparent border-bottom-0 w-5">@Localizer["Assets"]</th>
+                                                                                <th class="text-white bg-transparent border-bottom-0 w-20">@Localizer["Status"]</th>
+                                                                                <th class="text-white bg-transparent border-bottom-0 w-20 no-btn">@Localizer["Action"]</th>
                                                                             </tr>
-                                                                        }
-                                                                        sSpnNew = spnNew > 0 ? spnNew.ToString() : "";
-                                                                    }
-                                                                </tbody>
-                                                            </table>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            @{
+                                                                                int nCounter = 0;
+
+                                                                                string sInitialDisable = "disabled";
+                                                                                string sDisabled = "disabled";
+
+                                                                                if (Model.IsAuthorized)
+                                                                                    sInitialDisable = "";
+
+                                                                                foreach (var transfer in Model.OutgoingTransfers)
+                                                                                {
+                                                                                    sDisabled = sInitialDisable;
+                                                                                    if (transfer.TransferStatusId != 1)
+                                                                                    {
+                                                                                        sDisabled = "disabled";
+                                                                                    }
+
+                                                                                    nCounter++;
+                                                                                    <tr>
+                                                                                        <td>@nCounter</td>
+                                                                                        <td>@transfer.TransferDate?.ToString("dd-MMM-yyyy")</td>
+                                                                                        <td>@(_isSomali? transfer.StoreFromSo: transfer.StoreFrom)</td>
+                                                                                        <td>@(_isSomali? transfer.StoreToSo: transfer.StoreTo)</td>
+                                                                                        <td>@transfer.NumberOfAssets</td>
+                                                                                        <td>@(_isSomali? transfer.StatusSo: transfer.Status)</td>
+                                                                                        <td class="text-muted fs-15 fw-semibold">
+                                                                                            <div class="d-flex align-items-stretch">
+                                                                                                <a asp-controller="Transfers" asp-action="PreviewTransfer" asp-route-id="@transfer.Id"
+                                                                                                   class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="tooltip" data-bs-original-title="@Localizer["PreviewTransfer"]">
+                                                                                                    <i class="fe fe-eye"></i>
+                                                                                                </a>
+                                                                                                <a asp-controller="Transfers" asp-action="EditTransfer" asp-route-id="@transfer.Id"
+                                                                                                   class="btn btn-sm btn-outline-info me-1 @sDisabled" data-bs-toggle="tooltip" data-bs-original-title="@Localizer["EditTransfer"]">
+                                                                                                    <i class="fe fe-edit"></i>
+                                                                                                </a>
+                                                                                                <button class="btn btn-sm btn-outline-danger me-1 @sDisabled" id="btnDeleteTransfer" onclick="deleteTransfer('@transfer.Id');">
+                                                                                                    <i class="fe fe-trash"></i>
+                                                                                                </button>
+                                                                                            </div>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                }
+                                                                            }
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                                <br />
+                                                                <a asp-action="CreateTransfer" asp-controller="Transfers" id="btnCreate" class="btn btn-info-gradient pt-1"><i class="fe fe-plus-circle"></i>&nbsp;@Localizer["NewTransfer"]</a>
+                                                            </div>
+                                                            <div class="col-4 col-sm-4">
+                                                                <div class="card">
+                                                                    <div class="card-header">
+                                                                        <h4>@Localizer["OutgoingTransfersByCategory"]</h4>
+                                                                    </div>
+                                                                    <div class="card-body container">
+                                                                        @* <div id="chartOutgoing"></div> *@
+                                                                        <div style="width: 70%; margin: auto;">
+                                                                            <canvas id="pieChartOutgoing"></canvas>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                    <div class="col-4 col-sm-4">
-                                                        <div class="card">
-                                                            <div class="card-header">
-                                                                <h4>@Localizer["IncomingTransfersByCategory"]</h4>
+                                                    <div class="tab-pane " id="tabIncoming">
+                                                        <div class="row">
+                                                            <div class="col-8 col-sm-8">
+                                                                <div class="mb-4">
+                                                                    <div class="input-group">
+                                                                        <label class="rdiobox rd" for="rd-incoming-0"><input onclick="return radioCallIncoming(0);" class="mr-5 rd" name="rd-status-incoming" type="radio" id="rd-incoming-0" checked><span style="font-size:medium;">@Localizer["AllTransfers"]</span></label>&nbsp;&nbsp;
+                                                                        <label class="rdiobox rd" for="rd-incoming-2"><input onclick="return radioCallIncoming(2);" class="mr-5 rd" name="rd-status-incoming" type="radio" id="rd-incoming-2"><span style="font-size:medium;">@Localizer["AwaitingAcknowledgement"]</span></label>&nbsp;&nbsp;
+                                                                        <label class="rdiobox rd" for="rd-incoming-3"><input onclick="return radioCallIncoming(3);" class="mr-5 rd" name="rd-status-incoming" type="radio" id="rd-incoming-3"><span style="font-size:medium;">@Localizer["Completed"]</span></label>&nbsp;&nbsp;
+                                                                        <label class="rdiobox rd" for="rd-incoming-4"><input onclick="return radioCallIncoming(4);" class="mr-5 rd" name="rd-status-incoming" type="radio" id="rd-incoming-4"><span style="font-size:medium;">@Localizer["Rejected"]</span></label>&nbsp;&nbsp;
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="table-responsive" id="dvTable-Responsive-Incoming">
+                                                                    <table id="tblTransfersIncoming" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
+                                                                        <thead class="bg-primary-gradient ms-auto divShadow">
+                                                                            <tr>
+                                                                                <th class="text-white bg-transparent border-bottom-0 w-2">#</th>
+                                                                                <th class="text-white bg-transparent border-bottom-0 w-10">@Localizer["Date"]</th>
+                                                                                <th class="text-white bg-transparent border-bottom-0 w-20">@Localizer["StoreFrom"]</th>
+                                                                                <th class="text-white bg-transparent border-bottom-0 w-20">@Localizer["StoreTo"]</th>
+                                                                                <th class="text-white bg-transparent border-bottom-0 w-5">@Localizer["Assets"]</th>
+                                                                                <th class="text-white bg-transparent border-bottom-0 w-20">@Localizer["Status"]</th>
+                                                                                <th class="text-white bg-transparent border-bottom-0 w-20 no-btn">@Localizer["Action"]</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            @{
+                                                                                int nCounterIncoming = 0;
+                                                                                int spnNew = 0;
+                                                                                string sSpnNew = "";
+                                                                                foreach (var transfer in Model.IncomingTransfers)
+                                                                                {
+                                                                                    nCounterIncoming++;
+                                                                                    if (transfer.TransferStatusId == 2)
+                                                                                    {
+                                                                                        spnNew++;
+                                                                                    }
+                                                                                    <tr>
+                                                                                        <td>@nCounterIncoming</td>
+                                                                                        <td>@transfer.TransferDate?.ToString("dd-MMM-yyyy")</td>
+                                                                                        <td>@(_isSomali? transfer.StoreFromSo: transfer.StoreFrom)</td>
+                                                                                        <td>@(_isSomali? transfer.StoreToSo: transfer.StoreTo)</td>
+                                                                                        <td>@transfer.NumberOfAssets</td>
+                                                                                        <td>@(_isSomali? transfer.StatusSo: transfer.Status)</td>
+                                                                                        <td class="text-muted fs-15 fw-semibold">
+                                                                                            <div class="d-flex align-items-stretch">
+                                                                                                <a asp-controller="Transfers" asp-action="PreviewTransfer" asp-route-id="@transfer.Id" class="btn btn-sm btn-outline-primary border me-2" data-bs-toggle="tooltip" data-bs-original-title="@Localizer["PreviewTransfer"]">
+                                                                                                    <i class="fe fe-eye"></i>
+                                                                                                </a>
+                                                                                            </div>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                }
+                                                                                sSpnNew = spnNew > 0 ? spnNew.ToString() : "";
+                                                                            }
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
                                                             </div>
-                                                            <div class="card-body container">
-                                                                <div style="width: 70%; margin: auto;">
-                                                                    <canvas id="pieChartIncoming"></canvas>
+                                                            <div class="col-4 col-sm-4">
+                                                                <div class="card">
+                                                                    <div class="card-header">
+                                                                        <h4>@Localizer["IncomingTransfersByCategory"]</h4>
+                                                                    </div>
+                                                                    <div class="card-body container">
+                                                                        <div style="width: 70%; margin: auto;">
+                                                                            <canvas id="pieChartIncoming"></canvas>
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -282,7 +288,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div>  
                     </div>
                 </div>
             </div>

@@ -1,0 +1,6 @@
+﻿namespace MODAMSWeb.Resources.Areas.Identity.Pages.account
+{
+    public class login
+    {
+    }
+}

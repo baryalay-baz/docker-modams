@@ -266,16 +266,7 @@ namespace MODAMS.ApplicationServices
                             await _db.SaveChangesAsync();
                         }
 
-                        //Log NewsFeed
-                        string employeeName = await _func.GetEmployeeNameAsync();
-                        string assetName = assetNamesForLog;
-                        string storefrom = await _func.GetStoreNameByStoreIdAsync(prevStoreId);
-                        string storeTo = await _func.GetStoreNameByStoreIdAsync(transfer.StoreId);
-                        string message = $"{employeeName} transferred ({assetName}) from {storefrom} to {storeTo}";
-                        await _func.LogNewsFeedAsync(message, "Users", "Transfers", "PreviewTransfer", transfer.Id);
-
                         await _db.Database.CommitTransactionAsync();
-
                         transferDTO.Transfer.Id = transfer.Id;
 
                         //success

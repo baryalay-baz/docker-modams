@@ -15,7 +15,7 @@ var app = builder.Build();
 // Configure Supported Cultures - Later to be shifted to MiddlewareSetup
 var supportedCultures = new[] { "en", "so" };
 var localizationOptions = new RequestLocalizationOptions()
-    .SetDefaultCulture("en")
+    .SetDefaultCulture("so")
     .AddSupportedCultures(supportedCultures)
     .AddSupportedUICultures(supportedCultures);
 
