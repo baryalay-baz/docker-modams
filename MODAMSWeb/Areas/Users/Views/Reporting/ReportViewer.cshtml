@@ -54,28 +54,28 @@
             console.log(params);
             reportId += '.trdp';
 
-            $("#reportViewer1").telerik_ReportViewer({
+            // $("#reportViewer1").telerik_ReportViewer({
 
-                serviceUrl: "/api/reports",
-                reportSource: {
-                    report: reportId,
-                    parameters: params
-                },
+            //     serviceUrl: "/api/reports",
+            //     reportSource: {
+            //         report: reportId,
+            //         parameters: params
+            //     },
 
-                viewMode: telerikReportViewer.ViewModes.INTERACTIVE,
-                scaleMode: telerikReportViewer.ScaleModes.SPECIFIC,
-                scale: 1.0,
-                enableAccessibility: true,
-                sendEmail: { enabled: false },
-                clientSettings: {
-                    messages: {
-                        noDataMessage: "No data found or no data available."
-                    }
-                },
-                ready: function () {
-                    //this.refreshReport();
-                }
-            });
+            //     viewMode: telerikReportViewer.ViewModes.INTERACTIVE,
+            //     scaleMode: telerikReportViewer.ScaleModes.SPECIFIC,
+            //     scale: 1.0,
+            //     enableAccessibility: true,
+            //     sendEmail: { enabled: false },
+            //     clientSettings: {
+            //         messages: {
+            //             noDataMessage: "No data found or no data available."
+            //         }
+            //     },
+            //     ready: function () {
+            //         //this.refreshReport();
+            //     }
+            // });
         });
 
         const getParams = (reportId) => {
