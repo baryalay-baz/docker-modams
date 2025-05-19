@@ -1,9 +1,13 @@
-﻿@model MODAMS.Models.ViewModels.Dto.ReportingDTO
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization
+@inject IViewLocalizer Localizer
+
+@model MODAMS.Models.ViewModels.Dto.ReportingDTO
 
 
 <div class="page-header">
     <div>
-        <h1 class="page-title">Report</h1>
+        <h1 class="page-title">@Localizer["Reports"]</h1>
     </div>
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
@@ -17,7 +21,7 @@
         <div class="card divShadow">
             <div class="card-body p-4">
                 <div class="d-flex align-items-center justify-content-between">
-                    <h4 class="m-0">Asset Management System Reporting</h4>
+                    <h4 class="m-0">@Localizer["AMSReporting"]</h4>
                 </div>
             </div>
         </div>
@@ -32,8 +36,8 @@
                     <div class="card-body pnlHeight">
                         <div class="row">
                             <div class="col">
-                                <h3 class="mb-2 fw-semibold text-muted">Assets</h3>
-                                <p class="text-muted fs-13 mb-0">Asset Report</p>
+                                <h3 class="mb-2 fw-semibold text-muted">@Localizer["Assets"]</h3>
+                                <p class="text-muted fs-13 mb-0">@Localizer["AssetReport"]</p>
                             </div>
                             <div class="col col-auto top-icn dash">
                                 <div class="counter-icon bg-primary dash ms-auto box-shadow-primary">
@@ -49,36 +53,36 @@
                                         <div class="form-group">
                                             <select asp-for="AssetStoreId" asp-items="@Model.AssetStores"
                                                     class="form-control select2 form-select">
-                                                <option value="0">All Stores</option>
+                                                <option value="0">@Localizer["AllStores"]</option>
                                             </select>
                                         </div>
                                         <div class="form-group">
                                             <select asp-for="AssetStatusId" asp-items="@Model.AssetStatuses"
                                                     class="form-control select2 form-select">
-                                                <option value="0">All Statuses</option>
+                                                <option value="0">@Localizer["AllStatuses"]</option>
                                             </select>
                                         </div>
                                         <div class="form-group">
                                             <select asp-for="CategoryId" asp-items="@Model.Categories"
                                                     class="form-control select2 form-select">
-                                                <option value="0">All Categories</option>
+                                                <option value="0">@Localizer["AllCategories"]</option>
                                             </select>
                                         </div>
                                         <div class="form-group">
                                             <select asp-for="AssetConditionId" asp-items="@Model.Conditions"
                                                     class="form-control select2 form-select">
-                                                <option value="0">All Conditions</option>
+                                                <option value="0">@Localizer["AllConditions"]</option>
                                             </select>
                                         </div>
                                         <div class="form-group">
                                             <select asp-for="DonorId" asp-items="@Model.Donors"
                                                     class="form-control select2 form-select">
-                                                <option value="0">All Donors</option>
+                                                <option value="0">@Localizer["AllDonors"]</option>
                                             </select>
                                         </div>
                                     </form>
                                     <div class="form-group flex text-center">
-                                        <button class="btn btn-primary" id="btnSubmitAssetReport" onclick="return submitForm(event, 'frmAssetReport');"><i class="fa fa-print"></i>&nbsp;Generate Report</button>
+                                        <button class="btn btn-primary" id="btnSubmitAssetReport" onclick="return submitForm(event, 'frmAssetReport');"><i class="fa fa-print"></i>&nbsp;@Localizer["GenerateReport"]</button>
                                     </div>
                                 </div>
                             </div>
@@ -93,8 +97,8 @@
                     <div class="card-body pnlHeight">
                         <div class="row">
                             <div class="col">
-                                <h3 class="mb-2 fw-semibold text-muted">Transfers</h3>
-                                <p class="text-muted fs-13 mb-0 text-secondary">Transfer Report</p>
+                                <h3 class="mb-2 fw-semibold text-muted">@Localizer["Transfers"]</h3>
+                                <p class="text-muted fs-13 mb-0 text-secondary">@Localizer["TransfersReport"]</p>
                             </div>
                             <div class="col col-auto top-icn dash">
                                 <div class="counter-icon bg-secondary dash ms-auto box-shadow-primary">
@@ -110,26 +114,26 @@
                                             <label asp-for="StoreFromId"></label>
                                             <select asp-for="StoreFromId" asp-items="@Model.TransferStores"
                                                     class="form-control select2 form-select">
-                                                <option value="0">All Stores</option>
+                                                <option value="0">@Localizer["AllStores"]</option>
                                             </select>
                                         </div>
                                         <div class="form-group">
                                             <label asp-for="StoreToId"></label>
                                             <select asp-for="StoreToId" asp-items="@Model.TransferStores"
                                                     class="form-control select2 form-select">
-                                                <option value="0">All Stores</option>
+                                                <option value="0">@Localizer["AllStores"]</option>
                                             </select>
                                         </div>
                                         <div class="form-group">
                                             <label asp-for="TransferStatusId"></label>
                                             <select asp-for="TransferStatusId" asp-items="@Model.TransferStatuses"
                                                     class="form-control select2 form-select">
-                                                <option value="0">All Statuses</option>
+                                                <option value="0">@Localizer["AllStatuses"]</option>
                                             </select>
                                         </div>
                                     </form>
                                     <div class="form-group flex text-center">
-                                        <button class="btn btn-secondary" id="btnSubmitTransferReport" onclick="return submitForm(event, 'frmTransferReport');"><i class="fa fa-print"></i>&nbsp;Generate Report</button>
+                                        <button class="btn btn-secondary" id="btnSubmitTransferReport" onclick="return submitForm(event, 'frmTransferReport');"><i class="fa fa-print"></i>&nbsp;@Localizer["GenerateReport"]</button>
                                     </div>
                                 </div>
                             </div>
@@ -143,8 +147,8 @@
                     <div class="card-body pnlHeight">
                         <div class="row">
                             <div class="col">
-                                <h3 class="mb-2 fw-semibold text-muted">Disposal</h3>
-                                <p class="text-muted fs-13 mb-0">Disposal Report</p>
+                                <h3 class="mb-2 fw-semibold text-muted">@Localizer["Disposals"]</h3>
+                                <p class="text-muted fs-13 mb-0">@Localizer["DisposalReport"]</p>
                             </div>
                             <div class="col col-auto top-icn dash">
                                 <div class="counter-icon bg-info dash ms-auto box-shadow-primary">
@@ -162,20 +166,20 @@
                                             <label asp-for="DisposalStoreId"></label>
                                             <select asp-for="DisposalStoreId" asp-items="@Model.AssetStores"
                                                     class="form-control select2 form-select">
-                                                <option value="0">All Stores</option>
+                                                <option value="0">@Localizer["AllStores"]</option>
                                             </select>
                                         </div>
                                         <div class="form-group">
                                             <label asp-for="DisposalTypeId"></label>
                                             <select asp-for="DisposalTypeId" asp-items="@Model.DisposalTypes"
                                                     class="form-control select2 form-select">
-                                                <option value="0">All Disposl Types</option>
+                                                <option value="0">@Localizer["AllDisposalTypes"]</option>
                                             </select>
                                         </div>
                                         <div class="form-group flex text-center">
                                             <button onclick="return submitForm(event, 'frmDisposalReport');" 
                                             class="btn btn-info" id="btnSubmitDisposalReport">
-                                            <i class="fa fa-print"></i>&nbsp;Generate Report</button>
+                                            <i class="fa fa-print"></i>&nbsp;@Localizer["GenerateReport"]</button>
                                         </div>
                                     </form>
                                 </div>

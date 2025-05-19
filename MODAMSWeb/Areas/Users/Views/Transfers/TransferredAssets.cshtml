@@ -1,4 +1,8 @@
-﻿@model List<MODAMS.Models.ViewModels.Dto.TransfersOutgoingAssetDTO>
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization
+@inject IViewLocalizer Localizer
+
+@model List<MODAMS.Models.ViewModels.Dto.TransfersOutgoingAssetDTO>
 <div class="page-header">
     <div>
         <h1 class="page-title">Transferred Assets</h1>
@@ -20,16 +24,16 @@
                     <table id="tblTransfers" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
                         <thead class="bg-primary-gradient ms-auto divShadow">
                             <tr>
-                                <th class="text-white text-center bg-transparent border-bottom-0 w-5">S.No</th>
-                                <th class="text-white bg-transparent border-bottom-0">Transfer Date</th>
-                                <th class="text-white bg-transparent border-bottom-0">Store To</th>
-                                <th class="text-white bg-transparent border-bottom-0">Sub Category</th>
-                                <th class="text-white bg-transparent border-bottom-0">Make</th>
-                                <th class="text-white bg-transparent border-bottom-0">Model</th>
-                                <th class="text-white bg-transparent border-bottom-0">Asset Name</th>
-                                <th class="text-white bg-transparent border-bottom-0">Barcode</th>
-                                <th class="text-white bg-transparent border-bottom-0">Serial Number</th>
-                                <th class="text-white bg-transparent border-bottom-0">Cost</th>
+                                <th class="text-white text-center bg-transparent border-bottom-0 w-5">@Localizer["SNo"]</th>
+                                <th class="text-white bg-transparent border-bottom-0">@Localizer["TransferDate"]</th>
+                                <th class="text-white bg-transparent border-bottom-0">@Localizer["StoreTo"]</th>
+                                <th class="text-white bg-transparent border-bottom-0">@Localizer["SubCategory"]</th>
+                                <th class="text-white bg-transparent border-bottom-0">@Localizer["Make"]</th>
+                                <th class="text-white bg-transparent border-bottom-0">@Localizer["Model"]</th>
+                                <th class="text-white bg-transparent border-bottom-0">@Localizer["AssetName"]</th>
+                                <th class="text-white bg-transparent border-bottom-0">@Localizer["Barcode"]</th>
+                                <th class="text-white bg-transparent border-bottom-0">@Localizer["SerialNo"]</th>
+                                <th class="text-white bg-transparent border-bottom-0">@Localizer["Cost"]</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -63,7 +67,7 @@
                 <div class="row">
                     @*<hr class="customHR" />*@
                     <div class="col-sm-12">
-                        <a asp-action="Index" asp-controller="Transfers" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
+                        <a asp-action="Index" asp-controller="Transfers" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;@Localizer["Previous"]</a>
                     </div>
                 </div>
             </div>

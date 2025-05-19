@@ -32,6 +32,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Register.resx</DependentUpon>
     </Compile>
+    <Compile Update="Reporting.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Reporting.resx</DependentUpon>
+    </Compile>
     <Compile Update="TransferLabels.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -60,6 +65,10 @@
     <EmbeddedResource Update="Register.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Register.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Reporting.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Reporting.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="TransferLabels.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

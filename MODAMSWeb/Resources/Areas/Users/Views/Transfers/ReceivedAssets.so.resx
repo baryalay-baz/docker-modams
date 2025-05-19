@@ -117,28 +117,43 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="DevelopedBy" xml:space="preserve">
-    <value>Waxaa sameeyay</value>
+  <data name="AssetName" xml:space="preserve">
+    <value>Magaca Hantida</value>
   </data>
-  <data name="Email" xml:space="preserve">
-    <value>Ciwaanka</value>
+  <data name="Barcode" xml:space="preserve">
+    <value>Koodhka Baarka</value>
   </data>
-  <data name="ForgotPassword" xml:space="preserve">
-    <value>Halmaamey Ereysireedkii</value>
+  <data name="Cost" xml:space="preserve">
+    <value>Qiimaha</value>
   </data>
-  <data name="Login" xml:space="preserve">
-    <value>Soo gal</value>
+  <data name="CurrentValue" xml:space="preserve">
+    <value>Qiimaha Hadda</value>
   </data>
-  <data name="NotRegisteredYet" xml:space="preserve">
-    <value>Weli lama diiwaangelin</value>
+  <data name="Make" xml:space="preserve">
+    <value>Soosaaraha</value>
   </data>
-  <data name="Password" xml:space="preserve">
-    <value>Erayga sirta ah</value>
+  <data name="Model" xml:space="preserve">
+    <value>Nooca</value>
   </data>
-  <data name="Register" xml:space="preserve">
-    <value>Diiwaangeli</value>
+  <data name="Previous" xml:space="preserve">
+    <value>Hore</value>
   </data>
-  <data name="RememberMe" xml:space="preserve">
-    <value>I xusuusnow</value>
+  <data name="ReceivedAssets" xml:space="preserve">
+    <value>Hantida La Qaatey</value>
+  </data>
+  <data name="SerialNo" xml:space="preserve">
+    <value>Lambar Taxane</value>
+  </data>
+  <data name="SNo" xml:space="preserve">
+    <value>S/T</value>
+  </data>
+  <data name="StoreFrom" xml:space="preserve">
+    <value>Dukaanka Laga Keenay</value>
+  </data>
+  <data name="SubCategory" xml:space="preserve">
+    <value>Qayb-hoosaadka</value>
+  </data>
+  <data name="TransferDate" xml:space="preserve">
+    <value>Taariikhda Wareejinta</value>
   </data>
 </root>

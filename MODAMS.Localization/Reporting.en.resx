@@ -117,28 +117,64 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="DevelopedBy" xml:space="preserve">
-    <value>Waxaa sameeyay</value>
+  <data name="AllCategories" xml:space="preserve">
+    <value>All Categories</value>
   </data>
-  <data name="Email" xml:space="preserve">
-    <value>Ciwaanka</value>
+  <data name="AllConditions" xml:space="preserve">
+    <value>All Conditions</value>
   </data>
-  <data name="ForgotPassword" xml:space="preserve">
-    <value>Halmaamey Ereysireedkii</value>
+  <data name="AllDonors" xml:space="preserve">
+    <value>All Donors</value>
   </data>
-  <data name="Login" xml:space="preserve">
-    <value>Soo gal</value>
+  <data name="AllStatuses" xml:space="preserve">
+    <value>All Statuses</value>
   </data>
-  <data name="NotRegisteredYet" xml:space="preserve">
-    <value>Weli lama diiwaangelin</value>
+  <data name="AllStores" xml:space="preserve">
+    <value>All Stores</value>
   </data>
-  <data name="Password" xml:space="preserve">
-    <value>Erayga sirta ah</value>
+  <data name="AMSReporting" xml:space="preserve">
+    <value>Asset Management System Reporting</value>
   </data>
-  <data name="Register" xml:space="preserve">
-    <value>Diiwaangeli</value>
+  <data name="AssetReport" xml:space="preserve">
+    <value>Asset Report</value>
   </data>
-  <data name="RememberMe" xml:space="preserve">
-    <value>I xusuusnow</value>
+  <data name="Assets" xml:space="preserve">
+    <value>Assets</value>
+  </data>
+  <data name="AssetStatus" xml:space="preserve">
+    <value>Asset Status</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="Condition" xml:space="preserve">
+    <value>Condition</value>
+  </data>
+  <data name="DisposalType" xml:space="preserve">
+    <value>Disposal Type</value>
+  </data>
+  <data name="Donor" xml:space="preserve">
+    <value>Donor</value>
+  </data>
+  <data name="Reports" xml:space="preserve">
+    <value>Reports</value>
+  </data>
+  <data name="Store" xml:space="preserve">
+    <value>Store</value>
+  </data>
+  <data name="StoreFrom" xml:space="preserve">
+    <value>Transfer From Store</value>
+  </data>
+  <data name="StoreTo" xml:space="preserve">
+    <value>Transfer To Store</value>
+  </data>
+  <data name="SubCategory" xml:space="preserve">
+    <value>Sub Category</value>
+  </data>
+  <data name="TransferId" xml:space="preserve">
+    <value>Transfer Id</value>
+  </data>
+  <data name="TransferStatus" xml:space="preserve">
+    <value>Transfer Status</value>
   </data>
 </root>

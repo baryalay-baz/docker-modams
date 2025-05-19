@@ -255,39 +255,58 @@ namespace MODAMS.ApplicationServices
                 return Result<bool>.Failure("Please select a file to upload!");
             }
 
-            string fileName = employeeId.ToString() + Path.GetExtension(file.FileName);
-            string facesPath = Path.Combine(webRootPath, @"assets\images\faces");
+            // Validate file extension
+            var permittedExtensions = new[] { ".jpg", ".jpeg", ".png", ".bmp" };
+            var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
+
+            if (!permittedExtensions.Contains(fileExtension))
+            {
+                return Result<bool>.Failure("Unsupported file type. Only JPG, PNG, BMP files are allowed.");
+            }
+
+            string fileName = $"{employeeId}{fileExtension}";
+            string facesPath = Path.Combine(webRootPath, "assets", "images", "faces");
 
             try
             {
-                // 1. Save the uploaded file temporarily
+                // Ensure the directory exists
+                if (!Directory.Exists(facesPath))
+                {
+                    Directory.CreateDirectory(facesPath);
+                }
+
+                // Save the uploaded file temporarily
                 var originalFilePath = Path.Combine(facesPath, "original_" + fileName);
                 using (var fileStream = new FileStream(originalFilePath, FileMode.Create))
                 {
                     await file.CopyToAsync(fileStream);
                 }
 
-                // 2. Crop the face using DNN
+                // Crop the face using DNN
                 var prototxtPath = Path.Combine(webRootPath, "DnnModels", "deploy.prototxt.txt");
                 var caffeModelPath = Path.Combine(webRootPath, "DnnModels", "res10_300x300_ssd_iter_140000.caffemodel");
                 var faceCropper = new DnnFaceCropper(prototxtPath, caffeModelPath);
 
-                var croppedFilePath = Path.Combine(facesPath, fileName); // Final profile picture path
+                var croppedFilePath = Path.Combine(facesPath, fileName);
                 var result = faceCropper.CropFace(originalFilePath, croppedFilePath);
 
                 if (result != "Face cropped successfully.")
                 {
-                    // If no face detected, optionally fall back to the full original image
+                    _logger.LogWarning($"Face not detected for employee {employeeId}. Using original image.");
                     System.IO.File.Copy(originalFilePath, croppedFilePath, true);
                 }
+                else
+                {
+                    _logger.LogInformation($"Face cropped successfully for employee {employeeId}.");
+                }
 
-                // 3. Delete the original uploaded file to save space
+                // Delete the original uploaded file to save space
                 if (System.IO.File.Exists(originalFilePath))
                 {
                     System.IO.File.Delete(originalFilePath);
                 }
 
-                // 4. Update employee's ImageUrl
+                // Update employee's ImageUrl
                 var employee = await _db.Employees.FirstOrDefaultAsync(m => m.Id == employeeId);
                 if (employee != null)
                 {
@@ -311,7 +330,6 @@ namespace MODAMS.ApplicationServices
                 return Result<bool>.Failure($"An error occurred while uploading the file: {ex.Message}");
             }
         }
-
 
         public async Task<Result<GlobalSearchDTO>> SearchTransferOrAssetAsync(string barcode)
         {

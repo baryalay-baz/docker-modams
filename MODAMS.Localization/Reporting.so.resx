@@ -117,28 +117,64 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="DevelopedBy" xml:space="preserve">
-    <value>Waxaa sameeyay</value>
+  <data name="AllCategories" xml:space="preserve">
+    <value>Dhammaan Qaybaha</value>
   </data>
-  <data name="Email" xml:space="preserve">
-    <value>Ciwaanka</value>
+  <data name="AllConditions" xml:space="preserve">
+    <value>Dhammaan Heerarka</value>
   </data>
-  <data name="ForgotPassword" xml:space="preserve">
-    <value>Halmaamey Ereysireedkii</value>
+  <data name="AllDonors" xml:space="preserve">
+    <value>Dhammaan Deeq-bixiyeyaasha</value>
   </data>
-  <data name="Login" xml:space="preserve">
-    <value>Soo gal</value>
+  <data name="AllStatuses" xml:space="preserve">
+    <value>Dhammaan Xaaladaha</value>
   </data>
-  <data name="NotRegisteredYet" xml:space="preserve">
-    <value>Weli lama diiwaangelin</value>
+  <data name="AllStores" xml:space="preserve">
+    <value>Dhammaan Bakhaarrada</value>
   </data>
-  <data name="Password" xml:space="preserve">
-    <value>Erayga sirta ah</value>
+  <data name="AMSReporting" xml:space="preserve">
+    <value>Warbixinta Asset Management System-ka</value>
   </data>
-  <data name="Register" xml:space="preserve">
-    <value>Diiwaangeli</value>
+  <data name="AssetReport" xml:space="preserve">
+    <value>Warbixinta Hantida</value>
   </data>
-  <data name="RememberMe" xml:space="preserve">
-    <value>I xusuusnow</value>
+  <data name="Assets" xml:space="preserve">
+    <value>Hantida</value>
+  </data>
+  <data name="AssetStatus" xml:space="preserve">
+    <value>Xaalad</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Qayb</value>
+  </data>
+  <data name="Condition" xml:space="preserve">
+    <value>Heerka Hantida</value>
+  </data>
+  <data name="DisposalType" xml:space="preserve">
+    <value>Ka-Noqoshada</value>
+  </data>
+  <data name="Donor" xml:space="preserve">
+    <value>Deeq-bixiye</value>
+  </data>
+  <data name="Reports" xml:space="preserve">
+    <value>Warbixinno</value>
+  </data>
+  <data name="Store" xml:space="preserve">
+    <value>Bakhaar</value>
+  </data>
+  <data name="StoreFrom" xml:space="preserve">
+    <value>Wareejin laga keenay Bakhaar</value>
+  </data>
+  <data name="StoreTo" xml:space="preserve">
+    <value>Wareejin loo diray Bakhaar</value>
+  </data>
+  <data name="SubCategory" xml:space="preserve">
+    <value>Qayb-hoosaad</value>
+  </data>
+  <data name="TransferId" xml:space="preserve">
+    <value>Aqoonsiga Wareejinta</value>
+  </data>
+  <data name="TransferStatus" xml:space="preserve">
+    <value>Xaaladda Wareejinta</value>
   </data>
 </root>

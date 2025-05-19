@@ -1,11 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using MODAMS.Localization;
 
 namespace MODAMS.Models.ViewModels.Dto
 {
@@ -15,22 +11,22 @@ namespace MODAMS.Models.ViewModels.Dto
 
 
         //Section for Asset Report
-        [Display(Name = "Store")]
+        [Display(Name = "Store", ResourceType = typeof(Reporting))]
         public int AssetStoreId { get; set; }
 
-        [Display(Name = "Category")]
+        [Display(Name = "Category", ResourceType = typeof(Reporting))]
         public int CategoryId { get; set; }
 
-        [Display(Name = "Sub Category")]
+        [Display(Name = "SubCategory", ResourceType = typeof(Reporting))]
         public int SubCategoryId { get; set; }
 
-        [Display(Name = "Asset Status")]
+        [Display(Name = "AssetStatus", ResourceType = typeof(Reporting))]
         public int AssetStatusId { get; set; }
 
-        [Display(Name = "Asset Condition")]
+        [Display(Name = "Condition", ResourceType = typeof(Reporting))]
         public int AssetConditionId { get; set; }
 
-        [Display(Name = "Donor")]
+        [Display(Name = "Donor", ResourceType = typeof(Reporting))]
         public int DonorId { get; set; }
         [ValidateNever] public IEnumerable<SelectListItem> AssetStores { get; set; }
         [ValidateNever] public IEnumerable<SelectListItem> Categories { get; set; }
@@ -42,25 +38,25 @@ namespace MODAMS.Models.ViewModels.Dto
 
 
         //Section for TransferReport
-        [Display(Name = "Transfer Id")]
+        [Display(Name = "TransferId", ResourceType = typeof(Reporting))]
         public int TransferId { get; set; }
 
-        [Display(Name = "Transfer From Store")]
+        [Display(Name = "StoreFrom", ResourceType = typeof(Reporting))]
         public int StoreFromId { get; set; }
 
-        [Display(Name = "Transfer To Store")]
+        [Display(Name = "StoreTo", ResourceType = typeof(Reporting))]
         public int StoreToId { get; set; }
 
-        [Display(Name = "Transfer Status")]
+        [Display(Name = "TransferStatus", ResourceType = typeof(Reporting))]
         public int TransferStatusId { get; set; }
         [ValidateNever] public IEnumerable<SelectListItem> TransferStatuses { get; set; }
         [ValidateNever] public IEnumerable<SelectListItem> TransferStores { get; set; }
 
         //Section for DisposalReport
-        [Display(Name ="Store")]
+        [Display(Name = "Store", ResourceType = typeof(Reporting))]
         public int DisposalStoreId { get; set; }
 
-        [Display(Name = "Disposal Type")]
+        [Display(Name = "DisposalType", ResourceType = typeof(Reporting))]
         public int DisposalTypeId { get; set; }
         [ValidateNever] public IEnumerable<SelectListItem> DisposalTypes { get; set; }
     }

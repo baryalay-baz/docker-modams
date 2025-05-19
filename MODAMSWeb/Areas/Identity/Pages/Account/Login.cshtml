@@ -114,7 +114,6 @@
             const $img = $toggle.find('.language');
             const $label = $toggle.find('.lang-label');
 
-            // Set toggle based on current language
             const currentLang = getCurrentLanguage();
             if (currentLang === 'so') {
                 setToggleToSomali();
@@ -122,11 +121,21 @@
                 setToggleToEnglish();
             }
 
-            // On click, redirect to language switch action
             $toggle.on('click', function () {
                 const newLang = $(this).attr('data-lang') === 'so' ? 'en' : 'so';
                 const returnUrl = window.location.pathname + window.location.search;
-                window.location.href = `/Users/Language/SetLanguage?culture=${newLang}&returnUrl=${encodeURIComponent(returnUrl)}`;
+
+                // Apply animation (visually change it first)
+                if (newLang === 'so') {
+                    setToggleToSomali();
+                } else {
+                    setToggleToEnglish();
+                }
+
+                // Delay redirect slightly to let animation show
+                setTimeout(() => {
+                    window.location.href = `/Users/Language/SetLanguage?culture=${newLang}&returnUrl=${encodeURIComponent(returnUrl)}`;
+                }, 300); // 300ms is enough for most toggle animations
             });
 
             function setToggleToSomali() {
