@@ -4,18 +4,15 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.Net.Mail;
+using System.Globalization;
 using System.Text;
 using System.Text.Encodings.Web;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using MODAMS.Utility;
-using static QRCoder.PayloadGenerator;
 
 namespace MODAMSWeb.Areas.Identity.Pages.Account
 {
@@ -25,12 +22,14 @@ namespace MODAMSWeb.Areas.Identity.Pages.Account
         private readonly IEmailSender _emailSender;
         private readonly IAMSFunc _func;
         private readonly ILogger<ForgotPasswordModel> _logger;
+        private readonly bool _isSomali;
         public ForgotPasswordModel(UserManager<IdentityUser> userManager, IEmailSender emailSender, IAMSFunc func, ILogger<ForgotPasswordModel> logger)
         {
             _userManager = userManager;
             _emailSender = emailSender;
             _func = func;
             _logger = logger;
+            _isSomali = CultureInfo.CurrentUICulture.Name == "so";
         }
 
         [BindProperty]
@@ -63,17 +62,18 @@ namespace MODAMSWeb.Areas.Identity.Pages.Account
                     values: new { area = "Identity", code },
                     protocol: Request.Scheme);
 
-                string shortmessage = "Password reset instructions have been received for your account," +
-                    " click the button below to follow the instructions!";
+                string shortMessage = "We’ve received a request to reset the password for your account. Please click the button below to proceed.";
+                if(_isSomali)
+                    shortMessage = "Tilmaamaha dib u dejinta erayga sirta ah ayaa loo helay akoonkaaga. Fadlan guji badhanka hoose si aad u raacdo tilmaamaha.";
 
-                string message = _func.FormatMessage("Reset Password", shortmessage,
-                    Input.Email, HtmlEncoder.Default.Encode(callbackUrl), "Reset Password");
+                string message = _func.FormatMessage(_isSomali? "Dib u Deji Erayga Sirta" : "Reset Password", shortMessage,
+                    Input.Email, HtmlEncoder.Default.Encode(callbackUrl), _isSomali? "Dib u Deji Erayga Sirta" : "Reset Password");
 
                 try
                 {
                     await _emailSender.SendEmailAsync(
                     Input.Email,
-                    "Reset Password",
+                    _isSomali? "Dib u Deji Erayga Sirta" : "Reset Password",
                     message);
 
                     _logger.LogInformation($"Email sent to {Input.Email} with subject Reset Password.");
