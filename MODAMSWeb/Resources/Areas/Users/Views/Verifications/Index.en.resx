@@ -117,25 +117,61 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="InvalidEmail" xml:space="preserve">
-    <value>The {0} field is not a valid email address.</value>
+  <data name="AssetVerifications" xml:space="preserve">
+    <value>Asset Verifications</value>
   </data>
-  <data name="InvalidPattern" xml:space="preserve">
-    <value>Special characters are not allowed.</value>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
   </data>
-  <data name="InvalidRange" xml:space="preserve">
-    <value>The {0} field must be between {1} and {2}.</value>
+  <data name="Completed" xml:space="preserve">
+    <value>Completed</value>
   </data>
-  <data name="NumberOfAssetsGreaterThanZero" xml:space="preserve">
-    <value>Number of Assets must be greater than 0</value>
+  <data name="Confirm" xml:space="preserve">
+    <value>Confirm</value>
   </data>
-  <data name="NumberOfAssetsRequired" xml:space="preserve">
-    <value>Number of assets to verify is required.</value>
+  <data name="Custom Verification" xml:space="preserve">
+    <value>Custom Verification</value>
   </data>
-  <data name="Required" xml:space="preserve">
-    <value>The {0} field is required.</value>
+  <data name="DeleteConfirmationMessage" xml:space="preserve">
+    <value>Are you sure you want to delete this verification schedule?</value>
   </data>
-  <data name="StringLength" xml:space="preserve">
-    <value>The {0} must be at least {2} and at most {1} characters long.</value>
+  <data name="DeleteSchedule" xml:space="preserve">
+    <value>Delete Schedule</value>
+  </data>
+  <data name="Department" xml:space="preserve">
+    <value>Department</value>
+  </data>
+  <data name="End" xml:space="preserve">
+    <value>End</value>
+  </data>
+  <data name="Full Verification" xml:space="preserve">
+    <value>Full Verification</value>
+  </data>
+  <data name="NewSchedule" xml:space="preserve">
+    <value>New Schedule</value>
+  </data>
+  <data name="NumberOfSchedules" xml:space="preserve">
+    <value>Number of Schedules</value>
+  </data>
+  <data name="Ongoing" xml:space="preserve">
+    <value>Ongoing</value>
+  </data>
+  <data name="Pending" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  <data name="Start" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Team" xml:space="preserve">
+    <value>Team</value>
+  </data>
+  <data name="VerificationScheduleByStatus" xml:space="preserve">
+    <value>Verification Schedule by Status</value>
+  </data>
+  <data name="VerificationType" xml:space="preserve">
+    <value>Verification Type</value>
   </data>
 </root>

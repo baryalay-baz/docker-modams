@@ -117,25 +117,121 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="InvalidEmail" xml:space="preserve">
-    <value>The {0} field is not a valid email address.</value>
+  <data name="Action" xml:space="preserve">
+    <value>Action</value>
   </data>
-  <data name="InvalidPattern" xml:space="preserve">
-    <value>Special characters are not allowed.</value>
+  <data name="AssetVerificationSchedule" xml:space="preserve">
+    <value>Asset Verification Schedule</value>
   </data>
-  <data name="InvalidRange" xml:space="preserve">
-    <value>The {0} field must be between {1} and {2}.</value>
+  <data name="AssetName" xml:space="preserve">
+    <value>Asset Name</value>
   </data>
-  <data name="NumberOfAssetsGreaterThanZero" xml:space="preserve">
-    <value>Number of Assets must be greater than 0</value>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
   </data>
-  <data name="NumberOfAssetsRequired" xml:space="preserve">
-    <value>Number of assets to verify is required.</value>
+  <data name="Comments" xml:space="preserve">
+    <value>Comments</value>
   </data>
-  <data name="Required" xml:space="preserve">
-    <value>The {0} field is required.</value>
+  <data name="CompleteSchedule" xml:space="preserve">
+    <value>Complete Schedule</value>
   </data>
-  <data name="StringLength" xml:space="preserve">
-    <value>The {0} must be at least {2} and at most {1} characters long.</value>
+  <data name="CompleteVerification" xml:space="preserve">
+    <value>Complete Verification</value>
+  </data>
+  <data name="CSMessage" xml:space="preserve">
+    <value>You will not be able to undo this action, are you sure?</value>
+  </data>
+  <data name="Department" xml:space="preserve">
+    <value>Department</value>
+  </data>
+  <data name="EndDate" xml:space="preserve">
+    <value>End Date</value>
+  </data>
+  <data name="ListOfVerifiedAssets" xml:space="preserve">
+    <value>List of verified Assets</value>
+  </data>
+  <data name="Make" xml:space="preserve">
+    <value>Make</value>
+  </data>
+  <data name="Model" xml:space="preserve">
+    <value>Model</value>
+  </data>
+  <data name="Not Verified (Missing)" xml:space="preserve">
+    <value>Not Verified (Missing)</value>
+  </data>
+  <data name="Notes" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="NumberOfAssetsToVerify" xml:space="preserve">
+    <value>Number of Assets to Verify</value>
+  </data>
+  <data name="NumberOfAssetsVerified" xml:space="preserve">
+    <value>Number of Assets Verified</value>
+  </data>
+  <data name="Previous" xml:space="preserve">
+    <value>Previous</value>
+  </data>
+  <data name="Result" xml:space="preserve">
+    <value>Result</value>
+  </data>
+  <data name="SelectAssetToVerify" xml:space="preserve">
+    <value>Select asset to verify</value>
+  </data>
+  <data name="SelectedAsset" xml:space="preserve">
+    <value>Selected Assets</value>
+  </data>
+  <data name="SelectResultOption" xml:space="preserve">
+    <value>Select Result Option</value>
+  </data>
+  <data name="SerialNo" xml:space="preserve">
+    <value>Serial No</value>
+  </data>
+  <data name="StartDate" xml:space="preserve">
+    <value>Start Date</value>
+  </data>
+  <data name="UploadCurrentPicture" xml:space="preserve">
+    <value>Upload current picture</value>
+  </data>
+  <data name="VerificationDate" xml:space="preserve">
+    <value>Verification Date</value>
+  </data>
+  <data name="VerificationResult" xml:space="preserve">
+    <value>Verification Result</value>
+  </data>
+  <data name="VerificationTeam" xml:space="preserve">
+    <value>Verification Team</value>
+  </data>
+  <data name="VerificationType" xml:space="preserve">
+    <value>Verification Type</value>
+  </data>
+  <data name="Verified" xml:space="preserve">
+    <value>Verified</value>
+  </data>
+  <data name="Verified (Damaged)" xml:space="preserve">
+    <value>Verified (Damaged)</value>
+  </data>
+  <data name="Verified (In Good Condition)" xml:space="preserve">
+    <value>Verified (In Good Condition)</value>
+  </data>
+  <data name="Verified (Out of Service)" xml:space="preserve">
+    <value>Verified (Out of Service)</value>
+  </data>
+  <data name="Verified (With Issues)" xml:space="preserve">
+    <value>Verified (With Issues)</value>
+  </data>
+  <data name="VerifiedAssets" xml:space="preserve">
+    <value>Verified Assets</value>
+  </data>
+  <data name="VerifiedBy" xml:space="preserve">
+    <value>Verified By</value>
+  </data>
+  <data name="VerifyAsset" xml:space="preserve">
+    <value>Verify Asset</value>
+  </data>
+  <data name="VerifyAssets" xml:space="preserve">
+    <value>Verify Assets</value>
+  </data>
+  <data name="Select" xml:space="preserve">
+    <value>Select</value>
   </data>
 </root>

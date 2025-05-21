@@ -1,4 +1,9 @@
-﻿@model MODAMS.Models.ViewModels.Dto.VerificationScheduleCreateDTO
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization
+
+@inject IViewLocalizer Localizer
+
+@model MODAMS.Models.ViewModels.Dto.VerificationScheduleCreateDTO
 
 <style>
     input[type="date"]::-webkit-calendar-picker-indicator {
@@ -62,10 +67,12 @@
         padding: 5px 10px;
     }
 </style>
-
+@{
+    bool _isSomali = CultureInfo.CurrentUICulture.Name == "so";
+}
 <div class="page-header">
     <div>
-        <h1 class="page-title">Asset Verification Schedule</h1>
+        <h1 class="page-title">@Localizer["AssetVerificationSchedule"]</h1>
     </div>
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
@@ -83,7 +90,7 @@
                     <div class="card divShadow">
                         <div class="card-body p-4">
                             <div class="d-flex align-items-center justify-content-between">
-                                <h4 class="m-0 text-black">Create new Schedule</h4>
+                                <h4 class="m-0 text-black">@Localizer["CreateNewSchedule"]</h4>
                             </div>
                         </div>
                     </div>
@@ -97,22 +104,22 @@
                                     <div class="card-body">
                                         <form method="post" asp-action="CreateSchedule" id="frmCreateSchedule" novalidate="novalidate">
                                             <input type="hidden" id="teamMembersData" name="teamMembersData" />
-                                            <input type="hidden" id="NewSchedule.StoreId" name="NewSchedule_StoreId" /> 
+                                            <input type="hidden" id="NewSchedule.StoreId" name="NewSchedule_StoreId" />
                                             <input asp-for="NewSchedule.StoreId" value="@Model.StoreId" hidden />
 
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="mb-3 form-group">
-                                                        <label class="text-black">Department</label>
-                                                        <input type="text" value="@Model.Store.Name" disabled class="form-control" />
+                                                        <label class="text-black">@Localizer["Department"]</label>
+                                                        <input type="text" value="@(_isSomali? Model.Store.Department.NameSo:Model.Store.Department.Name)" disabled class="form-control" />
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="mb-3 form-group">
-                                                        <label asp-for="NewSchedule.VerificationType" class="text-black">Verification Type</label>
+                                                        <label asp-for="NewSchedule.VerificationType" class="text-black"></label>
                                                         <select asp-for="NewSchedule.VerificationType" class="form-select select2" id="verificationTypeDropdown">
-                                                            <option value="Full Verification">Full Verification</option>
-                                                            <option value="Custom Verification">Custom Verification</option>
+                                                            <option value="Full Verification">@Localizer["FullVerification"]</option>
+                                                            <option value="Custom Verification">@Localizer["CustomVerification"]</option>
                                                         </select>
                                                         <span asp-validation-for="NewSchedule.VerificationType" class="text-danger"></span>
                                                     </div>
@@ -121,13 +128,13 @@
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="mb-3 form-group">
-                                                        <label class="text-black">Number of Assets in Store</label>
+                                                        <label class="text-black">@Localizer["NumberOfAssetsInStore"]</label>
                                                         <input id="NumberOfAssets" class="form-control" type="text" value="@Model.NumberOfAssets" readonly />
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="mb-3 form-group">
-                                                        <label asp-for="NewSchedule.NumberOfAssetsToVerify" class="text-black">Number of Assets to Verify</label>
+                                                        <label asp-for="NewSchedule.NumberOfAssetsToVerify" class="text-black"></label>
                                                         <input asp-for="NewSchedule.NumberOfAssetsToVerify" value="@Model.NumberOfAssets" id="NumberOfAssetsToVerify" class="form-control" readonly />
                                                         <span asp-validation-for="NewSchedule.NumberOfAssetsToVerify" class="text-danger" id="spanNumberOfAssetsToVerify"></span>
                                                     </div>
@@ -136,14 +143,14 @@
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="mb-3 form-group">
-                                                        <label asp-for="NewSchedule.StartDate" class="text-black">Start Date</label>
+                                                        <label asp-for="NewSchedule.StartDate" class="text-black"></label>
                                                         <input asp-for="NewSchedule.StartDate" asp-format="{0:dd-MMM-yyyy}" class="form-control picker" aria-required="true" type="text" autocomplete="off" />
                                                         <span asp-validation-for="NewSchedule.StartDate" class="text-danger"></span>
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-6">
                                                     <div class="mb-3 form-group">
-                                                        <label asp-for="NewSchedule.EndDate" class="text-black">Plan End Date</label>
+                                                        <label asp-for="NewSchedule.EndDate" class="text-black"></label>
                                                         <input asp-for="NewSchedule.EndDate" asp-format="{0:dd-MMM-yyyy}" class="form-control picker" aria-required="true" type="text" autocomplete="off" />
                                                         <span asp-validation-for="NewSchedule.EndDate" class="text-danger"></span>
                                                     </div>
@@ -153,7 +160,7 @@
                                                 <div class="col-md-12">
                                                     <div class="mb-3 form-group mt-2">
                                                         <label asp-for="NewSchedule.Notes" class="text-black"></label>
-                                                        <textarea asp-for="NewSchedule.Notes" class="form-control" placeholder="Verification Notes" rows="3"></textarea>
+                                                        <textarea asp-for="NewSchedule.Notes" class="form-control" rows="3"></textarea>
                                                         <span asp-validation-for="NewSchedule.Notes" class="text-danger"></span>
                                                     </div>
                                                 </div>
@@ -170,8 +177,8 @@
                                 <div class="card">
                                     <div class="card-status bg-secondary br-tr-7 br-tl-7"></div>
                                     <div class="card-body">
-                                        <h5 class="text-black">Add Team Members</h5>
-                                        <p class="text-xsmall">All selected users will be given Store User access!</p>
+                                        <h5 class="text-black">@Localizer["AddTeamMembers"]</h5>
+                                        @* <p class="text-xsmall">All selected users will be given Store User access!</p> *@
                                         <hr class="text-bold" />
                                         <div class="row">
                                             <div class="col-md-12">
@@ -188,15 +195,15 @@
                                             <div class="col-md-7">
                                                 <div class="form-group">
                                                     <select class="form-select select2" id="dd-employees" asp-items="@Model.EmployeesList">
-                                                        <option value="0" disabled selected>-Select Employee-</option>
+                                                        <option value="0" disabled selected>-@Localizer["SelectEmployee"]-</option>
                                                     </select>
                                                 </div>
                                             </div>
                                             <div class="col-md-4">
                                                 <div class="form-group">
                                                     <select class="form-select select2" id="dd-role">
-                                                        <option value="Team Leader">Team Leader</option>
-                                                        <option value="Team Member">Team Member</option>
+                                                        <option value="Team Leader">@Localizer["TeamLeader"]</option>
+                                                        <option value="Team Member">@Localizer["TeamMember"]</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -213,10 +220,10 @@
                     </div>
                     <div class="card-footer">
                         <div class="flex">
-                            <button type="button" id="btn-submit" class="btn btn-info-gradient">
-                                <i class="fa fa-check-circle"></i><span class="loading">&nbsp;Save Schedule</span>
+                            <button type="button" class="btn btn-info" id="btn-submit">
+                                <i class="fa fa-check-circle"></i><span class="loading">&nbsp;@Localizer["SaveSchedule"]</span>
                             </button>
-                            <a asp-action="Index" asp-controller="Verifications" id="btnCancel" class="btn btn-secondary-gradient"><i class="fe fe-corner-up-left"></i>&nbsp;Cancel</a>
+                            <a asp-action="Index" asp-controller="Verifications" id="btnCancel" class="btn btn-gray"><i class="fa fa-close"></i>&nbsp;@Localizer["Cancel"]</a>
                         </div>
                     </div>
                 </div>
@@ -228,7 +235,7 @@
         <div class="row">
 
             <div class="col-sm-12">
-                <a asp-action="Index" asp-controller="Verifications" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
+                <a asp-action="Index" asp-controller="Verifications" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;@Localizer["Previous"]</a>
             </div>
         </div>
     </div>
@@ -243,6 +250,12 @@
         let Data = null;
         let selectedTeamMembers = [];
         let memberCounter = 0;
+        const isSomali = getCurrentLanguage() === "so";
+
+        const localizedMember = {
+            "Team Leader": "@Localizer["TeamLeader"]",
+            "Team Member": "@Localizer["TeamMember"]",
+        };
 
         $(document).ready(function () {
             hideMenu();
@@ -255,7 +268,7 @@
                 format: 'dd-MM-yyyy',
                 todayHighlight: true
             });
-            
+
 
             $(".btn-add-record").on("click", () => {
                 // Get the selected employee name and role
@@ -278,16 +291,16 @@
 
                     // Generate the table row HTML
                     let rowHtml = `<tr id="member-${memberCounter}">
-                                                                    <td class="text-black bg-transparent border-bottom-0 w-2">${memberCounter}</td>
-                                                                    <td class="text-black bg-transparent border-bottom-0 w-20">${getName(selectedEmployeeId)}</td>
-                                                                    <td class="text-black bg-transparent border-bottom-0 w-10">${selectedRole}</td>
-                                                                    <td class="text-black bg-transparent border-bottom-0 w-5 no-btn">
-                                                                        <a style="cursor:pointer;" onclick="removeMember(${memberCounter});">
-                                                                            <i class="fa fa-times text-danger"></i>
-                                                                        </a>
-                                                                    </td>
-                                                                </tr>
-                                                            `;
+                                        <td class="text-black bg-transparent border-bottom-0 w-2">${memberCounter}</td>
+                                        <td class="text-black bg-transparent border-bottom-0 w-20">${getName(selectedEmployeeId)}</td>
+                                        <td class="text-black bg-transparent border-bottom-0 w-10">${localizedMember[selectedRole]}</td>
+                                        <td class="text-black bg-transparent border-bottom-0 w-5 no-btn">
+                                            <a style="cursor:pointer;" onclick="removeMember(${memberCounter});">
+                                                <i class="fa fa-times text-danger"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                `;
 
                     // Append the row to the table body (replace #table-body with your table body selector)
                     $("#table-body").append(rowHtml);
@@ -298,7 +311,6 @@
                         $("#dd-role option[value='Team Leader']").remove();
                     }
                 }
-
             });
 
             $('#verificationTypeDropdown').change(function () {
@@ -322,7 +334,12 @@
 
                 // Validate that the number is greater than or equal to 1
                 if (isNaN(assetsToVerify) || assetsToVerify < 1 || assetsToVerify > assetCount) {
-                    $("#spanNumberOfAssetsToVerify").text(`Value should be between 1 and ${assetCount}`);
+                    const message = isSomali
+                    ? `Qiimaha waa inuu u dhexeeyaa 1 iyo ${assetCount}`
+                    : `Value should be between 1 and ${assetCount}`;
+
+                    $("#spanNumberOfAssetsToVerify").text(message);
+
                     blnCheck = false;
                 } else {
                     $("#spanNumberOfAssetsToVerify").text(""); // Clear the error message if valid
@@ -338,7 +355,7 @@
                 } else if (selectedTeamMembers.length === 0) {
                     notif({
                         type: "error",
-                        msg: "<b>Error: </b>No Team members selected!",
+                        msg: isSomali?"<b>Khalad: </b>Xubno Kooxeed lama xulin!":"<b>Error: </b>No Team members selected!",
                         position: "center",
                         width: 500,
                         height: 60,
@@ -372,15 +389,15 @@
                 console.error('Invalid ID');
                 return label;
             }
-            
+
             const employee = employees.find(e => e.id == employeeId);
 
             if (employee) {
                 label = `<span class="avatar avatar-sm rounded-circle cover-image">
-                                                                        <img src="${employee.imageUrl}" alt="${employee.fullName}" class="avatar avatar-sm rounded-circle">
-                                                                    </span>
-                                                                    <span class="employee-name">${employee.fullName}</span>
-                                                                `;
+                            <img src="${employee.imageUrl}" alt="${employee.fullName}" class="avatar avatar-sm rounded-circle">
+                            </span>
+                            <span class="employee-name">${employee.fullName}</span>
+                        `;
             } else {
                 console.warn('Employee not found for ID:', employeeId);
             }

@@ -9,6 +9,7 @@ using MODAMS.Models;
 using MODAMS.Models.ViewModels.Dto;
 using MODAMS.Utility;
 using Newtonsoft.Json;
+using System.Globalization;
 
 namespace MODAMS.ApplicationServices
 {
@@ -22,7 +23,7 @@ namespace MODAMS.ApplicationServices
 
         private readonly int _employeeId;
         private readonly int _countryOfficeId;
-
+        private readonly bool _isSomali;
         public VerificationService(ApplicationDbContext db, IAMSFunc func,
             IHttpContextAccessor httpContextAccessor, IWebHostEnvironment webHostEnvironment,
             ILogger<VerificationService> logger)
@@ -34,6 +35,7 @@ namespace MODAMS.ApplicationServices
             _webHostEnvironment = webHostEnvironment;
 
             _employeeId = _func.GetEmployeeId();
+            _isSomali = CultureInfo.CurrentCulture.Name == "so";
         }
 
         public async Task<Result<VerificationsDTO>> GetIndexAsync()
@@ -75,7 +77,8 @@ namespace MODAMS.ApplicationServices
                 var dto = new VerificationScheduleCreateDTO();
 
                 var store = await _db.Stores
-                .Where(m => m.Department.EmployeeId == _employeeId).FirstOrDefaultAsync();
+                    .Include(m=>m.Department)
+                    .Where(m => m.Department.EmployeeId == _employeeId).FirstOrDefaultAsync();
 
                 if (store != null)
                 {
@@ -87,7 +90,7 @@ namespace MODAMS.ApplicationServices
                 }
                 else
                 {
-                    return Result<VerificationScheduleCreateDTO>.Failure("Store not available");
+                    return Result<VerificationScheduleCreateDTO>.Failure(_isSomali? "Kayd lama heli karo" : "Store not available");
                 }
 
                 var employees = await _db.Employees.ToListAsync();

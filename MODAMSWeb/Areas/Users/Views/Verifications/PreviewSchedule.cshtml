@@ -1,4 +1,7 @@
-﻿@model MODAMS.Models.ViewModels.Dto.VerificationSchedulePreviewDTO
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+@model MODAMS.Models.ViewModels.Dto.VerificationSchedulePreviewDTO
 <style>
     .is-invalid {
         border-color: red;
@@ -35,7 +38,7 @@
 
 <div class="page-header">
     <div>
-        <h1 class="page-title">Asset Verification Schedule</h1>
+        <h1 class="page-title">@Localizer["AssetVerificationSchedule"]</h1>
     </div>
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
@@ -60,36 +63,36 @@
                                             <input asp-for="Id" hidden />
                                             <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label class="form-label">Department</label>
+                                                    <label class="form-label">@Localizer["Department"]</label>
                                                     <input type="text" class="form-control" value="@Model.StoreName" disabled />
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
-                                                <label class="form-label">Verification Type</label>
-                                                <input type="text" class="form-control" value="@Model.VerificationType" disabled />
+                                                <label class="form-label">@Localizer["VerificationType"]</label>
+                                                <input type="text" class="form-control" value="@(Localizer[Model.VerificationType])" disabled />
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label class="form-label">Start Date</label>
+                                                    <label class="form-label">@Localizer["StartDate"]</label>
                                                     <input type="text" class="form-control" value="@Model.StartDate.ToString("dd-MMM-yy")" disabled />
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
-                                                <label class="form-label">End Date</label>
+                                                <label class="form-label">@Localizer["EndDate"]</label>
                                                 <input type="text" class="form-control" value="@Model.EndDate.ToString("dd-MMM-yy")" disabled />
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="mb-3 form-group mt-2">
-                                                    <label class="form-label text-black">Notes</label>
+                                                    <label class="form-label text-black">@Localizer["Notes"]</label>
                                                     <textarea class="form-control mb-4" rows="3" disabled>@Model.Notes</textarea>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
-                                                <label class="form-label text-black">Verification Team</label>
+                                                <label class="form-label text-black">@Localizer["VerificationTeam"]</label>
                                                 <div class="avatar-list avatar-list-stacked form-control">
                                                     @{
                                                         if (Model.VerificationTeam != null)
@@ -122,21 +125,21 @@
                                         }
                                         <div class="row">
                                             <div class="col-md-6">
-                                                <label class="form-label">Number of Assets to Verify</label>
+                                                <label class="form-label">@Localizer["NumberOfAssetsToVerify"]</label>
                                                 <input type="text" id="txtNumberOfAssetsToVerify" class="form-control" value="@Model.NumberOfAssetsToVerify" readonly />
                                             </div>
                                             <div class="col-md-6">
-                                                <label class="form-label">Number of Assets Verified</label>
+                                                <label class="form-label">@Localizer["NumberOfAssetsVerified"]</label>
                                                 <input type="text" class="form-control" value="@Model.VerifiedAssets" readonly />
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="form-group mb-3 mt-2">
-                                                    <label class="form-label text-black">Verification Action</label>
+                                                    <label class="form-label text-black">@Localizer["Action"]</label>
                                                     <div class="flex form-control p-2">
                                                         <button id="btnVerify" type="button" class="btn btn-primary form-control @sVerificationEnabled">
-                                                            <i class="fa fa-check-square"></i> Verify Assets
+                                                            <i class="fa fa-check-square"></i> @Localizer["VerifyAssets"]
                                                         </button>
                                                     </div>
                                                 </div>
@@ -147,15 +150,15 @@
                                             }
                                             <div class="col-md-6">
                                                 <div class="form-group mb-3 mt-2">
-                                                    <label class="form-label text-black">Complete Verification</label>
+                                                    <label class="form-label text-black">@Localizer["CompleteVerification"]</label>
                                                     <div class="flex form-control p-2">
                                                         <button data-bs-toggle="dropdown" area-expanded="false" class="btn btn-info form-control @sCompletionEnabled">
-                                                            <i class="fa fa-check-square"></i> Complete Verification
+                                                            <i class="fa fa-check-square"></i> @Localizer["CompleteVerification"]
                                                         </button>
                                                         <div class="dropdown-menu" style="">
                                                             <div class="p-5">
-                                                                <h4 class="dropdown-title bolder text-danger">Complete Schedule?</h4>
-                                                                <p class="text-muted">You will not be able to undo this action, are you sure?</p>
+                                                                <h4 class="dropdown-title bolder text-danger">@Localizer["CompleteSchedule"]?</h4>
+                                                                <p class="text-muted">@Localizer["CSMessage"]</p> @* You will not be able to undo this action, are you sure? *@
                                                                 <form asp-action="CompleteVerificationSchedule" id="frmComplete" method="post">
                                                                     <input type="hidden" id="ScheduleId" name="ScheduleId" value="@Model.Id" />
                                                                     <button type="submit" id="btnComplete" class="btn btn-outline-info btn-sm">
@@ -202,7 +205,7 @@
         <div class="row">
 
             <div class="col-sm-12">
-                <a asp-action="Index" asp-controller="Verifications" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
+                <a asp-action="Index" asp-controller="Verifications" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;@Localizer["Previous"]</a>
             </div>
         </div>
     </div>
@@ -211,7 +214,7 @@
     <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
         <div class="modal-content modal-content-demo">
             <div class="modal-header bg-gray-300">
-                <h5 class="modal-title">Verify Assets</h5>
+                <h5 class="modal-title">@Localizer["VerifyAssets"]</h5>
                 <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" onclick="return refreshPage();">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -233,45 +236,45 @@
                                     <input asp-for="VerificationRecord.VerificationScheduleId" value="@Model.Id" type="hidden" />
 
                                     <div class="form-group">
-                                        <label asp-for="VerificationRecord.AssetId" class="form-label">Selected Asset</label>
+                                        <label asp-for="VerificationRecord.AssetId" class="form-label">@Localizer["SelectedAsset"]</label>
                                         <input type="text" id="AssetName" class="form-control" value="-select an asset-" disabled />
                                         <span id="spnAssetId" class="text-danger validation"></span>
                                     </div>
 
                                     <div class="form-group">
-                                        <label asp-for="VerificationRecord.VerificationDate" class="form-label">Verification Date</label>
+                                        <label asp-for="VerificationRecord.VerificationDate" class="form-label">@Localizer["VerificationDate"]</label>
                                         <input asp-for="VerificationRecord.VerificationDate" type="text" class="form-control" value="@DateTime.Now.ToString("dd-MMM-yy")" disabled />
                                         <span id="spnVerificationDate" class="text-danger validation"></span>
                                     </div>
 
                                     <div class="form-group">
-                                        <label asp-for="VerificationRecord.Result" class="form-label">Verification Result</label>
+                                        <label asp-for="VerificationRecord.Result" class="form-label">@Localizer["VerificationResult"]</label>
                                         <select asp-for="VerificationRecord.Result" class="form-control form-select" required>
-                                            <option value="-1" disabled selected>-Select Result Option-</option>
-                                            <option>Verified (In Good Condition)</option>
-                                            <option>Verified (With Issues)</option>
-                                            <option>Verified (Damaged)</option>
-                                            <option>Verified (Out of Service)</option>
-                                            <option>Not Verified (Missing)</option>
+                                            <option value="-1" disabled selected>-@Localizer["SelectResultOption"]-</option>
+                                            <option value="Verified (In Good Condition)">@Localizer["Verified (In Good Condition)"]</option>
+                                            <option value="Verified (With Issues)">@Localizer["Verified (With Issues)"]</option>
+                                            <option value="Verified (Damaged)">@Localizer["Verified (Damaged)"]</option>
+                                            <option value="Verified (Out of Service)">@Localizer["Verified (Out of Service)"]</option>
+                                            <option value="Not Verified (Missing)">@Localizer["Not Verified (Missing)"]</option>
                                         </select>
                                         <span id="spnResult" class="text-danger validation"></span>
                                     </div>
 
                                     <div class="form-group">
-                                        <label asp-for="VerificationRecord.Comments" class="form-label">Comments</label>
+                                        <label asp-for="VerificationRecord.Comments" class="form-label">@Localizer["Comments"]</label>
                                         <textarea asp-for="VerificationRecord.Comments" rows="3" class="form-control" required></textarea>
                                         <span id="spnComments" class="text-danger validation"></span>
                                     </div>
 
                                     <div class="form-group">
-                                        <label asp-for="file" class="form-label">Upload Current Picture</label>
+                                        <label asp-for="file" class="form-label">@Localizer["UploadCurrentPicture"]</label>
                                         <input asp-for="file" type="file" class="form-control dropify" required />
                                         <span id="spnFile" class="text-danger validation"></span>
                                     </div>
 
                                     <div class="form-group">
                                         <button id="btnVerifyAsset" type="button" class="btn btn-primary form-control @sVerificationEnabled">
-                                            <i class="fa fa-check-square"></i> Verify Asset
+                                            <i class="fa fa-check-square"></i> @Localizer["VerifyAsset"]
                                         </button>
                                     </div>
                                 </form>
@@ -281,16 +284,16 @@
                     <div class="col-md-8">
                         <div class="card">
                             <div class="card-body">
-                                <label class="form-label">Select Asset to verify</label>
+                                <label class="form-label">@Localizer["SelectAssetToVerify"]</label>
                                 <div class="table-responsive export-table">
                                     <table id="tblAssets" class="table text-nowrap mb-0 table-bordered key-buttons border-top border-bottom project-list-main">
                                         <thead class="bg-primary-gradient ms-auto divShadow">
                                             <tr>
                                                 <th class="text-black bg-transparent border-bottom-0 w-2"></th>
-                                                <th class="text-black bg-transparent border-bottom-0 w-10">Make</th>
-                                                <th class="text-black bg-transparent border-bottom-0 w-10">Model</th>
-                                                <th class="text-black bg-transparent border-bottom-0 w-10">Asset Name</th>
-                                                <th class="text-black bg-transparent border-bottom-0 w-30">Serial Number</th>
+                                                <th class="text-black bg-transparent border-bottom-0 w-10">@Localizer["Make"]</th>
+                                                <th class="text-black bg-transparent border-bottom-0 w-10">@Localizer["Model"]</th>
+                                                <th class="text-black bg-transparent border-bottom-0 w-10">@Localizer["AssetName"]</th>
+                                                <th class="text-black bg-transparent border-bottom-0 w-30">@Localizer["SerialNo"]</th>
                                             </tr>
                                         </thead>
                                         <tbody id="table-body">
@@ -309,11 +312,12 @@
     </div>
 </div>
 <section id="dvAssetsData" style="display:none;">@Html.Raw(Json.Serialize(Model.Assets))</section>
+
 <div class="modal fade" id="mdlVerified" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
         <div class="modal-content modal-content-demo">
             <div class="modal-header bg-gray-300">
-                <h5 class="modal-title">Verified Assets</h5>
+                <h5 class="modal-title">@Localizer["VerifiedAssets"]</h5>
                 <button aria-label="Close" class="btn-close" data-bs-dismiss="modal">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -327,18 +331,17 @@
                 <div class="modal-notification"></div>
                 <div class="card">
                     <div class="card-body">
-                        <label class="h3" id="lblTitle">List of verified assets</label>
+                        <label class="h3" id="lblTitle">@Localizer["ListOfVerifiedAssets"]</label>
                         <div class="table-responsive export-table">
                             <table id="tblVerifiedAssets" class="table text-nowrap mb-0 table-bordered key-buttons border-top border-bottom project-list-main">
                                 <thead class="bg-primary-gradient ms-auto divShadow">
                                     <tr>
                                         <th class="text-black bg-transparent border-bottom-0 w-2"></th>
-                                        <th class="text-black bg-transparent border-bottom-0 w-10">Make</th>
-                                        <th class="text-black bg-transparent border-bottom-0 w-10">Model</th>
-                                        <th class="text-black bg-transparent border-bottom-0 w-10">Asset Name</th>
-                                        <th class="text-black bg-transparent border-bottom-0 w-30">Serial Number</th>
-                                        <th class="text-black bg-transparent border-bottom-0 w-30">Result</th>
-                                        <th class="text-black bg-transparent border-bottom-0 w-30">Verified By</th>
+                                        <th class="text-black bg-transparent border-bottom-0 w-10">@Localizer["Make"]</th>
+                                        <th class="text-black bg-transparent border-bottom-0 w-10">@Localizer["Model"]</th>
+                                        <th class="text-black bg-transparent border-bottom-0 w-10">@Localizer["AssetName"]</th>
+                                        <th class="text-black bg-transparent border-bottom-0 w-30">@Localizer["SerialNo"]</th>
+                                        <th class="text-black bg-transparent border-bottom-0 w-30">@Localizer["VerifiedBy"]</th>
                                     </tr>
                                 </thead>
                                 <tbody id="table-body-verified">
@@ -349,7 +352,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                <button class="btn btn-light" data-bs-dismiss="modal">@Localizer["Close"]</button>
             </div>
         </div>
     </div>
@@ -357,9 +360,10 @@
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.0/dist/echarts.min.js"></script>
-    <script src="@Url.Content("~/js/user_verifications_previewschedule.js")" defer></script>
 
     <script>
+        const isSomali = getCurrentLanguage()==="so";
+
         $(document).ready(function () {
             hideMenu();
 
@@ -369,6 +373,8 @@
 
             // Now load the bar chart using the data
             loadBarchart(barchartData);
+            console.log(progressChartData);
+
             loadProgressChart(progressChartData);
 
             $("#btnVerify").on("click", () => {
@@ -381,7 +387,7 @@
                 if (isFormValid()) {
                     submitVerificationForm();
                 } else {
-                    showErrorMessage("Please correct the validation errors!");
+                    showErrorMessage(isSomali ? "Fadlan sax khaladaadka xaqiijinta hantida!" : "Please correct the validation errors!");
                 }
             });
 
@@ -395,5 +401,5 @@
 
         });
     </script>
-
+    <script src="@Url.Content("~/js/user_verifications_previewschedule.js")" defer></script>
 }

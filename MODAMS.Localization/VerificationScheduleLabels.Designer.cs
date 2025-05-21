@@ -22,14 +22,14 @@ namespace MODAMS.Localization {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class ValidationMessages {
+    public class VerificationScheduleLabels {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal ValidationMessages() {
+        internal VerificationScheduleLabels() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace MODAMS.Localization {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("MODAMS.Localization.ValidationMessages", typeof(ValidationMessages).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("MODAMS.Localization.VerificationScheduleLabels", typeof(VerificationScheduleLabels).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,65 +61,56 @@ namespace MODAMS.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The {0} field is not a valid email address..
+        ///   Looks up a localized string similar to Plan End Date.
         /// </summary>
-        public static string InvalidEmail {
+        public static string EndDate {
             get {
-                return ResourceManager.GetString("InvalidEmail", resourceCulture);
+                return ResourceManager.GetString("EndDate", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Special characters are not allowed..
+        ///   Looks up a localized string similar to Number of Assets to Verify.
         /// </summary>
-        public static string InvalidPattern {
+        public static string NumberOfAssetsToVerify {
             get {
-                return ResourceManager.GetString("InvalidPattern", resourceCulture);
+                return ResourceManager.GetString("NumberOfAssetsToVerify", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The {0} field must be between {1} and {2}..
+        ///   Looks up a localized string similar to Start Date.
         /// </summary>
-        public static string InvalidRange {
+        public static string StartDate {
             get {
-                return ResourceManager.GetString("InvalidRange", resourceCulture);
+                return ResourceManager.GetString("StartDate", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Number of Assets must be greater than 0.
+        ///   Looks up a localized string similar to Verification Notes.
         /// </summary>
-        public static string NumberOfAssetsGreaterThanZero {
+        public static string VerificationNotes {
             get {
-                return ResourceManager.GetString("NumberOfAssetsGreaterThanZero", resourceCulture);
+                return ResourceManager.GetString("VerificationNotes", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Number of assets to verify is required..
+        ///   Looks up a localized string similar to Verification Status.
         /// </summary>
-        public static string NumberOfAssetsRequired {
+        public static string VerificationStatus {
             get {
-                return ResourceManager.GetString("NumberOfAssetsRequired", resourceCulture);
+                return ResourceManager.GetString("VerificationStatus", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The {0} field is required..
+        ///   Looks up a localized string similar to Verification Type.
         /// </summary>
-        public static string Required {
+        public static string VerificationType {
             get {
-                return ResourceManager.GetString("Required", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The {0} must be at least {2} and at most {1} characters long..
-        /// </summary>
-        public static string StringLength {
-            get {
-                return ResourceManager.GetString("StringLength", resourceCulture);
+                return ResourceManager.GetString("VerificationType", resourceCulture);
             }
         }
     }

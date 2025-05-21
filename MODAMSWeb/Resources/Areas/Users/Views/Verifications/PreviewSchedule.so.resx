@@ -117,25 +117,121 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="InvalidEmail" xml:space="preserve">
-    <value>The {0} field is not a valid email address.</value>
+  <data name="Action" xml:space="preserve">
+    <value>Ficil</value>
   </data>
-  <data name="InvalidPattern" xml:space="preserve">
-    <value>Special characters are not allowed.</value>
+  <data name="AssetVerificationSchedule" xml:space="preserve">
+    <value>Jadwalka Xaqiijinta Hantida</value>
   </data>
-  <data name="InvalidRange" xml:space="preserve">
-    <value>The {0} field must be between {1} and {2}.</value>
+  <data name="AssetName" xml:space="preserve">
+    <value>Magaca Hantida</value>
   </data>
-  <data name="NumberOfAssetsGreaterThanZero" xml:space="preserve">
-    <value>Number of Assets must be greater than 0</value>
+  <data name="Close" xml:space="preserve">
+    <value>Xir</value>
   </data>
-  <data name="NumberOfAssetsRequired" xml:space="preserve">
-    <value>Number of assets to verify is required.</value>
+  <data name="Comments" xml:space="preserve">
+    <value>Faallooyin</value>
   </data>
-  <data name="Required" xml:space="preserve">
-    <value>The {0} field is required.</value>
+  <data name="CompleteSchedule" xml:space="preserve">
+    <value>Dhammee Jadwalka</value>
   </data>
-  <data name="StringLength" xml:space="preserve">
-    <value>The {0} must be at least {2} and at most {1} characters long.</value>
+  <data name="CompleteVerification" xml:space="preserve">
+    <value>Dhammee Xaqiijinta</value>
+  </data>
+  <data name="CSMessage" xml:space="preserve">
+    <value>Ficilkan lama tirtiri karo, ma hubtaa?</value>
+  </data>
+  <data name="Department" xml:space="preserve">
+    <value>Waaxda</value>
+  </data>
+  <data name="EndDate" xml:space="preserve">
+    <value>Taariikhda Dhammaadka</value>
+  </data>
+  <data name="ListOfVerifiedAssets" xml:space="preserve">
+    <value>Liiska Hantida la Xaqiijiyay</value>
+  </data>
+  <data name="Make" xml:space="preserve">
+    <value>Nooca</value>
+  </data>
+  <data name="Model" xml:space="preserve">
+    <value>Moodelka</value>
+  </data>
+  <data name="Not Verified (Missing)" xml:space="preserve">
+    <value>Lama Xaqiijin (Maqan)</value>
+  </data>
+  <data name="Notes" xml:space="preserve">
+    <value>Xusuusin</value>
+  </data>
+  <data name="NumberOfAssetsToVerify" xml:space="preserve">
+    <value>Tirada Hantida la Xaqiijinayo</value>
+  </data>
+  <data name="NumberOfAssetsVerified" xml:space="preserve">
+    <value>Tirada Hantida la Xaqiijiyay</value>
+  </data>
+  <data name="Previous" xml:space="preserve">
+    <value>Hore</value>
+  </data>
+  <data name="Result" xml:space="preserve">
+    <value>Natiijo</value>
+  </data>
+  <data name="SelectAssetToVerify" xml:space="preserve">
+    <value>Dooro hanti la xaqiijiyo</value>
+  </data>
+  <data name="SelectedAsset" xml:space="preserve">
+    <value>Hantida la Doortay</value>
+  </data>
+  <data name="SelectResultOption" xml:space="preserve">
+    <value>Dooro Ikhtiyaarka Natiijada</value>
+  </data>
+  <data name="SerialNo" xml:space="preserve">
+    <value>L/T</value>
+  </data>
+  <data name="StartDate" xml:space="preserve">
+    <value>Taariikhda Bilaabashada</value>
+  </data>
+  <data name="UploadCurrentPicture" xml:space="preserve">
+    <value>Ku Shub Sawirka Hadda</value>
+  </data>
+  <data name="VerificationDate" xml:space="preserve">
+    <value>Taariikhda Xaqiijinta</value>
+  </data>
+  <data name="VerificationResult" xml:space="preserve">
+    <value>Natiijada Xaqiijinta</value>
+  </data>
+  <data name="VerificationTeam" xml:space="preserve">
+    <value>Kooxda Xaqiijinta</value>
+  </data>
+  <data name="VerificationType" xml:space="preserve">
+    <value>Nooca Xaqiijinta</value>
+  </data>
+  <data name="Verified" xml:space="preserve">
+    <value>La Xaqiijiyay</value>
+  </data>
+  <data name="Verified (Damaged)" xml:space="preserve">
+    <value>La Xaqiijiyay (Waxyeello Leh)</value>
+  </data>
+  <data name="Verified (In Good Condition)" xml:space="preserve">
+    <value>La Xaqiijiyay (Xaalad Wanaagsan)</value>
+  </data>
+  <data name="Verified (Out of Service)" xml:space="preserve">
+    <value>La Xaqiijiyay (Ka Baxsan Adeeg)</value>
+  </data>
+  <data name="Verified (With Issues)" xml:space="preserve">
+    <value>La Xaqiijiyay (Dhibaatooyin Jira)</value>
+  </data>
+  <data name="VerifiedAssets" xml:space="preserve">
+    <value>Hantida la Xaqiijiyay</value>
+  </data>
+  <data name="VerifiedBy" xml:space="preserve">
+    <value>Waxaa Xaqiijiyay</value>
+  </data>
+  <data name="VerifyAsset" xml:space="preserve">
+    <value>Xaqiiji Hanti</value>
+  </data>
+  <data name="VerifyAssets" xml:space="preserve">
+    <value>Xaqiiji Hantida</value>
+  </data>
+  <data name="Select" xml:space="preserve">
+    <value>Dooro</value>
   </data>
 </root>

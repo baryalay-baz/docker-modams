@@ -117,25 +117,22 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="InvalidEmail" xml:space="preserve">
-    <value>The {0} field is not a valid email address.</value>
+  <data name="EndDate" xml:space="preserve">
+    <value>Taariikhda Dhammaadka Qorshaha</value>
   </data>
-  <data name="InvalidPattern" xml:space="preserve">
-    <value>Special characters are not allowed.</value>
+  <data name="NumberOfAssetsToVerify" xml:space="preserve">
+    <value>Tirada Hantida La Xaqiijinayo</value>
   </data>
-  <data name="InvalidRange" xml:space="preserve">
-    <value>The {0} field must be between {1} and {2}.</value>
+  <data name="StartDate" xml:space="preserve">
+    <value>Taariikhda Bilaabashada</value>
   </data>
-  <data name="NumberOfAssetsGreaterThanZero" xml:space="preserve">
-    <value>Number of Assets must be greater than 0</value>
+  <data name="VerificationNotes" xml:space="preserve">
+    <value>Qoraallada Xaqiijinta</value>
   </data>
-  <data name="NumberOfAssetsRequired" xml:space="preserve">
-    <value>Number of assets to verify is required.</value>
+  <data name="VerificationStatus" xml:space="preserve">
+    <value>Xaaladda Xaqiijinta</value>
   </data>
-  <data name="Required" xml:space="preserve">
-    <value>The {0} field is required.</value>
-  </data>
-  <data name="StringLength" xml:space="preserve">
-    <value>The {0} must be at least {2} and at most {1} characters long.</value>
+  <data name="VerificationType" xml:space="preserve">
+    <value>Nooca Xaqiijinta</value>
   </data>
 </root>

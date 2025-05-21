@@ -117,25 +117,61 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="InvalidEmail" xml:space="preserve">
-    <value>The {0} field is not a valid email address.</value>
+  <data name="AssetVerifications" xml:space="preserve">
+    <value>Xaqiijinta Hantida</value>
   </data>
-  <data name="InvalidPattern" xml:space="preserve">
-    <value>Special characters are not allowed.</value>
+  <data name="Cancel" xml:space="preserve">
+    <value>Jooji</value>
   </data>
-  <data name="InvalidRange" xml:space="preserve">
-    <value>The {0} field must be between {1} and {2}.</value>
+  <data name="Completed" xml:space="preserve">
+    <value>Hawl La Dhammeeyey</value>
   </data>
-  <data name="NumberOfAssetsGreaterThanZero" xml:space="preserve">
-    <value>Number of Assets must be greater than 0</value>
+  <data name="Confirm" xml:space="preserve">
+    <value>Xaqiiji</value>
   </data>
-  <data name="NumberOfAssetsRequired" xml:space="preserve">
-    <value>Number of assets to verify is required.</value>
+  <data name="Custom Verification" xml:space="preserve">
+    <value>Xaqiijin Gaar ah</value>
   </data>
-  <data name="Required" xml:space="preserve">
-    <value>The {0} field is required.</value>
+  <data name="DeleteConfirmationMessage" xml:space="preserve">
+    <value>Ma hubtaa inaad rabto inaad tirtirto jadwalkan xaqiijinta?</value>
   </data>
-  <data name="StringLength" xml:space="preserve">
-    <value>The {0} must be at least {2} and at most {1} characters long.</value>
+  <data name="DeleteSchedule" xml:space="preserve">
+    <value>Tirtir Jadwalka</value>
+  </data>
+  <data name="Department" xml:space="preserve">
+    <value>Waax</value>
+  </data>
+  <data name="End" xml:space="preserve">
+    <value>Dhammee</value>
+  </data>
+  <data name="Full Verification" xml:space="preserve">
+    <value>Xaqiijin Dhameystiran</value>
+  </data>
+  <data name="NewSchedule" xml:space="preserve">
+    <value>Jadwal Cusub</value>
+  </data>
+  <data name="NumberOfSchedules" xml:space="preserve">
+    <value>Tirada Jadwalada</value>
+  </data>
+  <data name="Ongoing" xml:space="preserve">
+    <value>Hawl Socota</value>
+  </data>
+  <data name="Pending" xml:space="preserve">
+    <value>Hawl Sugaysa</value>
+  </data>
+  <data name="Start" xml:space="preserve">
+    <value>Bilow</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Heerka</value>
+  </data>
+  <data name="Team" xml:space="preserve">
+    <value>Koox</value>
+  </data>
+  <data name="VerificationScheduleByStatus" xml:space="preserve">
+    <value>Jadwallada Xaqiijinta oo loo eegay Heerka</value>
+  </data>
+  <data name="VerificationType" xml:space="preserve">
+    <value>Nooca Xaqiijinta</value>
   </data>
 </root>

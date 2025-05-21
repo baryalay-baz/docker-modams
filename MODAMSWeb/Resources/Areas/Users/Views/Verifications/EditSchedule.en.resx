@@ -117,25 +117,70 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="InvalidEmail" xml:space="preserve">
-    <value>The {0} field is not a valid email address.</value>
+  <data name="AddTeamMembers" xml:space="preserve">
+    <value>Add Team members</value>
   </data>
-  <data name="InvalidPattern" xml:space="preserve">
-    <value>Special characters are not allowed.</value>
+  <data name="AssetVerificationSchedule" xml:space="preserve">
+    <value>Asset Verification Schedule</value>
   </data>
-  <data name="InvalidRange" xml:space="preserve">
-    <value>The {0} field must be between {1} and {2}.</value>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
   </data>
-  <data name="NumberOfAssetsGreaterThanZero" xml:space="preserve">
-    <value>Number of Assets must be greater than 0</value>
+  <data name="Confirm" xml:space="preserve">
+    <value>Confirm</value>
   </data>
-  <data name="NumberOfAssetsRequired" xml:space="preserve">
-    <value>Number of assets to verify is required.</value>
+  <data name="CreateNewSchedule" xml:space="preserve">
+    <value>Create New Schedule</value>
   </data>
-  <data name="Required" xml:space="preserve">
-    <value>The {0} field is required.</value>
+  <data name="CustomVerification" xml:space="preserve">
+    <value>Custom Verification</value>
   </data>
-  <data name="StringLength" xml:space="preserve">
-    <value>The {0} must be at least {2} and at most {1} characters long.</value>
+  <data name="DeleteConfirmationMessage" xml:space="preserve">
+    <value>You will not be able to recover this schedule, are you sure?</value>
+  </data>
+  <data name="DeleteSchedule" xml:space="preserve">
+    <value>Delete Schedule</value>
+  </data>
+  <data name="Department" xml:space="preserve">
+    <value>Department</value>
+  </data>
+  <data name="EditSchedule" xml:space="preserve">
+    <value>Edit Schedule</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="FullVerification" xml:space="preserve">
+    <value>Full Verification</value>
+  </data>
+  <data name="NoTeamMembersSelected" xml:space="preserve">
+    <value>No Team Members selected</value>
+  </data>
+  <data name="NumberOfAssetsInStore" xml:space="preserve">
+    <value>Number Of Assets in Store</value>
+  </data>
+  <data name="NumberOfAssetsToVerify" xml:space="preserve">
+    <value>Number of Assets to Verify</value>
+  </data>
+  <data name="PreviewSchedule" xml:space="preserve">
+    <value>Preview Schedule</value>
+  </data>
+  <data name="Previous" xml:space="preserve">
+    <value>Previous</value>
+  </data>
+  <data name="SaveSchedule" xml:space="preserve">
+    <value>Save Schedule</value>
+  </data>
+  <data name="SelectEmployee" xml:space="preserve">
+    <value>Select Employee</value>
+  </data>
+  <data name="TeamLeader" xml:space="preserve">
+    <value>Team Leader</value>
+  </data>
+  <data name="TeamMember" xml:space="preserve">
+    <value>Team Member</value>
+  </data>
+  <data name="VerificationNotes" xml:space="preserve">
+    <value>Verification Notes</value>
   </data>
 </root>

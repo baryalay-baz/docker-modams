@@ -117,25 +117,55 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="InvalidEmail" xml:space="preserve">
-    <value>The {0} field is not a valid email address.</value>
+  <data name="AddTeamMembers" xml:space="preserve">
+    <value>Ku dar Xubnaha Kooxda</value>
   </data>
-  <data name="InvalidPattern" xml:space="preserve">
-    <value>Special characters are not allowed.</value>
+  <data name="AssetVerificationSchedule" xml:space="preserve">
+    <value>Jadwalka Xaqiijinta Hantida</value>
   </data>
-  <data name="InvalidRange" xml:space="preserve">
-    <value>The {0} field must be between {1} and {2}.</value>
+  <data name="Cancel" xml:space="preserve">
+    <value>Jooji</value>
   </data>
-  <data name="NumberOfAssetsGreaterThanZero" xml:space="preserve">
-    <value>Number of Assets must be greater than 0</value>
+  <data name="CreateNewSchedule" xml:space="preserve">
+    <value>Abuur Jadwal Cusub</value>
   </data>
-  <data name="NumberOfAssetsRequired" xml:space="preserve">
-    <value>Number of assets to verify is required.</value>
+  <data name="CustomVerification" xml:space="preserve">
+    <value>Xaqiijin Gaar ah</value>
   </data>
-  <data name="Required" xml:space="preserve">
-    <value>The {0} field is required.</value>
+  <data name="Department" xml:space="preserve">
+    <value>Waaxda</value>
   </data>
-  <data name="StringLength" xml:space="preserve">
-    <value>The {0} must be at least {2} and at most {1} characters long.</value>
+  <data name="Error" xml:space="preserve">
+    <value>Khalad</value>
+  </data>
+  <data name="FullVerification" xml:space="preserve">
+    <value>Xaqiijin Dhameystiran</value>
+  </data>
+  <data name="NoTeamMembersSelected" xml:space="preserve">
+    <value>Xubno Kooxeed lama xulin</value>
+  </data>
+  <data name="NumberOfAssetsInStore" xml:space="preserve">
+    <value>Tirada Hantida Ku Jirta Kaydka</value>
+  </data>
+  <data name="NumberOfAssetsToVerify" xml:space="preserve">
+    <value>Tirada Hantida La Xaqiijinayo</value>
+  </data>
+  <data name="Previous" xml:space="preserve">
+    <value>Hore</value>
+  </data>
+  <data name="SaveSchedule" xml:space="preserve">
+    <value>Kaydi Jadwalka</value>
+  </data>
+  <data name="SelectEmployee" xml:space="preserve">
+    <value>Xulo Shaqaale</value>
+  </data>
+  <data name="TeamLeader" xml:space="preserve">
+    <value>Hogaamiyaha Kooxda</value>
+  </data>
+  <data name="TeamMember" xml:space="preserve">
+    <value>Xubin Kooxda ka Tirsan</value>
+  </data>
+  <data name="VerificationNotes" xml:space="preserve">
+    <value>Qoraallada Xaqiijinta</value>
   </data>
 </root>

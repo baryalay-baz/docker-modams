@@ -126,6 +126,12 @@
   <data name="InvalidRange" xml:space="preserve">
     <value>Goobta {0} waa inay u dhaxaysaa {1} iyo {2}.</value>
   </data>
+  <data name="NumberOfAssetsGreaterThanZero" xml:space="preserve">
+    <value>Tirada Hantidu waa inay ka weynaataa eber</value>
+  </data>
+  <data name="NumberOfAssetsRequired" xml:space="preserve">
+    <value>Tirada hantida la xaqiijinayo waa lama huraan.</value>
+  </data>
   <data name="Required" xml:space="preserve">
     <value>Goobta {0} waa qasab.</value>
   </data>

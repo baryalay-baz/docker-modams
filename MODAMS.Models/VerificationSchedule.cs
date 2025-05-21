@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using MODAMS.Localization;
 
 namespace MODAMS.Models
 {
@@ -14,19 +15,39 @@ namespace MODAMS.Models
         [Key]
         public int Id { get; set; }
 
-        [Required]
+        [Required(
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "Required")]
+        [Display(Name = "StartDate", ResourceType = typeof(VerificationScheduleLabels))]
         public DateTime StartDate { get; set; }
+
+        [Display(Name = "EndDate", ResourceType = typeof(VerificationScheduleLabels))]
         public DateTime EndDate { get; set; }
+        
         public int EmployeeId { get; set; }
+
+        [Display(Name = "VerificationStatus", ResourceType = typeof(VerificationScheduleLabels))]
         public string VerificationStatus { get; set; } = "Pending";
+
+        [Display(Name = "VerificationType", ResourceType = typeof(VerificationScheduleLabels))]
         public string VerificationType { get; set; } = "Full Verification";
 
-        [Required(ErrorMessage = "Number of assets to verify is required.")]
-        [Range(1, int.MaxValue, ErrorMessage = "Number of assets to verify must be greater than 0.")]
+        [Required(
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "NumberOfAssetsRequired")]
+        [Range(1, int.MaxValue,
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "NumberOfAssetsGreaterThanZero")]
+
+        [Display(Name = "NumberOfAssetsToVerify", ResourceType = typeof(VerificationScheduleLabels))]
         public int NumberOfAssetsToVerify { get; set; }
+
+        [Display(Name = "VerificationNotes", ResourceType = typeof(VerificationScheduleLabels))]
         public string Notes { get; set; } = String.Empty;
 
-        [Required]
+        [Required(
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "Required")]
         public int StoreId { get; set; }
 
         [ValidateNever]

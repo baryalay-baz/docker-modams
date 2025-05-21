@@ -2,10 +2,24 @@
 //Developed by Baryalay Baz
 //5-Oct-2024
 var currentPage_tblAssets = 0;
-
+const localizedResult = {
+    'Verified (In Good Condition)': 'La Xaqiijiyay (Xaalad Wanaagsan)',
+    'Verified (With Issues)': 'La Xaqiijiyay (Dhibaatooyin Jira)',
+    'Verified (Out of Service)': 'La Xaqiijiyay (Ka Baxsan Adeeg)',
+    'Verified (Damaged)': 'La Xaqiijiyay (Waxyeello Leh)',
+    'Not Verified (Missing)': 'Lama Xaqiijin (Maqan)'
+}
+const unLocalizedResult = {
+    'La Xaqiijiyay (Xaalad Wanaagsan)': 'Verified (In Good Condition)',
+    'La Xaqiijiyay (Dhibaatooyin Jira)': 'Verified (With Issues)',
+    'La Xaqiijiyay (Ka Baxsan Adeeg)': 'Verified (Out of Service)',
+    'La Xaqiijiyay (Waxyeello Leh)': 'Verified (Damaged)',
+    'Lama Xaqiijin (Maqan)': 'Not Verified (Missing)'
+}
 const loadBarchart = (data) => {
+    
+    var results = data.map(x => isSomali ? localizedResult[x.result] : x.result);
 
-    var results = data.map(x => x.result);
     var recordCounts = data.map(x => x.verificationRecordCount);
 
     var barColors = [getRandomColor(), getRandomColor(), getRandomColor(), getRandomColor(), getRandomColor()];
@@ -34,7 +48,7 @@ const loadBarchart = (data) => {
             data: results,
             axisLabel: {
                 fontSize: 12,
-                interval: 0, 
+                interval: 0,
                 formatter: function (value) {
                     return value;
                 }
@@ -49,9 +63,9 @@ const loadBarchart = (data) => {
             })),
             type: 'bar',
             label: {
-                show: true,        
-                position: 'right', 
-                formatter: '{c}'   
+                show: true,
+                position: 'right',
+                formatter: '{c}'
             }
         }]
     };
@@ -70,12 +84,12 @@ const loadProgressChart = (data) => {
 
     var dates = data.map(item => item.formattedDate);
 
-    var planProgress = data.map(item => item.planProgress); 
-    var achievedProgress = data.map(item => item.progress); 
-
+    var planProgress = data.map(item => item.planProgress);
+    var achievedProgress = data.map(item => item.progress);
+    const sText = isSomali ? 'Horumarka La Qorsheeyay vs. Horumarka La Gaadhay' : 'Planned vs. Achieved Progress';
     var option = {
         title: {
-            text: 'Planned vs. Achieved Progress'
+            text: sText
         },
         tooltip: {
             trigger: 'axis'
@@ -86,23 +100,23 @@ const loadProgressChart = (data) => {
         xAxis: {
             type: 'category',
             boundaryGap: false,
-            data: dates 
+            data: dates
         },
         yAxis: {
             type: 'value'
         },
         series: [
             {
-                name: 'Planned Progress',
+                name: isSomali ? 'Horumarka La Qorsheeyay' : 'Planned Progress',
                 type: 'line',
                 data: planProgress,
-                smooth: true, 
+                smooth: true,
                 lineStyle: {
                     width: 2
                 }
             },
             {
-                name: 'Achieved Progress',
+                name: isSomali ? 'Horumarka La Gaadhay' : 'Achieved Progress',
                 type: 'line',
                 data: achievedProgress,
                 smooth: true,
@@ -111,7 +125,7 @@ const loadProgressChart = (data) => {
                 },
                 label: {
                     show: true,
-                    position: 'top', 
+                    position: 'top',
                     formatter: function (params) {
                         return params.data !== null ? params.data : '';
                     }
@@ -130,6 +144,9 @@ const getRandomColor = () => {
     return moderateLightColorPalette[randomIndex];
 };
 const handleBarClick = (clickedResult) => {
+    
+    clickedResult = isSomali ? unLocalizedResult[clickedResult] : clickedResult;
+
     $('#mdlVerified').modal('show');
     loadVerifiedAssetsTable(clickedResult);
 };
@@ -142,10 +159,9 @@ const loadVerifiedAssetsTable = (result) => {
         let nCounter = 0;
 
         let filteredData = Data.filter(e => e.result === result && e.verifiedBy !== "Not Verified")
-
+        
         filteredData.forEach(e => {
             nCounter++;
-
             var sVerifyText = '<i class="fa fa-check-circle" style="font-size: 1rem; color: green;"></i> ' + e.verifiedBy;
             sHtml += `
                         <tr>
@@ -154,7 +170,6 @@ const loadVerifiedAssetsTable = (result) => {
                             <td class="text-black bg-transparent border-bottom-0 w-10">${e.model}</td>
                             <td class="text-black bg-transparent border-bottom-0 w-10">${e.name}</td>
                             <td class="text-black bg-transparent border-bottom-0 w-10">${e.serialNo}</td>
-                            <td class="text-black bg-transparent border-bottom-0 w-10">${e.result}</td>
                             <td class="text-black bg-transparent border-bottom-0 w-10">${sVerifyText}</td>
                         </tr>
                     `;
@@ -166,6 +181,8 @@ const loadVerifiedAssetsTable = (result) => {
 
         $("#table-body-verified").html("").html(sHtml);
         makeDataTable("#tblVerifiedAssets", "1");
+        
+        result = isSomali ? localizedResult[result] : result;
         $("#lblTitle").text("").text(result);
 
     }
@@ -339,8 +356,9 @@ const loadAssetsData = () => {
     });
 };
 const loadAssets = (data) => {
-    var Data = JSON.parse(data);
-    var sHtml = '';
+    const Data = JSON.parse(data);
+    let sHtml = '';
+
 
     let assetsToVerify = $('#txtNumberOfAssetsToVerify').val();
     let verifiedCount = 0;
@@ -351,18 +369,18 @@ const loadAssets = (data) => {
     if (Data != null) {
         Data.forEach(e => {
             if (e.isSelected) {
-                sButton = `<i class="fa fa-check-circle text-success delete-icon" id="icon-${e.id}" style="font-size: 1rem;" data-id="${e.verificationRecordId}" data-assetId="${e.id}"></i> Verified`;
+                sButton = `<i class="fa fa-check-circle text-success delete-icon" id="icon-${e.id}" style="font-size: 1rem;" data-id="${e.verificationRecordId}" data-assetId="${e.id}"></i> ${isSomali ? "La Xaqiijiyay" : "Verified"}`;
                 verifiedCount++;
             } else {
-                sButton = `<button class="btn btn-outline-info btn-sm" onclick="return selectRecord(${e.id});">Select</button>`;
+                sButton = `<button class="btn btn-outline-info btn-sm" onclick="return selectRecord(${e.id});">${isSomali ? "Dooro" : "Select"}</button>`;
             }
             sHtml += `
                 <tr id="tr-${e.id}">
                     <td id="td-${e.id}" class="text-black bg-transparent border-bottom-0 w-2">${sButton}</td>
+                    <td class="text-black bg-transparent border-bottom-0 w-10">${e.make}</td>
                     <td class="text-black bg-transparent border-bottom-0 w-10">${e.model}</td>
-                    <td class="text-black bg-transparent border-bottom-0 w-10">${e.name}</td>
-                    <td class="text-black bg-transparent border-bottom-0 w-30">${e.serialNo}</td>
-                    <td class="text-black bg-transparent border-bottom-0 w-10">${e.barcode}</td>
+                    <td class="text-black bg-transparent border-bottom-0 w-30">${e.name}</td>
+                    <td class="text-black bg-transparent border-bottom-0 w-10">${e.serialNo}</td>
                 </tr>
             `;
         });
@@ -387,10 +405,10 @@ const loadAssets = (data) => {
     }
 };
 const bindHoverAndClickEvents = () => {
-    
+
     $(".delete-icon").hover(
         function () {
-            
+
             $(this).removeClass("fa-check-circle text-success").addClass("fa-trash text-secondary").css({
                 "cursor": "pointer"
             });

@@ -47,6 +47,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>ValidationMessages.resx</DependentUpon>
     </Compile>
+    <Compile Update="VerificationScheduleLabels.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>VerificationScheduleLabels.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -77,6 +82,10 @@
     <EmbeddedResource Update="ValidationMessages.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ValidationMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="VerificationScheduleLabels.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>VerificationScheduleLabels.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 
