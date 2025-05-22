@@ -77,7 +77,7 @@ namespace MODAMS.ApplicationServices
                 var dto = new VerificationScheduleCreateDTO();
 
                 var store = await _db.Stores
-                    .Include(m=>m.Department)
+                    .Include(m => m.Department)
                     .Where(m => m.Department.EmployeeId == _employeeId).FirstOrDefaultAsync();
 
                 if (store != null)
@@ -90,7 +90,7 @@ namespace MODAMS.ApplicationServices
                 }
                 else
                 {
-                    return Result<VerificationScheduleCreateDTO>.Failure(_isSomali? "Kayd lama heli karo" : "Store not available");
+                    return Result<VerificationScheduleCreateDTO>.Failure(_isSomali ? "Kayd lama heli karo" : "Store not available");
                 }
 
                 var employees = await _db.Employees.ToListAsync();
@@ -212,7 +212,7 @@ namespace MODAMS.ApplicationServices
                     })
                     .FirstOrDefaultAsync();
 
-                if (dto == null) return Result<VerificationScheduleEditDTO>.Failure("Schedule not found!");
+                if (dto == null) return Result<VerificationScheduleEditDTO>.Failure(_isSomali ? "Jadwalka Hubinta lama helin!" : "Verification Schedule not found!");
 
                 dto.EditTeam = await _db.VerificationTeams
                     .AsNoTracking()
@@ -246,7 +246,7 @@ namespace MODAMS.ApplicationServices
                 var scheduleInDb = await _db.VerificationSchedules.FirstOrDefaultAsync(m => m.Id == dto.Id);
 
                 if (scheduleInDb == null)
-                    return Result<VerificationScheduleEditDTO>.Failure("Schedule not found!");
+                    return Result<VerificationScheduleEditDTO>.Failure(_isSomali ? "Jadwalka Hubinta lama helin!" : "Verification Schedule not found!");
 
 
                 using (var transaction = await _db.Database.BeginTransactionAsync())
@@ -340,7 +340,7 @@ namespace MODAMS.ApplicationServices
                     })
                     .FirstOrDefaultAsync();
 
-                if (schedule == null) return Result<VerificationSchedulePreviewDTO>.Failure("Schedule Not found!");
+                if (schedule == null) return Result<VerificationSchedulePreviewDTO>.Failure(_isSomali ? "Jadwalka Hubinta lama helin!" : "Verification Schedule Not found!");
 
                 int verifiedAssets = await _db.VerificationRecords.Where(m => m.VerificationScheduleId == id).CountAsync();
 
@@ -360,7 +360,7 @@ namespace MODAMS.ApplicationServices
                     VerifiedAssets = verifiedAssets
                 };
 
-                if (dto == null) return Result<VerificationSchedulePreviewDTO>.Failure("Schedule Not found!");
+                if (dto == null) return Result<VerificationSchedulePreviewDTO>.Failure(_isSomali ? "Jadwalka Hubinta lama helin!" : "Verification Schedule Not found!");
 
                 var verificationTeam = await _db.VerificationTeams
                     .AsNoTracking()
@@ -390,21 +390,22 @@ namespace MODAMS.ApplicationServices
         {
             if (dto.VerificationRecord == null)
             {
-                return Result<bool>.Failure("Verification record is missing");
+                return Result<bool>.Failure(_isSomali ? "Diiwaanka Hubinta wuu maqan yahay" : "Verification record is missing");
             }
 
             if (file == null || file.Length == 0)
             {
-                return Result<bool>.Failure("No file uploaded or file is empty");
+                return Result<bool>.Failure(_isSomali ? "Fayl lama soo gelin ama faylka wuu madhan yahay" : "No file uploaded or file is empty");
             }
 
             var verificationRecordInDb = await _db.VerificationRecords
-                .Where(m => m.VerificationScheduleId == dto.VerificationRecord.VerificationScheduleId 
+                .Where(m => m.VerificationScheduleId == dto.VerificationRecord.VerificationScheduleId
                 && m.AssetId == dto.VerificationRecord.AssetId).FirstOrDefaultAsync();
 
             if (verificationRecordInDb != null)
             {
-                return Result<bool>.Failure($"This asset is already verified by {verificationRecordInDb.VerifiedBy}");
+                var failureMessage = _isSomali ? "Hantidan hore ayaa waxaa xaqiijiyay " : "This asset is already verified by ";
+                return Result<bool>.Failure($"{failureMessage} {verificationRecordInDb.VerifiedBy}");
             }
 
             using (var transaction = await _db.Database.BeginTransactionAsync())
@@ -444,7 +445,7 @@ namespace MODAMS.ApplicationServices
                         var result = await UpdateScheduleStatus(scheduleInDb);
                         if (result.IsFailure)
                         {
-                            throw new Exception($"Failed updating schedule status: {result.ErrorMessage}");
+                            throw new Exception(_isSomali ? "Waa lagu guuldareystay cusbooneysiinta xaaladda jadwalka" : "Failed updating schedule status: " + result.ErrorMessage);
                         }
                     }
                     await transaction.CommitAsync();
@@ -483,7 +484,14 @@ namespace MODAMS.ApplicationServices
 
 
                 if (scheduleInDb.VerificationStatus != "Pending")
-                    return Result.Failure("Only pending schedules can be deleted! Contact Administrator for deleting this schedule!");
+                {
+                    var errorMessage = "Only pending schedules can be deleted! Contact Administrator for deleting this schedule!";
+
+                    if (_isSomali)
+                        errorMessage = "Kaliya jadwalada sugaya ayaa la tirtiri karaa! La xiriir Maamulaha si aad jadwalkan u tirtirto!";
+
+                    return Result.Failure(errorMessage);
+                }
 
                 try
                 {
@@ -547,15 +555,19 @@ namespace MODAMS.ApplicationServices
             if (scheduleInDb == null)
                 return;
 
+            var sMessage = $"You have been assigned as {role} in a Verification Schedule with id {scheduleInDb.Id} by {await _func.GetEmployeeNameAsync()}!";
+
+            if (_isSomali)
+                sMessage = $"Waxaa laguu xilsaaray sidii {role} jadwalka hubinta leh Aqoonsiga {scheduleInDb.Id}, waxaana kugu xilsaaray {await _func.GetEmployeeNameAsync()}!";
 
             var notification = new Notification()
             {
                 DateTime = DateTime.Now,
                 EmployeeFrom = _employeeId,
                 EmployeeTo = employeeId,
-                Message = $"You have been assigned as {role} in a Verification Schedule with id {scheduleInDb.Id} by {await _func.GetEmployeeNameAsync()}!",
+                Message = sMessage,
                 NotificationSectionId = SD.NS_Schedule,
-                Subject = "Asset Verification Schedule",
+                Subject = _isSomali ? "Jadwalka Hubinta Hantida" : "Asset Verification Schedule",
                 IsViewed = false,
                 TargetRecordId = scheduleInDb.Id
             };
@@ -572,19 +584,23 @@ namespace MODAMS.ApplicationServices
             if (scheduleInDb == null)
             {
                 // Log or handle the case where the schedule is not found
-                throw new InvalidOperationException($"Schedule with ID {scheduleId} not found.");
+                throw new InvalidOperationException(_isSomali ? $"Jadwalka leh Aqoonsiga {scheduleId} lama helin." : $"Schedule with ID {scheduleId} not found.");
             }
 
             // Extract the employee ID if available
             int employeeId = scheduleInDb.Store?.Department?.EmployeeId ?? 0;
 
             // Create a notification object
+            var sMessage = $"Verification Schedule with ID {scheduleInDb.Id} has been completed successfully!";
+            if (_isSomali)
+                sMessage = $"Jadwalka Hubinta leh Aqoonsiga {scheduleInDb.Id} si guul leh ayaa loo dhammeeyay!";
+
             var notification = new Notification
             {
                 DateTime = DateTime.Now,
                 EmployeeFrom = _employeeId,  // Assumes _employeeId is set and available
                 EmployeeTo = employeeId,
-                Message = $"Verification Schedule with ID {scheduleInDb.Id} completed successfully!",
+                Message = sMessage,
                 NotificationSectionId = SD.NS_Schedule,
                 Subject = "Verification Completed",
                 IsViewed = false,
@@ -776,7 +792,11 @@ namespace MODAMS.ApplicationServices
                 catch (Exception ex)
                 {
                     _func.LogException(_logger, ex);
-                    return Result.Failure($"Error occurred while completing Schedule: {ex.Message}");
+                    var message = $"Error occured while completing Schedule: {ex.Message}";
+                    if (_isSomali)
+                        message = $"Khalad ayaa dhacay inta lagu jiray dhammeystirka Jadwalka: {ex.Message}";
+
+                    return Result.Failure(message);
                 }
             }
 
@@ -786,7 +806,7 @@ namespace MODAMS.ApplicationServices
         {
             if (file == null)
             {
-                return "File not found!";
+                return _isSomali ? "Fayl lama helin!" : "File not found!";
             }
 
             string wwwRootPath = _webHostEnvironment.WebRootPath;
@@ -829,13 +849,13 @@ namespace MODAMS.ApplicationServices
         {
             if (imageUrl == "")
             {
-                return Result.Failure("Picture not found!");
+                return Result.Failure(_isSomali ? "Sawir lama helin!" : "Picture not found!");
             }
 
             var assetPicture = await _db.AssetPictures.Where(m => m.ImageUrl == imageUrl).FirstOrDefaultAsync();
             if (assetPicture == null)
             {
-                return Result.Failure("Picture not found!");
+                return Result.Failure(_isSomali ? "Sawir lama helin!" : "Picture not found!");
             }
 
             // Remove the picture entry from the database
@@ -847,14 +867,18 @@ namespace MODAMS.ApplicationServices
             catch (Exception ex)
             {
                 _func.LogException(_logger, ex);
-                return Result.Failure($"Error occurred while removing the picture from the database: {ex.Message}");
+                var message = "Error occurred while removing the picture from the database: " + ex.Message;
+                if (_isSomali)
+                    message = "Khalad ayaa dhacay inta lagu jiray ka saarista sawirka keydka xogta: " + ex.Message;
+
+                return Result.Failure(message);
             }
 
             // Remove file from disk
             string sFileName = assetPicture.ImageUrl.Substring(15); // Removes "/assetpictures/"
             if (!await DeleteFileAsync(sFileName, "assetpictures"))
             {
-                return Result.Failure("Error deleting picture!");
+                return Result.Failure(_isSomali ? "Khalad ayaa ka dhacay tirtirka sawirka!" : "Error deleting picture!");
             }
 
             return Result.Success();

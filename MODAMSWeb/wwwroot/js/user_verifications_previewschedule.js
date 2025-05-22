@@ -1,6 +1,6 @@
 ﻿//Script for Verifications/PreviewSchedule.cshtml
 //Developed by Baryalay Baz
-//5-Oct-2024
+//22-May-2025
 var currentPage_tblAssets = 0;
 const localizedResult = {
     'Verified (In Good Condition)': 'La Xaqiijiyay (Xaalad Wanaagsan)',
@@ -18,15 +18,12 @@ const unLocalizedResult = {
 }
 const loadBarchart = (data) => {
     
-    var results = data.map(x => isSomali ? localizedResult[x.result] : x.result);
+    let results = data.map(x => isSomali ? localizedResult[x.result] : x.result);
+    let recordCounts = data.map(x => x.verificationRecordCount);
+    const barColors = [getRandomColor(), getRandomColor(), getRandomColor(), getRandomColor(), getRandomColor()];
 
-    var recordCounts = data.map(x => x.verificationRecordCount);
-
-    var barColors = [getRandomColor(), getRandomColor(), getRandomColor(), getRandomColor(), getRandomColor()];
-
-    var myChart = echarts.init(document.getElementById('verificationChart'));
-
-    var option = {
+    const myChart = echarts.init(document.getElementById('verificationChart'));
+    const option = {
         title: {
             text: ''
         },
@@ -78,16 +75,13 @@ const loadBarchart = (data) => {
     });
 };
 const loadProgressChart = (data) => {
-    data = JSON.parse(data); // Make sure the data is parsed from JSON
+    const chart = echarts.init(document.getElementById('progressChart'));
+    const dates = data.map(item => item.formattedDate);
 
-    var chart = echarts.init(document.getElementById('progressChart'));
-
-    var dates = data.map(item => item.formattedDate);
-
-    var planProgress = data.map(item => item.planProgress);
-    var achievedProgress = data.map(item => item.progress);
+    const planProgress = data.map(item => item.planProgress);
+    const achievedProgress = data.map(item => item.progress);
     const sText = isSomali ? 'Horumarka La Qorsheeyay vs. Horumarka La Gaadhay' : 'Planned vs. Achieved Progress';
-    var option = {
+    const option = {
         title: {
             text: sText
         },
@@ -95,7 +89,10 @@ const loadProgressChart = (data) => {
             trigger: 'axis'
         },
         legend: {
-            data: ['Planned Progress', 'Achieved Progress']
+            data: [
+                isSomali ? 'Horumarka La Qorsheeyay' : 'Planned Progress',
+                isSomali ? 'Horumarka La Gaadhay' : 'Achieved Progress'
+            ]
         },
         xAxis: {
             type: 'category',

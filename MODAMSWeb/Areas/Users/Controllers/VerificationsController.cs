@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MODAMS.ApplicationServices.IServices;
 using MODAMS.Models.ViewModels.Dto;
+using System.Globalization;
 
 namespace MODAMSWeb.Areas.Users.Controllers
 {
@@ -10,9 +11,11 @@ namespace MODAMSWeb.Areas.Users.Controllers
     public class VerificationsController : Controller
     {
         private readonly IVerificationService _verificationService;
+        private readonly bool _isSomali;
         public VerificationsController(IVerificationService verificationService)
         {
             _verificationService = verificationService;
+            _isSomali = CultureInfo.CurrentUICulture.Name == "so";
         }
         [HttpGet]
         public async Task<IActionResult> Index()
@@ -54,7 +57,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
         {
             if (!ModelState.IsValid)
             {
-                TempData["error"] = "Error Occurred: " + string.Join("; ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
+                var sError = _isSomali ? "Khalad ayaa dhacay" : "Error Occured:";
+                TempData["error"] = sError + string.Join("; ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
                 return RedirectToAction("CreateSchedule");
             }
 
@@ -63,12 +67,12 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             if (result.IsSuccess)
             {
-                TempData["success"] = "Verification Schedule created successfully!";
+                TempData["success"] = _isSomali ? "Jadwalka Hubinta si guul leh ayaa loo abuuray!" : "Verification Schedule created successfully!";
                 return RedirectToAction("Index");
             }
             else
             {
-                TempData["error"] = "Transaction failed: " + result.ErrorMessage;
+                TempData["error"] = _isSomali ? "Khalad ayaa dhacay" : "Error occured: " + result.ErrorMessage;
                 return RedirectToAction("CreateSchedule");
             }
         }
@@ -98,7 +102,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 var errors = ModelState.Values.SelectMany(v => v.Errors)
                                               .Select(e => e.ErrorMessage)
                                               .ToList();
-                TempData["error"] = "Validation failed: " + string.Join("; ", errors);
+                TempData["error"] = _isSomali ? "Ansaxintu way guuldareysatay: " : "Validation failed: " + string.Join("; ", errors);
                 return View(dto);
             }
 
@@ -107,7 +111,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             if (result.IsSuccess)
             {
-                TempData["success"] = "Schedule updated successfully!";
+                TempData["success"] = _isSomali? "Jadwalku si guul leh ayaa loo cusbooneysiiyay!" : "Schedule updated successfully!";
                 return RedirectToAction("Index");
             }
             else
@@ -152,7 +156,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
         {
             if (id == 0)
             {
-                TempData["error"] = "Select a schedule to delete!";
+                TempData["error"] = _isSomali? "Dooro jadwal aad rabto inaad tirtirto!" : "Select a schedule to delete!";
                 return RedirectToAction("Index");
             }
 
@@ -160,7 +164,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             if (result.IsSuccess)
             {
-                TempData["success"] = "Schedule deleted successfully!";
+                TempData["success"] = _isSomali? "Jadwalka si guul leh ayaa loo tirtiray!" : "Schedule deleted successfully!";
                 return RedirectToAction("Index");
             }
             else
@@ -176,7 +180,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             if (result.IsSuccess)
             {
-                return Json(new { success = true, message = "Verification Record deleted successfuly!" });
+                return Json(new { success = true, message = _isSomali? "Diiwaanka Hubinta si guul leh ayaa loo tirtiray!" : "Verification Record deleted successfuly!" });
             }
             else
             {
@@ -204,7 +208,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             var result = await _verificationService.CompleteVerificationSchedule(ScheduleId);
             if (result.IsSuccess)
             {
-                TempData["success"] = "Verification set to completed successfuly!";
+                TempData["success"] = _isSomali? "Hubintu si guul leh ayaa loo dhammeeyay!" : "Verification set to completed successfuly!";
                 return RedirectToAction("PreviewSchedule", new { id = ScheduleId });
             }
             else

@@ -360,28 +360,29 @@
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.0/dist/echarts.min.js"></script>
-
     <script>
         const isSomali = getCurrentLanguage()==="so";
-
         $(document).ready(function () {
             hideMenu();
-
-            // Pass serialized Model.BarchartData to a global JavaScript variable
-            var barchartData = @Html.Raw(Json.Serialize(Model.BarchartData));
-            var progressChartData = '@Html.Raw(Json.Serialize(Model.ProgressChart))';
-
-            // Now load the bar chart using the data
-            loadBarchart(barchartData);
-            console.log(progressChartData);
-
-            loadProgressChart(progressChartData);
-
+            
+            let result = tryParseJson('@Html.Raw(Json.Serialize(Model.BarchartData))','Barchart Data');
+            if(result.status === "success"){
+                loadBarchart(result.data);
+            }else{
+                showErrorMessageJs(result.message);
+                return;
+            }
+            result = tryParseJson('@Html.Raw(Json.Serialize(Model.ProgressChart))','Progress Chart Data');
+            if(result.status === "success"){
+                loadProgressChart(result.data);
+            }else{
+                showErrorMessageJs(result.message);
+                return;
+            }
             $("#btnVerify").on("click", () => {
                 loadAssetsData();
                 showModal();
             });
-
             $("#btnVerifyAsset").on("click", function (e) {
                 e.preventDefault();
                 if (isFormValid()) {
@@ -390,12 +391,10 @@
                     showErrorMessage(isSomali ? "Fadlan sax khaladaadka xaqiijinta hantida!" : "Please correct the validation errors!");
                 }
             });
-
             $("#btnComplete").on("click", function (e) {
                 e.preventDefault();
                 $("#frmComplete").submit();
             });
-
             var textareaHeight = $('textarea.form-control').outerHeight(); // Includes padding and border
             $('.avatar-list').outerHeight(textareaHeight); // Sets height including padding and border
 
