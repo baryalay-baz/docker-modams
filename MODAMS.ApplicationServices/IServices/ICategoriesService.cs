@@ -17,6 +17,6 @@ namespace MODAMS.ApplicationServices.IServices
         Task<Result<SubCategoryDTO>> CreateSubCategoryAsync(SubCategoryDTO dto);
         Task<Result<SubCategory>> GetEditSubCategoryAsync(int subCategoryId);
         Task<Result<SubCategory>> EditSubCategoryAsync(SubCategory dto);
-        Task<string> GetSubCategoriesAsync(string categoryName);
+        Task<List<SubCategory>> GetSubCategoriesAsync(string categoryName);
     }
 }

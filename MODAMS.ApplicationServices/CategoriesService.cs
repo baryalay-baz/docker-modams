@@ -235,42 +235,27 @@ namespace MODAMS.ApplicationServices
                 return Result<SubCategory>.Failure(ex.Message);
             }
         }
-        public async Task<string> GetSubCategoriesAsync(string categoryName)
+        public async Task<List<SubCategory>> GetSubCategoriesAsync(string categoryName)
         {
-            string sResult = "No Records Found";
+            if (string.IsNullOrWhiteSpace(categoryName))
+                return new List<SubCategory>();
 
-            if (!string.IsNullOrEmpty(categoryName))
+            if (categoryName == "All")
             {
-                if (categoryName == "All")
-                {
-                    var subCategories = await _db.SubCategories.ToListAsync();
-                    if (subCategories.Any())
-                    {
-                        sResult = JsonConvert.SerializeObject(subCategories);
-                    }
-                }
-                else
-                {
-                    int categoryId = await _db.Categories
-                        .Where(c => c.CategoryName == categoryName)
-                        .Select(c => c.Id)
-                        .FirstOrDefaultAsync();
-
-                    if (categoryId > 0)
-                    {
-                        var subCategories = await _db.SubCategories
-                            .Where(sc => sc.CategoryId == categoryId)
-                            .ToListAsync();
-
-                        if (subCategories.Any())
-                        {
-                            sResult = JsonConvert.SerializeObject(subCategories);
-                        }
-                    }
-                }
+                return await _db.SubCategories.ToListAsync();
             }
 
-            return sResult;
+            var categoryId = await _db.Categories
+                .Where(c => c.CategoryName == categoryName)
+                .Select(c => c.Id)
+                .FirstOrDefaultAsync();
+
+            if (categoryId == 0)
+                return new List<SubCategory>();
+
+            return await _db.SubCategories
+                .Where(sc => sc.CategoryId == categoryId)
+                .ToListAsync();
         }
     }
 }

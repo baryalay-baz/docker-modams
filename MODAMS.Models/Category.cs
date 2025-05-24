@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MODAMS.Localization;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -11,16 +12,21 @@ namespace MODAMS.Models
     {
         [Key]
         public int Id { get; set; }
-
-        [Required]
-        [Display(Name ="Category Code")]
+        [Required(
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "Required")]
+        [Display(Name = "CategoryCode", ResourceType = typeof(CategoryLabels))]
         public string CategoryCode { get; set; } = String.Empty;
-
-        [Required]
-        [Display(Name ="Category Name")]
+        [Required(
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "Required")]
+        [Display(Name = "CategoryName", ResourceType = typeof(CategoryLabels))]
         public string CategoryName { get; set; } = String.Empty;
 
-        [Display(Name ="Category Name Somali")]
+        [Required(
+            ErrorMessageResourceType = typeof(ValidationMessages),
+            ErrorMessageResourceName = "Required")]
+        [Display(Name = "CategoryNameSomali", ResourceType = typeof(CategoryLabels))]
         public string CategoryNameSo { get; set; } = String.Empty;
     }
 }

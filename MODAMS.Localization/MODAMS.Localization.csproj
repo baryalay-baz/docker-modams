@@ -17,6 +17,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>AssetDocumentLabels.resx</DependentUpon>
     </Compile>
+    <Compile Update="CategoryLabels.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>CategoryLabels.resx</DependentUpon>
+    </Compile>
     <Compile Update="CreateAssetLabels.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -58,6 +63,10 @@
     <EmbeddedResource Update="AssetDocumentLabels.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>AssetDocumentLabels.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="CategoryLabels.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>CategoryLabels.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="CreateAssetLabels.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

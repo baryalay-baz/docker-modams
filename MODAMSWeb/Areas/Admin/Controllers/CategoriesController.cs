@@ -208,9 +208,10 @@ namespace MODAMSWeb.Areas.Admin.Controllers
         //API AJAX CALLS
         [HttpGet]
         [Authorize(Roles = "Administrator, SeniorManagement, StoreOwner")]
-        public async Task<string> GetSubCategories(string CategoryName)
+        public async Task<IActionResult> GetSubCategories(string categoryName)
         {
-            return await _categoriesService.GetSubCategoriesAsync(CategoryName);
+            var subCategories = await _categoriesService.GetSubCategoriesAsync(categoryName);
+            return Ok(subCategories);
         }
     }
 }
