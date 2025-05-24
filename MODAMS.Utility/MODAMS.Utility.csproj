@@ -1,14 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="MailKit" Version="4.7.1.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="7.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.16" />
     <PackageReference Include="MimeKit" Version="4.7.1" />
     <PackageReference Include="OpenCvSharp4" Version="4.10.0.20241108" />
     <PackageReference Include="OpenCvSharp4.runtime.win" Version="4.10.0.20241108" />

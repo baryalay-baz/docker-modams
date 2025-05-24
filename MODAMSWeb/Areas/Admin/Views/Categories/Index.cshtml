@@ -9,7 +9,7 @@
 
 <div class="page-header">
     <div>
-        <h1 class="page-title">Departments</h1>
+        <h1 class="page-title">Manage Categories</h1>
     </div>
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
@@ -162,18 +162,10 @@
     @*<script src="~/assets/js/project-list.js"></script>*@
     <script>
         $(document).ready(function () {
-            var tblCategories = $('#tblCategories').DataTable({
-                language: {
-                    searchPlaceholder: 'Search...',
-                    sSearch: '',
-                }
-            });
-            $('#tblSubCategories').DataTable({
-                language: {
-                    searchPlaceholder: 'Search...',
-                    sSearch: '',
-                }
-            });
+
+            var tblCategories = makeDataTable('#tblCategories',"1",100);
+
+            makeDataTable('#tblSubCategories',"1",100);
 
             $('#tblCategories tbody').on('click', 'tr', function () {
                 if ($(this).hasClass('trShadow')) {
@@ -248,12 +240,8 @@
                 });
                 sHtml += `</tbody></table>`;
                 $("#dvSubCategories").html("").html(sHtml);
-                $('#tblSubCategories').DataTable({
-                    language: {
-                        searchPlaceholder: 'Search...',
-                        sSearch: '',
-                    }
-                });
+                
+                makeDataTable('#tblSubCategories',"1",100);
             } else {
                 $("#tBodyCategories").html('<tr class="odd"><td valign="top" colspan="4" class="dataTables_empty">No data available in table</td></tr>');
             }
