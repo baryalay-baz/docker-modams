@@ -6,19 +6,19 @@ using MODAMS.DataAccess.Data;
 using MODAMS.Models;
 using MODAMS.Models.ViewModels.Dto;
 using MODAMS.Utility;
-using Newtonsoft.Json;
 using System.Data;
+using System.Globalization;
 
 namespace MODAMSWeb.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = "Administrator, SeniorManagement, StoreOwner")]
+    [Authorize]
     public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext _db;
         private readonly IAMSFunc _func;
         private readonly ICategoriesService _categoriesService;
-        private int _employeeId;
+        private bool _isSomali;
 
         public CategoriesController(ApplicationDbContext db, IAMSFunc func, ICategoriesService categoriesService)
         {
@@ -26,7 +26,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
             _func = func;
             _categoriesService = categoriesService;
 
-            _employeeId = _func.GetEmployeeId();
+            _isSomali = CultureInfo.CurrentCulture.Name == "so";
         }
 
         public async Task<IActionResult> Index(int? id)
@@ -38,7 +38,8 @@ namespace MODAMSWeb.Areas.Admin.Controllers
             {
                 return View(dto);
             }
-            else {
+            else
+            {
                 TempData["error"] = result.ErrorMessage;
                 return View(new CategoriesDTO());
             }
@@ -47,11 +48,9 @@ namespace MODAMSWeb.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> EditCategory(int? id)
         {
-
-
             if (id == null)
             {
-                TempData["error"] = "Please select a category";
+                TempData["error"] = _isSomali ? "Fadlan dooro qayb" : "Please select a category";
                 return RedirectToAction("Index", "Categories");
             }
 
@@ -59,7 +58,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
 
             if (categoryInDb == null)
             {
-                TempData["error"] = "Category not found!";
+                TempData["error"] = _isSomali? "Qayb lama helin!" : "Category not found!";
                 return RedirectToAction("Index", "Categories");
             }
 
@@ -71,14 +70,14 @@ namespace MODAMSWeb.Areas.Admin.Controllers
         {
             if (!ModelState.IsValid)
             {
-                TempData["error"] = "All fields are mandatory";
+                TempData["error"] = _isSomali? "Dhammaan meelaha waa qasab" : "All fields are mandatory";
                 return View(category);
             }
 
             var categoryInDb = await _db.Categories.Where(m => m.Id == category.Id).FirstOrDefaultAsync();
             if (categoryInDb == null)
             {
-                TempData["error"] = "Category not found!";
+                TempData["error"] = _isSomali ? "Qayb lama helin!" : "Category not found!";
                 return View(category);
             }
 
@@ -86,7 +85,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
             categoryInDb.CategoryName = category.CategoryName;
 
             await _db.SaveChangesAsync();
-            TempData["success"] = "Changes saved successfuly!";
+            TempData["success"] = _isSomali? "Isbedelada si guul leh ayaa loo keydiyay!" : "Changes saved successfuly!";
             return RedirectToAction("Index", "Categories");
         }
         [Authorize(Roles = "Administrator, StoreOwner")]
@@ -102,7 +101,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
         {
             if (!ModelState.IsValid)
             {
-                TempData["error"] = "All fields are mandatory";
+                TempData["error"] = _isSomali ? "Dhammaan meelaha waa qasab" : "All fields are mandatory";
                 return View(category);
             }
 
@@ -111,7 +110,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
 
             if (result.IsSuccess)
             {
-                TempData["success"] = "Category added successfuly!";
+                TempData["success"] = _isSomali? "Qayb si guul leh ayaa loo abuuray!" : "Category created successfuly!";
                 return RedirectToAction("Index", "Categories");
             }
             else
@@ -122,22 +121,19 @@ namespace MODAMSWeb.Areas.Admin.Controllers
         }
         [Authorize(Roles = "Administrator, StoreOwner")]
         [HttpGet]
-        public IActionResult CreateSubCategory(int id)
+        public async Task<IActionResult> CreateSubCategory(int id)
         {
-            SubCategoryDTO dto = new SubCategoryDTO();
+            var result = await _categoriesService.GetCreateSubCategoryAsync(id);
 
-            if (id > 0)
+            if (result.IsSuccess)
             {
-                dto.CategoryId = id;
-                dto.SubCategoryCode = "-";
+                return View(result.Value);
             }
             else
             {
-                TempData["error"] = "Please select a category first!";
+                TempData["error"] = result.ErrorMessage;
                 return RedirectToAction("Index", "Categories");
             }
-
-            return View(dto);
         }
         [Authorize(Roles = "Administrator, StoreOwner")]
         [HttpPost]
@@ -145,7 +141,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
         {
             if (!ModelState.IsValid)
             {
-                TempData["error"] = "All fields are mandatory";
+                TempData["error"] = _isSomali ? "Dhammaan meelaha waa qasab" : "All fields are mandatory";
                 return View(dto);
             }
 
@@ -154,7 +150,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
 
             if (result.IsSuccess)
             {
-                TempData["success"] = "Sub-Category added successfuly!";
+                TempData["success"] = _isSomali? "Qayb-hoosaad si guul leh ayaa loo daray!" : "Sub-Category added successfuly!";
                 return RedirectToAction("Index", "Categories");
             }
             else
@@ -169,7 +165,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
         {
             if (id == 0)
             {
-                TempData["error"] = "Please select a subcategory to first";
+                TempData["error"] = _isSomali? "Fadlan marka hore qayb-hoosaad dooro!" : "Please select a Sub-Category to first";
                 return RedirectToAction("Index", "Categories");
             }
 
@@ -188,14 +184,14 @@ namespace MODAMSWeb.Areas.Admin.Controllers
         }
         [Authorize(Roles = "Administrator, StoreOwner")]
         [HttpPost]
-        public async Task<IActionResult> EditSubCategory(SubCategory subCategory)
+        public async Task<IActionResult> EditSubCategory(SubCategoryDTO subCategory)
         {
             var result = await _categoriesService.EditSubCategoryAsync(subCategory);
 
             var dto = result.Value;
             if (result.IsSuccess)
             {
-                TempData["success"] = "Changes saved successfuly!";
+                TempData["success"] = _isSomali? "Isbedelada si guul leh ayaa loo keydiyay!" : "Changes saved successfuly!";
                 return RedirectToAction("Index", "Categories");
             }
             else

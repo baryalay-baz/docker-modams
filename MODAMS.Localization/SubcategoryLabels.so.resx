@@ -117,25 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Cancel" xml:space="preserve">
-    <value>Cancel</value>
+  <data name="Lifespan" xml:space="preserve">
+    <value>Muddada Nolosha</value>
   </data>
-  <data name="Categories" xml:space="preserve">
-    <value>Categories</value>
+  <data name="SubCategoryCode" xml:space="preserve">
+    <value>Koodhka Qayb-hoosaadka</value>
   </data>
-  <data name="CategoryDetails" xml:space="preserve">
-    <value>Category Details</value>
+  <data name="SubCategoryName" xml:space="preserve">
+    <value>Magaca Qayb-hoosaadka</value>
   </data>
-  <data name="CreateCategory" xml:space="preserve">
-    <value>Create Category</value>
-  </data>
-  <data name="Dashboard" xml:space="preserve">
-    <value>Dashboard</value>
-  </data>
-  <data name="EditCategory" xml:space="preserve">
-    <value>Edit Category</value>
-  </data>
-  <data name="SaveChanges" xml:space="preserve">
-    <value>Save Changes</value>
+  <data name="SubCategoryNameSo" xml:space="preserve">
+    <value>Magaca Qayb-hoosaadka Soomaaliga</value>
   </data>
 </root>

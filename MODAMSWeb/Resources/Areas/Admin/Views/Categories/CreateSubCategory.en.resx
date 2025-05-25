@@ -123,17 +123,17 @@
   <data name="Categories" xml:space="preserve">
     <value>Categories</value>
   </data>
-  <data name="CategoryDetails" xml:space="preserve">
-    <value>Category Details</value>
+  <data name="SubCategoryDetails" xml:space="preserve">
+    <value>Sub Category Details</value>
   </data>
-  <data name="CreateCategory" xml:space="preserve">
-    <value>Create Category</value>
+  <data name="CreateSubCategory" xml:space="preserve">
+    <value>Create Sub Category</value>
+  </data>
+  <data name="CreateNewSubCategory" xml:space="preserve">
+    <value>Create New Sub Category</value>
   </data>
   <data name="Dashboard" xml:space="preserve">
     <value>Dashboard</value>
-  </data>
-  <data name="EditCategory" xml:space="preserve">
-    <value>Edit Category</value>
   </data>
   <data name="SaveChanges" xml:space="preserve">
     <value>Save Changes</value>

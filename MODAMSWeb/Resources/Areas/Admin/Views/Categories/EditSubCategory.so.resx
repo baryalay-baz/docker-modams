@@ -118,24 +118,24 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Cancel" xml:space="preserve">
-    <value>Cancel</value>
+    <value>Jooji</value>
   </data>
   <data name="Categories" xml:space="preserve">
-    <value>Categories</value>
+    <value>Qeybaha</value>
   </data>
-  <data name="CategoryDetails" xml:space="preserve">
-    <value>Category Details</value>
+  <data name="SubCategoryDetails" xml:space="preserve">
+    <value>Faahfaahinta Hoosaagga</value>
   </data>
-  <data name="CreateCategory" xml:space="preserve">
-    <value>Create Category</value>
+  <data name="EditSubCategory" xml:space="preserve">
+    <value>Tafatir Qayb-hoosaad</value>
   </data>
   <data name="Dashboard" xml:space="preserve">
-    <value>Dashboard</value>
+    <value>Dashboard-ka</value>
   </data>
   <data name="EditCategory" xml:space="preserve">
-    <value>Edit Category</value>
+    <value>Tafatir Qeyb</value>
   </data>
   <data name="SaveChanges" xml:space="preserve">
-    <value>Save Changes</value>
+    <value>Kaydi Isbeddelada</value>
   </data>
 </root>

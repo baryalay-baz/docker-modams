@@ -117,25 +117,70 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Cancel" xml:space="preserve">
-    <value>Cancel</value>
+  <data name="Action" xml:space="preserve">
+    <value>Action</value>
   </data>
-  <data name="Categories" xml:space="preserve">
-    <value>Categories</value>
-  </data>
-  <data name="CategoryDetails" xml:space="preserve">
-    <value>Category Details</value>
-  </data>
-  <data name="CreateCategory" xml:space="preserve">
-    <value>Create Category</value>
+  <data name="Active" xml:space="preserve">
+    <value>Active</value>
   </data>
   <data name="Dashboard" xml:space="preserve">
     <value>Dashboard</value>
   </data>
-  <data name="EditCategory" xml:space="preserve">
-    <value>Edit Category</value>
+  <data name="EditEmployee" xml:space="preserve">
+    <value>Edit Employee</value>
   </data>
-  <data name="SaveChanges" xml:space="preserve">
-    <value>Save Changes</value>
+  <data name="EmployeeList" xml:space="preserve">
+    <value>EmployeeList</value>
+  </data>
+  <data name="Employees" xml:space="preserve">
+    <value>Employees</value>
+  </data>
+  <data name="FullName" xml:space="preserve">
+    <value>Full Name</value>
+  </data>
+  <data name="IsActive" xml:space="preserve">
+    <value>Is Active</value>
+  </data>
+  <data name="JobTitle" xml:space="preserve">
+    <value>Job Title</value>
+  </data>
+  <data name="LockAccount" xml:space="preserve">
+    <value>Lock Account</value>
+  </data>
+  <data name="LockConfirmationMessage" xml:space="preserve">
+    <value>Are you sure you want to lock this account?</value>
+  </data>
+  <data name="Locked" xml:space="preserve">
+    <value>Locked</value>
+  </data>
+  <data name="LockEmployee" xml:space="preserve">
+    <value>Lock Employee</value>
+  </data>
+  <data name="NewEmployee" xml:space="preserve">
+    <value>New Employee</value>
+  </data>
+  <data name="Phone" xml:space="preserve">
+    <value>Phone</value>
+  </data>
+  <data name="Previous" xml:space="preserve">
+    <value>Previous</value>
+  </data>
+  <data name="RoleName" xml:space="preserve">
+    <value>Role Name</value>
+  </data>
+  <data name="SerialNo" xml:space="preserve">
+    <value>SNo</value>
+  </data>
+  <data name="Supervisor" xml:space="preserve">
+    <value>Supervisor</value>
+  </data>
+  <data name="UnlockAccount" xml:space="preserve">
+    <value>Unlock Account</value>
+  </data>
+  <data name="UnlockConfirmationMessage" xml:space="preserve">
+    <value>Are you sure you want to un-lock this account?</value>
+  </data>
+  <data name="UnlockEmployee" xml:space="preserve">
+    <value>Unlock Employee</value>
   </data>
 </root>

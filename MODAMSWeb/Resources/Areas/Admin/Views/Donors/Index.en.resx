@@ -117,25 +117,31 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Cancel" xml:space="preserve">
-    <value>Cancel</value>
-  </data>
-  <data name="Categories" xml:space="preserve">
-    <value>Categories</value>
-  </data>
-  <data name="CategoryDetails" xml:space="preserve">
-    <value>Category Details</value>
-  </data>
-  <data name="CreateCategory" xml:space="preserve">
-    <value>Create Category</value>
+  <data name="Action" xml:space="preserve">
+    <value>Action</value>
   </data>
   <data name="Dashboard" xml:space="preserve">
     <value>Dashboard</value>
   </data>
-  <data name="EditCategory" xml:space="preserve">
-    <value>Edit Category</value>
+  <data name="DonorCode" xml:space="preserve">
+    <value>Donor Code</value>
   </data>
-  <data name="SaveChanges" xml:space="preserve">
-    <value>Save Changes</value>
+  <data name="DonorList" xml:space="preserve">
+    <value>Donor List</value>
+  </data>
+  <data name="DonorName" xml:space="preserve">
+    <value>Donor Name</value>
+  </data>
+  <data name="Donors" xml:space="preserve">
+    <value>Donors</value>
+  </data>
+  <data name="EditDonor" xml:space="preserve">
+    <value>Edit Donor</value>
+  </data>
+  <data name="NewDonor" xml:space="preserve">
+    <value>New Donor</value>
+  </data>
+  <data name="Previous" xml:space="preserve">
+    <value>Previous</value>
   </data>
 </root>

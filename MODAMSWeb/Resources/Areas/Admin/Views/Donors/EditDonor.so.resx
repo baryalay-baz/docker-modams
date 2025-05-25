@@ -118,24 +118,27 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Cancel" xml:space="preserve">
-    <value>Cancel</value>
+    <value>Jooji</value>
   </data>
-  <data name="Categories" xml:space="preserve">
-    <value>Categories</value>
-  </data>
-  <data name="CategoryDetails" xml:space="preserve">
-    <value>Category Details</value>
-  </data>
-  <data name="CreateCategory" xml:space="preserve">
-    <value>Create Category</value>
+  <data name="CreateDonor" xml:space="preserve">
+    <value>Abuur Deeq Bixin</value>
   </data>
   <data name="Dashboard" xml:space="preserve">
-    <value>Dashboard</value>
+    <value>Dashboard-ka</value>
   </data>
-  <data name="EditCategory" xml:space="preserve">
-    <value>Edit Category</value>
+  <data name="DonorDetails" xml:space="preserve">
+    <value>Faahfaahinta Deeqaha</value>
+  </data>
+  <data name="DonorList" xml:space="preserve">
+    <value>Liiska Deeqayaasha</value>
+  </data>
+  <data name="Donors" xml:space="preserve">
+    <value>Deeqayaasha</value>
+  </data>
+  <data name="EditDonor" xml:space="preserve">
+    <value>Tafatir Deeq-bixiyaha</value>
   </data>
   <data name="SaveChanges" xml:space="preserve">
-    <value>Save Changes</value>
+    <value>Keydi Isbeddelada</value>
   </data>
 </root>

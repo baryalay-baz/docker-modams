@@ -120,20 +120,20 @@
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
-  <data name="Categories" xml:space="preserve">
-    <value>Categories</value>
-  </data>
-  <data name="CategoryDetails" xml:space="preserve">
-    <value>Category Details</value>
-  </data>
-  <data name="CreateCategory" xml:space="preserve">
-    <value>Create Category</value>
+  <data name="CreateDonor" xml:space="preserve">
+    <value>Create Donor</value>
   </data>
   <data name="Dashboard" xml:space="preserve">
     <value>Dashboard</value>
   </data>
-  <data name="EditCategory" xml:space="preserve">
-    <value>Edit Category</value>
+  <data name="DonorDetails" xml:space="preserve">
+    <value>Donor Details</value>
+  </data>
+  <data name="DonorList" xml:space="preserve">
+    <value>Donor List</value>
+  </data>
+  <data name="Donors" xml:space="preserve">
+    <value>Donors</value>
   </data>
   <data name="SaveChanges" xml:space="preserve">
     <value>Save Changes</value>

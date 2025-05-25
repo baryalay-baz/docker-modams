@@ -9,6 +9,7 @@ using MODAMS.Utility;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,7 +23,7 @@ namespace MODAMS.ApplicationServices
         private readonly ILogger<CategoriesService> _logger;
 
         private int _employeeId;
-
+        private readonly bool _isSomali;
         public CategoriesService(ApplicationDbContext db, IAMSFunc func, ILogger<CategoriesService> logger)
         {
             _db = db;
@@ -30,6 +31,7 @@ namespace MODAMS.ApplicationServices
             _logger = logger;
 
             _employeeId = _func.GetEmployeeId();
+            _isSomali = CultureInfo.CurrentCulture.Name == "so";
         }
 
         public async Task<Result<CategoriesDTO>> GetIndexAsync(int? categoryId)
@@ -70,10 +72,15 @@ namespace MODAMS.ApplicationServices
         {
             try
             {
-                var categoryInDb = await _db.Categories.Where(m => m.CategoryName == dto.CategoryName).FirstOrDefaultAsync();
+                var categoryInDb = await _db.Categories.Where(m => m.CategoryName == dto.CategoryName)
+                    .FirstOrDefaultAsync();
                 if (categoryInDb != null)
                 {
-                    return Result<Category>.Failure("Category with this name already exists!");
+                    var message = _isSomali
+                        ? $"Qeybta leh magaca '{dto.CategoryNameSo}' hore ayaa loo abuuray!"
+                        : $"Category with name '{dto.CategoryName}' already exists!";
+
+                    return Result<Category>.Failure(message);
                 }
 
                 await _db.Categories.AddAsync(dto);
@@ -91,7 +98,10 @@ namespace MODAMS.ApplicationServices
                 {
                     _logger.LogError($"Error: {ex.Message}");
                 }
-                return Result<Category>.Failure($"Failed creating a category {ex.Message}");
+                var message = _isSomali
+                    ? $"Waa lagu guuldareystay in la abuuro qeybta {ex.Message}"
+                    : $"Failed creating a category {ex.Message}";
+                return Result<Category>.Failure(message);
             }
         }
         public async Task<Result<Category>> GetEditCategoryAsync(int categoryId)
@@ -100,9 +110,7 @@ namespace MODAMS.ApplicationServices
             {
                 var categoryInDb = await _db.Categories.FirstOrDefaultAsync(m => m.Id == categoryId);
                 if (categoryInDb == null)
-                {
-                    return Result<Category>.Failure("Category not found!");
-                }
+                    return Result<Category>.Failure(_isSomali ? "Qeyb lama helin!" : "Category not found!");
 
                 return Result<Category>.Success(categoryInDb);
             }
@@ -126,11 +134,12 @@ namespace MODAMS.ApplicationServices
                 var categoryInDb = await _db.Categories.Where(m => m.Id == dto.Id).FirstOrDefaultAsync();
                 if (categoryInDb == null)
                 {
-                    return Result<Category>.Failure("Category not found!");
+                    return Result<Category>.Failure(_isSomali ? "Qeyb lama helin!" : "Category not found!");
                 }
 
                 categoryInDb.CategoryCode = dto.CategoryCode;
                 categoryInDb.CategoryName = dto.CategoryName;
+                categoryInDb.CategoryNameSo = dto.CategoryNameSo;
 
                 await _db.SaveChangesAsync();
                 return Result<Category>.Success(dto);
@@ -149,6 +158,29 @@ namespace MODAMS.ApplicationServices
             }
 
         }
+        public async Task<Result<SubCategoryDTO>> GetCreateSubCategoryAsync(int categoryId)
+        {
+            try
+            {
+                var category = await _db.Categories.Where(m => m.Id == categoryId).FirstOrDefaultAsync();
+                if (category == null)
+                {
+                    return Result<SubCategoryDTO>.Failure(_isSomali ? "Qeyb lama helin!" : "Category not found!");
+                }
+                var dto = new SubCategoryDTO()
+                {
+                    CategoryId = categoryId,
+                    CategoryCode = category.CategoryCode,
+                    CategoryName = category.CategoryName,
+                };
+                return Result<SubCategoryDTO>.Success(dto);
+            }
+            catch (Exception ex)
+            {
+                _func.LogException(_logger, ex);
+                return Result<SubCategoryDTO>.Failure(ex.Message);
+            }
+        }
         public async Task<Result<SubCategoryDTO>> CreateSubCategoryAsync(SubCategoryDTO dto)
         {
             try
@@ -156,7 +188,9 @@ namespace MODAMS.ApplicationServices
                 var subCategoryInDb = await _db.SubCategories.Where(m => m.SubCategoryName == dto.SubCategoryName).FirstOrDefaultAsync();
                 if (subCategoryInDb != null)
                 {
-                    return Result<SubCategoryDTO>.Failure("Sub-Category with this name already exists!");
+                    return Result<SubCategoryDTO>.Failure(_isSomali
+                        ? "Hoosaag leh magacaas hore ayaa loo abuuray!"
+                        : "Sub-Category with this name already exists!");
                 }
 
                 dto.LifeSpan = (dto.LifeSpan < 1) ? 1 : dto.LifeSpan;
@@ -166,6 +200,7 @@ namespace MODAMS.ApplicationServices
                     CategoryId = dto.CategoryId,
                     SubCategoryCode = dto.SubCategoryCode,
                     SubCategoryName = dto.SubCategoryName,
+                    SubCategoryNameSo = dto.SubCategoryNameSo,
                     LifeSpan = dto.LifeSpan
                 };
                 await _db.SubCategories.AddAsync(subCategory);
@@ -186,41 +221,54 @@ namespace MODAMS.ApplicationServices
                 return Result<SubCategoryDTO>.Failure(ex.Message);
             }
         }
-        public async Task<Result<SubCategory>> GetEditSubCategoryAsync(int subCategoryId)
+        public async Task<Result<SubCategoryDTO>> GetEditSubCategoryAsync(int subCategoryId)
         {
             try
             {
-                var dto = await _db.SubCategories.Where(m => m.Id == subCategoryId).FirstOrDefaultAsync();
+                var subCategoryInDb = await _db.SubCategories
+                    .Include(m => m.Category)
+                    .Where(m => m.Id == subCategoryId).FirstOrDefaultAsync();
 
-                if (dto == null)
+                if (subCategoryInDb == null)
+                    return Result<SubCategoryDTO>.Failure(_isSomali ? "Hoosaag lama helin!" : "Sub-Category not found!");
+
+                var dto = new SubCategoryDTO()
                 {
-                    return Result<SubCategory>.Failure("Sub-Category not found!");
-                }
+                    Id = subCategoryInDb.Id,
+                    CategoryId = subCategoryInDb.CategoryId,
+                    SubCategoryCode = subCategoryInDb.SubCategoryCode,
+                    CategoryCode = subCategoryInDb.Category.CategoryCode,
+                    CategoryName = subCategoryInDb.Category.CategoryName,
+                    SubCategoryName = subCategoryInDb.SubCategoryName,
+                    SubCategoryNameSo = subCategoryInDb.SubCategoryNameSo,
+                    LifeSpan = subCategoryInDb.LifeSpan
+                };
 
-                return Result<SubCategory>.Success(dto);
+                return Result<SubCategoryDTO>.Success(dto);
             }
             catch (Exception ex)
             {
                 _func.LogException(_logger, ex);
-                return Result<SubCategory>.Failure(ex.Message);
+                return Result<SubCategoryDTO>.Failure(ex.Message);
             }
         }
-        public async Task<Result<SubCategory>> EditSubCategoryAsync(SubCategory dto)
+        public async Task<Result<SubCategoryDTO>> EditSubCategoryAsync(SubCategoryDTO dto)
         {
             try
             {
                 var subCategoryInDb = await _db.SubCategories.Where(m => m.Id == dto.Id).FirstOrDefaultAsync();
                 if (subCategoryInDb == null)
                 {
-                    return Result<SubCategory>.Failure("Sub-Category not found!");
+                    return Result<SubCategoryDTO>.Failure(_isSomali ? "Hoosaag lama helin!" : "Sub-Category not found!");
                 }
 
                 subCategoryInDb.SubCategoryCode = dto.SubCategoryCode;
                 subCategoryInDb.SubCategoryName = dto.SubCategoryName;
+                subCategoryInDb.SubCategoryNameSo = dto.SubCategoryNameSo;
                 subCategoryInDb.LifeSpan = dto.LifeSpan < 1 ? 1 : dto.LifeSpan;
                 await _db.SaveChangesAsync();
 
-                return Result<SubCategory>.Success(dto);
+                return Result<SubCategoryDTO>.Success(dto);
             }
             catch (Exception ex)
             {
@@ -232,7 +280,7 @@ namespace MODAMS.ApplicationServices
                 {
                     _logger.LogError($"Error: {ex.Message}");
                 }
-                return Result<SubCategory>.Failure(ex.Message);
+                return Result<SubCategoryDTO>.Failure(ex.Message);
             }
         }
         public async Task<List<SubCategory>> GetSubCategoriesAsync(string categoryName)

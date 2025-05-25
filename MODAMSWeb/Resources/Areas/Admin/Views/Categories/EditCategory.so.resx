@@ -124,13 +124,10 @@
     <value>Qeybaha</value>
   </data>
   <data name="CategoryDetails" xml:space="preserve">
-    <value>Faahfaahinta Qaybta</value>
+    <value>Faahfaahinta Qeybta</value>
   </data>
   <data name="CreateCategory" xml:space="preserve">
     <value>Abuur Qayb</value>
-  </data>
-  <data name="CreateNewCategory" xml:space="preserve">
-    <value>Abuur Qayb Cusub</value>
   </data>
   <data name="Dashboard" xml:space="preserve">
     <value>Dashboard-ka</value>

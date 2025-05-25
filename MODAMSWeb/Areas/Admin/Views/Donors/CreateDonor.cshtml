@@ -1,15 +1,19 @@
-﻿@model MODAMS.Models.Donor
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization
+@inject IViewLocalizer Localizer
+
+@model MODAMS.Models.Donor
 
 <!-- PAGE-HEADER -->
 <div class="page-header">
     <div>
-        <h1 class="page-title">Create Donor</h1>
+        <h1 class="page-title">@Localizer["CreateDonor"]</h1>
     </div>
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">Dashboard</a></li>
-            <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Donors" asp-action="Index">Donors List</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Create Donor</li>
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">@Localizer["Dashboard"]</a></li>
+            <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Donors" asp-action="Index">@Localizer["Donors"]</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Localizer["CreateDonor"]</li>
         </ol>
     </div>
 </div>
@@ -19,7 +23,7 @@
     <div class="col-lg-12 col-md-12">
         <div class="card">
             <div class="card-header border-bottom">
-                <h4 class="mb-0">Donor Details</h4>
+                <h4 class="mb-0">@Localizer["DonorDetails"]</h4>
             </div>
             <div class="card-body p-0">
                 <div class="row p-5 border-bottom">
@@ -33,7 +37,7 @@
                                     <div class="col-sm-6">
                                         <div class="mb-3 form-group">
                                             <label asp-for="Code"></label>
-                                            <input asp-for="Code" class="form-control" aria-required="true" placeholder="Donor Code" />
+                                            <input asp-for="Code" class="form-control" aria-required="true" />
                                             <span asp-validation-for="Code" class="text-danger"></span>
                                         </div>
                                     </div>
@@ -42,7 +46,7 @@
                                     <div class="col-sm-6">
                                         <div class="mb-3 form-group">
                                             <label asp-for="Name"></label>
-                                            <input asp-for="Name" class="form-control" aria-required="true" placeholder="Donor Name" />
+                                            <input asp-for="Name" class="form-control" aria-required="true" />
                                             <span asp-validation-for="Name" class="text-danger"></span>
                                         </div>
                                     </div>
@@ -53,8 +57,8 @@
                 </div>
                 <div class="row p-5">
                     <div class="btn-list">
-                        <button id="btnSubmit" class="btn btn-primary"><i class="fe fe-check-circle"></i> Save Donor</button>
-                        <a asp-area="Admin" asp-controller="Donors" asp-action="Index" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
+                        <button id="btnSubmit" class="btn btn-info"><i class="fa fa-check-circle"></i> @Localizer["SaveChanges"]</button>
+                        <a asp-area="Admin" asp-controller="Donors" asp-action="Index" class="btn btn-gray"><i class="fa fa-close"></i>&nbsp;@Localizer["Cancel"]</a>
                     </div>
                 </div>
             </div>

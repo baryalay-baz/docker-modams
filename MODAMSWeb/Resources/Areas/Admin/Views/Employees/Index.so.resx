@@ -117,25 +117,70 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Cancel" xml:space="preserve">
-    <value>Cancel</value>
+  <data name="Action" xml:space="preserve">
+    <value>Ficil</value>
   </data>
-  <data name="Categories" xml:space="preserve">
-    <value>Categories</value>
-  </data>
-  <data name="CategoryDetails" xml:space="preserve">
-    <value>Category Details</value>
-  </data>
-  <data name="CreateCategory" xml:space="preserve">
-    <value>Create Category</value>
+  <data name="Active" xml:space="preserve">
+    <value>Firfircoon</value>
   </data>
   <data name="Dashboard" xml:space="preserve">
-    <value>Dashboard</value>
+    <value>Dashboard-ka</value>
   </data>
-  <data name="EditCategory" xml:space="preserve">
-    <value>Edit Category</value>
+  <data name="EditEmployee" xml:space="preserve">
+    <value>Tafatir Shaqaalaha</value>
   </data>
-  <data name="SaveChanges" xml:space="preserve">
-    <value>Save Changes</value>
+  <data name="EmployeeList" xml:space="preserve">
+    <value>Liiska Shaqaalaha</value>
+  </data>
+  <data name="Employees" xml:space="preserve">
+    <value>Shaqaalaha</value>
+  </data>
+  <data name="FullName" xml:space="preserve">
+    <value>Magaca oo buuxa</value>
+  </data>
+  <data name="IsActive" xml:space="preserve">
+    <value>Ma firfircoon yahay?</value>
+  </data>
+  <data name="JobTitle" xml:space="preserve">
+    <value>Cinwaanka Shaqada</value>
+  </data>
+  <data name="LockAccount" xml:space="preserve">
+    <value>Xir Akoonka</value>
+  </data>
+  <data name="LockConfirmationMessage" xml:space="preserve">
+    <value>Ma hubtaa inaad xirto akoontigan?</value>
+  </data>
+  <data name="Locked" xml:space="preserve">
+    <value>La xiray</value>
+  </data>
+  <data name="LockEmployee" xml:space="preserve">
+    <value>Shaqaale Cusub</value>
+  </data>
+  <data name="NewEmployee" xml:space="preserve">
+    <value>Shaqaale Cusub</value>
+  </data>
+  <data name="Phone" xml:space="preserve">
+    <value>Telefoon</value>
+  </data>
+  <data name="Previous" xml:space="preserve">
+    <value>Hore</value>
+  </data>
+  <data name="RoleName" xml:space="preserve">
+    <value>Magaca Doorka</value>
+  </data>
+  <data name="SerialNo" xml:space="preserve">
+    <value>L/S</value>
+  </data>
+  <data name="Supervisor" xml:space="preserve">
+    <value>Kormeeraha</value>
+  </data>
+  <data name="UnlockAccount" xml:space="preserve">
+    <value>Fur Akoonka</value>
+  </data>
+  <data name="UnlockConfirmationMessage" xml:space="preserve">
+    <value>Ma hubtaa inaad furto akoontigan?</value>
+  </data>
+  <data name="UnlockEmployee" xml:space="preserve">
+    <value>Fur Shaqaalaha</value>
   </data>
 </root>

@@ -1,15 +1,19 @@
-﻿@model MODAMS.Models.ViewModels.Dto.SubCategoryDTO
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization
+@inject IViewLocalizer Localizer
+
+@model MODAMS.Models.ViewModels.Dto.SubCategoryDTO
 
 <!-- PAGE-HEADER -->
 <div class="page-header">
     <div>
-        <h1 class="page-title">Create Sub Category</h1>
+        <h1 class="page-title">@Localizer["CreateSubCategory"]</h1>
     </div>
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">Dashboard</a></li>
-            <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Categories" asp-action="Index">Categories</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Create Sub Category</li>
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">@Localizer["Dashboard"]</a></li>
+            <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Categories" asp-action="Index">@Localizer["Categories"]</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Localizer["CreateSubCategory"]</li>
         </ol>
     </div>
 </div>
@@ -19,7 +23,7 @@
     <div class="col-lg-12 col-md-12">
         <div class="card">
             <div class="card-header border-bottom">
-                <h4 class="mb-0">Sub Category Details</h4>
+                <h4 class="mb-0">@Localizer["SubCategoryDetails"]</h4>
             </div>
             <div class="card-body p-0">
                 <div class="row p-5 border-bottom">
@@ -32,8 +36,17 @@
                                 <div class="row">
                                     <div class="col-sm-6">
                                         <div class="mb-3 form-group">
+                                            <label asp-for="CategoryName"></label>
+                                            <input asp-for="CategoryName" readonly class="form-control" aria-required="true" />
+                                            <span asp-validation-for="CategoryName" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="mb-3 form-group">
                                             <label asp-for="SubCategoryCode"></label>
-                                            <input asp-for="SubCategoryCode" class="form-control" aria-required="true" placeholder="Sub-Category Code" />
+                                            <input asp-for="SubCategoryCode" value="@Model.CategoryCode" readonly class="form-control" aria-required="true" />
                                             <span asp-validation-for="SubCategoryCode" class="text-danger"></span>
                                         </div>
                                     </div>
@@ -42,7 +55,7 @@
                                     <div class="col-sm-6">
                                         <div class="mb-3 form-group">
                                             <label asp-for="SubCategoryName"></label>
-                                            <input asp-for="SubCategoryName" class="form-control" aria-required="true" placeholder="Category Name" />
+                                            <input asp-for="SubCategoryName" class="form-control" aria-required="true" autocomplete="off" />
                                             <span asp-validation-for="SubCategoryName" class="text-danger"></span>
                                         </div>
                                     </div>
@@ -50,8 +63,17 @@
                                 <div class="row">
                                     <div class="col-sm-6">
                                         <div class="mb-3 form-group">
+                                            <label asp-for="SubCategoryNameSo"></label>
+                                            <input asp-for="SubCategoryNameSo" class="form-control" aria-required="true" autocomplete="off">
+                                            <span asp-validation-for="SubCategoryNameSo" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="mb-3 form-group">
                                             <label asp-for="LifeSpan"></label>
-                                            <input asp-for="LifeSpan" class="form-control" aria-required="true" placeholder="Lifespan" />
+                                            <input asp-for="LifeSpan" class="form-control" aria-required="true" />
                                             <span asp-validation-for="LifeSpan" class="text-danger"></span>
                                         </div>
                                     </div>
@@ -62,8 +84,8 @@
                 </div>
                 <div class="row p-5">
                     <div class="btn-list">
-                        <button id="btnSubmit" class="btn btn-primary"><i class="fe fe-check-circle"></i> Save Changes</button>
-                        <a asp-area="Admin" asp-controller="Categories" asp-action="Index" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
+                        <button id="btnSubmit" class="btn btn-info"><i class="fa fa-check-circle"></i> @Localizer["SaveChanges"]</button>
+                        <a asp-area="Admin" asp-controller="Categories" asp-action="Index" class="btn btn-gray"><i class="fa fa-close"></i>&nbsp;@Localizer["Cancel"]</a>
                     </div>
                 </div>
             </div>
@@ -77,6 +99,26 @@
             $("#btnSubmit").on("click", () => {
                 $("#frmSubCategory").submit();
             });
+            $("#SubCategoryName").on("input", () => {
+                generateSubCategoryCode();
+            });
         });
+
+        function generateSubCategoryCode() {
+            let subCategoryName = $("#SubCategoryName").val().trim();
+            let subCategoryCode = "@Model.CategoryCode" + "-";
+            if (subCategoryName) {
+                // Remove any non-alphabet characters and get first 3 letters
+                let lettersOnly = subCategoryName.replace(/[^a-zA-Z]/g, '');
+                let codePart = lettersOnly.substring(0, 4).toUpperCase();
+                // Pad with X if less than 3 letters
+                codePart = codePart.padEnd(3, 'X');
+                subCategoryCode += codePart;
+            } else {
+                subCategoryCode = '';
+            }
+            $("#SubCategoryCode").val(subCategoryCode);
+        }
+
     </script>
 }

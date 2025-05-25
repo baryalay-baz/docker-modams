@@ -1,13 +1,17 @@
-﻿@model List<MODAMS.Models.Donor>
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization
+@inject IViewLocalizer Localizer
+
+@model List<MODAMS.Models.Donor>
 
 <div class="page-header">
     <div>
-        <h1 class="page-title">Donors</h1>
+        <h1 class="page-title">@Localizer["Donors"]</h1>
     </div>
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">Dashboard</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Donors</li>
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">@Localizer["Dashboard"]</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Localizer["Donors"]</li>
         </ol>
     </div>
 </div>
@@ -17,9 +21,8 @@
         <div class="card">
             <div class="card-body p-4">
                 <div class="d-flex align-items-center justify-content-between">
-                    <h4 class="m-0">Donors List</h4>
+                    <h4 class="m-0">@Localizer["DonorList"]</h4>
                     <div class="btn-list">
-                        
                     </div>
                 </div>
             </div>
@@ -29,7 +32,7 @@
         <div class="btn-list">
             <a asp-area="Admin" asp-controller="Donors" asp-action="CreateDonor" class="btn btn-info-gradient trShadow">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-inner-icn text-white" enable-background="new 0 0 24 24" viewBox="0 0 24 24"><path d="M16,11.5h-3.5V8c0-0.276123-0.223877-0.5-0.5-0.5S11.5,7.723877,11.5,8v3.5H8c-0.276123,0-0.5,0.223877-0.5,0.5s0.223877,0.5,0.5,0.5h3.5v3.5005493C11.5001831,16.2765503,11.723999,16.5001831,12,16.5h0.0006104C12.2765503,16.4998169,12.5001831,16.276001,12.5,16v-3.5H16c0.276123,0,0.5-0.223877,0.5-0.5S16.276123,11.5,16,11.5z M12,2C6.4771729,2,2,6.4771729,2,12s4.4771729,10,10,10c5.5202026-0.0062866,9.9937134-4.4797974,10-10C22,6.4771729,17.5228271,2,12,2z M12,21c-4.9705811,0-9-4.0294189-9-9s4.0294189-9,9-9c4.9682617,0.0056152,8.9943848,4.0317383,9,9C21,16.9705811,16.9705811,21,12,21z" /></svg>
-                New Donor
+                @Localizer["NewDonor"]
             </a>
         </div>
     </div>
@@ -40,10 +43,10 @@
                     <table id="tblDonors" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
                         <thead class="table-head">
                             <tr>
-                                <th class="bg-transparent border-bottom-0 w-5">S.No</th>
-                                <th class="bg-transparent border-bottom-0">Donor Code</th>
-                                <th class="bg-transparent border-bottom-0">Donor Name</th>
-                                <th class="bg-transparent border-bottom-0 no-btn">Action</th>
+                                <th class="bg-transparent border-bottom-0 w-5">#</th>
+                                <th class="bg-transparent border-bottom-0">@Localizer["DonorCode"]</th>
+                                <th class="bg-transparent border-bottom-0">@Localizer["DonorName"]</th>
+                                <th class="bg-transparent border-bottom-0 no-btn">@Localizer["Action"]</th>
                             </tr>
                         </thead>
                         <tbody class="table-body">
@@ -56,20 +59,19 @@
                                     nCounter++;
                                     sCounter = (nCounter < 10) ? "0" + nCounter : nCounter.ToString();
 
-                                        <tr>
-                                            <td class="text-muted fs-15 fw-semibold text-center">@sCounter.</td>
-                                            <td class="text-muted fs-15 fw-semibold">@donor.Code</td>
-                                            <td class="text-muted fs-15 fw-semibold">@donor.Name</td>
-                                            <td>
-                                                <div class="d-flex align-items-stretch">
-                                                    <a asp-controller="Donors" asp-action="EditDonor" asp-route-id="@donor.Id" class="btn btn-sm btn-outline-primary border me-2" data-bs-toggle="tooltip" data-bs-original-title="Edit Donor">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 20">
-                                                            <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" />
-                                                        </svg>
-                                                    </a>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                    <tr>
+                                        <td class="text-muted fs-15 fw-semibold text-center">@sCounter.</td>
+                                        <td class="text-muted fs-15 fw-semibold">@donor.Code</td>
+                                        <td class="text-muted fs-15 fw-semibold">@donor.Name</td>
+                                        <td>
+                                            <div class="d-flex align-items-stretch">
+                                                <a asp-controller="Donors" asp-action="EditDonor" asp-route-id="@donor.Id"
+                                                   class="btn btn-sm btn-outline-info me-1 data-bs-toggle="tooltip" data-bs-original-title="@Localizer["EditDonor"]">
+                                                    <i class="fe fe-edit"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
                                 }
                             }
                         </tbody>
@@ -77,9 +79,9 @@
                 </div>
             </div>
             <div class="card-footer">
-                <a asp-area="Users" asp-controller="Home" asp-action="Index" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
+                <a asp-area="Users" asp-controller="Home" asp-action="Index" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;@Localizer["Previous"]</a>
             </div>
-            
+
         </div>
     </div>
 </div>
@@ -89,7 +91,7 @@
     <!-- PROJECT-LIST JS-->
     @*<script src="~/assets/js/project-list.js"></script>*@
     <script>
-        
+
         $(document).ready(function () {
             hideMenu();
             makeDataTable("#tblDonors", "1");
