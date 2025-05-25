@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using MODAMS.Models.ViewModels.Dto;
 using MODAMS.Models.ViewModels;
 using MODAMS.ApplicationServices.IServices;
+using System.Globalization;
 
 namespace MODAMSWeb.Areas.Admin.Controllers
 {
@@ -29,7 +30,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
         private readonly IEmailSender _emailSender;
 
         private readonly IEmployeesService _employeesService;
-
+        private readonly bool _isSomali;
         public EmployeesController(IEmployeesService employeesService, ILogger<HomeController> logger, ApplicationDbContext db, IAMSFunc func,
             UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IEmailSender emailSender)
         {
@@ -42,6 +43,8 @@ namespace MODAMSWeb.Areas.Admin.Controllers
             _userManager = userManager;
             _roleManager = roleManager;
             _emailSender = emailSender;
+
+            _isSomali = CultureInfo.CurrentCulture.Name == "so";
         }
 
         [Authorize(Roles = "StoreOwner, SeniorManagement, Administrator")]
@@ -86,7 +89,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
         {
             if (!ModelState.IsValid)
             {
-                TempData["error"] = "Please fill all the mandatory fields";
+                TempData["error"] = _isSomali? "Fadlan buuxi dhammaan goobaha khasabka ah" : "Please fill all the mandatory fields";
                 form = await _employeesService.PopulateEmployeeDTOAsync(form);
 
                 return View(form);
@@ -95,7 +98,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
             var result = await _employeesService.CreateEmployeeAsync(form);
             if (result.IsSuccess)
             {
-                TempData["success"] = "Employee added successfuly!";
+                TempData["success"] = _isSomali? "Shaqaale si guul leh ayaa lagu daray!" : "Employee added successfuly!";
 
                 // Pass the base URL and scheme to the service for generating the URL
                 await _employeesService.SendRegistrationNotification(
@@ -144,7 +147,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
 
             if (result.IsSuccess)
             {
-                TempData["success"] = "Employee record updated successfully!";
+                TempData["success"] = _isSomali? "Diiwaanka shaqaalaha si guul leh ayaa loo cusboonaysiiyay!" : "Employee record updated successfully!";
                 return RedirectToAction("Index", "Employees");
             }
             else
@@ -160,7 +163,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
             var result = await _employeesService.LockAccountAsync(id);
 
             if (result.IsSuccess) {
-                TempData["success"] = "Account locked successfuly!";
+                TempData["success"] = _isSomali? "Akoonka si guul leh ayaa loo xiray!" : "Account locked successfuly!";
                 return RedirectToAction("Index", "Employees");
             }
 
@@ -176,7 +179,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
 
             if (result.IsSuccess)
             {
-                TempData["success"] = "Account unlocked successfuly!";
+                TempData["success"] = _isSomali? "Akoonka si guul leh ayaa loo furay!" : "Account unlocked successfuly!";
                 return RedirectToAction("Index", "Employees");
             }
 

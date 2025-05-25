@@ -156,12 +156,13 @@ const Notify = (type, message) => {
 
 // Show error message inside a notification container
 const showErrorMessageJs = (errorMessage) => {
+    const isSomali = getCurrentLanguage() === "so";
     const sHtml = `
         <div class="notification-container">
             <div class="alert alert-danger alert-dismissible fade show p-0 mb-0" role="alert">
                 <p class="py-3 px-5 mb-0 border-bottom border-bottom-danger-light">
                     <span class="alert-inner--icon me-2"><i class="fe fe-slash"></i></span>
-                    <strong>Error Message</strong>
+                    <strong>${isSomali ? "Fariinta Khaladka" : "Error Message"}</strong>
                 </p>
                 <p class="py-3 px-5">${errorMessage}</p>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
@@ -174,12 +175,14 @@ const showErrorMessageJs = (errorMessage) => {
 
 // Show success message inside a notification container
 const showSuccessMessageJs = (successMessage) => {
+    const isSomali = getCurrentLanguage()==="so";
+
     const sHtml = `
         <div class="notification-container">
             <div class="alert alert-success alert-dismissible fade show p-0 mb-4 notification-message" role="alert">
                 <p class="py-3 px-5 mb-0 border-bottom border-bottom-success-light">
                     <span class="alert-inner--icon me-2"><i class="fe fe-thumbs-up"></i></span>
-                    <strong>Success Message</strong>
+                    <strong>${isSomali ? "Fariinta Guusha" :"Success Message"}</strong>
                 </p>
                 <p class="py-3 px-5">${successMessage}</p>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">

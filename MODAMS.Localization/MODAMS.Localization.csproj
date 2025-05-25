@@ -37,6 +37,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>DonorLabels.resx</DependentUpon>
     </Compile>
+    <Compile Update="EmployeeLabels.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>EmployeeLabels.resx</DependentUpon>
+    </Compile>
     <Compile Update="Register.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -89,6 +94,10 @@
     <EmbeddedResource Update="DonorLabels.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>DonorLabels.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="EmployeeLabels.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>EmployeeLabels.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Register.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

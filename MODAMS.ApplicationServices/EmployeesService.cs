@@ -4,22 +4,15 @@ using Microsoft.Extensions.Logging;
 using MODAMS.DataAccess.Data;
 using MODAMS.Models.ViewModels;
 using MODAMS.Utility;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.EntityFrameworkCore;
 using MODAMS.Models.ViewModels.Dto;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MODAMS.Models;
-using System.Security.Policy;
 using System.Text.Encodings.Web;
-using DocumentFormat.OpenXml.Office2010.Excel;
 using Newtonsoft.Json;
 using MODAMS.ApplicationServices.IServices;
+using System.Globalization;
 
 namespace MODAMS.ApplicationServices
 {
@@ -33,7 +26,7 @@ namespace MODAMS.ApplicationServices
         private readonly IEmailSender _emailSender;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private int _employeeId;
-
+        private readonly bool _isSomali;
         public EmployeesService(ILogger<EmployeesService> logger, ApplicationDbContext db, IAMSFunc func,
             UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IEmailSender emailSender,
             IHttpContextAccessor httpContextAccessor)
@@ -47,6 +40,7 @@ namespace MODAMS.ApplicationServices
             _httpContextAccessor = httpContextAccessor;
 
             _employeeId = _func.GetEmployeeId();
+            _isSomali = CultureInfo.CurrentCulture.Name == "so";
         }
 
         private bool IsInRole(string role) => _httpContextAccessor.HttpContext.User.IsInRole(role);
@@ -96,7 +90,7 @@ namespace MODAMS.ApplicationServices
                 var employeeInDb = await _db.Employees.FirstOrDefaultAsync(m => m.Email == dto.Employee.Email);
 
                 if (employeeInDb != null)
-                    return Result<EmployeeDTO>.Failure("Employee with this email already exists");
+                    return Result<EmployeeDTO>.Failure(_isSomali? "Shaqaale leh email-kan hore ayuu u jiray" : "Employee with this email already exists");
 
                 dto.Employee.ImageUrl = "/assets/images/faces/profile_placeholder.png";
                 dto.Employee.IsActive = true;
@@ -121,7 +115,7 @@ namespace MODAMS.ApplicationServices
                 var employeeInDb = await _db.Employees.Where(m => m.Id == employeeId).FirstOrDefaultAsync();
 
                 if (employeeInDb == null)
-                    return Result<EmployeeDTO>.Failure("Employee not found!");
+                    return Result<EmployeeDTO>.Failure(_isSomali? "Shaqaale lama helin!" : "Employee not found!");
 
                 var currentRole = await _func.GetRoleNameAsync(employeeId);
 
@@ -147,7 +141,7 @@ namespace MODAMS.ApplicationServices
                 if (employee == null)
                 {
                     dto = await PopulateEmployeeDTOAsync(dto);
-                    return Result<EmployeeDTO>.Failure("Employee not found!", dto);
+                    return Result<EmployeeDTO>.Failure(_isSomali? "Shaqaale lama helin!" : "Employee not found!", dto);
                 }
 
                 employee.FullName = dto.Employee.FullName;
@@ -191,7 +185,7 @@ namespace MODAMS.ApplicationServices
                 var employee = _db.Employees.Where(m => m.Id == employeeId).FirstOrDefault();
 
                 if (employee == null)
-                    return Result<bool>.Failure("Employee record not found!");
+                    return Result<bool>.Failure(_isSomali? "Shaqaale lama helin!" : "Employee not found!");
 
                 employee.IsActive = false;
                 await _db.SaveChangesAsync();
@@ -211,7 +205,7 @@ namespace MODAMS.ApplicationServices
                 var employee = _db.Employees.Where(m => m.Id == employeeId).FirstOrDefault();
 
                 if (employee == null)
-                    return Result<bool>.Failure("Employee record not found!");
+                    return Result<bool>.Failure(_isSomali ? "Shaqaale lama helin!" : "Employee not found!");
 
                 employee.IsActive = true;
                 await _db.SaveChangesAsync();
@@ -248,23 +242,24 @@ namespace MODAMS.ApplicationServices
             // Construct the callback URL manually
             var callbackUrl = $"{scheme}://{baseUrl}/Identity/Account/Register?returnUrl={Uri.EscapeDataString(emailAddress)}";
 
-            string shortMessage = "A new account has been created for you at MOD Asset Management System, " +
-                                  "please click the button below to follow the instructions!";
+            string shortMessage = _isSomali
+            ? "Akoon cusub ayaa lagu abuuray nidaamka Maaraynta Hantida ee MOD, fadlan guji batoonka hoose si aad u raacdo tilmaamaha!"
+            : "A new account has been created for you at MOD Asset Management System, please click the button below to follow the instructions!";
 
             string message;
 
             if (!string.IsNullOrEmpty(callbackUrl))
             {
-                message = _func.FormatMessage("Account Registration", shortMessage, emailAddress,
+                message = _func.FormatMessage(_isSomali? "Diiwaangelinta Akoonka" : "Account Registration", shortMessage, emailAddress,
                                               HtmlEncoder.Default.Encode(callbackUrl), "Register here");
             }
             else
             {
-                message = _func.FormatMessage("Reset Password", shortMessage, emailAddress,
+                message = _func.FormatMessage(_isSomali? "Dib u Deji Erayga Sirta" : "Reset Password", shortMessage, emailAddress,
                                               HtmlEncoder.Default.Encode("./"), "Register here");
             }
 
-            await _emailSender.SendEmailAsync(emailAddress, "Account Registration", message);
+            await _emailSender.SendEmailAsync(emailAddress, _isSomali ? "Diiwaangelinta Akoonka" : "Account Registration", message);
         }
         public async Task<EmployeeDTO> PopulateEmployeeDTOAsync(EmployeeDTO dto)
         {

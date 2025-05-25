@@ -54,7 +54,6 @@
                                 <th class="bg-transparent border-bottom-0 w-5">@Localizer["SNo"]</th>
                                 <th class="bg-transparent border-bottom-0">@Localizer["FullName"]</th>
                                 <th class="bg-transparent border-bottom-0">@Localizer["JobTitle"]</th>
-                                <th class="bg-transparent border-bottom-0">@Localizer["Phone"]</th>
                                 <th class="bg-transparent border-bottom-0">@Localizer["RoleName"]</th>
                                 <th class="bg-transparent border-bottom-0">@Localizer["Supervisor"]</th>
                                 <th class="bg-transparent border-bottom-0">@Localizer["IsActive"]</th>
@@ -87,7 +86,6 @@
                                             </div>
                                         </td>
                                         <td class="text-muted fs-15 fw-semibold">@employee.JobTitle</td>
-                                        <td class="text-muted fs-15 fw-semibold">@employee.Phone</td>
                                         <td class="text-muted fs-15 fw-semibold">@employee.RoleName</td>
                                         <td class="text-muted fs-15 fw-semibold">@employee.SupervisorName</td>
                                         <td class="text-muted fs-15 fw-semibold">
@@ -109,26 +107,26 @@
 
                                         <td>
                                             <div class="d-flex align-items-stretch">
-                                                <a asp-controller="Employees" asp-action="EditEmployee" asp-route-id="@employee.Id" class="btn btn-sm btn-outline-primary border me-2" data-bs-toggle="tooltip" data-bs-original-title="@Localizer["EditEmployee"]">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 20">
-                                                        <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" />
-                                                    </svg>
+                                                <a asp-controller="Employees" asp-action="EditEmployee" asp-route-id="@employee.Id" class="btn btn-sm btn-outline-info me-1" data-bs-toggle="tooltip" data-bs-original-title="@Localizer["EditEmployee"]">
+                                                    <i class="fe fe-edit"></i>
                                                 </a>
                                                 @{
                                                     if (employee.IsActive)
                                                     {
-                                                        <a class="btn btn-sm btn-outline-secondary border me-2" data-bs-toggle="dropdown" data-bs-original-title="@Localizer["LockEmployee"]">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="currentColor" class="bi bi-lock" viewBox="0 0 16 20">
+                                                        <a class="btn btn-sm btn-outline-secondary me-1" data-bs-toggle="dropdown" data-bs-original-title="@Localizer["LockEmployee"]">
+                                                            @*<svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="currentColor" class="bi bi-lock" viewBox="0 0 16 20">
                                                                 <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2zM5 8h6a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z" />
-                                                            </svg>
+                                                            </svg>*@
+                                                            <i class="fe fe-lock"></i>
                                                         </a>
                                                     }
                                                     else
                                                     {
-                                                        <a class="btn btn-sm btn-outline-primary border me-2" data-bs-toggle="dropdown" data-bs-original-title="@Localizer["UnlockEmployee"]">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="currentColor" class="bi bi-unlock" viewBox="0 0 16 20">
+                                                        <a class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="dropdown" data-bs-original-title="@Localizer["UnlockEmployee"]">
+                                                            @*<svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="currentColor" class="bi bi-unlock" viewBox="0 0 16 20">
                                                                 <path d="M11 1a2 2 0 0 0-2 2v4a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h5V3a3 3 0 0 1 6 0v4a.5.5 0 0 1-1 0V3a2 2 0 0 0-2-2zM3 8a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1H3z" />
-                                                            </svg>
+                                                            </svg>*@
+                                                            <i class="fe fe-unlock"></i>
                                                         </a>
                                                     }
                                                 }
@@ -137,7 +135,7 @@
                                                         @{
                                                             if (employee.IsActive)
                                                             {
-                                                                <h4 class="dropdown-title"><i class="fa fa-lock"></i> Lock Account</h4>
+                                                                <h4 class="dropdown-title"><i class="fa fa-lock"></i> @Localizer["LockAccount"]</h4>
                                                                 <br />
                                                                 //<p>Are you sure you want to lock this account?</p>
                                                                 <p>@Localizer["LockConfirmationMessage"]</p>

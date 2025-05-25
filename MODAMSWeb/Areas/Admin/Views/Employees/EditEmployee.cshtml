@@ -1,15 +1,19 @@
-﻿@model MODAMS.Models.ViewModels.Dto.EmployeeDTO
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization
+@inject IViewLocalizer Localizer
+
+@model MODAMS.Models.ViewModels.Dto.EmployeeDTO
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <!-- PAGE-HEADER -->
 <div class="page-header">
     <div>
-        <h1 class="page-title">Edit Employee</h1>
+        <h1 class="page-title">@Localizer["EditEmployee"]</h1>
     </div>
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">Dashboard</a></li>
-            <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Employees" asp-action="Index">Employee List</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Edit Employee</li>
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">@Localizer["Dashboard"]</a></li>
+            <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Employees" asp-action="Index">@Localizer["EmployeeList"]</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Localizer["EditEmployee"]</li>
         </ol>
     </div>
 </div>
@@ -19,7 +23,7 @@
     <div class="col-lg-12 col-md-12">
         <div class="card">
             <div class="card-header border-bottom">
-                <h4 class="mb-0">Employee Details</h4>
+                <h4 class="mb-0">@Localizer["EmployeeDetails"]</h4>
             </div>
             <div class="card-body p-0">
                 <div class="row p-5 border-bottom">
@@ -33,14 +37,14 @@
                                     <div class="col-sm-6">
                                         <div class="mb-3 form-group">
                                             <label asp-for="Employee.FullName"></label>
-                                            <input asp-for="Employee.FullName" class="form-control" aria-required="true" placeholder="Full Name" />
+                                            <input asp-for="Employee.FullName" class="form-control" aria-required="true"/>
                                             <span asp-validation-for="Employee.FullName" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-sm-6">
                                         <div class="mb-3 form-group">
                                             <label asp-for="Employee.JobTitle"></label>
-                                            <input asp-for="Employee.JobTitle" class="form-control" aria-required="true" placeholder="Job Title" />
+                                            <input asp-for="Employee.JobTitle" class="form-control" aria-required="true"/>
                                             <span asp-validation-for="Employee.JobTitle" class="text-danger"></span>
                                         </div>
                                     </div>
@@ -49,14 +53,14 @@
                                     <div class="col-sm-6">
                                         <div class="mb-3 form-group">
                                             <label asp-for="Employee.Email"></label>
-                                            <input asp-for="Employee.Email" readonly class="form-control" aria-required="true" placeholder="email@unops.org" />
+                                            <input asp-for="Employee.Email" readonly class="form-control" aria-required="true" placeholder="email@gmail.com" />
                                             <span asp-validation-for="Employee.Email" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-sm-6">
                                         <div class="mb-3 form-group">
                                             <label asp-for="Employee.Phone"></label>
-                                            <input asp-for="Employee.Phone" class="form-control" aria-required="true" placeholder="Phone Number" />
+                                            <input asp-for="Employee.Phone" class="form-control" aria-required="true" />
                                             <span asp-validation-for="Employee.Phone" class="text-danger"></span>
                                         </div>
                                     </div>
@@ -65,7 +69,7 @@
                                     <div class="col-sm-6">
                                         <div class="mb-3 form-group">
                                             <label asp-for="Employee.CardNumber"></label>
-                                            <input asp-for="Employee.CardNumber" class="form-control" aria-required="true" placeholder="ID Card Number" />
+                                            <input asp-for="Employee.CardNumber" class="form-control" aria-required="true" />
                                             <span asp-validation-for="Employee.CardNumber" class="text-danger"></span>
                                         </div>
                                     </div>
@@ -86,7 +90,7 @@
                                             <label asp-for="roleId"></label>
                                             <select asp-for="roleId" asp-items="@Model.RoleList"
                                                     class="form-control select2 form-select">
-                                                <option disabled selected>-Select Role-</option>
+                                                <option disabled selected>-@Localizer["SelectRole"]-</option>
                                             </select>
                                             <span asp-validation-for="roleId" class="text-danger"></span>
                                         </div>
@@ -107,8 +111,8 @@
                 </div>
                 <div class="row p-5">
                     <div class="btn-list">
-                        <button id="btnSubmit" class="btn btn-primary"><i class="fe fe-check-circle"></i> Save Employee</button>
-                        <a asp-area="Admin" asp-controller="Employees" asp-action="Index" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
+                        <button id="btnSubmit" class="btn btn-info"><i class="fa fa-check-circle"></i> @Localizer["SaveEmployee"]</button>
+                        <a asp-area="Admin" asp-controller="Employees" asp-action="Index" class="btn btn-gray"><i class="fa fa-close"></i>&nbsp;@Localizer["Cancel"]</a>
                     </div>
                 </div>
             </div>

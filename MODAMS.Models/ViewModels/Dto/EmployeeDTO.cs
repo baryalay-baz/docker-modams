@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using MODAMS.Localization;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -15,7 +16,7 @@ namespace MODAMS.Models.ViewModels.Dto
         public Employee Employee { get; set; }
 
 
-        [Display(Name = "Employee Role")]
+        [Display(Name = "EmployeeRole", ResourceType = typeof(EmployeeLabels))]
         [ValidateNever]
         public string roleId { get; set; }
 
