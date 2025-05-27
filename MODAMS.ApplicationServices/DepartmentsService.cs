@@ -9,11 +9,8 @@ using MODAMS.Models.ViewModels;
 using MODAMS.Models.ViewModels.Dto;
 using MODAMS.Utility;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Globalization;
+
 
 namespace MODAMS.ApplicationServices
 {
@@ -24,7 +21,7 @@ namespace MODAMS.ApplicationServices
         private readonly ILogger<DepartmentsService> _logger;
 
         private int _employeeId;
-
+        private readonly bool _isSomali;
         public DepartmentsService(ApplicationDbContext db, IAMSFunc func, ILogger<DepartmentsService> logger)
         {
             _db = db;
@@ -32,6 +29,7 @@ namespace MODAMS.ApplicationServices
             _logger = logger;
 
             _employeeId = _func.GetEmployeeId();
+            _isSomali = CultureInfo.CurrentCulture.Name == "so";
         }
         public async Task<Result<DepartmentsDTO>> GetIndexAsync()
         {
@@ -82,7 +80,7 @@ namespace MODAMS.ApplicationServices
                 if (department != null)
                 {
                     dto = await PopulateDepartmentDTO(dto);
-                    return Result<DepartmentDTO>.Failure("Department already exists!", dto);
+                    return Result<DepartmentDTO>.Failure(_isSomali ? "Waaxda horay ayey u jirtay!" : "Department already exists!", dto);
                 }
                 await _db.Departments.AddAsync(dto.department);
                 await _db.SaveChangesAsync();
@@ -105,7 +103,7 @@ namespace MODAMS.ApplicationServices
                 string departmentOwner = "";
 
                 if (department == null)
-                    return Result<DepartmentDTO>.Failure("Department not found!");
+                    return Result<DepartmentDTO>.Failure(_isSomali ? "Waaxda lama helin!" : "Department not found!");
 
                 departmentOwner = await _func.GetEmployeeNameByIdAsync(department.EmployeeId == 0 || department.EmployeeId == null ? 0 : (int)department.EmployeeId);
                 var dto = new DepartmentDTO()
@@ -132,10 +130,10 @@ namespace MODAMS.ApplicationServices
                 if (department == null)
                 {
                     dto = await PopulateDepartmentDTO(dto);
-                    return Result<DepartmentDTO>.Failure("Department not found!", dto);
+                    return Result<DepartmentDTO>.Failure(_isSomali ? "Waaxda lama helin!" : "Department not found!", dto);
                 }
-
                 department.Name = dto.department.Name;
+                department.NameSo = dto.department.NameSo;
                 department.UpperLevelDeptId = dto.department.UpperLevelDeptId;
 
                 await _db.SaveChangesAsync();
@@ -168,7 +166,7 @@ namespace MODAMS.ApplicationServices
                     var orgChart = new OrganizationChartDTO()
                     {
                         ID = item.Id,
-                        Name = item.Name,
+                        Name = _isSomali ? item.NameSo : item.Name,
                         ParentID = parentId,
                         Title = item.OwnerName,
                         Avatar = imageUrl,
@@ -223,7 +221,8 @@ namespace MODAMS.ApplicationServices
                 return Result<DepartmentHeadsDTO>.Failure(ex.Message);
             }
         }
-        public async Task<Result<bool>>AssignOwnerAsync(DepartmentHeadsDTO dto){
+        public async Task<Result<bool>> AssignOwnerAsync(DepartmentHeadsDTO dto)
+        {
             try
             {
                 int nDepartmentId = dto.DepartmentId;
@@ -231,7 +230,7 @@ namespace MODAMS.ApplicationServices
 
                 if (nEmployeeId == 0)
                 {
-                    return Result<bool>.Failure("Employee not found!");
+                    return Result<bool>.Failure(_isSomali ? "Shaqaale lama helin!" : "Employee not found!");
                 }
 
                 var departmentHead = await _db.DepartmentHeads
@@ -273,12 +272,14 @@ namespace MODAMS.ApplicationServices
                 await _db.SaveChangesAsync();
                 return Result<bool>.Success(true);
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 _func.LogException(_logger, ex);
                 return Result<bool>.Failure(ex.Message, false);
             }
         }
-        public async Task<Result<bool>> VacateDepartmentAsync(DepartmentHeadsDTO dto) {
+        public async Task<Result<bool>> VacateDepartmentAsync(DepartmentHeadsDTO dto)
+        {
             try
             {
                 var department = await _db.Departments.FirstOrDefaultAsync(m => m.Id == dto.DepartmentId);
@@ -298,7 +299,8 @@ namespace MODAMS.ApplicationServices
 
                 return Result<bool>.Success(true);
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 _func.LogException(_logger, ex);
                 return Result<bool>.Failure(ex.Message);
             }
@@ -366,6 +368,7 @@ namespace MODAMS.ApplicationServices
             var store = new Store()
             {
                 Name = department.Name,
+                NameSo = department.NameSo,
                 Description = "Store for " + department.Name,
                 DepartmentId = department.Id
             };
@@ -379,6 +382,8 @@ namespace MODAMS.ApplicationServices
             if (storeInDb != null)
             {
                 storeInDb.Name = department.Name;
+                storeInDb.NameSo = department.NameSo;
+                storeInDb.Description = "Store for " + department.Name;
             }
             await _db.SaveChangesAsync();
         }

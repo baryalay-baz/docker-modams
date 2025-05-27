@@ -1,16 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MODAMS.DataAccess.Data;
-using MODAMS.Utility;
-using Microsoft.EntityFrameworkCore;
-using MODAMS.Models.ViewModels;
-using MODAMS.Models;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Newtonsoft.Json;
 using Kendo.Mvc.UI;
 
 using MODAMS.Models.ViewModels.Dto;
 using MODAMS.ApplicationServices.IServices;
+using System.Globalization;
 
 namespace MODAMSWeb.Areas.Admin.Controllers
 {
@@ -19,9 +13,11 @@ namespace MODAMSWeb.Areas.Admin.Controllers
     public class DepartmentsController : Controller
     {
         private readonly IDepartmentsService _departmentsService;
+        private readonly bool _isSomali;
         public DepartmentsController(IDepartmentsService departmentsService)
         {
             _departmentsService = departmentsService;
+             _isSomali = CultureInfo.CurrentCulture.Name == "so";
         }
 
         [HttpGet]
@@ -60,7 +56,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
         {
             if (!ModelState.IsValid)
             {
-                TempData["error"] = "All fields are mandatory";
+                TempData["error"] = _isSomali? "Dhamaan meelaha waa qasab in la buuxiyo" : "All fields are mandatory";
                 form = await _departmentsService.PopulateDepartmentDTO(form);
                 return View(form);
             }
@@ -70,7 +66,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
 
             if (result.IsSuccess)
             {
-                TempData["success"] = "Department created succcessfuly!";
+                TempData["success"] = _isSomali ? "Waaxda si guul leh ayaa loo sameeyay!" : "Department created succcessfuly!";
                 return RedirectToAction("Index", "Departments");
             }
             else {
@@ -101,7 +97,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
         {
             if (!ModelState.IsValid)
             {
-                TempData["error"] = "All fields are mandatory!";
+                TempData["error"] = _isSomali ? "Dhamaan meelaha waa qasab in la buuxiyo" : "All fields are mandatory";
                 return View(form);
             }
             var result = await _departmentsService.EditDepartmentAsync(form);
@@ -109,7 +105,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
 
             if (result.IsSuccess)
             {
-                TempData["success"] = "Department updated successfully!";
+                TempData["success"] = _isSomali? "Waaxda si guul leh ayaa loo cusbooneysiiyay!" : "Department updated successfully!";
                 return RedirectToAction("Index", "Departments");
             }
             else {
@@ -165,7 +161,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
 
             if (result.IsSuccess)
             {
-                TempData["success"] = "Owner set successfully!";
+                TempData["success"] = _isSomali? "Milkiilaha si guul leh ayaa loo qoondeeyay!" : "Owner assigned successfully!";
                 return RedirectToAction("Index", "Departments");
             }
             else {
@@ -180,7 +176,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
             var result = await _departmentsService.VacateDepartmentAsync(dto);
             if (result.IsSuccess)
             {
-                TempData["success"] = "Store Vacated Successfuly!";
+                TempData["success"] = _isSomali? "Bakhaarka si guul leh ayaa loo banneeyay!" : "Store Vacated Successfuly!";
                 return RedirectToAction("Index", "Departments");
             }
 

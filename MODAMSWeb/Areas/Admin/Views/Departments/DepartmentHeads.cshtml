@@ -1,4 +1,7 @@
-﻿@model MODAMS.Models.ViewModels.Dto.DepartmentHeadsDTO
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization
+@inject IViewLocalizer Localizer
+@model MODAMS.Models.ViewModels.Dto.DepartmentHeadsDTO
 <style>
     .custom-row {
         margin-right: -20px;
@@ -15,17 +18,19 @@
 
 <div class="page-header">
     <div>
-        <h1 class="page-title">Departments</h1>
+        <h1 class="page-title">@Localizer["Departments"]</h1>
     </div>
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">Dashboard</a></li>
-            <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Departments" asp-action="Index">Departments</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Department Heads</li>
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">@Localizer["Dashboard"]</a></li>
+            <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Departments" asp-action="Index">@Localizer["Departments"]</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Localizer["DepartmentHeads"]</li>
         </ol>
     </div>
 </div>
-
+@{
+    var isSomali = CultureInfo.CurrentCulture.Name == "so";
+}
 <div class="row">
     <div class="col-md-12">
         <div class="card">
@@ -37,7 +42,7 @@
                         if (Model.Owner == "Vacant")
                             bgType = "bg-danger";
                     }
-                    <span class="badge @bgType my-1">@Model.Owner</span>
+                    <span class="badge @bgType my-1">@(Model.Owner == "Vacant" ? isSomali ? "Bannaan" : "Vacant" : Model.Owner)</span>
                 </div>
 
             </div>
@@ -51,7 +56,7 @@
                     <div class="col-md-4 col-xl-4">
                         <div class="card ">
                             <div class="card-header bg-gray-300">
-                                <h3 class="card-title ">Store Owner</h3>
+                                <h3 class="card-title ">@Localizer["StoreOwner"]</h3>
                                 <div class="card-options">
                                     <a href="#" class="card-options-collapse" data-bs-toggle="card-collapse"><i class="fe fe-chevron-up"></i></a>
                                     <a href="#" class="card-options-remove" data-bs-toggle="card-remove"><i class="fe fe-x "></i></a>
@@ -102,7 +107,7 @@
                     <div class="col-md-8 col-xl-8">
                         <div class="card ">
                             <div class="card-header bg-gray-300">
-                                <h3 class="card-title ">Store Users</h3>
+                                <h3 class="card-title ">@Localizer["StoreUsers"]</h3>
                                 <div class="card-options">
                                     <a href="#" class="card-options-collapse" data-bs-toggle="card-collapse"><i class="fe fe-chevron-up"></i></a>
                                     <a href="#" class="card-options-remove" data-bs-toggle="card-remove"><i class="fe fe-x "></i></a>
@@ -112,11 +117,11 @@
                                 <table class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main" id="tblUsers">
                                     <thead>
                                         <tr>
-                                            <th>S.No</th>
-                                            <th>Full Name</th>
-                                            <th>Job Title</th>
-                                            <th>Telephone</th>
-                                            <th>Email</th>
+                                            <th>#</th>
+                                            <th>@Localizer["FullName"]</th>
+                                            <th>@Localizer["JobTitle"]</th>
+                                            <th>@Localizer["Telephone"]</th>
+                                            <th>@Localizer["Email"]</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -147,7 +152,7 @@
     <div class="col-md-12">
         <div class="card card-collapsed">
             <div class="card-header bg-gray-300">
-                <h5 class="card-title">Ownerhsip history</h5>
+                <h5 class="card-title">@Localizer["OwnershipHistory"]</h5>
                 <div class="card-options">
                     <a href="#" class="card-options-collapse" data-bs-toggle="card-collapse"><i class="fe fe-chevron-up"></i></a>
                     <a href="#" class="card-options-remove" data-bs-toggle="card-remove"><i class="fe fe-x "></i></a>
@@ -160,11 +165,11 @@
                             <table id="tblDepartmentHeads" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
                                 <thead class="table-head">
                                     <tr>
-                                        <th class="bg-transparent border-bottom-0 w-5">S.No</th>
-                                        <th class="bg-transparent border-bottom-0">Owner Name</th>
-                                        <th class="bg-transparent border-bottom-0">Date From</th>
-                                        <th class="bg-transparent border-bottom-0">Date To</th>
-                                        <th class="bg-transparent border-bottom-0">Is Active</th>
+                                        <th class="bg-transparent border-bottom-0 w-5">#</th>
+                                        <th class="bg-transparent border-bottom-0">@Localizer["OwnerName"]</th>
+                                        <th class="bg-transparent border-bottom-0">@Localizer["DateFrom"]</th>
+                                        <th class="bg-transparent border-bottom-0">@Localizer["DateTo"]</th>
+                                        <th class="bg-transparent border-bottom-0">@Localizer["IsActive"]</th>
                                     </tr>
                                 </thead>
                                 <tbody class="table-body">
@@ -204,7 +209,7 @@
                     </div>
                 </div>
                 <div class="card-footer">
-                    <a asp-area="Admin" asp-controller="Departments" asp-action="Index" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
+                    <a asp-area="Admin" asp-controller="Departments" asp-action="Index" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;@Localizer["Previous"]</a>
                 </div>
             </div>
         </div>
@@ -215,15 +220,15 @@
             <div class="modal-content modal-content-demo">
 
                 <div class="modal-header">
-                    <h5 class="modal-title">Department Ownership</h5><button aria-label="Close" class="btn-close" data-bs-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+                    <h5 class="modal-title">@Localizer["DepartmentOwnership"]</h5><button aria-label="Close" class="btn-close" data-bs-dismiss="modal"><span aria-hidden="true">&times;</span></button>
                 </div>
                 <div class="modal-body">
                     <form method="post" asp-action="AssignOwner" id="frmAssignOwner">
-                        <p>List of available employees</p>
+                        <p>@Localizer["ListOfAvailableEmployees"]</p>
                         <input asp-for="DepartmentId" hidden />
                         <div class="mb-3 form-group">
                             <select name="EmployeeId" id="EmployeeId" asp-items="@Model.Employees" class="form-control select2-style1 form-select">
-                                <option disabled selected>-Select Employee-</option>
+                                <option disabled selected>-@Localizer["SelectEmployee"]-</option>
                             </select>
                         </div>
                     </form>
@@ -232,8 +237,8 @@
                     <input asp-for="DepartmentId" hidden />
                 </form>
                 <div class="modal-footer">
-                    <button id="btnVacate" class="btn btn-danger">Vacate Store</button>
-                    <button id="btnSaveChanges" class="btn btn-primary">Assign Owner</button> <button class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                    <button id="btnVacate" class="btn btn-danger">@Localizer["VacateStore"]</button>
+                    <button id="btnSaveChanges" class="btn btn-primary">@Localizer["AssignOwner"]</button> <button class="btn btn-light" data-bs-dismiss="modal">@Localizer["Close"]</button>
                 </div>
             </div>
         </div>
@@ -247,12 +252,13 @@
         $(document).ready(() => {
             loadFaces();
             hideMenu();
+            var isSomali = getCurrentLanguage()==="so";
             $('#btnSaveChanges').on("click", () => {
                 let employeeId = $('#EmployeeId').val();
                 if (employeeId != null) {
                     $("#frmAssignOwner").submit();
-                } else { 
-                    Notify("error","Please select an Employee!")
+                } else {
+                    Notify("error",isSomali?"Fadlan dooro shaqaale!":"Please select an Employee!")
                 }
             });
 
@@ -262,18 +268,7 @@
 
             makeDataTable('#tblDepartmentHeads');
             makeDataTable("#tblUsers");
-
-            // $('#tblUsers').DataTable({
-            //     language: {
-            //         searchPlaceholder: 'Search...',
-            //         sSearch: '',
-            //     }
-            // });
-
-            //$('.select2').select2({
-            //    //dropdownParent: $("#mdlDepartmentHeads")
-            //});
-            //setSelect2();
+                     
 
         });
 

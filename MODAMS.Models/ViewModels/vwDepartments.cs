@@ -10,14 +10,15 @@ namespace MODAMS.Models.ViewModels
     public class vwDepartments
     {
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string NameSo { get; set; } = string.Empty;
         
         [Display(Name="Parent Department")]
         public int UpperLevelDeptId { get; set; }
-        public string ULDeptName { get; set; }
+        public string ULDeptName { get; set; } = string.Empty;
         public int EmployeeId { get; set; }
-        public string OwnerName { get; set; }
-        public string ImageUrl { get; set; }
-        public string Email { get; set; }
+        public string OwnerName { get; set; } = string.Empty;
+        public string ImageUrl { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
     }
 }
