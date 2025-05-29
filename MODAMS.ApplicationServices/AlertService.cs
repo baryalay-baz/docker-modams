@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Spreadsheet;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -8,11 +7,7 @@ using MODAMS.DataAccess.Data;
 using MODAMS.Models;
 using MODAMS.Models.ViewModels.Dto;
 using MODAMS.Utility;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Globalization;
 
 namespace MODAMS.ApplicationServices
 {
@@ -23,6 +18,7 @@ namespace MODAMS.ApplicationServices
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger<AlertService> _logger;
 
+        private readonly bool _isSomali;
         private int _employeeId;
         public AlertService(IAMSFunc func, ApplicationDbContext db, IHttpContextAccessor contextAccessor,
             ILogger<AlertService> logger)
@@ -32,6 +28,7 @@ namespace MODAMS.ApplicationServices
             _httpContextAccessor = contextAccessor;
             _logger = logger;
 
+            _isSomali = CultureInfo.CurrentCulture.Name == "so";
             _employeeId = _func.GetEmployeeId();
         }
 
@@ -136,10 +133,10 @@ namespace MODAMS.ApplicationServices
                         SubCategory = asset.SubCategory.SubCategoryName,
                         Make = asset.Make,
                         DepartmentId = asset.Store.Department.Id,
-                        Department = asset.Store.Department.Name,
+                        Department = _isSomali ? asset.Store.Department.NameSo : asset.Store.Department.Name,
                         Name = asset.Name,
-                        AlertType = "Missing Documents",
-                        Description = documentName + " is not uploaded!",
+                        AlertType = _isSomali ? "Dukumiintiyo Maqan" : "Missing Documents",
+                        Description = documentName + (_isSomali ? " lama soo gelin!" : " is not uploaded!"),
                         EmployeeId = asset.Store.Department.EmployeeId
                     };
                     Alerts.Add(alert);
@@ -261,9 +258,9 @@ namespace MODAMS.ApplicationServices
                 }
                 if (blnCheck)
                 {
-                    var subCategoryName = asset.SubCategory?.SubCategoryName ?? "";
+                    var subCategoryName = _isSomali ? asset.SubCategory?.SubCategoryNameSo : asset.SubCategory?.SubCategoryName ?? "";
                     var departmentId = asset.Store?.Department?.Id ?? 0;
-                    var departmentName = asset.Store?.Department?.Name ?? "";
+                    var departmentName = _isSomali ? asset.Store?.Department?.NameSo : asset.Store?.Department?.Name ?? "";
                     var employeeId = asset.Store?.Department?.EmployeeId ?? 0;
 
                     var alert = new vwAlert
@@ -274,7 +271,7 @@ namespace MODAMS.ApplicationServices
                         DepartmentId = departmentId,
                         Department = departmentName,
                         Name = asset.Name,
-                        AlertType = "Missing Data",
+                        AlertType = _isSomali ? "Xog Maqan" : "Missing Data",
                         Description = $"{sDataColumn} is not valid!",
                         EmployeeId = employeeId
                     };

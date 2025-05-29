@@ -1,12 +1,16 @@
-﻿<!-- PAGE-HEADER -->
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization
+@inject IViewLocalizer Localizer
+
+<!-- PAGE-HEADER -->
 <div class="page-header">
     <div>
-        <h1 class="page-title">Account Settings</h1>
+        <h1 class="page-title">@Localizer["AccountSettings"]</h1>
     </div>
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">Dashboard</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Account Settings</li>
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">@Localizer["Dashboard"]</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Localizer["AccountSettings"]</li>
         </ol>
     </div>
 </div>
@@ -16,26 +20,27 @@
     <div class="col-md-12">
         <div class="card">
             <div class="card-body text-center">
-                <h3 class="text-muted"><i class="fa fa-key"></i> Password Reset </h3>
+                <h3 class="text-muted"><i class="fa fa-key"></i> @Localizer["ResetPassword"] </h3>
                 <br />
-                <p style="font-size: 16px;">Password reset instructions will be sent to your registered email address, Please follow the instructions to reset your password</p>
+                <p style="font-size: 16px;">@Localizer["ResetInstructions"]</p>
                 <button class="btn btn-pill btn-outline-secondary" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="fa fa-key"></i> Reset Password <i class="icon ion-ios-arrow-down text-12"></i>
+                    <i class="fa fa-key"></i> @Localizer["ResetPassword"] <i class="icon ion-ios-arrow-down text-12"></i>
                 </button>
                 <div class="dropdown-menu" style="">
                     <div class="p-5">
-                        <h4 class="dropdown-title">Reset Password</h4><br />
-                        <p>This will initiate password reset process!<br /><br />Are you sure?</p>
-                        <a asp-area="Users" asp-action="ResetPassword" asp-controller="Home" asp-route-id="1" class="btn btn-secondary btn-sm"><i class="mdi mdi-checkbox-marked-circle-outline"></i> Reset Password</a>
+                        <h4 class="dropdown-title">@Localizer["ResetPassword"]</h4><br />
+                        <p>@Localizer["ResetConfirmation"]<br /><br />@Localizer["AreYouSure"]?</p>
+                        <a asp-area="Users" asp-action="ResetPassword" asp-controller="Home" asp-route-id="1" class="btn btn-secondary btn-sm"><i class="mdi mdi-checkbox-marked-circle-outline"></i> @Localizer["ResetPassword"]</a>
                     </div>
                 </div>
                 <br /><br />
                 <hr />
                 <br />
-                <h3 class="text-muted"><i class="fa fa-lock"></i> Two-Factor Authentication </h3>
+                <h3 class="text-muted"><i class="fa fa-lock"></i> @Localizer["2FA"] </h3>
                 <br />
-                <p style="font-size: 16px;">To enable Two Factor Authentication, please download and install Google Authenticator and follow the instructions on the next page</p>
-                <a href="/Identity/Account/Manage/TwoFactorAuthentication" class="btn btn-pill btn-outline-primary"><i class="fa fa-lock"></i> Two Factor Authentication</a>
+                @*To enable Two Factor Authentication, please download and install Google Authenticator and follow the instructions on the next page*@
+                <p style="font-size: 16px;">@Localizer["2FAMessage"]</p>
+                <a href="/Identity/Account/Manage/TwoFactorAuthentication" class="btn btn-pill btn-outline-primary"><i class="fa fa-lock"></i> @Localizer["2FA"]</a>
             </div>
         </div>
     </div>

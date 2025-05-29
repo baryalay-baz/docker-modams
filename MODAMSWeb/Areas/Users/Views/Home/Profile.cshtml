@@ -1,14 +1,18 @@
-﻿@model MODAMS.Models.ViewModels.Dto.ProfileDataDTO
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization
+@inject IViewLocalizer Localizer
+
+@model MODAMS.Models.ViewModels.Dto.ProfileDataDTO
 
 <!-- PAGE-HEADER -->
 <div class="page-header">
     <div>
-        <h1 class="page-title">Profile</h1>
+        <h1 class="page-title">@Localizer["Profile"]</h1>
     </div>
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">Dashboard</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Profile</li>
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">@Localizer["Dashboard"]</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Localizer["Profile"]</li>
         </ol>
     </div>
 </div>
@@ -30,31 +34,31 @@
 
                                 <div class="main-dropdown-form-demo">
                                     <button class="btn btn-primary btn-sm" data-bs-toggle="dropdown" area-expandexd="false">
-                                        <i class="fa fa-pencil"></i> Edit Picture
+                                        <i class="fa fa-pencil"></i> @Localizer["EditPicture"]
                                     </button>
                                     <div class="dropdown-menu" style="">
                                         <div class="p-1">
-                                            <h4 class="dropdown-title">Upload Profile Picture</h4><br />
-                                            <p class="text-muted" style="font-size:10px;">Picture Size: <b>128px * 128px (height * width)</b></p>
+                                            <h4 class="dropdown-title">@Localizer["UploadProfilePicture"]</h4><br />
+                                            <p class="text-muted" style="font-size:10px;">@Localizer["PictureSize"]: <b>128px * 128px (@Localizer["Height"] * @Localizer["Width"])</b></p>
                                             <form method="post" asp-action="UploadPicture" enctype="multipart/form-data">
                                                 <div class="form-group">
                                                     <input class="form-control file-input form-control-sm" type="file" name="file">
                                                     <span asp-validation-for="ImageUrl" class="text-danger"></span>
                                                 </div>
                                                 <div class="form-group">
-                                                    <button class="btn btn-primary btn-sm"><i class="fa fa-solid fa-upload"></i> Upload</button>
+                                                    <button class="btn btn-primary btn-sm"><i class="fa fa-solid fa-upload"></i> @Localizer["Upload"]</button>
                                                 </div>                                                
                                             </form>   
                                         </div>
                                     </div>
                                     <button class="btn btn-secondary btn-sm" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="fa fa-key"></i> Reset Password <i class="icon ion-ios-arrow-down text-12"></i>
+                                        <i class="fa fa-key"></i> @Localizer["ResetPassword"] <i class="icon ion-ios-arrow-down text-12"></i>
                                     </button>
                                     <div class="dropdown-menu" style="">
                                         <div class="p-1">
-                                            <h4 class="dropdown-title">Reset Password</h4><br />
-                                            <p>This will initiate password reset process!<br /><br />Are you sure?</p>
-                                            <a asp-area="Users" asp-action="ResetPassword" asp-controller="Home" class="btn btn-primary btn-sm"><i class="mdi mdi-checkbox-marked-circle-outline"></i> Reset Password</a>
+                                            <h4 class="dropdown-title">@Localizer["ResetPassword"]</h4><br />
+                                            <p>@Localizer["ResetConfirmationMessage"]<br /><br />@Localizer["AreYouSure"]?</p>
+                                            <a asp-area="Users" asp-action="ResetPassword" asp-controller="Home" class="btn btn-primary btn-sm"><i class="mdi mdi-checkbox-marked-circle-outline"></i> @Localizer["ResetPassword"]</a>
                                         </div>
                                     </div>
                                 </div>
@@ -72,8 +76,8 @@
                     <div class="tab-menu-heading">
                         <div class="tabs-menu1">
                             <ul class="nav">
-                                <li><a href="#profileMain" class="active show" data-bs-toggle="tab">Profile</a></li>
-                                <li><a href="#editProfile" data-bs-toggle="tab">Edit Profile</a></li>
+                                <li><a href="#profileMain" class="active show" data-bs-toggle="tab">@Localizer["Profile"]</a></li>
+                                <li><a href="#editProfile" data-bs-toggle="tab">@Localizer["EditProfile"]</a></li>
                             </ul>
                         </div>
                     </div>
@@ -87,31 +91,31 @@
 
                         <div class="border-top"></div>
                         <div class="table-responsive p-5">
-                            <h3 class="card-title">Personal Info</h3>
+                            <h3 class="card-title">@Localizer["PersonalInfo"]</h3>
                             <table class="table row table-borderless">
                                 <tbody class="col-lg-12 col-xl-6 p-0">
                                     <tr>
-                                        <td><strong>Full Name :</strong> @Model.FullName</td>
+                                        <td><strong>@Localizer["FullName"] :</strong> @Model.FullName</td>
                                     </tr>
                                     <tr>
-                                        <td><strong>Job Title :</strong> @Model.JobTitle</td>
+                                        <td><strong>@Localizer["JobTitle"] :</strong> @Model.JobTitle</td>
                                     </tr>
                                     <tr>
                                         <td><strong>Email :</strong> @Model.Email</td>
                                     </tr>
                                     <tr>
-                                        <td><strong>ID Card Number :</strong> @Model.CardNumber</td>
+                                        <td><strong>@Localizer["IDCardNumber"] :</strong> @Model.CardNumber</td>
                                     </tr>
                                 </tbody>
                                 <tbody class="col-lg-12 col-xl-6 p-0 border-top-0">
                                     <tr>
-                                        <td><strong>Department :</strong> @Model.Department</td>
+                                        <td><strong>@Localizer["Department"] :</strong> @Model.Department</td>
                                     </tr>
                                     <tr>
-                                        <td><strong>Role :</strong> @Model.RoleName</td>
+                                        <td><strong>@Localizer["Role"] :</strong> @Model.RoleName</td>
                                     </tr>
                                     <tr>
-                                        <td><strong>Supervisor :</strong> @Model.SupervisorName </td>
+                                        <td><strong>@Localizer["Supervisor"] :</strong> @Model.SupervisorName </td>
                                     </tr>
                                     <tr>
                                         <td></td>
@@ -121,14 +125,14 @@
                         </div>
                         <div class="border-top"></div>
                         <div class="p-4">
-                            <h3 class="card-title">Contact</h3>
+                            <h3 class="card-title">@Localizer["Contact"]</h3>
                             <div class="d-sm-flex">
                                 <div>
                                     <div class="main-profile-contact-list">
                                         <div class="media mx-2">
                                             <div class="media-icon bg-primary-transparent text-primary"> <i class="fe fe-phone fs-21"></i> </div>
                                             <div class="media-body ms-2">
-                                                <span class="text-muted">Mobile</span>
+                                                <span class="text-muted">@Localizer["Mobile"]</span>
                                                 <p class="mb-0">@Model.Phone</p>
                                             </div>
                                         </div>
@@ -158,7 +162,7 @@
                             <input asp-for="Id" hidden />
                             <input asp-for="Email" hidden />
                             <div class="row mb-4">
-                                <p class="mb-4 text-17">Personal Info</p>
+                                <p class="mb-4 text-17">@Localizer["PersonalInfo"]</p>
                                 <div class="col-md-12 col-lg-12 col-xl-6">
                                     <div class="form-group">
                                         <label asp-for="FullName" class="form-label"></label>
@@ -191,7 +195,7 @@
                                 <div class="col-md-12 col-lg-12 col-xl-6">
                                     <div class="form-group">
                                         <button id="btnSaveChanges" type="submit" class="btn btn-primary">
-                                            <i class="mdi mdi-checkbox-marked-circle-outline"></i> Save Changes
+                                            <i class="mdi mdi-checkbox-marked-circle-outline"></i> @Localizer["SaveChanges"]
                                         </button>
                                     </div>
                                 </div>

@@ -21,7 +21,7 @@ namespace MODAMSWeb.Areas.Identity.Pages.Account.Manage
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<EnableAuthenticatorModel> _logger;
         private readonly UrlEncoder _urlEncoder;
-
+        private readonly bool _isSomali;
         private const string AuthenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
 
         public EnableAuthenticatorModel(
@@ -32,19 +32,20 @@ namespace MODAMSWeb.Areas.Identity.Pages.Account.Manage
             _userManager = userManager;
             _logger = logger;
             _urlEncoder = urlEncoder;
+            _isSomali = CultureInfo.CurrentCulture.Name == "so";
         }
 
         public string SharedKey { get; set; }
         public string AuthenticatorUri { get; set; }
-                
+
         [TempData]
         public string[] RecoveryCodes { get; set; }
 
-        
+
         [TempData]
         public string StatusMessage { get; set; }
 
-        
+
         [BindProperty]
         public InputModel Input { get; set; }
 
@@ -67,7 +68,8 @@ namespace MODAMSWeb.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                var error = _isSomali ? "Isticmaalaha lama helin." : $"Unable to load user with ID '{_userManager.GetUserId(User)}'.";
+                return NotFound(error);
             }
 
             await LoadSharedKeyAndQrCodeUriAsync(user);
@@ -80,7 +82,8 @@ namespace MODAMSWeb.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                var error = _isSomali ? "Isticmaalaha lama helin." : $"Unable to load user with ID '{_userManager.GetUserId(User)}'.";
+                return NotFound(error);
             }
 
             if (!ModelState.IsValid)
@@ -97,7 +100,7 @@ namespace MODAMSWeb.Areas.Identity.Pages.Account.Manage
 
             if (!is2faTokenValid)
             {
-                ModelState.AddModelError("Input.Code", "Verification code is invalid.");
+                ModelState.AddModelError("Input.Code", _isSomali ? "Code-ga xaqiijinta waa khalad." : "Verification code is invalid.");
                 await LoadSharedKeyAndQrCodeUriAsync(user);
                 return Page();
             }
@@ -106,7 +109,7 @@ namespace MODAMSWeb.Areas.Identity.Pages.Account.Manage
             var userId = await _userManager.GetUserIdAsync(user);
             _logger.LogInformation("User with ID '{UserId}' has enabled 2FA with an authenticator app.", userId);
 
-            StatusMessage = "Your authenticator app has been verified.";
+            StatusMessage = _isSomali ? "App-kaaga xaqiijinta waa la xaqiijiyey." : "Your authenticator app has been verified.";
 
             if (await _userManager.CountRecoveryCodesAsync(user) == 0)
             {

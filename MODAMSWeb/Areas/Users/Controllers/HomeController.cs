@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Text;
 using MODAMS.Models.ViewModels.Dto;
 using MODAMS.ApplicationServices.IServices;
+using System.Globalization;
 
 namespace MODAMSWeb.Areas.Users.Controllers
 {
@@ -24,6 +25,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
         private readonly IWebHostEnvironment _webHostEnvironment;
 
         private int _employeeId;
+        private readonly bool _isSomali;
 
         public readonly IHomeService _homeService;
 
@@ -38,6 +40,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             _userManager = userManager;
             _roleManager = roleManager;
             _webHostEnvironment = webHostEnvironment;
+            _isSomali = CultureInfo.CurrentCulture.Name == "so";
 
             _homeService = homeService;
 
@@ -55,7 +58,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             }
             else
             {
-                TempData["error"] = $"Error occured: {result.ErrorMessage}";
+                TempData["error"] = result.ErrorMessage;
                 return View(new DashboardDTO());
             }
         }
@@ -86,7 +89,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
         {
             if (!ModelState.IsValid)
             {
-                TempData["error"] = "Please complete all the mandatory fields!";
+                TempData["error"] = _isSomali? "Fadlan buuxi dhammaan meelaha khasabka ah!" : "Please complete all the mandatory fields!";
                 return RedirectToAction("Profile", "Employees");
             }
 
@@ -95,7 +98,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             if (result.IsSuccess)
             {
-                TempData["success"] = "Profile updated successfuly!";
+                TempData["success"] = _isSomali? "Macluumaadkaaga waa la cusbooneysiiyay si guul leh!" : "Profile updated successfuly!";
                 return RedirectToAction("Profile", "Home", new { id = dto.Id });
             }
             else
@@ -110,7 +113,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             var user = await _userManager.FindByEmailAsync(emailAddress);
             if (user == null)
             {
-                TempData["error"] = "User not found!";
+                TempData["error"] = _isSomali? "Isticmaalaha lama helin!" : "User not found!";
                 return RedirectToAction("Profile", "Employees");
             }
 
@@ -129,11 +132,12 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             if (!result.IsSuccess)
             {
-                TempData["error"] = result.ErrorMessage ?? "An error occurred while resetting the password.";
+                var error = _isSomali? "Khalad ayaa dhacay inta la dib-u-dejinayay erayga sirta." : "An error occurred while resetting the password.";
+                TempData["error"] = result.ErrorMessage ?? error;
                 return RedirectToAction("Profile", "Employees");
             }
 
-            TempData["success"] = "Password reset instructions sent!";
+            TempData["success"] = _isSomali? "Tilmaamaha dib-u-dejinta erayga sirta waa la diray!" : "Password reset instructions sent!";
             return RedirectToAction("Profile", "Home");
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -151,11 +155,12 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             if (!result.IsSuccess)
             {
-                TempData["error"] = result.ErrorMessage ?? "An error occurred while uploading the file.";
+                var error = _isSomali ? "Khalad ayaa dhacay inta la soo gelinayay faylka." : "File upload failed or an error occurred.";
+                TempData["error"] = result.ErrorMessage ?? error;
                 return RedirectToAction("Profile", "Home");
             }
 
-            TempData["success"] = "Profile picture uploaded successfully!";
+            TempData["success"] = _isSomali? "Sawirka macluumaadkaaga ayaa si guul leh loo soo geliyay!" : "Profile picture uploaded successfully!";
             return RedirectToAction("Profile", "Home");
         }
         [HttpGet]
@@ -170,7 +175,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             if (result.Value == null)
             {
-                return Json(new { status = "empty", message = "Profile not available." });
+                return Json(new { status = "empty", message = _isSomali? "Macluumaadkaaga lama heli karo." : "Profile not available." });
             }
 
             return Json(new { status = "success", data = result.Value });
@@ -187,7 +192,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             if (result.Value == null || !result.Value.Any())
             {
-                return Json(new { status = "empty", message = "No notifications available." });
+                return Json(new { status = "empty", message = _isSomali? "Digniino lama heli karo." : "No notifications available." });
             }
 
             return Json(new { status = "success", data = result.Value });
@@ -203,7 +208,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             if (!result.IsSuccess)
             {
-                TempData["error"] = result.ErrorMessage ?? "An error occurred while searching.";
+                var error = _isSomali ? "Khalad ayaa dhacay inta la baarayay" : "An error occurred during search";
+                TempData["error"] = result.ErrorMessage ?? error;
                 return View(new GlobalSearchDTO());
             }
 
@@ -228,7 +234,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             if (!result.IsSuccess)
             {
-                TempData["error"] = result.ErrorMessage ?? "An error occurred while processing the notification.";
+                var error = _isSomali ? "Khalad ayaa dhacay inta la farsameynayay digniinta." : "An error occurred while processing the notification.";
+                TempData["error"] = result.ErrorMessage ?? error;
                 return View();
             }
 
@@ -260,7 +267,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 TempData["error"] = result.ErrorMessage;
             }
             else {
-                TempData["success"] = "All Notifications cleared successfuly!";
+                TempData["success"] = _isSomali? "Dhammaan digniinaha waa la tirtiray si guul leh!" : "All Notifications cleared successfuly!";
             }
 
             return RedirectToAction("Index", "Home");

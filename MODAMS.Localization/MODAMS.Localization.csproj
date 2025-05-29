@@ -47,6 +47,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>EmployeeLabels.resx</DependentUpon>
     </Compile>
+    <Compile Update="ProfileDataLabels.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ProfileDataLabels.resx</DependentUpon>
+    </Compile>
     <Compile Update="Register.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -107,6 +112,10 @@
     <EmbeddedResource Update="EmployeeLabels.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>EmployeeLabels.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="ProfileDataLabels.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ProfileDataLabels.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Register.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

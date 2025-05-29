@@ -1,70 +1,77 @@
 ﻿@page
+@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization
+@using Microsoft.AspNetCore.Http.Features
+@inject IViewLocalizer Localizer
+
 @model EnableAuthenticatorModel
 @{
-    ViewData["Title"] = "Configure authenticator app";
+    var isSomali = CultureInfo.CurrentCulture.Name == "so";
+
+    ViewData["Title"] = isSomali ? "Deji app-ka xaqiijinta" : "Configure authenticator app";
     ViewData["ActivePage"] = ManageNavPages.TwoFactorAuthentication;
 }
 <style>
-    p{
-        font-size:medium;
+    p {
+        font-size: medium;
     }
 </style>
 <!-- PAGE-HEADER -->
 <div class="page-header">
     <div>
-        <h1 class="page-title">Enable Two-facor Autentication (2FA)</h1>
+        <h1 class="page-title">@(isSomali ? "Dhaqaaji xaqiijinta laba-geesoodka ah (2FA)" : "Enable Two-facor Autentication (2FA)")</h1>
     </div>
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">Dashboard</a></li>
-            <li class="breadcrumb-item"><a href="/Identity/Account/Manage/TwoFactorAuthentication">Two Factor Authentication</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Enable Authenticator</li>
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">@(isSomali ? "Dashboard-ka" : "Dashboard")</a></li>
+            <li class="breadcrumb-item"><a href="/Identity/Account/Manage/TwoFactorAuthentication">@(isSomali ? "Xaqiijinta Laba-Geesoodka ah" : "Two Factor Authentication")</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@(isSomali ? "Dhaqaaji App-ka Xaqiijinta" : "Enable Authenticator")</li>
         </ol>
     </div>
 </div>
 <!-- PAGE-HEADER END -->
-
 <div class="row">
     <div class="card">
         <div class="card-body">
             <partial name="_StatusMessage" for="StatusMessage" />
             <h3>@ViewData["Title"]</h3>
             <div>
-                <p>To use an authenticator app go through the following steps:</p>
+                <p>@(isSomali ? "Si aad u isticmaasho app-ka xaqiijinta, raac tallaabooyinkan hoos ku xusan: " : "To use an authenticator app go through the following steps:")</p>
                 <ol class="list">
                     <li>
                         <p>
-                            Download a two-factor authenticator app like Microsoft Authenticator for
+                            @(isSomali ? "Soo dejiso app xaqiijinta laba-geesoodka ah sida Microsoft Authenticator u ah " : "Download a two-factor authenticator app like Microsoft Authenticator for ")
                             <a href="https://go.microsoft.com/fwlink/?Linkid=825071">Windows Phone</a>,
                             <a href="https://go.microsoft.com/fwlink/?Linkid=825072">Android</a> and
                             <a href="https://go.microsoft.com/fwlink/?Linkid=825073">iOS</a> or
-                            Google Authenticator for
+                            @(isSomali ? "Google Authenticator u ah":"Google Authenticator for ")
                             <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=en">Android</a> and
                             <a href="https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8">iOS</a>.
                         </p>
                     </li>
                     <li>
-                        <p>Scan the QR Code or enter this key <kbd>@Model.SharedKey</kbd> into your two factor authenticator app. Spaces and casing do not matter.</p>
-                        
+                        <p>@(isSomali ? "Sawir QR Code-ka ama geli furahan " : "Scan the QR Code or enter this key ")<kbd>@Model.SharedKey</kbd>@(isSomali ? " ku gali app-kaaga xaqiijinta laba-geesoodka ah. Fogaanta iyo xarfaha waaweyn/yar ma saameeyaan." : " into your two factor authenticator app. Spaces and casing do not matter.")</p>
                         <div id="qrCode"></div>
                         <div id="qrCodeData" data-url="@Model.AuthenticatorUri"></div>
                         <br />
                     </li>
-                    
+
                     <li>
                         <p>
-                            Once you have scanned the QR code or input the key above, your two factor authentication app will provide you
-                            with a unique code. Enter the code in the confirmation box below.
+                            @(isSomali 
+                            ? "Markaad sawirto QR code-ka ama aad geliso furaha kor ku xusan, app-kaaga xaqiijinta laba-geesoodka ah wuxuu ku siin doonaa code gaar ah. Geli code-kaas sanduuqa xaqiijinta ee hoose." 
+                            : "Once you have scanned the QR code or input the key above, your two factor authentication app will provide you with a unique code. Enter the code in the confirmation box below.")
                         </p>
                         <div class="row">
                             <div class="col-md-6">
                                 <form id="send-code" method="post">
                                     <div class="form-floating mb-3">
-                                        <input asp-for="Input.Code" class="form-control" autocomplete="off" placeholder="Please enter the code." />
-                                        <label asp-for="Input.Code" class="control-label form-label">Verification Code</label>
+                                        <input asp-for="Input.Code" class="form-control" autocomplete="off" placeholder="@(isSomali ? "Fadlan geli code-ka." : "Please enter the code.")  />
+                                        <label asp-for="Input.Code" class="control-label form-label">@(isSomali ? "Code-ga Xaqiijinta" : "Verification Code")</label>
                                         <span asp-validation-for="Input.Code" class="text-danger"></span>
                                     </div>
-                                    <button type="submit" class="btn btn-default">Verify</button>
+                                    <button type="submit" class="btn btn-default">
+                                        @(isSomali ? "Xaqiiji" : "Verify")</button>
                                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                                 </form>
                             </div>

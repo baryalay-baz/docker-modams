@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using MODAMS.Models;
 using MODAMS.ApplicationServices.IServices;
+using System.Globalization;
 
 
 namespace MODAMS.ApplicationServices
@@ -37,6 +38,7 @@ namespace MODAMS.ApplicationServices
         private readonly IWebHostEnvironment _webHostEnvironment;
 
         private readonly int _employeeId;
+        private readonly bool _isSomali;
         public HomeService(ILogger<HomeService> logger, ApplicationDbContext db, IAMSFunc func,
             IHttpContextAccessor httpContextAccessor, UserManager<IdentityUser> userManager,
             RoleManager<IdentityRole> roleManager, IEmailSender emailSender, IWebHostEnvironment webHostEnvironment)
@@ -51,6 +53,7 @@ namespace MODAMS.ApplicationServices
             _webHostEnvironment = webHostEnvironment;
 
             _employeeId = _func.GetEmployeeId();
+            _isSomali = CultureInfo.CurrentCulture.Name == "so";
         }
         private bool IsInRole(string role) => _httpContextAccessor.HttpContext.User.IsInRole(role);
 
@@ -172,7 +175,7 @@ namespace MODAMS.ApplicationServices
 
                 if (employeeInDb == null)
                 {
-                    return Result<ProfileDataDTO>.Failure("Profile not found!");
+                    return Result<ProfileDataDTO>.Failure(_isSomali ? "Macluumaadkaaga lama helin!" : "Profile not found!");
                 }
 
                 var dto = new ProfileDataDTO()
@@ -206,7 +209,7 @@ namespace MODAMS.ApplicationServices
 
                 if (employeeInDb == null)
                 {
-                    return Result<ProfileDataDTO>.Failure("Employee not found");
+                    return Result<ProfileDataDTO>.Failure(_isSomali ? "Shaqaale lama helin!" : "Employee not found!");
                 }
 
                 employeeInDb.FullName = dto.FullName;
@@ -215,7 +218,7 @@ namespace MODAMS.ApplicationServices
                 employeeInDb.CardNumber = dto.CardNumber;
 
                 await _db.SaveChangesAsync();
-                await _func.LogNewsFeedAsync(await _func.GetEmployeeNameAsync() + " updated his profile", "Users", "Home", "Profile", employeeInDb.Id);
+                await _func.LogNewsFeedAsync(await _func.GetEmployeeNameAsync() + (_isSomali ? " ayaa cusbooneysiiyay macluumaadkiisa" : " updated his profile"), "Users", "Home", "Profile", employeeInDb.Id);
 
                 return Result<ProfileDataDTO>.Success(dto);
             }
@@ -229,15 +232,19 @@ namespace MODAMS.ApplicationServices
         {
             try
             {
-                string shortmessage = "Password reset instructions have been received for your account, " +
-                    "click the button below to follow the instructions!";
+                string shortmessage = "Password reset instructions have been sent to your account. " +
+                "Please click the button below and follow the instructions!";
 
-                string message = _func.FormatMessage("Reset Password", shortmessage,
-                    emailAddress, HtmlEncoder.Default.Encode(callbackUrl), "Reset Password");
+                if (_isSomali)
+                    shortmessage = "Tilmaamaha dib-u-dejinta erayga sirta ayaa loo soo diray koontadaada. " +
+                            "Fadlan guji badhanka hoose oo raac tilmaamaha!";
+
+                string message = _func.FormatMessage(_isSomali ? "Dib u-deji Erayga Sirta" : "Reset Password", shortmessage,
+                    emailAddress, HtmlEncoder.Default.Encode(callbackUrl), _isSomali ? "Dib u-deji Erayga Sirta" : "Reset Password");
 
                 await _emailSender.SendEmailAsync(
                     emailAddress,
-                    "Reset Password",
+                    _isSomali ? "Dib u-deji Erayga Sirta" : "Reset Password",
                     message);
 
                 return Result<bool>.Success(true);
@@ -252,7 +259,7 @@ namespace MODAMS.ApplicationServices
         {
             if (file == null || file.Length == 0)
             {
-                return Result<bool>.Failure("Please select a file to upload!");
+                return Result<bool>.Failure(_isSomali ? "Fadlan dooro faylka aad rabto inaad soo geliso!" : "Please select a file to upload!");
             }
 
             // Validate file extension
@@ -261,7 +268,9 @@ namespace MODAMS.ApplicationServices
 
             if (!permittedExtensions.Contains(fileExtension))
             {
-                return Result<bool>.Failure("Unsupported file type. Only JPG, PNG, BMP files are allowed.");
+                return Result<bool>.Failure(_isSomali
+                    ? "Nooca faylka lama taageero. Kaliya faylasha JPG, PNG, BMP ayaa la oggol yahay."
+                    : "Unsupported file type. Only JPG, PNG, BMP files are allowed.");
             }
 
             string fileName = $"{employeeId}{fileExtension}";
@@ -315,11 +324,19 @@ namespace MODAMS.ApplicationServices
 
                     // Log the action in the news feed
                     string employeeName = await _func.GetEmployeeNameAsync();
-                    await _func.LogNewsFeedAsync($"{employeeName} uploaded a profile picture", "Users", "Home", "Profile", employee.Id);
+                    if (_isSomali)
+                    {
+                        await _func.LogNewsFeedAsync($"{employeeName} wuxuu soo geliyay sawirka macluumaadkaaga", "Users", "Home", "Profile", employee.Id);
+                    }
+                    else
+                    {
+                        await _func.LogNewsFeedAsync($"{employeeName} uploaded a profile picture", "Users", "Home", "Profile", employee.Id);
+                    }
+
                 }
                 else
                 {
-                    return Result<bool>.Failure("Employee not found.");
+                    return Result<bool>.Failure(_isSomali ? "Shaqaale lama helin." : "Employee not found.");
                 }
 
                 return Result<bool>.Success(true);
@@ -327,7 +344,8 @@ namespace MODAMS.ApplicationServices
             catch (Exception ex)
             {
                 _func.LogException(_logger, ex);
-                return Result<bool>.Failure($"An error occurred while uploading the file: {ex.Message}");
+                var error = _isSomali ? "Khalad ayaa dhacay inta la soo gelinayay faylka: " : "An error occurred while uploading the file: ";
+                return Result<bool>.Failure($"{error}{ex.Message}");
             }
         }
 
@@ -358,7 +376,8 @@ namespace MODAMS.ApplicationServices
             catch (Exception ex)
             {
                 _func.LogException(_logger, ex);
-                return Result<GlobalSearchDTO>.Failure("An error occurred while searching for the transfer or asset.");
+                var error = _isSomali ? "Khalad ayaa dhacay inta la baarayay wareejinta ama hantida." : "An error occurred while searching for the transfer or asset.";
+                return Result<GlobalSearchDTO>.Failure(error);
             }
         }
         public async Task<Result<NotificationRedirectorDTO>> HandleNotificationAsync(int notificationId)
@@ -372,7 +391,7 @@ namespace MODAMS.ApplicationServices
 
                 if (notification == null)
                 {
-                    return Result<NotificationRedirectorDTO>.Failure("Notification not found.");
+                    return Result<NotificationRedirectorDTO>.Failure(_isSomali? "Digniinta lama helin." : "Notification not found.");
                 }
 
                 notification.IsViewed = true;
@@ -394,7 +413,8 @@ namespace MODAMS.ApplicationServices
                 return Result<NotificationRedirectorDTO>.Failure(ex.Message);
             }
         }
-        public async Task<Result<List<NotificationDTO>>> GetAllNotificationsAsync(int id) {
+        public async Task<Result<List<NotificationDTO>>> GetAllNotificationsAsync(int id)
+        {
             try
             {
                 var dto = await _db.Notifications
@@ -428,12 +448,14 @@ namespace MODAMS.ApplicationServices
                 return Result<List<NotificationDTO>>.Success(dto);
 
             }
-            catch (Exception ex) {
-                _func.LogException(_logger,ex);
+            catch (Exception ex)
+            {
+                _func.LogException(_logger, ex);
                 return Result<List<NotificationDTO>>.Failure(ex.Message);
             }
         }
-        public async Task<Result<bool>> ClearAllNotificationsAsync() {
+        public async Task<Result<bool>> ClearAllNotificationsAsync()
+        {
             try
             {
                 var notifications = await _db.Notifications.Where(m => m.EmployeeTo == _employeeId).ToListAsync();
@@ -442,18 +464,21 @@ namespace MODAMS.ApplicationServices
 
                 return Result<bool>.Success(true);
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 _func.LogException(_logger, ex);
                 return Result<bool>.Failure(ex.Message);
             }
         }
-        public async Task<Result<List<NewsFeed>>> GetListOfNewsfeedAsync() {
+        public async Task<Result<List<NewsFeed>>> GetListOfNewsfeedAsync()
+        {
             try
             {
                 var newsFeed = await _db.NewsFeed.OrderByDescending(m => m.TimeStamp).ToListAsync();
                 return Result<List<NewsFeed>>.Success(newsFeed);
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 _func.LogException(_logger, ex);
                 return Result<List<NewsFeed>>.Failure(ex.Message);
             }

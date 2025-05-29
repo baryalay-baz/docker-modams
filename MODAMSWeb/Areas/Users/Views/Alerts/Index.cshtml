@@ -1,13 +1,17 @@
-﻿@model MODAMS.Models.ViewModels.Dto.AlertsDTO
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization
+@inject IViewLocalizer Localizer
+
+@model MODAMS.Models.ViewModels.Dto.AlertsDTO
 
 <div class="page-header">
     <div>
-        <h1 class="page-title">Alerts</h1>
+        <h1 class="page-title">@Localizer["Alerts"]</h1>
     </div>
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">Dashboard</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Alerts</li>
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">@Localizer["Dashboard"]</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Localizer["Alerts"]</li>
         </ol>
     </div>
 </div>
@@ -16,10 +20,10 @@
         <div class="card divShadow">
             <div class="card-body p-4">
                 <div class="d-flex align-items-center justify-content-between">
-                    <h4 class="m-0">Asset Management System Alerts</h4>
+                    <h4 class="m-0">@Localizer["AMSAlerts"]</h4>
                     <select asp-for="@Model.DepartmentId" asp-items="@Model.DepartmentList"
                             class="form-control select2 form-select">
-                        <option value="0">All Departments</option>
+                        <option value="0">@Localizer["AllDepartments"]</option>
                     </select>
                 </div>
             </div>
@@ -53,7 +57,7 @@
                     <div aria-multiselectable="true" id="accordion8" role="tablist">
                         <div class="card mb-0">
                             <div class="card-header border-bottom-0 bg-info h-5" id="heading8" role="tab">
-                                <a class="accor-style2 collapsed text-white" aria-controls="collapse8" aria-expanded="false" data-bs-toggle="collapse" href="#collapse8"><i class="fe fe-plus-circle me-2"></i>&nbsp;List of Assets with Alerts</a>
+                                <a class="accor-style2 collapsed text-white" aria-controls="collapse8" aria-expanded="false" data-bs-toggle="collapse" href="#collapse8"><i class="fe fe-plus-circle me-2"></i>&nbsp;@Localizer["ListOfAssetsWithAlerts"]</a>
                             </div>
                             <div aria-labelledby="heading8" class="collapse" data-bs-parent="#accordion8" id="collapse8" role="tabpanel">
                                 <div class="card-body">
@@ -61,14 +65,14 @@
                                         <table id="tblAlerts" class="table text-nowrap mb-0 table-bordered key-buttons border-top border-bottom project-list-main">
                                             <thead class="bg-primary-gradient ms-auto divShadow">
                                                 <tr>
-                                                    <th class="text-white bg-transparent border-bottom-0 w-5" width="10%">S.No</th>
-                                                    <th class="text-white bg-transparent border-bottom-0">Category</th>
-                                                    <th class="text-white bg-transparent border-bottom-0">Make</th>
-                                                    <th class="text-white bg-transparent border-bottom-0">Asset Name</th>
-                                                    <th class="text-white bg-transparent border-bottom-0">Alert Type</th>
-                                                    <th class="text-white bg-transparent border-bottom-0">Description</th>
-                                                    <th class="text-white bg-transparent border-bottom-0">Department</th>
-                                                    <th class="text-white bg-transparent border-bottom-0">Action</th>
+                                                    <th class="text-white bg-transparent border-bottom-0 w-5" width="10%">@Localizer["SNo"]</th>
+                                                    <th class="text-white bg-transparent border-bottom-0">@Localizer["Category"]</th>
+                                                    <th class="text-white bg-transparent border-bottom-0">@Localizer["Make"]</th>
+                                                    <th class="text-white bg-transparent border-bottom-0">@Localizer["AssetName"]</th>
+                                                    <th class="text-white bg-transparent border-bottom-0">@Localizer["AlertType"]</th>
+                                                    <th class="text-white bg-transparent border-bottom-0">@Localizer["Description"]</th>
+                                                    <th class="text-white bg-transparent border-bottom-0">@Localizer["Department"]</th>
+                                                    <th class="text-white bg-transparent border-bottom-0">@Localizer["Action"]</th>
                                                 </tr>
                                             </thead>
                                             <tbody class="table-body">
@@ -90,7 +94,7 @@
                                                             <td class="text-muted fs-15 fw-semibold">@alert.Department</td>
                                                             <td class="text-muted fs-15 fw-semibold">
                                                                 <div class="d-flex align-items-stretch">
-                                                                    <a asp-controller="Assets" asp-action="AssetInfo" asp-route-id="@alert.AssetId" class="btn btn-sm btn-outline-info border me-2" data-bs-toggle="tooltip" data-bs-original-title="Asset Information">
+                                                                    <a asp-controller="Assets" asp-action="AssetInfo" asp-route-id="@alert.AssetId" class="btn btn-sm btn-outline-info me-1" data-bs-toggle="tooltip" data-bs-original-title="Asset Information">
                                                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
                                                                             <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
                                                                             <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />

@@ -1,8 +1,13 @@
 ﻿@page
+@using System.Globalization
+
 @model ResetAuthenticatorModel
 @{
+    var isSomali = CultureInfo.CurrentCulture.Name == "so";
+
     ViewData["Title"] = "Reset authenticator key";
     ViewData["ActivePage"] = ManageNavPages.TwoFactorAuthentication;
+    
 }
 
 <div class="row">
@@ -15,16 +20,36 @@
                 <div class="alert alert-secondary" role="alert">
                     <p>
                         <span class="glyphicon glyphicon-warning-sign"></span>
-                        <strong>If you reset your authenticator key your authenticator app will not work until you reconfigure it.</strong>
+                        @if(isSomali)
+                        {
+                            <span>Haddii aad dib u dejiso furaha app-kaaga xaqiijinta, app-ka xaqiijinta ma shaqayn doono ilaa aad dib u dejiso.</span>
+                        }
+                        else
+                        {
+                            <span>If you reset your authenticator key your authenticator app will not work until you reconfigure it.</span>
+                        }
                     </p>
+                    <br />
                     <p>
-                        This process disables 2FA until you verify your authenticator app.
-                        If you do not complete your authenticator app configuration you may lose access to your account.
+                       @if(isSomali)
+                        {
+                            <span>
+                                Hannaankani wuxuu daminayaa xaqiijinta laba-geesoodka ah ilaa aad xaqiijiso app-kaaga xaqiijinta.
+                                Haddii aad dhammaystiri waydo dejinta app-kaaga xaqiijinta, waxaa laga yaabaa inaad lumiso gelitaanka
+                            </span>
+                        }
+                        else
+                        {
+                            <span>
+                                This process disables two-factor authentication until you verify your authenticator app.
+                                If you do not complete your authenticator app configuration you may lose access to your account.
+                            </span>
+                        }
                     </p>
                 </div>
                 <div>
                     <form id="reset-authenticator-form" method="post">
-                        <button id="reset-authenticator-button" class="btn btn-pill btn-outline-secondary" type="submit">Reset authenticator key</button>
+                        <button id="reset-authenticator-button" class="btn btn-pill btn-outline-secondary" type="submit">@(isSomali ? "Dib u deji furaha app-ka xaqiijinta" : "Reset authenticator key")</button>
                     </form>
                 </div>
             </div>
