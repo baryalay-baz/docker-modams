@@ -126,6 +126,9 @@
   <data name="CurrentValue" xml:space="preserve">
     <value>Current Value</value>
   </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
   <data name="InitialCost" xml:space="preserve">
     <value>Initial Cost</value>
   </data>
@@ -146,6 +149,9 @@
   </data>
   <data name="Secondary Store" xml:space="preserve">
     <value>Secondary Store</value>
+  </data>
+  <data name="Stores" xml:space="preserve">
+    <value>Stores</value>
   </data>
   <data name="TotalAssets" xml:space="preserve">
     <value>Total Assets</value>

@@ -120,6 +120,9 @@
   <data name="AssetPictures" xml:space="preserve">
     <value>Asset Pictures</value>
   </data>
+  <data name="Assets" xml:space="preserve">
+    <value>Assets</value>
+  </data>
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
@@ -128,6 +131,9 @@
   </data>
   <data name="Confirm" xml:space="preserve">
     <value>Confirm</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
   </data>
   <data name="Delete" xml:space="preserve">
     <value>Delete</value>
@@ -140,6 +146,12 @@
   </data>
   <data name="NoPicturesAvailable" xml:space="preserve">
     <value>No pictures available</value>
+  </data>
+  <data name="PictureGallery" xml:space="preserve">
+    <value>Picture Gallery</value>
+  </data>
+  <data name="Stores" xml:space="preserve">
+    <value>Stores</value>
   </data>
   <data name="Upload" xml:space="preserve">
     <value>Upload</value>

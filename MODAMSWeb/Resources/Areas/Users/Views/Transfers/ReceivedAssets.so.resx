@@ -129,6 +129,9 @@
   <data name="CurrentValue" xml:space="preserve">
     <value>Qiimaha Hadda</value>
   </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard-ka</value>
+  </data>
   <data name="Make" xml:space="preserve">
     <value>Soosaaraha</value>
   </data>
@@ -155,5 +158,8 @@
   </data>
   <data name="TransferDate" xml:space="preserve">
     <value>Taariikhda Wareejinta</value>
+  </data>
+  <data name="Transfers" xml:space="preserve">
+    <value>Wareejin</value>
   </data>
 </root>

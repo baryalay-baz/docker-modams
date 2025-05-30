@@ -32,30 +32,25 @@ namespace MODAMS.ApplicationServices
         private readonly ApplicationDbContext _db;
         private readonly IAMSFunc _func;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
+        
         private readonly IEmailSender _emailSender;
-        private readonly IWebHostEnvironment _webHostEnvironment;
-
+        
         private readonly int _employeeId;
         private readonly bool _isSomali;
         public HomeService(ILogger<HomeService> logger, ApplicationDbContext db, IAMSFunc func,
             IHttpContextAccessor httpContextAccessor, UserManager<IdentityUser> userManager,
-            RoleManager<IdentityRole> roleManager, IEmailSender emailSender, IWebHostEnvironment webHostEnvironment)
+            RoleManager<IdentityRole> roleManager, IEmailSender emailSender)
         {
             _logger = logger;
             _db = db;
             _func = func;
             _httpContextAccessor = httpContextAccessor;
-            _userManager = userManager;
-            _roleManager = roleManager;
             _emailSender = emailSender;
-            _webHostEnvironment = webHostEnvironment;
 
             _employeeId = _func.GetEmployeeId();
             _isSomali = CultureInfo.CurrentCulture.Name == "so";
         }
-        private bool IsInRole(string role) => _httpContextAccessor.HttpContext.User.IsInRole(role);
+        private bool IsInRole(string role) => _httpContextAccessor.HttpContext?.User?.IsInRole(role) ?? false;
 
         public async Task<Result<DashboardDTO>> GetIndexAsync()
         {
@@ -348,7 +343,6 @@ namespace MODAMS.ApplicationServices
                 return Result<bool>.Failure($"{error}{ex.Message}");
             }
         }
-
         public async Task<Result<GlobalSearchDTO>> SearchTransferOrAssetAsync(string barcode)
         {
             try

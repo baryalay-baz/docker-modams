@@ -234,10 +234,22 @@
   <data name="SaveChanges" xml:space="preserve">
     <value>Save Changes</value>
   </data>
-  <data name="EditAsset" xml:space="preserve">
+  <data name="EditAssetDetails" xml:space="preserve">
     <value>Edit Asset Details</value>
   </data>
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="Stores" xml:space="preserve">
+    <value>Stores</value>
+  </data>
+  <data name="Assets" xml:space="preserve">
+    <value>Assets</value>
+  </data>
+  <data name="EditAsset" xml:space="preserve">
+    <value>Edit Asset</value>
   </data>
 </root>

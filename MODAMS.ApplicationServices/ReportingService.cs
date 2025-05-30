@@ -23,7 +23,6 @@ namespace MODAMS.ApplicationServices
 
         private int _employeeId;
         private int _supervisorEmployeeId;
-        private int _storeId;
         public ReportingService(ApplicationDbContext db, IAMSFunc func,IHttpContextAccessor httpContextAccessor, ILogger<ReportingService> logger)
         {
             _db = db;
@@ -35,7 +34,7 @@ namespace MODAMS.ApplicationServices
             _supervisorEmployeeId = _func.GetSupervisorId(_employeeId);
         }
 
-        private bool IsInRole(string role) => _httpContextAccessor.HttpContext.User.IsInRole(role);
+        private bool IsInRole(string role) => _httpContextAccessor.HttpContext?.User?.IsInRole(role) ?? false;
         public async Task<ReportingDTO> PopulateDTO(ReportingDTO dto)
         {
             //Populate Asset Report

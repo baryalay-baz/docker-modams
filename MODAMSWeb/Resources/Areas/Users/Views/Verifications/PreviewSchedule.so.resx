@@ -234,4 +234,13 @@
   <data name="Select" xml:space="preserve">
     <value>Dooro</value>
   </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard-ka</value>
+  </data>
+  <data name="Verifications" xml:space="preserve">
+    <value>Xaqiin</value>
+  </data>
+  <data name="PreviewSchedule" xml:space="preserve">
+    <value>Dib-u-eegis Jadwal</value>
+  </data>
 </root>

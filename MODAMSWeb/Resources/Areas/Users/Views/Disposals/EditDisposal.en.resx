@@ -180,4 +180,10 @@
   <data name="Confirm" xml:space="preserve">
     <value>Confirm</value>
   </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="Disposals" xml:space="preserve">
+    <value>Disposals</value>
+  </data>
 </root>

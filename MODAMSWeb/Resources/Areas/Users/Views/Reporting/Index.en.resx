@@ -162,4 +162,7 @@
   <data name="DisposalReport" xml:space="preserve">
     <value>Disposal Report</value>
   </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
 </root>

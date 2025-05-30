@@ -117,79 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AreYouSure" xml:space="preserve">
-    <value>Ma hubtaa?</value>
-  </data>
-  <data name="AssetName" xml:space="preserve">
-    <value>Nooca Hantida</value>
-  </data>
-  <data name="AssetTransfers" xml:space="preserve">
-    <value>Hanti Wareejin</value>
-  </data>
-  <data name="Barcode" xml:space="preserve">
-    <value>Barcode-ka</value>
-  </data>
-  <data name="Cancel" xml:space="preserve">
-    <value>Jooji</value>
-  </data>
-  <data name="Category" xml:space="preserve">
-    <value>Qayb</value>
-  </data>
-  <data name="Confirm" xml:space="preserve">
-    <value>Xaqiiji</value>
-  </data>
-  <data name="CreateNewTransfer" xml:space="preserve">
-    <value>Abuur Wareejin Cusub</value>
-  </data>
-  <data name="DeleteTransfer" xml:space="preserve">
-    <value>Tirtir Wareejinta</value>
-  </data>
-  <data name="DeleteConfirmationMessage" xml:space="preserve">
-    <value>Ma hubtaa inaad xaqiijiso tirtirka wareejintan?</value>
-  </data>
-  <data name="EditTransfer" xml:space="preserve">
-    <value>Beddel Wareejinta</value>
-  </data>
-  <data name="Make" xml:space="preserve">
-    <value>Sharikadda Sameysey</value>
-  </data>
-  <data name="Model" xml:space="preserve">
-    <value>Model-ka</value>
-  </data>
-  <data name="PreviewTransfer" xml:space="preserve">
-    <value>Sii-eeg Wareejinta</value>
-  </data>
-  <data name="Previous" xml:space="preserve">
-    <value>Hore</value>
-  </data>
-  <data name="SaveTransfer" xml:space="preserve">
-    <value>Keydi Wareejinta</value>
-  </data>
-  <data name="SelectAssets" xml:space="preserve">
-    <value>Xulo Hantida</value>
-  </data>
-  <data name="Selected" xml:space="preserve">
-    <value>La Xushay</value>
-  </data>
-  <data name="SelectStore" xml:space="preserve">
-    <value>Xulo Dukaanka</value>
-  </data>
-  <data name="SerialNo" xml:space="preserve">
-    <value>Tirada Taxan</value>
-  </data>
-  <data name="TransferFromStore" xml:space="preserve">
-    <value>Laga soo wareejiyey bakhaar</value>
-  </data>
-  <data name="TransferNotes" xml:space="preserve">
-    <value>Qoraalada Wareejinta</value>
-  </data>
-  <data name="YourSelection" xml:space="preserve">
-    <value>Xulashadaada</value>
+  <data name="AllNotifications" xml:space="preserve">
+    <value>Dhammaan Ogeysiisyada</value>
   </data>
   <data name="Dashboard" xml:space="preserve">
     <value>Dashboard-ka</value>
   </data>
-  <data name="Transfers" xml:space="preserve">
-    <value>Wareejin</value>
+  <data name="DeleteAllNotifications" xml:space="preserve">
+    <value>Tirtir Dhammaan Ogeysiisyada</value>
+  </data>
+  <data name="Notifications" xml:space="preserve">
+    <value>Ogeysiisyada</value>
+  </data>
+  <data name="Previous" xml:space="preserve">
+    <value>Hore</value>
   </data>
 </root>

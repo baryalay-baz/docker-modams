@@ -135,6 +135,9 @@
   <data name="CustomVerification" xml:space="preserve">
     <value>Xaqiijin Gaar ah</value>
   </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard-ka</value>
+  </data>
   <data name="DeleteConfirmationMessage" xml:space="preserve">
     <value>Ma awoodi doontid inaad soo celiso jadwalkan, ma hubtaa?</value>
   </data>
@@ -182,5 +185,8 @@
   </data>
   <data name="VerificationNotes" xml:space="preserve">
     <value>Qoraallada Xaqiijinta</value>
+  </data>
+  <data name="Verifications" xml:space="preserve">
+    <value>Xaqiin</value>
   </data>
 </root>

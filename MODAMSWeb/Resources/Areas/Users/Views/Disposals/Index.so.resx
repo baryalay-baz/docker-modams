@@ -135,6 +135,9 @@
   <data name="Confirm" xml:space="preserve">
     <value>Xaqiiji</value>
   </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard-ka</value>
+  </data>
   <data name="Date" xml:space="preserve">
     <value>Taariikhda</value>
   </data>

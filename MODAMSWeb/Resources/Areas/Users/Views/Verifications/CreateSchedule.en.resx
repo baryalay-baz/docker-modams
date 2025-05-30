@@ -129,8 +129,14 @@
   <data name="CreateNewSchedule" xml:space="preserve">
     <value>Create New Schedule</value>
   </data>
+  <data name="CreateSchedule" xml:space="preserve">
+    <value>Create Schedule</value>
+  </data>
   <data name="CustomVerification" xml:space="preserve">
     <value>Custom Verification</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashbaord</value>
   </data>
   <data name="Department" xml:space="preserve">
     <value>Department</value>
@@ -167,5 +173,8 @@
   </data>
   <data name="VerificationNotes" xml:space="preserve">
     <value>Verification Notes</value>
+  </data>
+  <data name="Verifications" xml:space="preserve">
+    <value>Verifications</value>
   </data>
 </root>

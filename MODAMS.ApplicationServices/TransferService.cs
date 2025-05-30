@@ -1,6 +1,4 @@
-﻿using DocumentFormat.OpenXml.Office2010.Excel;
-using DocumentFormat.OpenXml.Spreadsheet;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -10,13 +8,9 @@ using MODAMS.Models;
 using MODAMS.Models.ViewModels;
 using MODAMS.Models.ViewModels.Dto;
 using MODAMS.Utility;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace MODAMS.ApplicationServices
 {
@@ -28,7 +22,6 @@ namespace MODAMS.ApplicationServices
         public readonly ILogger<TransferService> _logger;
 
         private int _employeeId;
-        private int _supervisorId;
         private int _storeId;
         private readonly bool _isSomali;
 
@@ -40,10 +33,9 @@ namespace MODAMS.ApplicationServices
             _logger = logger;
 
             _employeeId = _func.GetEmployeeId();
-            _supervisorId = _func.GetSupervisorId(_employeeId);
             _isSomali = CultureInfo.CurrentUICulture.Name == "so";
         }
-        private bool IsInRole(string role) => _httpContextAccessor.HttpContext.User.IsInRole(role);
+        
         public async Task<Result<TransferDTO>> GetIndexAsync(int id = 0, int transferStatusId = 0)
         {
             try
@@ -934,6 +926,7 @@ namespace MODAMS.ApplicationServices
 
 
         //Private Functions
+        private bool IsInRole(string role) => _httpContextAccessor.HttpContext?.User?.IsInRole(role) ?? false;
         private bool IsAssetSelected(int assetId, List<TransferDetail> transferDetails)
         {
             bool blnResult = false;

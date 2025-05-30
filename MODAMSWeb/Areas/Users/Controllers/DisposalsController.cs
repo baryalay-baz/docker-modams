@@ -20,11 +20,10 @@ namespace MODAMSWeb.Areas.Users.Controllers
     {
         private readonly ApplicationDbContext _db;
         private readonly IAMSFunc _func;
-        private int _employeeId;
-        private int _storeId;
         private readonly IWebHostEnvironment _webHostEnvironment;
-
         private readonly IDisposalService _disposalService;
+        
+        private int _employeeId;
 
         public DisposalsController(IDisposalService disposalService, ApplicationDbContext db, IAMSFunc func, IWebHostEnvironment webHostEnvironment)
         {

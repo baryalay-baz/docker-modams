@@ -43,7 +43,7 @@ namespace MODAMS.ApplicationServices
             _isSomali = CultureInfo.CurrentCulture.Name == "so";
         }
 
-        private bool IsInRole(string role) => _httpContextAccessor.HttpContext.User.IsInRole(role);
+        private bool IsInRole(string role) => _httpContextAccessor.HttpContext?.User?.IsInRole(role) ?? false;
 
         public async Task<Result<List<vwEmployees>>> GetIndexAsync()
         {

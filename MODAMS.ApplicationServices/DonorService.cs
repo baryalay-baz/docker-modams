@@ -5,11 +5,6 @@ using MODAMS.ApplicationServices.IServices;
 using MODAMS.DataAccess.Data;
 using MODAMS.Models;
 using MODAMS.Utility;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MODAMS.ApplicationServices
 {
@@ -19,15 +14,11 @@ namespace MODAMS.ApplicationServices
         private readonly IAMSFunc _func;
         private readonly ILogger<DonorService> _logger;
 
-        private int _employeeId;
-
         public DonorService(ApplicationDbContext db, IAMSFunc func, ILogger<DonorService> logger)
         {
             _db = db;
             _func = func;
             _logger = logger;
-
-            _employeeId = _func.GetEmployeeId();
         }
 
         public async Task<Result<List<Donor>>> GetIndexAsync()

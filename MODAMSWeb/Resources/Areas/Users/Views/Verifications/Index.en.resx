@@ -132,6 +132,9 @@
   <data name="Custom Verification" xml:space="preserve">
     <value>Custom Verification</value>
   </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
   <data name="DeleteConfirmationMessage" xml:space="preserve">
     <value>Are you sure you want to delete this verification schedule?</value>
   </data>
@@ -167,6 +170,9 @@
   </data>
   <data name="Team" xml:space="preserve">
     <value>Team</value>
+  </data>
+  <data name="Verifications" xml:space="preserve">
+    <value>Verifications</value>
   </data>
   <data name="VerificationScheduleByStatus" xml:space="preserve">
     <value>Verification Schedule by Status</value>

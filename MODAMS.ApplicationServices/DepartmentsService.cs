@@ -20,7 +20,6 @@ namespace MODAMS.ApplicationServices
         private readonly IAMSFunc _func;
         private readonly ILogger<DepartmentsService> _logger;
 
-        private int _employeeId;
         private readonly bool _isSomali;
         public DepartmentsService(ApplicationDbContext db, IAMSFunc func, ILogger<DepartmentsService> logger)
         {
@@ -28,7 +27,6 @@ namespace MODAMS.ApplicationServices
             _func = func;
             _logger = logger;
 
-            _employeeId = _func.GetEmployeeId();
             _isSomali = CultureInfo.CurrentCulture.Name == "so";
         }
         public async Task<Result<DepartmentsDTO>> GetIndexAsync()
@@ -305,7 +303,6 @@ namespace MODAMS.ApplicationServices
                 return Result<bool>.Failure(ex.Message);
             }
         }
-
         public async Task<string> GetDepartmentsAsync()
         {
             string sResult = "No Records Found";

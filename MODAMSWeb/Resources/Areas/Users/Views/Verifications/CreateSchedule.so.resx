@@ -129,8 +129,14 @@
   <data name="CreateNewSchedule" xml:space="preserve">
     <value>Abuur Jadwal Cusub</value>
   </data>
+  <data name="CreateSchedule" xml:space="preserve">
+    <value>Abuur Jadwal</value>
+  </data>
   <data name="CustomVerification" xml:space="preserve">
     <value>Xaqiijin Gaar ah</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashbaord-ka</value>
   </data>
   <data name="Department" xml:space="preserve">
     <value>Waaxda</value>
@@ -167,5 +173,8 @@
   </data>
   <data name="VerificationNotes" xml:space="preserve">
     <value>Qoraallada Xaqiijinta</value>
+  </data>
+  <data name="Verifications" xml:space="preserve">
+    <value>Xaqiin</value>
   </data>
 </root>

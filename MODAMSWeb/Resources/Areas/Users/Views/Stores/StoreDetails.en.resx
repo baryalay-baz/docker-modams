@@ -129,6 +129,9 @@
   <data name="Count" xml:space="preserve">
     <value>Count</value>
   </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
   <data name="Disposed" xml:space="preserve">
     <value>Disposed</value>
   </data>
@@ -146,6 +149,12 @@
   </data>
   <data name="Registered" xml:space="preserve">
     <value>Registered</value>
+  </data>
+  <data name="StoreDetails" xml:space="preserve">
+    <value>Store Details</value>
+  </data>
+  <data name="Stores" xml:space="preserve">
+    <value>Stores</value>
   </data>
   <data name="SubCategory" xml:space="preserve">
     <value>Sub Category</value>

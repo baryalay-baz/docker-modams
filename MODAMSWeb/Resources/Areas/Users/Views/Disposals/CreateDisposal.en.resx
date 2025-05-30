@@ -132,6 +132,12 @@
   <data name="CreateNewDisposal" xml:space="preserve">
     <value>Create New Disposal</value>
   </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="Disposals" xml:space="preserve">
+    <value>Disposals</value>
+  </data>
   <data name="Identification" xml:space="preserve">
     <value>Identification</value>
   </data>

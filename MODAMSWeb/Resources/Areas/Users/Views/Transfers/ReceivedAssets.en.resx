@@ -129,6 +129,9 @@
   <data name="CurrentValue" xml:space="preserve">
     <value>Current Value</value>
   </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
   <data name="Make" xml:space="preserve">
     <value>Make</value>
   </data>
@@ -155,5 +158,8 @@
   </data>
   <data name="TransferDate" xml:space="preserve">
     <value>Transfer Date</value>
+  </data>
+  <data name="Transfers" xml:space="preserve">
+    <value>Transfers</value>
   </data>
 </root>

@@ -22,7 +22,6 @@ namespace MODAMS.ApplicationServices
         private readonly IAMSFunc _func;
         private readonly ILogger<CategoriesService> _logger;
 
-        private int _employeeId;
         private readonly bool _isSomali;
         public CategoriesService(ApplicationDbContext db, IAMSFunc func, ILogger<CategoriesService> logger)
         {
@@ -30,7 +29,6 @@ namespace MODAMS.ApplicationServices
             _func = func;
             _logger = logger;
 
-            _employeeId = _func.GetEmployeeId();
             _isSomali = CultureInfo.CurrentCulture.Name == "so";
         }
 

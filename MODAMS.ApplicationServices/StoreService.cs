@@ -27,7 +27,6 @@ namespace MODAMS.ApplicationServices
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         private int _employeeId;
-        private int _supervisorEmployeeId;
         private bool _isSomali;
         public StoreService(ApplicationDbContext db, IAMSFunc func, ILogger<StoreService> logger, IHttpContextAccessor httpContextAccessor)
         {
@@ -211,6 +210,6 @@ namespace MODAMS.ApplicationServices
         }
 
         //Private functions
-        private bool IsInRole(string role) => _httpContextAccessor.HttpContext.User.IsInRole(role);
+        private bool IsInRole(string role) => _httpContextAccessor.HttpContext?.User?.IsInRole(role) ?? false;
     }
 }

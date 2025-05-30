@@ -132,6 +132,12 @@
   <data name="CreateNewTransfer" xml:space="preserve">
     <value>Abuur Wareejin Cusub</value>
   </data>
+  <data name="CreateTransfer" xml:space="preserve">
+    <value>Abuur Wareejin</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard-ka</value>
+  </data>
   <data name="Make" xml:space="preserve">
     <value>Sharikadda Sameysey</value>
   </data>
@@ -158,6 +164,9 @@
   </data>
   <data name="TransferNotes" xml:space="preserve">
     <value>Qoraalada Wareejinta</value>
+  </data>
+  <data name="Transfers" xml:space="preserve">
+    <value>Wareejin</value>
   </data>
   <data name="YourSelection" xml:space="preserve">
     <value>Xulashadaada</value>

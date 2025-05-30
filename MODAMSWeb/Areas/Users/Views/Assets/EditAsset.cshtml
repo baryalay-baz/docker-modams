@@ -14,15 +14,15 @@
 <!-- PAGE-HEADER -->
 <div class="page-header">
     <div>
-        <h1 class="page-title">@Localizer["EditAsset"]</h1>
+        <h1 class="page-title">@Localizer["EditAssetDetails"]</h1>
     </div>
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">Dashboard</a></li>
-            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Stores" asp-action="Index">Stores</a></li>
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">@Localizer["Dashboard"]</a></li>
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Stores" asp-action="Index">@Localizer["Stores"]</a></li>
             <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Stores" asp-action="StoreDetails" asp-route-id="@Model.StoreId">@Model.StoreName</a></li>
-            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Assets" asp-action="Index" asp-route-id="@Model.StoreId">Assets</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Edit Asset</li>
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Assets" asp-action="Index" asp-route-id="@Model.StoreId">@Localizer["Assets"]</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Localizer["EditAsset"]</li>
         </ol>
     </div>
 </div>

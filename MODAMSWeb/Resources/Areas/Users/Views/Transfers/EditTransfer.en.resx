@@ -186,4 +186,10 @@
   <data name="YourSelection" xml:space="preserve">
     <value>Your Selection</value>
   </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="Transfers" xml:space="preserve">
+    <value>Transfers</value>
+  </data>
 </root>

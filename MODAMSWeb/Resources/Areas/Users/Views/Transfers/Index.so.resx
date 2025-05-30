@@ -150,6 +150,9 @@
   <data name="Count" xml:space="preserve">
     <value>Tiri</value>
   </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard-ka</value>
+  </data>
   <data name="Date" xml:space="preserve">
     <value>Taariikhda</value>
   </data>
@@ -197,6 +200,9 @@
   </data>
   <data name="StoreTo" xml:space="preserve">
     <value>Bakhaarka ay u socoto</value>
+  </data>
+  <data name="Transfers" xml:space="preserve">
+    <value>Wareejin</value>
   </data>
   <data name="Value" xml:space="preserve">
     <value>Qiime</value>

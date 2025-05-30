@@ -32,7 +32,7 @@ namespace MODAMS.ApplicationServices
             _employeeId = _func.GetEmployeeId();
         }
 
-        private bool IsInRole(string role) => _httpContextAccessor.HttpContext.User.IsInRole(role);
+        private bool IsInRole(string role) => _httpContextAccessor.HttpContext?.User?.IsInRole(role) ?? false;
 
         public async Task<Result<AlertsDTO>> GetIndexAsync(int? departmentId = 0)
         {

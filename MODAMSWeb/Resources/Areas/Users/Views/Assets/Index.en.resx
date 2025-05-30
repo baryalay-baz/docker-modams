@@ -144,6 +144,9 @@
   <data name="Category" xml:space="preserve">
     <value>Category</value>
   </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
   <data name="EditAsset" xml:space="preserve">
     <value>Edit Asset</value>
   </data>
@@ -173,6 +176,9 @@
   </data>
   <data name="Status" xml:space="preserve">
     <value>Status</value>
+  </data>
+  <data name="Stores" xml:space="preserve">
+    <value>Stores</value>
   </data>
   <data name="Year" xml:space="preserve">
     <value>Year</value>

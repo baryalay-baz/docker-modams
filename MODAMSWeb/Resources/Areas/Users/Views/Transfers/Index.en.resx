@@ -150,6 +150,9 @@
   <data name="Count" xml:space="preserve">
     <value>Count</value>
   </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
   <data name="Date" xml:space="preserve">
     <value>Date</value>
   </data>
@@ -197,6 +200,9 @@
   </data>
   <data name="StoreTo" xml:space="preserve">
     <value>Store To</value>
+  </data>
+  <data name="Transfers" xml:space="preserve">
+    <value>Transfers</value>
   </data>
   <data name="Value" xml:space="preserve">
     <value>Value</value>

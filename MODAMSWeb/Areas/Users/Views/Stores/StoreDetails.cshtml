@@ -8,34 +8,34 @@
 
 <style>
     .legend span {
-    padding-block: 3px;
-    padding-left: 5px;
-    padding-right: 5px;
-    display: inline-block;
-    text-align: center;
-    cursor: pointer;
-    color: white;
+        padding-block: 3px;
+        padding-left: 5px;
+        padding-right: 5px;
+        display: inline-block;
+        text-align: center;
+        cursor: pointer;
+        color: white;
     }
 
     .hover-effect {
-    position: relative;
-    left: 0;
-    transition: left 0.3s ease-in-out;
+        position: relative;
+        left: 0;
+        transition: left 0.3s ease-in-out;
     }
 
-    .hover-effect:hover {
-    left: 10px;
-    }
+        .hover-effect:hover {
+            left: 10px;
+        }
 </style>
 
 <div class="page-header">
     <div>
-        <h1 class="page-title">Store Details</h1>
+        <h1 class="page-title">@Localizer["StoreDetails"]</h1>
     </div>
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">Dashboard</a></li>
-            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Stores" asp-action="Index">Stores</a></li>
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">@Localizer["Dashboard"]</a></li>
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Stores" asp-action="Index">@Localizer["Stores"]</a></li>
             <li class="breadcrumb-item active" aria-current="page">@Model.StoreName</li>
         </ol>
     </div>
@@ -57,7 +57,7 @@
 <div class="row">
     <div class="col-xl col-md-12">
         <a asp-area="Users" asp-controller="Assets" asp-action="Index"
-        asp-route-id="@Model.StoreId" asp-route-subCategoryId="0">
+           asp-route-id="@Model.StoreId" asp-route-subCategoryId="0">
             <div class="card divShadow">
                 <div class="card-body">
                     <div class="row">
@@ -243,7 +243,7 @@
                                                         if (CategoryCheck)
                                                         {
                                                             <td rowspan="@nCategoryCount" class="text-muted fs-15 fw-semibold">
-                                                                @(isSomali ? sca.CategoryNameSo : sca.CategoryName)
+                                                                @(isSomali? sca.CategoryNameSo: sca.CategoryName)
                                                             </td>
                                                             CategoryCheck = false;
                                                         }
@@ -253,7 +253,7 @@
                                                            asp-route-id="@sca.StoreId"
                                                            asp-route-subCategoryId="@sca.SubCategoryId"
                                                            class="text-muted hover-effect">
-                                                            @(isSomali ? sca.SubCategoryNameSo : sca.SubCategoryName)
+                                                            @(isSomali? sca.SubCategoryNameSo: sca.SubCategoryName)
                                                         </a>
                                                     </td>
                                                     <td class="text-muted fs-15 fw-semibold @sbgClass" style="text-align: right;">
@@ -309,8 +309,7 @@
     var jsonData = Json.Serialize(localizedStoreCategoryAssets);
 }
 
-<section id="dvChartData" style="display:none;">
-</section>
+<section id="dvChartData" style="display:none;"></section>
 @section scripts {
 
     <script src="~/assets/plugins/c3-0.7.20/c3.min.js"></script>
@@ -328,7 +327,7 @@
         const pieChart = () => {
             //var sData = '@Html.Raw(Json.Serialize(Model.StoreCategoryAssets))';
             var sData = '@Html.Raw(jsonData)';
-            
+
             if (sData == "No Records Found" || sData == "") {
             } else {
                 var Data = JSON.parse(sData);

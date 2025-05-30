@@ -126,6 +126,9 @@
   <data name="AssetDocuments" xml:space="preserve">
     <value>Asset Documents</value>
   </data>
+  <data name="Assets" xml:space="preserve">
+    <value>Assets</value>
+  </data>
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
@@ -134,6 +137,9 @@
   </data>
   <data name="Confirm" xml:space="preserve">
     <value>Confirm</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
   </data>
   <data name="DeleteConfirmationMessage" xml:space="preserve">
     <value>You will not be able to recover this document again</value>
@@ -158,6 +164,9 @@
   </data>
   <data name="SNo" xml:space="preserve">
     <value>S.No</value>
+  </data>
+  <data name="Stores" xml:space="preserve">
+    <value>Stores</value>
   </data>
   <data name="Upload" xml:space="preserve">
     <value>Upload</value>

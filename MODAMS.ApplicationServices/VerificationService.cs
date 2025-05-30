@@ -22,7 +22,6 @@ namespace MODAMS.ApplicationServices
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         private readonly int _employeeId;
-        private readonly int _countryOfficeId;
         private readonly bool _isSomali;
         public VerificationService(ApplicationDbContext db, IAMSFunc func,
             IHttpContextAccessor httpContextAccessor, IWebHostEnvironment webHostEnvironment,
@@ -547,7 +546,7 @@ namespace MODAMS.ApplicationServices
 
 
         //Private functions
-        private bool IsInRole(string role) => _httpContextAccessor.HttpContext.User.IsInRole(role);
+        private bool IsInRole(string role) => _httpContextAccessor.HttpContext?.User?.IsInRole(role) ?? false;
         private async Task NotifyTeamMemberAsync(int scheduleId, int employeeId, string role)
         {
 

@@ -144,6 +144,9 @@
   <data name="Category" xml:space="preserve">
     <value>Qayb</value>
   </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard-ka</value>
+  </data>
   <data name="EditAsset" xml:space="preserve">
     <value>Tifaftir Hantida</value>
   </data>
@@ -173,6 +176,9 @@
   </data>
   <data name="Status" xml:space="preserve">
     <value>Heerka</value>
+  </data>
+  <data name="Stores" xml:space="preserve">
+    <value>Bakhaaro</value>
   </data>
   <data name="Year" xml:space="preserve">
     <value>Sanadka</value>

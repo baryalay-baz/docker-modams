@@ -1,4 +1,7 @@
-﻿@model MODAMS.Models.ViewModels.Dto.GlobalSearchDTO
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+@model MODAMS.Models.ViewModels.Dto.GlobalSearchDTO
 
 <style>
     table {
@@ -29,12 +32,12 @@
 
 <div class="page-header">
     <div>
-        <h1 class="page-title">Search Assets</h1>
+        <h1 class="page-title">@Localizer["SearchAssets"]</h1>
     </div>
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">Dashboard</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Global Search</li>
+            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">@Localizer["Dashboard"]</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Localizer["GlobalSearch"]</li>
         </ol>
     </div>
 </div>
@@ -43,7 +46,7 @@
         <div class="card divShadow">
             <div class="card-body p-4">
                 <div class="d-flex align-items-center justify-content-between">
-                    <h4 class="m-0">Asset from all stores</h4>
+                    <h4 class="m-0">@Localizer["AssetsFromAllStores"]</h4>
                 </div>
             </div>
         </div>
@@ -86,7 +89,7 @@
                                     }
                                     else
                                     {
-                                        <h3>Asset not found!</h3>
+                                        <h3>@Localizer["AssetNotFound"]</h3>
                                     }
                                 }
                                 

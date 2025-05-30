@@ -457,7 +457,7 @@ namespace MODAMS.ApplicationServices
         }
 
         //Private Functions
-        private bool IsInRole(string role) => _httpContextAccessor.HttpContext.User.IsInRole(role);
+        private bool IsInRole(string role) => _httpContextAccessor.HttpContext?.User?.IsInRole(role) ?? false;
         private async Task<Result<string>> DeletePictureAsync(int disposalId)
         {
             if (disposalId == 0)
@@ -466,6 +466,7 @@ namespace MODAMS.ApplicationServices
             }
 
             var disposalInDb = await _db.Disposals.FirstOrDefaultAsync(m => m.Id == disposalId);
+
             if (disposalInDb == null)
             {
                 return Result<string>.Failure(_isSomali ? "Baabi’in lama helin!" : "Disposal not found!");

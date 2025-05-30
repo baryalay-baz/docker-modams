@@ -17,9 +17,6 @@ namespace MODAMSWeb.Areas.Users.Controllers
         private readonly IAMSFunc _func;
         private readonly ITransferService _transferService;
 
-        private int _employeeId;
-        private int _supervisorId;
-        private int _storeId;
         private readonly bool _isSomali;
 
         public TransfersController(ApplicationDbContext db, IAMSFunc func, ITransferService transferService)
@@ -28,8 +25,6 @@ namespace MODAMSWeb.Areas.Users.Controllers
             _func = func;
             _transferService = transferService;
 
-            _employeeId = _func.GetEmployeeId();
-            _supervisorId = _func.GetSupervisorId(_employeeId);
             _isSomali = CultureInfo.CurrentUICulture.Name == "so";
         }
         [HttpGet]

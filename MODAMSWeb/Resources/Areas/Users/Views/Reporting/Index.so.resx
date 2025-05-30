@@ -162,4 +162,7 @@
   <data name="DisposalReport" xml:space="preserve">
     <value>Warbixinta Ka-Takoorid</value>
   </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard-ka</value>
+  </data>
 </root>

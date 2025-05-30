@@ -234,4 +234,16 @@
   <data name="Cancel" xml:space="preserve">
     <value>Jooji</value>
   </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard-ka</value>
+  </data>
+  <data name="Stores" xml:space="preserve">
+    <value>Bakhaaro</value>
+  </data>
+  <data name="Assets" xml:space="preserve">
+    <value>Hantida</value>
+  </data>
+  <data name="CreateAsset" xml:space="preserve">
+    <value>Abuur Hanti</value>
+  </data>
 </root>

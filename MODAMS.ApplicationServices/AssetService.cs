@@ -890,7 +890,7 @@ namespace MODAMS.ApplicationServices
         }
 
         //Private functions
-        private bool IsInRole(string role) => _httpContextAccessor.HttpContext.User.IsInRole(role);
+        private bool IsInRole(string role) => _httpContextAccessor.HttpContext?.User?.IsInRole(role) ?? false;
         private async Task<List<vwAssetDocument>> GetDocumentListAsync(int AssetId)
         {
 

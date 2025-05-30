@@ -132,6 +132,12 @@
   <data name="CreateNewTransfer" xml:space="preserve">
     <value>Create New Transfer</value>
   </data>
+  <data name="CreateTransfer" xml:space="preserve">
+    <value>Create Transfer</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
   <data name="Make" xml:space="preserve">
     <value>Make</value>
   </data>
@@ -158,6 +164,9 @@
   </data>
   <data name="TransferNotes" xml:space="preserve">
     <value>Transfer Notes</value>
+  </data>
+  <data name="Transfers" xml:space="preserve">
+    <value>Transfers</value>
   </data>
   <data name="YourSelection" xml:space="preserve">
     <value>Your Selection</value>

@@ -129,6 +129,9 @@
   <data name="Count" xml:space="preserve">
     <value>Tirin</value>
   </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard-ka</value>
+  </data>
   <data name="Disposed" xml:space="preserve">
     <value>Laga takhalusey</value>
   </data>
@@ -146,6 +149,12 @@
   </data>
   <data name="Registered" xml:space="preserve">
     <value>Diiwaangashan</value>
+  </data>
+  <data name="StoreDetails" xml:space="preserve">
+    <value>Faahfaahinta Bakhaarka</value>
+  </data>
+  <data name="Stores" xml:space="preserve">
+    <value>Bakhaaro</value>
   </data>
   <data name="SubCategory" xml:space="preserve">
     <value>Nooc-hoosaad</value>

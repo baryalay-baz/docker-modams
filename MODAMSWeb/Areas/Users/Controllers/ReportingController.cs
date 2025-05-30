@@ -20,7 +20,6 @@ namespace MODAMSWeb.Areas.Users.Controllers
         private readonly IAMSFunc _func;
         private int _employeeId;
         private int _supervisorEmployeeId;
-        private int _storeId;
 
         private readonly bool _isSomali;
         private readonly IWebHostEnvironment _webHostEnvironment;

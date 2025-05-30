@@ -1,4 +1,7 @@
-﻿@model List<MODAMS.Models.ViewModels.Dto.NotificationDTO>
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@model List<MODAMS.Models.ViewModels.Dto.NotificationDTO>
+
 <style>
     /* CSS styles can also be placed in an external stylesheet */
     .colored-row {
@@ -8,12 +11,12 @@
 
 <div class="page-header">
     <div>
-        <h1 class="page-title">Notifications</h1>
+        <h1 class="page-title">@Localizer["Notifications"]</h1>
     </div>
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item active"><a href="/Users/Home/Index">Dashboard</a></li>
-            <li class="breadcrumb-item active" aria-current="page">All Notifications</li>
+            <li class="breadcrumb-item active"><a href="/Users/Home/Index">@Localizer["Dashboard"]</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Localizer["AllNotifications"]</li>
         </ol>
     </div>
 </div>
@@ -23,7 +26,7 @@
         <div class="card">
             <div class="card-header">
                 <a class="btn btn-secondary" asp-action="ClearNotifications" asp-controller="Home" asp-area="Users">
-                    <i class="fe fe-trash"></i>&nbsp; Delete All Notifications
+                    <i class="fe fe-trash"></i>&nbsp; @Localizer["DeleteAllNotifications"]
                 </a>
             </div>
             <div class="card-body">
@@ -73,7 +76,7 @@
                 <div class="row">
                     @*<hr class="customHR" />*@
                     <div class="col-sm-12">
-                        <a asp-action="Index" asp-controller="Home" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;Previous</a>
+                        <a asp-action="Index" asp-controller="Home" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;@Localizer["Previous"]</a>
                     </div>
 
                 </div>

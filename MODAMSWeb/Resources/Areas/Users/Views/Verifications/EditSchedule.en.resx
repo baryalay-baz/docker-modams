@@ -135,6 +135,9 @@
   <data name="CustomVerification" xml:space="preserve">
     <value>Custom Verification</value>
   </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
   <data name="DeleteConfirmationMessage" xml:space="preserve">
     <value>You will not be able to recover this schedule, are you sure?</value>
   </data>
@@ -182,5 +185,8 @@
   </data>
   <data name="VerificationNotes" xml:space="preserve">
     <value>Verification Notes</value>
+  </data>
+  <data name="Verifications" xml:space="preserve">
+    <value>Verifications</value>
   </data>
 </root>

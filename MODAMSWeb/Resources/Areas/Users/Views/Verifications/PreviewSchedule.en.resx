@@ -234,4 +234,13 @@
   <data name="Select" xml:space="preserve">
     <value>Select</value>
   </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="Verifications" xml:space="preserve">
+    <value>Verifications</value>
+  </data>
+  <data name="PreviewSchedule" xml:space="preserve">
+    <value>Preview Schedule</value>
+  </data>
 </root>

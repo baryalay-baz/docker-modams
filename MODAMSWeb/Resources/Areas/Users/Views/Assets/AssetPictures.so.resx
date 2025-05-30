@@ -120,6 +120,9 @@
   <data name="AssetPictures" xml:space="preserve">
     <value>Sawirrada Hantida</value>
   </data>
+  <data name="Assets" xml:space="preserve">
+    <value>Hantida</value>
+  </data>
   <data name="Cancel" xml:space="preserve">
     <value>Jooji</value>
   </data>
@@ -128,6 +131,9 @@
   </data>
   <data name="Confirm" xml:space="preserve">
     <value>Xaqiiji</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard-ka</value>
   </data>
   <data name="Delete" xml:space="preserve">
     <value>Tirtir</value>
@@ -140,6 +146,12 @@
   </data>
   <data name="NoPicturesAvailable" xml:space="preserve">
     <value>Lama hayo sawir!</value>
+  </data>
+  <data name="PictureGallery" xml:space="preserve">
+    <value>Sawirro</value>
+  </data>
+  <data name="Stores" xml:space="preserve">
+    <value>Bakhaaro</value>
   </data>
   <data name="Upload" xml:space="preserve">
     <value>Geli</value>

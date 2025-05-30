@@ -126,6 +126,9 @@
   <data name="CurrentValue" xml:space="preserve">
     <value>Qiimaha Waqtiga</value>
   </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard-ka</value>
+  </data>
   <data name="InitialCost" xml:space="preserve">
     <value>Qiimaha Hore</value>
   </data>
@@ -146,6 +149,9 @@
   </data>
   <data name="Secondary Store" xml:space="preserve">
     <value>Bakhaar Farac ahXubno</value>
+  </data>
+  <data name="Stores" xml:space="preserve">
+    <value>Bakhaaro</value>
   </data>
   <data name="TotalAssets" xml:space="preserve">
     <value>Wadarta Hantida</value>

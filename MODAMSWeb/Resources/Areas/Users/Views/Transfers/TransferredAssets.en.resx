@@ -126,6 +126,9 @@
   <data name="Cost" xml:space="preserve">
     <value>Cost</value>
   </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
   <data name="Make" xml:space="preserve">
     <value>Make</value>
   </data>
@@ -152,5 +155,8 @@
   </data>
   <data name="TransferredAssets" xml:space="preserve">
     <value>Transferred Assets</value>
+  </data>
+  <data name="Transfers" xml:space="preserve">
+    <value>Transfers</value>
   </data>
 </root>

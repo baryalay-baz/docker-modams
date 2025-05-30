@@ -132,6 +132,12 @@
   <data name="CreateNewDisposal" xml:space="preserve">
     <value>Samee Baabi’in Cusub</value>
   </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard-ka</value>
+  </data>
+  <data name="Disposals" xml:space="preserve">
+    <value>Ka-takhalusid</value>
+  </data>
   <data name="Identification" xml:space="preserve">
     <value>Aqoonsiga</value>
   </data>

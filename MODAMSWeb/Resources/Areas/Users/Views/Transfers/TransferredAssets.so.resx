@@ -126,6 +126,9 @@
   <data name="Cost" xml:space="preserve">
     <value>Qiimaha</value>
   </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard-ka</value>
+  </data>
   <data name="Make" xml:space="preserve">
     <value>Soosaaraha</value>
   </data>
@@ -152,5 +155,8 @@
   </data>
   <data name="TransferredAssets" xml:space="preserve">
     <value>Hantida La Wareejiyay</value>
+  </data>
+  <data name="Transfers" xml:space="preserve">
+    <value>Wareejin</value>
   </data>
 </root>
