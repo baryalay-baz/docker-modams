@@ -1,7 +1,10 @@
 ﻿@page
+@using System.Globalization
 @model AccessDeniedModel
 @{
-    ViewData["Title"] = "Access denied";
+    var isSomali = CultureInfo.CurrentCulture.Name == "so";
+
+    ViewData["Title"] = isSomali ? "Galitaanka waa la diiday" : "Access denied";
 }
 <style>
     .containerCenter {
@@ -16,10 +19,10 @@
 
 <div class="containerCenter">
     <div class="text-center">
-        <h3 class="text-danger text-center">Access Denied</h3>
-        <h5 class="text-center">You are not authorized to access this content, please contact the system administrator</h5>
+        <h3 class="text-danger text-center">@(isSomali ? "Galitaanka waa la diiday" : "Access denied")</h3>
+        <h5 class="text-center">@(isSomali ? "Lama oggola inaad gasho waxyaabahan. Fadlan la xiriir maamulka nidaamka." : "ou are not authorized to access this content, please contact the system administrator")Y</h5>
         <br />
-        <a href="@Request.Headers["Referer"].ToString()">Back</a>
+        <a href="@Request.Headers["Referer"].ToString()">@(isSomali?"Hore":"Back")</a>
     </div>
 </div>
 @section Scripts{
