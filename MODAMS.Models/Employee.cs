@@ -1,4 +1,5 @@
-﻿using MODAMS.Localization;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using MODAMS.Localization;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
@@ -50,6 +51,10 @@ namespace MODAMS.Models
         [Display(Name = "ImageUrl", ResourceType = typeof(EmployeeLabels))]
         public string ImageUrl { get; set; } = String.Empty;
         public string DisplayMode { get; set; } = String.Empty;
+
+        [ValidateNever]
+        public ICollection<StoreEmployee> StoreEmployees { get; set; }
+
 
     }
 }

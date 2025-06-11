@@ -1,12 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
-using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace MODAMS.Models
 {
@@ -37,8 +30,9 @@ namespace MODAMS.Models
         [ValidateNever]
         public ICollection<VerificationSchedule> VerificationSchedules { get; set; }
         [ValidateNever]
-        
         public ICollection<Asset> Assets { get; set; }
+        [ValidateNever]
+        public ICollection<StoreEmployee> StoreEmployees { get; set; }
 
     }
 }

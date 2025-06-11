@@ -1,11 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace MODAMS.Models.ViewModels.Dto
 {
@@ -14,20 +10,23 @@ namespace MODAMS.Models.ViewModels.Dto
         [Display(Name = "Select Employee to Assign as Owner")]
         public int EmployeeId { get; set; }
         public int DepartmentId { get; set; }
-        public string DepartmentName { get; set; }
-        public string Owner {  get; set; }
-        public List<vwEmployees> DepartmentUsers { get; set; }
-
-        public List<DepartmentHead> DepartmentHeads { get; set; }
-
-        [ValidateNever]
-        public IEnumerable<SelectListItem> Employees { get; set; }
+        public int StoreId { get; set; }
+        public string DepartmentName { get; set; } = string.Empty;
+        public string Owner { get; set; } = string.Empty;
+        public List<DepartmentHead> DepartmentHeads { get; set; } = new List<DepartmentHead>();
+        public List<vwEmployees> DepartmentUsers { get; set; } = new List<vwEmployees>();
 
         [ValidateNever]
-        public IEnumerable<SelectListItem> Months { get; set; }
+        public IEnumerable<SelectListItem> AvailableStoreOwners { get; set; } = new List<SelectListItem>();
 
         [ValidateNever]
-        public IEnumerable<SelectListItem> Years { get; set; }
+        public IEnumerable<SelectListItem> AvailableUsers { get; set; } = new List<SelectListItem>();
+
+        [ValidateNever]
+        public IEnumerable<SelectListItem> Months { get; set; } = new List<SelectListItem>();
+
+        [ValidateNever]
+        public IEnumerable<SelectListItem> Years { get; set; } = new List<SelectListItem>();
 
 
     }

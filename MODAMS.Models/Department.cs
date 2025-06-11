@@ -1,4 +1,5 @@
-﻿using MODAMS.Localization;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using MODAMS.Localization;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
@@ -30,6 +31,9 @@ namespace MODAMS.Models
         [AllowNull]
         [Display(Name = "DepartmentOwner", ResourceType = typeof(DepartmentLabels))]
         public int? EmployeeId { get; set; }
+
+        [ValidateNever]
+        public ICollection<Store> Stores { get; set; }
 
     }
 }

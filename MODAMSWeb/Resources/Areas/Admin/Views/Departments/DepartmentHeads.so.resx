@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AnErrorOccurredWhileRemovingTheUser" xml:space="preserve">
+    <value>Isticmaalaha markii la saarayay, qalad ayaa dhacay.</value>
+  </data>
+  <data name="AreYouSureYouWantToRemoveThisUser" xml:space="preserve">
+    <value>Ma hubtaa inaad rabto inaad isticmaalahaan ka saarto?</value>
+  </data>
   <data name="AssignOwner" xml:space="preserve">
     <value>Qoondee Milkiile</value>
   </data>
@@ -162,8 +168,8 @@
   <data name="OwnershipHistory" xml:space="preserve">
     <value>Taariikhda Milkiilaha</value>
   </data>
-  <data name="Previous" xml:space="preserve">
-    <value>Hore</value>
+  <data name="RemoveUser" xml:space="preserve">
+    <value>Saar Isticmaale</value>
   </data>
   <data name="SelectEmployee" xml:space="preserve">
     <value>Dooro Shaqaale</value>
@@ -177,7 +183,23 @@
   <data name="Telephone" xml:space="preserve">
     <value>Taleefan</value>
   </data>
+  <data name="UserRemovedSuccessfully" xml:space="preserve">
+    <value>Isticmaalaha si guul leh ayaa loo saaray!</value>
+  </data>
   <data name="VacateStore" xml:space="preserve">
     <value>Bannee Bakhaarka</value>
+  </data>
+  <data name="Previous" xml:space="preserve">
+    <value>Hore</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>Xaqiiji</value>
+    <comment>Xaqiiji</comment>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Jooji</value>
+  </data>
+  <data name="NewUser" xml:space="preserve">
+    <value>Isticmaalaha Cusub</value>
   </data>
 </root>

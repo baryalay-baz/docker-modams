@@ -34,7 +34,7 @@
         $('#btnConrfirmText').html(btnConfirmText);
         $('#btnCancelText').html(btnCancelText);
         const sHtml = data!==""?
-            `<input type="hidden" name="assetId" value="${data}" />`:
+            `${data}`:
             `<input type="hidden" name="assetId" value="" />`;
         $('#confirmMessage').html(`
             ${sHtml}

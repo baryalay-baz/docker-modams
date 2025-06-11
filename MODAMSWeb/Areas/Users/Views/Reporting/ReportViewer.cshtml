@@ -12,15 +12,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-
-    <link href="https://kendo.cdn.telerik.com/2022.3.913/styles/kendo.common.min.css" rel="stylesheet" />
-    <link href="https://kendo.cdn.telerik.com/2022.3.913/styles/kendo.blueopal.min.css" rel="stylesheet" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/themes/10.2.0/default/default-ocean-blue.css" id="theme-css" />
 
     <link rel="shortcut icon" type="image/x-icon" href="~/assets/images/brand/favicon.ico" />
     <!--If Kendo is used it should be added before the report viewer.-->
-    <script src="/api/reports/resources/js/telerikReportViewer-18.2.24.806.min.js"></script>
-    
+    <script src="/api/reports/resources/js/telerikReportViewer-19.1.25.521.min.js"></script>
+
 
     <style>
         #reportViewer1 {
@@ -33,9 +31,9 @@
             font-family: Verdana, Arial;
         }
 
-        signatureStyle{
-            font-family:'Freestyle Script';
-            font-size:20px;
+        signatureStyle {
+            font-family: 'Freestyle Script';
+            font-size: 20px;
         }
 
     </style>
@@ -82,7 +80,7 @@
         const getParams = (reportId) => {
             let params = {};
 
-            if (reportId == "AssetReport") {
+            if (reportId == "AssetReport" || reportId == "AssetReportSo") {
                 let storeId = parseInt('@Model.AssetStoreId');
                 let assetStatusId = parseInt('@Model.AssetStatusId');
                 let categoryId = parseInt('@Model.CategoryId');
@@ -96,13 +94,13 @@
                     AssetConditionId: assetConditionId,
                     DonorId: donorId
                 };
-            } else if (reportId == "TransferVoucher") {
+            } else if (reportId == "TransferVoucher" || reportId == "TransferVoucherSo") {
                 let transferId = '@Model.TransferId';
 
                 params = {
                     TransferId: transferId
                 };
-            } else if (reportId == "TransferReport") {
+            } else if (reportId == "TransferReport" || reportId == "TransferReportSo") {
                 let storeFromId = '@Model.StoreFromId';
                 let storeToId = '@Model.StoreToId';
                 let transferStatusId = '@Model.TransferStatusId';
@@ -113,7 +111,7 @@
                     TransferStatusId: transferStatusId
                 };
 
-            } else if (reportId == "DisposalReport") { 
+            } else if (reportId == "DisposalReport" || reportId == "DisposalReportSo") {
                 let disposalStoreId = '@Model.DisposalStoreId';
                 let disposalTypeId = '@Model.DisposalTypeId';
 
@@ -128,6 +126,5 @@
             return params;
         }
     </script>
-
 </body>
 </html>

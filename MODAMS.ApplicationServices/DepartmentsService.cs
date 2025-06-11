@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -33,13 +34,28 @@ namespace MODAMS.ApplicationServices
         {
             try
             {
-                List<vwDepartments> depts = await _db.vwDepartments.OrderByDescending(m => m.EmployeeId).ToListAsync();
-                List<vwEmployees> empls = await _db.vwEmployees.ToListAsync();
+                List<vwDepartments> depts = await _db.vwDepartments
+                    .OrderByDescending(m => m.EmployeeId).ToListAsync();
+                var storeUsers = await _db.StoreEmployees
+                    .Select(m => new StoreUsersDTO
+                    {
+                        Id = m.EmployeeId,
+                        FullName = m.Employee.FullName,
+                        JobTitle = m.Employee.JobTitle,
+                        SupervisorEmployeeId = m.Employee.SupervisorEmployeeId,
+                        ImageUrl = m.Employee.ImageUrl ?? "/assets/images/faces/profile_placeholder.png",
+                        Email = m.Employee.Email,
+                        Phone = m.Employee.Phone,
+                        StoreId = m.StoreId,
+                        DepartmentId = m.Store.DepartmentId
+                    })
+                    .ToListAsync();
+
 
                 var dto = new DepartmentsDTO()
                 {
                     departments = depts,
-                    employees = empls
+                    storeUsers = storeUsers
                 };
                 return Result<DepartmentsDTO>.Success(dto);
             }
@@ -185,30 +201,68 @@ namespace MODAMS.ApplicationServices
         {
             try
             {
-                List<DepartmentHead> departmentHeads = await _db.DepartmentHeads.Where(m => m.DepartmentId == departmentId)
-                .Include(m => m.Employee).Include(m => m.Department).OrderByDescending(m => m.StartDate).ToListAsync();
+                var department = await _db.Departments
+                    .Include(m => m.Stores)
+                    .Where(m => m.Id == departmentId)
+                    .FirstOrDefaultAsync();
 
-                var availableEmployeesList = await _db.vwAvailableEmployees.Where(m => m.RoleName == "StoreOwner").Select(m => new SelectListItem
-                {
-                    Text = m.FullName,
-                    Value = m.Id.ToString()
-                }).ToListAsync();
+                var storeId = department?.Stores.FirstOrDefault()?.Id ?? 0;
+
+                var departmentHeads = await _db.DepartmentHeads
+                    .Where(m => m.DepartmentId == departmentId)
+                    .Include(m => m.Employee)
+                    .Include(m => m.Department)
+                    .OrderByDescending(m => m.StartDate).ToListAsync();
+
+                var employees = await _db.vwAvailableEmployees.ToListAsync();
+
+                var availableStoreOwners = employees
+                    .Where(m => m.RoleName == "StoreOwner")
+                    .OrderBy(m => m.FullName)
+                    .Select(m => new SelectListItem
+                    {
+                        Text = $"{m.FullName} - {m.JobTitle}",
+                        Value = m.Id.ToString()
+                    }).ToList();
+
+                var availableStoreUsers = employees
+                    .Where(m => m.RoleName == "User")
+                    .OrderBy(m => m.FullName)
+                    .Select(m => new SelectListItem
+                    {
+                        Text = $"{m.FullName} - {m.JobTitle}",
+                        Value = m.Id.ToString()
+                    }).ToList();
 
                 int departmentHeadId = await _func.GetDepartmentHeadAsync(departmentId);
                 var storeOwner = await _func.GetEmployeeNameByIdAsync(departmentHeadId);
 
                 storeOwner = storeOwner == "Not found!" ? "Vacant" : storeOwner;
 
-                var users = await _db.vwEmployees.Where(m => m.SupervisorEmployeeId == departmentHeadId & m.RoleName == "User").ToListAsync();
+                var storeUsers = await _db.StoreEmployees
+                    .Where(m => m.StoreId == storeId)
+                    .Select(m => new vwEmployees
+                    {
+                        Id = m.EmployeeId,
+                        FullName = m.Employee.FullName,
+                        JobTitle = m.Employee.JobTitle,
+                        SupervisorEmployeeId = m.Employee.SupervisorEmployeeId,
+                        ImageUrl = m.Employee.ImageUrl ?? "/assets/images/faces/profile_placeholder.png",
+                        Email = m.Employee.Email,
+                        Phone = m.Employee.Phone
+                    })
+                    .ToListAsync();
 
                 var dto = new DepartmentHeadsDTO()
                 {
                     DepartmentHeads = departmentHeads,
-                    Employees = availableEmployeesList,
+                    AvailableStoreOwners = availableStoreOwners,
+                    AvailableUsers = availableStoreUsers,
                     DepartmentId = departmentId,
+                    StoreId = storeId,
                     DepartmentName = await _func.GetDepartmentNameByIdAsync(departmentId),
                     Owner = storeOwner,
-                    DepartmentUsers = users
+                    DepartmentUsers = storeUsers
                 };
 
                 return Result<DepartmentHeadsDTO>.Success(dto);
@@ -275,6 +329,38 @@ namespace MODAMS.ApplicationServices
                 _func.LogException(_logger, ex);
                 return Result<bool>.Failure(ex.Message, false);
             }
+        }
+        public async Task<Result<bool>> NewUserAsync(DepartmentHeadsDTO dto) {
+            var employeeId = dto.EmployeeId;
+            var storeId = dto.StoreId;
+
+            try
+            {
+                if (employeeId == 0 || storeId == 0)
+                {
+                    return Result<bool>.Failure(_isSomali ? "Shaqaale lama helin!" : "Employee not found!");
+                }
+                var storeEmployee = await _db.StoreEmployees
+                    .FirstOrDefaultAsync(m => m.StoreId == storeId && m.EmployeeId == employeeId);
+                if (storeEmployee != null)
+                {
+                    return Result<bool>.Failure(_isSomali ? "Shaqaalahan horey ayuu u jiray!" : "This employee already exists in this store!");
+                }
+                storeEmployee = new StoreEmployee()
+                {
+                    StoreId = storeId,
+                    EmployeeId = employeeId
+                };
+                await _db.StoreEmployees.AddAsync(storeEmployee);
+                await _db.SaveChangesAsync();
+                return Result<bool>.Success(true);
+            }
+            catch (Exception ex)
+            {
+                _func.LogException(_logger, ex);
+                return Result<bool>.Failure(ex.Message, false);
+            }
+
         }
         public async Task<Result<bool>> VacateDepartmentAsync(DepartmentHeadsDTO dto)
         {
@@ -358,6 +444,32 @@ namespace MODAMS.ApplicationServices
 
             return dto;
         }
+        public async Task<Result<bool>> RemoveDepartmentUserAsync(int employeeId, int storeId)
+        {
+            try
+            {
+                var storeEmployee = await _db.StoreEmployees
+                    .FirstOrDefaultAsync(m => m.StoreId == storeId && m.EmployeeId == employeeId);
+
+                if (storeEmployee != null)
+                {
+                    _db.StoreEmployees.Remove(storeEmployee);
+                    await _db.SaveChangesAsync();
+                }
+                else
+                {
+                    return Result<bool>.Failure(_isSomali ? "Shaqaalahan lama helin!" : "Employee not found in this store!");
+                }
+
+                return Result<bool>.Success(true);
+            }
+            catch (Exception ex)
+            {
+                _func.LogException(_logger, ex);
+                return Result<bool>.Failure(ex.Message, false);
+            }
+        }
+
 
         //private functions
         private async Task CreateStoreAsync(Department department)

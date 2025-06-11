@@ -98,28 +98,25 @@
                                         <td>
                                             <div class="avatar-list avatar-list-stacked">
                                                 @{
-                                                    if (department.EmployeeId > 0)
+                                                    var employees = Model.storeUsers.Where(m => m.DepartmentId == department.Id).ToList();
+                                                    if (employees.Count > 0)
                                                     {
-                                                        var employees = Model.employees.Where(m => m.SupervisorEmployeeId == department.EmployeeId).ToList();
-                                                        if (employees.Count > 0)
+                                                        foreach (var emp in employees)
                                                         {
-                                                            foreach (var emp in employees)
+                                                            if (emp != null)
                                                             {
-                                                                if (emp != null)
-                                                                {
-                                                                    string sContent = $"{emp.JobTitle} <br /> {emp.Email}";
+                                                                string sContent = $"{emp.JobTitle} <br /> {emp.Email}";
 
-                                                                    <a data-bs-container="body"
-                                                                       data-bs-content="@Html.Raw(sContent)"
-                                                                       data-bs-html="true"
-                                                                       data-bs-placement="right"
-                                                                       data-bs-popover-color="default"
-                                                                       data-bs-toggle="popover"
-                                                                       data-bs-original-title="@emp.FullName"
-                                                                       role="button" tabindex="0" data-bs-trigger="hover">
-                                                                        <span><img src="@emp.ImageUrl" alt="profile-user" class="avatar bradius cover-image"></span>
-                                                                    </a>
-                                                                }
+                                                                <a data-bs-container="body"
+                                                                   data-bs-content="@Html.Raw(sContent)"
+                                                                   data-bs-html="true"
+                                                                   data-bs-placement="right"
+                                                                   data-bs-popover-color="default"
+                                                                   data-bs-toggle="popover"
+                                                                   data-bs-original-title="@emp.FullName"
+                                                                   role="button" tabindex="0" data-bs-trigger="hover">
+                                                                    <span><img src="@emp.ImageUrl" alt="profile-user" class="avatar bradius cover-image"></span>
+                                                                </a>
                                                             }
                                                         }
                                                     }

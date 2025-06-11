@@ -15,6 +15,15 @@ namespace MODAMS.Models.ViewModels.Dto
 
         public int SelectedMonth { get; set; }
         public int SelectedYear { get; set; }
+        // System Information
+        public string ApplicationName { get; set; }
+        public string Version { get; set; }
+        public string DatabaseVersion { get; set; }
+        public string OperatingSystem { get; set; }
+        public DateTime ServerTime { get; set; }
+
+
+
         public List<SelectListItem> Months { get; set; }
         public List<SelectListItem> Years { get; set; }
 

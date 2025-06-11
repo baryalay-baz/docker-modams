@@ -120,8 +120,7 @@
                                             <th>#</th>
                                             <th>@Localizer["FullName"]</th>
                                             <th>@Localizer["JobTitle"]</th>
-                                            <th>@Localizer["Telephone"]</th>
-                                            <th>@Localizer["Email"]</th>
+                                            <th></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -131,17 +130,33 @@
                                             {
                                                 nCounter++;
                                                 sCounter = (nCounter < 10) ? '0' + nCounter.ToString() : nCounter.ToString();
-                                                        <tr>
-                                                            <td>@sCounter</td>
-                                                            <td>@departmentUser.FullName</td>
-                                                            <td>@departmentUser.JobTitle</td>
-                                                            <td>@departmentUser.Phone</td>
-                                                            <td>@departmentUser.Email</td>
-                                                        </tr>
+                                                <tr>
+                                                    <td>@sCounter</td>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="me-2">
+                                                                <span>
+                                                                    <img style="min-width:10px;" src="@departmentUser.ImageUrl" alt="profile-user" class="data-image avatar avatar-md rounded-circle">
+                                                                </span>
+                                                            </div>
+                                                            <div>
+                                                                <h6 class="mb-0">@departmentUser.FullName</h6>
+                                                                <span class="text-muted fs-12">@departmentUser.Email</span>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>@departmentUser.JobTitle</td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-outline-secondary me-1" data-bs-toggle="tooltip" data-bs-original-title="@Localizer["RemoveUser"]" onclick="removeUser(@departmentUser.Id, @Model.StoreId, @Model.DepartmentId)">
+                                                            <i class="fe fe-trash"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
                                             }
                                         }
                                     </tbody>
                                 </table>
+                                <a data-bs-target="#mdlNewUser" data-bs-toggle="modal" id="btnAddUser" class="btn btn-outline-info mt-2"><i class="fa fa-plus"></i>&nbsp;@Localizer["NewUser"]</a>
                             </div>
                         </div>
                     </div>
@@ -180,31 +195,29 @@
                                         {
                                             nCounter++;
                                             sCounter = (nCounter < 10) ? '0' + nCounter.ToString() : nCounter.ToString();
-                                                    <tr>
-                                                        <td class="text-muted fs-15 fw-semibold text-center">@sCounter.</td>
-                                                        <td class="text-muted fs-15 fw-semibold">
-                                                            <div class="d-flex align-items-center">
-                                                                <div class="me-2">
-                                                                    <span>
-                                                                        <img style="min-width:30px;" src="@dh.Employee.ImageUrl" alt="profile-user" class="data-image avatar avatar-lg rounded-circle">
-                                                                    </span>
-                                                                </div>
-                                                                <div>
-                                                                    <h6 class="mb-0">@dh.Employee.FullName</h6>
-                                                                    <span class="text-muted fs-12">@dh.Employee.Email</span>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                        <td class="text-muted fs-15 fw-semibold">@dh.StartDate.ToString("dd-MMM-yyyy")</td>
-                                                        <td class="text-muted fs-15 fw-semibold">@dh.EndDate?.ToString("dd-MMM-yyyy")</td>
-                                                        <td class="text-muted fs-15 fw-semibold">@dh.IsActive</td>
-                                                    </tr>
+                                            <tr>
+                                                <td class="text-muted fs-15 fw-semibold text-center">@sCounter.</td>
+                                                <td class="text-muted fs-15 fw-semibold">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="me-2">
+                                                            <span>
+                                                                <img style="min-width:30px;" src="@dh.Employee.ImageUrl" alt="profile-user" class="data-image avatar avatar-lg rounded-circle">
+                                                            </span>
+                                                        </div>
+                                                        <div>
+                                                            <h6 class="mb-0">@dh.Employee.FullName</h6>
+                                                            <span class="text-muted fs-12">@dh.Employee.Email</span>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="text-muted fs-15 fw-semibold">@dh.StartDate.ToString("dd-MMM-yyyy")</td>
+                                                <td class="text-muted fs-15 fw-semibold">@dh.EndDate?.ToString("dd-MMM-yyyy")</td>
+                                                <td class="text-muted fs-15 fw-semibold">@dh.IsActive</td>
+                                            </tr>
                                         }
                                     }
-
                                 </tbody>
                             </table>
-
                         </div>
                     </div>
                 </div>
@@ -227,7 +240,7 @@
                         <p>@Localizer["ListOfAvailableEmployees"]</p>
                         <input asp-for="DepartmentId" hidden />
                         <div class="mb-3 form-group">
-                            <select name="EmployeeId" id="EmployeeId" asp-items="@Model.Employees" class="form-control select2-style1 form-select">
+                            <select name="EmployeeId" id="EmployeeId" asp-items="@Model.AvailableStoreOwners" class="form-control select2-style1 form-select">
                                 <option disabled selected>-@Localizer["SelectEmployee"]-</option>
                             </select>
                         </div>
@@ -243,9 +256,34 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="mdlNewUser">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content modal-content-demo">
 
+                <div class="modal-header">
+                    <h5 class="modal-title">@Localizer["NewUser"]</h5><button aria-label="Close" class="btn-close" data-bs-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" asp-action="NewUser" id="frmNewUser">
+                        <p>@Localizer["ListOfAvailableEmployees"]</p>
+                        <input asp-for="DepartmentId" hidden />
+                        <input asp-for="StoreId" hidden />
+                        <div class="mb-3 form-group">
+                            <select name="EmployeeId" id="frmNewUser_EmployeeId" asp-items="@Model.AvailableUsers" class="form-control select2-style1 form-select">
+                                <option disabled selected>-@Localizer["SelectEmployee"]-</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button id="btnNewUser" class="btn btn-primary">@Localizer["NewUser"]</button><button class="btn btn-light" data-bs-dismiss="modal">@Localizer["Close"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <section id="dvFacesData" style="display:none;"></section>
 </div>
+@await Html.PartialAsync("~/Views/Shared/_Confirmation.cshtml")
 
 @section Scripts {
     <script>
@@ -266,11 +304,51 @@
                 $("#frmVacateDepartment").submit();
             });
 
+            $('#btnNewUser').on("click", () => {
+                let employeeId = $('#frmNewUser_EmployeeId').val();
+                if (employeeId != null) {
+                    $("#frmNewUser").submit();
+                } else {
+                    Notify("error",isSomali?"Fadlan dooro shaqaale!":"Please select an Employee!")
+                }
+            });
+
+           $('#mdlNewUser').on('shown.bs.modal', function() {
+                    $(this).find('.select2-style1').select2({
+                    dropdownParent: $(this),
+                    placeholder: isSomali ? 'Raadi...' : 'Search...',
+                    allowClear: true,
+                    width: '100%'
+                });
+            });
+            $('#mdlAssignOwner').on('shown.bs.modal', function() {
+                    $(this).find('.select2-style1').select2({
+                    dropdownParent: $(this),
+                    placeholder: isSomali ? 'Raadi...' : 'Search...',
+                    allowClear: true,
+                    width: '100%'
+                })
+            });
+
             makeDataTable('#tblDepartmentHeads');
             makeDataTable("#tblUsers");
-                     
-
         });
+
+        const removeUser = (employeeId, storeId, departmentId) =>{
+            var sData = `<input type="hidden" name="employeeId" value="${employeeId}" />
+                         <input type="hidden" name="storeId" value="${storeId}" />
+                         <input type="hidden" name="departmentId" value="${departmentId}" />`;
+
+            const options = {
+                        actionUrl: `/Admin/Departments/RemoveDepartmentUser`,
+                        title: '@Localizer["RemoveUser"]',
+                        message: '@Localizer["AreYouSureYouWantToRemoveThisUser"]',
+                        btnConfirmText: '@Localizer["Confirm"]',
+                        btnCancelText: '@Localizer["Cancel"]',
+                        data: sData
+                        };
+            openConfirmation(options);
+        }
 
         const loadFaces = () => {
             var postData = {};

@@ -18,9 +18,10 @@ namespace MODAMS.ApplicationServices.IServices
         Task<Result<DepartmentHeadsDTO>> GetDepartmentHeadsAsync(int departmentId);
         Task<Result<bool>> AssignOwnerAsync(DepartmentHeadsDTO dto);
         Task<Result<bool>> VacateDepartmentAsync(DepartmentHeadsDTO dto);
-
+        Task<Result<bool>> NewUserAsync(DepartmentHeadsDTO dto);
         Task<string> GetDepartmentsAsync();
         Task<List<OrganizationChartDTO>> GetOrganizationChartJsonAsync();
         Task<DepartmentDTO> PopulateDepartmentDTO(DepartmentDTO dto);
+        Task<Result<bool>> RemoveDepartmentUserAsync(int storeId, int employeeId);
     }
 }

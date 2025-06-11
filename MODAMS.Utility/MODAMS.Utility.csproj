@@ -13,9 +13,9 @@
     <PackageReference Include="OpenCvSharp4" Version="4.10.0.20241108" />
     <PackageReference Include="OpenCvSharp4.runtime.win" Version="4.10.0.20241108" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
-    <PackageReference Include="Telerik.Reporting" Version="18.0.24.130" />
-    <PackageReference Include="Telerik.Reporting.OpenXmlRendering" Version="18.0.24.130" />
-    <PackageReference Include="Telerik.Reporting.Services.AspNetCore" Version="18.0.24.130" />
+    <PackageReference Include="Telerik.Reporting" Version="19.1.25.521" />
+    <PackageReference Include="Telerik.Reporting.OpenXmlRendering" Version="19.1.25.521" />
+    <PackageReference Include="Telerik.Reporting.Services.AspNetCore" Version="19.1.25.521" />
     <PackageReference Include="ZXing.Net" Version="0.16.9" />
   </ItemGroup>
 

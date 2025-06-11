@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Mvc.Localization
 @using System.Globalization
+@using Newtonsoft.Json
 @inject IViewLocalizer Localizer
 
 @model MODAMS.Models.ViewModels.Dto.ReportingDTO
@@ -177,9 +178,10 @@
                                             </select>
                                         </div>
                                         <div class="form-group flex text-center">
-                                            <button onclick="return submitForm(event, 'frmDisposalReport');" 
-                                            class="btn btn-info" id="btnSubmitDisposalReport">
-                                            <i class="fa fa-print"></i>&nbsp;@Localizer["GenerateReport"]</button>
+                                            <button onclick="return submitForm(event, 'frmDisposalReport');"
+                                                    class="btn btn-info" id="btnSubmitDisposalReport">
+                                                <i class="fa fa-print"></i>&nbsp;@Localizer["GenerateReport"]
+                                            </button>
                                         </div>
                                     </form>
                                 </div>
@@ -188,41 +190,95 @@
                     </div>
                 </div>
             </div>
+            <div class="col-md-3 flex-fill">
+                <div class="card divShadow">
+                    <div class="card-status bg-orange br-tr-7 br-tl-7"></div>
+                    <div class="card-body pnlHeight">
+                        <div class="row">
+                            <div class="col">
+                                <h3 class="mb-2 fw-semibold text-muted">Verifications</h3>
+                                <p class="text-muted fs-13 mb-0">Asset Verifications Report</p>
+                            </div>
+                            <div class="col col-auto top-icn dash">
+                                <div class="counter-icon bg-orange dash ms-auto box-shadow-primary">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-list-check" viewBox="0 0 16 16">
+                                        <path fill-rule="evenodd" d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3.854 2.146a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708L2 3.293l1.146-1.147a.5.5 0 0 1 .708 0zm0 4a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708L2 7.293l1.146-1.147a.5.5 0 0 1 .708 0zm0 4a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 0 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+</div>
+@section scripts {
+    <script>
+        var stores = '@Html.Raw(JsonConvert.SerializeObject(Model.TransferStores))';
 
-    @section scripts {
-        <script>
-            $(document).ready(() => {
-                $('.select2').select2();
+        $(document).ready(() => {
+            $('.select2').select2();
 
-                resizeCards();
+
+
+           resizeCards();
+
+           $('#StoreFromId').on('change', function () {
+                var selectedStore = $(this).val()+"";
+                var currentStoreId = '@Model.AssetStoreId';
+                var currentStoreName = getStoreName(currentStoreId);
+                var selectedStoreName = getStoreName(selectedStore);
+
+                if(selectedStore !== currentStoreId) {
+                    $('#StoreToId').empty().append($`<option selected value="{currentStoreId}">{currentStoreName}</option>`);
+                }else
+                {
+                    var storesData = JSON.parse(stores);
+                    var filteredStores = storesData.filter(store => store.Value !== selectedStore);
+
+                    $('#StoreToId').empty().append('<option value="0">@Localizer["AllStores"]</option>');
+                    filteredStores.forEach(store => {
+                        $('#StoreToId').append(`<option value="${store.Value}">${store.Text}</option>`);
+                    });
+                }
             });
 
-            const submitForm = (event, form) => {
-                event.preventDefault();
-                // Get the screen's available width and height
-                var width = screen.availWidth;
-                var height = screen.availHeight;
+        });
 
-                // Open a new window without window controls and set it to the available screen size
-                var newWindow = window.open("", "PrintWindow", `addressbar=no,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,directories=no,status=no,width=${width},height=${height}`);
+        const getStoreName = (storeId) => {
+            var store = JSON.parse(stores).find(s => s.Value === storeId);
+            return store ? store.Text : '';
+        }
 
-                // Move the new window to the top left corner of the screen
-                newWindow.moveTo(0, 0);
+        const submitForm = (event, form) => {
+            event.preventDefault();
+            // Get the screen's available width and height
+            var width = screen.availWidth;
+            var height = screen.availHeight;
 
-                // Set the form's target to the new window
-                form = $('#' + form);
-                form.attr('target', 'PrintWindow');
+            // Open a new window without window controls and set it to the available screen size
+            var newWindow = window.open("", "PrintWindow", `addressbar=no,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,directories=no,status=no,width=${width},height=${height}`);
 
-                // Submit the form
-                form.submit();
+            // Move the new window to the top left corner of the screen
+            newWindow.moveTo(0, 0);
 
-            }
+            // Set the form's target to the new window
+            form = $('#' + form);
+            form.attr('target', 'PrintWindow');
 
-            const resizeCards = () => {
-                var firstCardHeight = $('.col-md-3:first-child .card').outerHeight();
-                $('.col-md-3 .card').css('height', firstCardHeight + 'px');
-            }
-        </script>
-    }
+            // Submit the form
+            form.submit();
+
+        }
+
+        const resizeCards = () => {
+            var firstCardHeight = $('.col-md-3:first-child .card').outerHeight();
+            $('.col-md-3 .card').css('height', firstCardHeight + 'px');
+        }
+    </script>
+}

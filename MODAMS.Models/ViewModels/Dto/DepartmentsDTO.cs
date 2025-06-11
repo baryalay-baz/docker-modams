@@ -11,15 +11,8 @@ namespace MODAMS.Models.ViewModels.Dto
 {
     public class DepartmentsDTO
     {
-        public List<vwDepartments> departments { get; set; }
-        public List<vwEmployees> employees { get; set; }
+        public List<vwDepartments> departments { get; set; } = new List<vwDepartments>();
+        public List<StoreUsersDTO> storeUsers { get; set; } = new List<StoreUsersDTO>();
 
-        public List<vwEmployees> departmentUsers(int employeeId) {
-            var du = new List<vwEmployees>();
-
-            du = employees.Where(m => m.SupervisorEmployeeId == employeeId).ToList();
-
-            return du;
-        }
     }
 }

@@ -712,6 +712,29 @@ namespace MODAMS.DataAccess.Migrations
                     b.ToTable("Stores");
                 });
 
+            modelBuilder.Entity("MODAMS.Models.StoreEmployee", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StoreId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("StoreId");
+
+                    b.ToTable("StoreEmployees");
+                });
+
             modelBuilder.Entity("MODAMS.Models.SubCategory", b =>
                 {
                     b.Property<int>("Id")
@@ -1000,6 +1023,10 @@ namespace MODAMS.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("CategoryNameSo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Chasis")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -1011,6 +1038,10 @@ namespace MODAMS.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ConditionNameSo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<decimal>("Cost")
                         .HasColumnType("decimal(18,2)");
 
@@ -1018,6 +1049,10 @@ namespace MODAMS.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("DepartmentName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DepartmentNameSo")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -1089,6 +1124,10 @@ namespace MODAMS.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("StatusNameSo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("StoreId")
                         .HasColumnType("int");
 
@@ -1100,6 +1139,10 @@ namespace MODAMS.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("SubCategoryName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SubCategoryNameSo")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -1120,7 +1163,15 @@ namespace MODAMS.DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("CardNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("JobTitle")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -1482,6 +1533,10 @@ namespace MODAMS.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ConditionNameSo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<decimal>("Cost")
                         .HasColumnType("decimal(18,2)");
 
@@ -1523,12 +1578,20 @@ namespace MODAMS.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("StatusSo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("StoreFrom")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("StoreFromId")
                         .HasColumnType("int");
+
+                    b.Property<string>("StoreFromSo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("StoreTo")
                         .IsRequired()
@@ -1537,7 +1600,15 @@ namespace MODAMS.DataAccess.Migrations
                     b.Property<int>("StoreToId")
                         .HasColumnType("int");
 
+                    b.Property<string>("StoreToSo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("SubCategoryName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SubCategoryNameSo")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -1954,12 +2025,31 @@ namespace MODAMS.DataAccess.Migrations
             modelBuilder.Entity("MODAMS.Models.Store", b =>
                 {
                     b.HasOne("MODAMS.Models.Department", "Department")
-                        .WithMany()
+                        .WithMany("Stores")
                         .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Department");
+                });
+
+            modelBuilder.Entity("MODAMS.Models.StoreEmployee", b =>
+                {
+                    b.HasOne("MODAMS.Models.Employee", "Employee")
+                        .WithMany("StoreEmployees")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MODAMS.Models.Store", "Store")
+                        .WithMany("StoreEmployees")
+                        .HasForeignKey("StoreId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Store");
                 });
 
             modelBuilder.Entity("MODAMS.Models.SubCategory", b =>
@@ -2122,9 +2212,21 @@ namespace MODAMS.DataAccess.Migrations
                     b.Navigation("Employees");
                 });
 
+            modelBuilder.Entity("MODAMS.Models.Department", b =>
+                {
+                    b.Navigation("Stores");
+                });
+
+            modelBuilder.Entity("MODAMS.Models.Employee", b =>
+                {
+                    b.Navigation("StoreEmployees");
+                });
+
             modelBuilder.Entity("MODAMS.Models.Store", b =>
                 {
                     b.Navigation("Assets");
+
+                    b.Navigation("StoreEmployees");
 
                     b.Navigation("VerificationSchedules");
                 });

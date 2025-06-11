@@ -31,5 +31,19 @@ namespace MODAMSWeb.Areas.Admin.Controllers
                 return View(new SettingsDTO());
             }
         }
+        public async Task<IActionResult> SetStoreEmployees() 
+        {
+            var result = await _settingsService.SetStoreEmployeesAsync();
+            var dto = result.Value;
+            if (result.IsSuccess)
+            {
+                TempData["success"] = $"{dto} employees updated successfully.";
+            }
+            else
+            {
+                TempData["error"] = result.ErrorMessage;
+            }
+            return RedirectToAction("Index");
+        }
     }
 }

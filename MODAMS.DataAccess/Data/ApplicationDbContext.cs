@@ -47,7 +47,7 @@ namespace MODAMS.DataAccess.Data
         public DbSet<VerificationSchedule> VerificationSchedules { get; set; }
         public DbSet<VerificationRecord> VerificationRecords { get; set; }
         public DbSet<VerificationTeam> VerificationTeams { get; set; }
-        //public DbSet<StoreEmployee> StoreEmployees { get; set; }
+        public DbSet<StoreEmployee> StoreEmployees { get; set; }
 
 
         //Section for Views

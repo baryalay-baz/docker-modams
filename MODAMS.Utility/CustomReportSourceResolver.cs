@@ -20,7 +20,7 @@ namespace MODAMS.Utility
 
         private int _employeeId;
         private int _supervisorEmployeeId;
-        public CustomReportSourceResolver(ApplicationDbContext db , IAMSFunc func)
+        public CustomReportSourceResolver(ApplicationDbContext db, IAMSFunc func)
         {
             _db = db;
             _func = func;
@@ -39,7 +39,7 @@ namespace MODAMS.Utility
             }
             if (operationOrigin == OperationOrigin.GenerateReportDocument)
             {
-                if (reportId == "AssetReport.trdp")
+                if (reportId == "AssetReport.trdp" || reportId == "AssetReportSo.trdp")
                 {
                     // Set the data source for the report
                     var vwAssets = GetAssetList(currentParameterValues).GetAwaiter().GetResult();
@@ -52,7 +52,7 @@ namespace MODAMS.Utility
                         graph1.DataSource = vwAssets;
                     }
                 }
-                else if (reportId == "TransferVoucher.trdp")
+                else if (reportId == "TransferVoucher.trdp" || reportId == "TransferVoucherSo.trdp")
                 {
                     var data = GetTransferVoucherData(currentParameterValues).GetAwaiter().GetResult();
                     if (data != null)
@@ -60,7 +60,7 @@ namespace MODAMS.Utility
                         report.DataSource = data;
                     }
                 }
-                else if (reportId == "TransferReport.trdp")
+                else if (reportId == "TransferReport.trdp" || reportId == "TransferReportSo.trdp")
                 {
                     var data = GetTransferReport(currentParameterValues).GetAwaiter().GetResult();
                     if (data != null)
@@ -68,7 +68,7 @@ namespace MODAMS.Utility
                         report.DataSource = data;
                     }
                 }
-                else if (reportId == "DisposalReport.trdp")
+                else if (reportId == "DisposalReport.trdp" || reportId == "DisposalReportSo.trdp")
                 {
                     var data = GetDisposalReport(currentParameterValues).GetAwaiter().GetResult();
                     if (data != null)
@@ -76,7 +76,8 @@ namespace MODAMS.Utility
                         report.DataSource = data;
                     }
                 }
-            };
+            }
+            ;
             return new InstanceReportSource
             {
                 ReportDocument = report
@@ -140,7 +141,13 @@ namespace MODAMS.Utility
                 SubmissionForAcknowledgementDate = tv.SubmissionForAcknowledgementDate,
                 TransferStatusId = tv.TransferStatusId,
                 TransferDate = tv.TransferDate,
-                TransferNumber = tv.TransferNumber
+                TransferNumber = tv.TransferNumber,
+                ConditionNameSo = tv.ConditionNameSo,
+                StatusSo = tv.StatusSo,
+                SubCategoryNameSo = tv.SubCategoryNameSo,
+                StoreFromSo = tv.StoreFromSo,
+                StoreToSo = tv.StoreToSo,
+                TransferId = tv.TransferId
             });
 
 
@@ -221,7 +228,12 @@ namespace MODAMS.Utility
                     StoreOwner = "-",
                     Identification = asset.SubCategory.Category.CategoryName == "Vehicles" ? "Plate: " + asset.Plate : "SN: " + asset.SerialNo,
                     StatusName = asset.AssetStatus.StatusName,
-                    ConditionName = asset.Condition.ConditionName
+                    ConditionName = asset.Condition.ConditionName,
+                    ConditionNameSo = asset.Condition.ConditionNameSo,
+                    StatusNameSo = asset.AssetStatus.StatusNameSo,
+                    CategoryNameSo = asset.SubCategory.Category.CategoryNameSo,
+                    DepartmentNameSo = asset.Store.Department.NameSo,
+                    SubCategoryNameSo = asset.SubCategory.SubCategoryNameSo
                 });
 
             int storeId = 0;

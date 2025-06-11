@@ -10,5 +10,6 @@ namespace MODAMS.ApplicationServices.IServices
     public interface ISettingsService
     {
         Task<Result<SettingsDTO>> GetIndexAsync(int? nMonth, int? nYear);
+        Task<Result<int>> SetStoreEmployeesAsync();
     }
 }

@@ -43,6 +43,10 @@ namespace MODAMS.Models.ViewModels
         public string Identification { get; set; }
         public string StatusName { get; set; }
         public string ConditionName { get; set; }
-
+        public string ConditionNameSo { get; set; }
+        public string StatusNameSo { get; set; }
+        public string SubCategoryNameSo { get; set; }
+        public string CategoryNameSo { get; set; }
+        public string DepartmentNameSo { get; set; }
     }
 }

@@ -17,7 +17,7 @@ namespace MODAMSWeb.Areas.Admin.Controllers
         public DepartmentsController(IDepartmentsService departmentsService)
         {
             _departmentsService = departmentsService;
-             _isSomali = CultureInfo.CurrentCulture.Name == "so";
+            _isSomali = CultureInfo.CurrentCulture.Name == "so";
         }
 
         [HttpGet]
@@ -30,7 +30,8 @@ namespace MODAMSWeb.Areas.Admin.Controllers
             {
                 return View(dto);
             }
-            else {
+            else
+            {
                 TempData["error"] = result.ErrorMessage;
                 return View(new DepartmentsDTO());
             }
@@ -42,7 +43,8 @@ namespace MODAMSWeb.Areas.Admin.Controllers
             var result = await _departmentsService.GetCreateDepartmentAsync();
             var dto = result.Value;
 
-            if (result.IsSuccess) {
+            if (result.IsSuccess)
+            {
                 return View(dto);
             }
 
@@ -56,11 +58,11 @@ namespace MODAMSWeb.Areas.Admin.Controllers
         {
             if (!ModelState.IsValid)
             {
-                TempData["error"] = _isSomali? "Dhamaan meelaha waa qasab in la buuxiyo" : "All fields are mandatory";
+                TempData["error"] = _isSomali ? "Dhamaan meelaha waa qasab in la buuxiyo" : "All fields are mandatory";
                 form = await _departmentsService.PopulateDepartmentDTO(form);
                 return View(form);
             }
-            
+
             var result = await _departmentsService.CreateDepartmentAsync(form);
             var dto = result.Value;
 
@@ -69,11 +71,12 @@ namespace MODAMSWeb.Areas.Admin.Controllers
                 TempData["success"] = _isSomali ? "Waaxda si guul leh ayaa loo sameeyay!" : "Department created succcessfuly!";
                 return RedirectToAction("Index", "Departments");
             }
-            else {
+            else
+            {
                 TempData["error"] = result.ErrorMessage;
                 return View(dto);
             }
-        }       
+        }
         [HttpGet]
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> EditDepartment(int id)
@@ -85,7 +88,8 @@ namespace MODAMSWeb.Areas.Admin.Controllers
             {
                 return View(dto);
             }
-            else {
+            else
+            {
                 TempData["error"] = result.ErrorMessage;
                 return RedirectToAction("Index", "Departments");
             }
@@ -105,10 +109,11 @@ namespace MODAMSWeb.Areas.Admin.Controllers
 
             if (result.IsSuccess)
             {
-                TempData["success"] = _isSomali? "Waaxda si guul leh ayaa loo cusbooneysiiyay!" : "Department updated successfully!";
+                TempData["success"] = _isSomali ? "Waaxda si guul leh ayaa loo cusbooneysiiyay!" : "Department updated successfully!";
                 return RedirectToAction("Index", "Departments");
             }
-            else {
+            else
+            {
                 TempData["error"] = result.ErrorMessage;
                 return View(dto);
             }
@@ -146,7 +151,8 @@ namespace MODAMSWeb.Areas.Admin.Controllers
             var result = await _departmentsService.GetDepartmentHeadsAsync(id);
             var dto = result.Value;
 
-            if (result.IsSuccess) {
+            if (result.IsSuccess)
+            {
                 return View(dto);
             }
 
@@ -161,14 +167,34 @@ namespace MODAMSWeb.Areas.Admin.Controllers
 
             if (result.IsSuccess)
             {
-                TempData["success"] = _isSomali? "Milkiilaha si guul leh ayaa loo qoondeeyay!" : "Owner assigned successfully!";
+                TempData["success"] = _isSomali ? "Milkiilaha si guul leh ayaa loo qoondeeyay!" : "Owner assigned successfully!";
                 return RedirectToAction("Index", "Departments");
             }
-            else {
+            else
+            {
                 TempData["error"] = result.ErrorMessage;
                 return RedirectToAction("Index", "Departments");
             }
         }
+
+        [HttpPost]
+        [Authorize(Roles = "Administrator, StoreOwner")]
+        public async Task<IActionResult> NewUser(DepartmentHeadsDTO dto)
+        {
+            var result = await _departmentsService.NewUserAsync(dto);
+
+            if (result.IsSuccess)
+            {
+                TempData["success"] = _isSomali ? "Isticmaalaha si guul leh ayaa loo daray!" : "User added successfuly!";
+                return RedirectToAction("DepartmentHeads", "Departments", new { id = dto.DepartmentId });
+            }
+            else
+            {
+                TempData["error"] = result.ErrorMessage;
+                return RedirectToAction("DepartmentHeads", "Departments", new { id = dto.DepartmentId });
+            }
+        }
+
         [Authorize(Roles = "Administrator")]
         [HttpPost]
         public async Task<IActionResult> VacateDepartment(DepartmentHeadsDTO dto)
@@ -176,12 +202,26 @@ namespace MODAMSWeb.Areas.Admin.Controllers
             var result = await _departmentsService.VacateDepartmentAsync(dto);
             if (result.IsSuccess)
             {
-                TempData["success"] = _isSomali? "Bakhaarka si guul leh ayaa loo banneeyay!" : "Store Vacated Successfuly!";
+                TempData["success"] = _isSomali ? "Bakhaarka si guul leh ayaa loo banneeyay!" : "Store Vacated Successfuly!";
                 return RedirectToAction("Index", "Departments");
             }
 
             TempData["error"] = result.ErrorMessage;
             return RedirectToAction("Index", "Departments");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RemoveDepartmentUser(int employeeId, int storeId, int departmentId)
+        {
+            var result = await _departmentsService.RemoveDepartmentUserAsync(employeeId, storeId);
+            if (result.IsSuccess)
+            {
+                TempData["success"] = _isSomali ? "Isticmaalaha si guul leh ayaa loo saaray!" : "User Removed Successfuly!";
+                return RedirectToAction("DepartmentHeads", "Departments", new { id = departmentId });
+            }
+
+            TempData["error"] = result.ErrorMessage;
+            return RedirectToAction("DepartmentHeads", "Departments", new { id = departmentId });
         }
     }
 }

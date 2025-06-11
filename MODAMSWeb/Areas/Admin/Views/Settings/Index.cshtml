@@ -197,6 +197,47 @@
         </div>
     </div>
 </div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h3>System Information</h3>
+                <hr />
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Application Name:</strong> @Model.ApplicationName</p>
+                        <p><strong>Version:</strong> @Model.Version</p>
+                        <p><strong>Database Version:</strong> @Model.DatabaseVersion</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Operating System:</strong> @Model.OperatingSystem</p>
+                        <p><strong>Server Time:</strong> @Model.ServerTime.ToString("F")</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h3>Administrative Actions</h3>
+                <hr />
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <a asp-area="Admin" asp-action="SetStoreEmployees" asp-controller="Settings" class="btn btn-primary mb-2 form-control">Generate Store Employees</a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
 @section scripts {
     <script>
         $(document).ready(() => {
