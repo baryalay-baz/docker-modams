@@ -62,26 +62,22 @@ namespace MODAMSWeb.Areas.Users.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateAsset(int id)
         {
-            var empId = User.IsInRole("User") ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
-            if (await _func.GetStoreOwnerIdAsync(id) != empId)
+            if (!await _func.CanModifyStoreAsync(id, _employeeId))
             {
-                var sError = _isSomali ? "Uma aad fasaxinid inaad fuliso tallaabadan!" : "You are not authorized to perform this action!";
-                TempData["error"] = sError;
-                return RedirectToAction("Index", "Assets", new { area = "Users", id = id });
+                var message = _isSomali
+                    ? "Uma aad fasaxin inaad fuliso tallaabadan!"
+                    : "You are not authorized to perform this action!";
+                TempData["error"] = message;
+                return RedirectToAction(nameof(Index), "Assets", new { area = "Users", id = id });
             }
 
             var result = await _assetService.GetCreateAssetAsync(id);
-            var dto = result.Value;
-
-            if (result.IsSuccess)
-            {
-                return View(dto);
-            }
-            else
+            if (!result.IsSuccess)
             {
                 TempData["error"] = result.ErrorMessage;
-                return RedirectToAction("Index", "Assets", new { area = "Users", id = id });
+                return RedirectToAction(nameof(Index), "Assets", new { area = "Users", id = id });
             }
+            return View(result.Value);
         }
         [Authorize(Roles = "StoreOwner, User")]
         [ValidateAntiForgeryToken]
@@ -124,36 +120,36 @@ namespace MODAMSWeb.Areas.Users.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditAsset(AssetEditDTO dto)
         {
-            var empId = User.IsInRole("User") ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
-            if (await _func.GetStoreOwnerIdAsync(dto.StoreId) != empId)
+            if (!await _func.CanModifyStoreAsync(dto.StoreId, _employeeId))
             {
-                var sError = _isSomali ? "Uma aad fasaxinid inaad fuliso tallaabadan!"
+                var message = _isSomali
+                    ? "Uma aad fasaxin inaad fuliso tallaabadan!"
                     : "You are not authorized to perform this action!";
-                TempData["error"] = sError;
-
-                return RedirectToAction("Index", "Assets", new { area = "Users", id = dto.StoreId });
+                TempData["error"] = message;
+                return RedirectToAction(nameof(EditAsset), new { id = dto.StoreId });
             }
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var result = await _assetService.EditAssetAsync(dto);
-
-                if (result.IsSuccess)
-                {
-                    TempData["success"] = _isSomali ? "Isbeddelada si guul leh ayaa loo kaydiyey!" : "Changes saved successfully!";
-                    return RedirectToAction("EditAsset", "Assets", new { id = dto.Id });
-                }
-                else
-                {
-                    TempData["error"] = result.ErrorMessage;
-                    return View(dto);
-                }
-            }
-            else
-            {
-                TempData["error"] = _isSomali ? "Dhammaan meelaha waa qasab in la buuxiyo!" : "All fields are mandatory!";
+                TempData["error"] = _isSomali
+                    ? "Dhammaan meelaha waa qasab in la buuxiyo!"
+                    : "All fields are mandatory!";
+                dto = await _assetService.PopulateDtoListsAsync(dto);
                 return View(dto);
             }
+
+            var result = await _assetService.EditAssetAsync(dto);
+            if (!result.IsSuccess)
+            {
+                TempData["error"] = result.ErrorMessage;
+                await _assetService.PopulateDtoListsAsync(result.Value);
+                return View(result.Value);
+            }
+
+            TempData["success"] = _isSomali
+                ? "Isbeddelada si guul leh ayaa loo kaydiyey!"
+                : "Changes saved successfully!";
+            return RedirectToAction(nameof(EditAsset), new { id = result.Value.Id });
         }
         [Authorize(Roles = "Administrator, StoreOwner, User")]
         [HttpGet]
@@ -169,7 +165,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             else
             {
                 TempData["error"] = result.ErrorMessage;
-                return View(new AssetDocumentDTO());
+                return RedirectToAction("Index", "Assets", new { area = "Users", id = dto.StoreId });
             }
         }
         [HttpPost]
@@ -258,7 +254,6 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             return RedirectToAction("AssetPictures", "Assets", new { area = "Users", id = AssetId });
         }
-
         [HttpPost]
         [Authorize(Roles = "StoreOwner, User")]
         [IgnoreAntiforgeryToken]

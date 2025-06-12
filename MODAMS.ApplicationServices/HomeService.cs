@@ -166,7 +166,7 @@ namespace MODAMS.ApplicationServices
         {
             try
             {
-                var employeeInDb = await _db.Employees.Where(m => m.Id == id).SingleOrDefaultAsync();
+                var employeeInDb = await _db.Employees.Where(m => m.Id == id).FirstOrDefaultAsync();
 
                 if (employeeInDb == null)
                 {

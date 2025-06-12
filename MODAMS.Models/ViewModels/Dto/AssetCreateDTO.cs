@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using MODAMS.Localization;
+using MODAMS.Models.ViewModels.Dto.Contracts;
 
 namespace MODAMS.Models.ViewModels.Dto
 {
-    public class AssetCreateDTO
+    public class AssetCreateDTO : IAssetDtoLists
     {
         [Key]
         public int Id { get; set; }
@@ -175,5 +176,6 @@ namespace MODAMS.Models.ViewModels.Dto
 
         [ValidateNever]
         public bool IsAuthorized { get; set; } = false;
+       
     }
 }

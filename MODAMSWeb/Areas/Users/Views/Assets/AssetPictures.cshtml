@@ -9,6 +9,13 @@
         display: flex;
         align-items: center;
     }
+
+    .asset-thumb {
+        width: 200px; /* or 100% if you want it to fill the Bootstrap column */
+        height: 150px; /* pick whatever aspect ratio you like */
+        object-fit: cover; /* crop/scale to fill without distorting */
+        display: block; /* removes any inline-img whitespace artifacts */
+    }
 </style>
 <div class="page-header">
     <div>
@@ -75,12 +82,17 @@
                 {
                     foreach (var pic in Model.AssetPictures)
                     {
-                        <div class="col-md-3">
-                            <img src="@pic.ImageUrl" />
-                            <div class="text-center pt-2">
-                                <a onclick="deletePicture(@pic.Id, @pic.AssetId);" class="btn btn-secondary"> <i class="fa fa-trash">&nbsp;</i>@Localizer["Delete"]</a>
-                            </div>
-                            <div class="text-center">&nbsp</div>
+                        <div class="col-md-2 mb-4 d-flex flex-column align-items-center">
+                            <img src="@pic.ImageUrl"
+                                 alt="Asset picture"
+                                 class="asset-thumb mb-2" />
+
+                            <button type="button"
+                                    onclick="deletePicture(@pic.Id, @pic.AssetId)"
+                                    class="btn btn-secondary">
+                                <i class="fa fa-trash"></i>
+                                @Localizer["Delete"]
+                            </button>
                         </div>
                     }
                 }
@@ -108,7 +120,7 @@
                     message: '@Localizer["DeleteConfirmationMessage"]',
                     btnConfirmText: '@Localizer["Confirm"]',
                     btnCancelText: '@Localizer["Cancel"]',
-                    data: assetId
+                    data: `<input type="hidden" name="assetId" value="${assetId}" />`
                 };
                 //console.log(options);
                 openConfirmation(options);

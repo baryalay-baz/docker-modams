@@ -290,6 +290,9 @@
         $(document).ready(() => {
             loadFaces();
             hideMenu();
+            var users = @Html.Raw(Json.Serialize(Model.AvailableUsers));
+            console.log(users);
+
             var isSomali = getCurrentLanguage()==="so";
             $('#btnSaveChanges').on("click", () => {
                 let employeeId = $('#EmployeeId').val();

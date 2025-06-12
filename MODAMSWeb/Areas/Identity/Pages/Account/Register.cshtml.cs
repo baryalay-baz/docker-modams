@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
 using MODAMS.DataAccess.Data;
 using MODAMS.Localization;
 using MODAMS.Models;
@@ -140,87 +141,105 @@ namespace MODAMSWeb.Areas.Identity.Pages.Account
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
-            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+            ExternalLogins = (await _signInManager
+                .GetExternalAuthenticationSchemesAsync())
+                .ToList();
 
-            int nEmployeeId = await _func.GetEmployeeIdByEmailAsync(Input.Email);
-
-            if (EmailHasAccount(Input.Email))
+            string email = Input.Email?.Trim();
+            if (string.IsNullOrEmpty(email))
             {
-                var errorMessage = _isSomali
-                ? $"{Input.Email} horey ayaa xisaab loogu sameeyay!"
-                : $"{Input.Email} already has an associated account!";
-                ModelState.AddModelError(string.Empty, errorMessage);
+                ModelState.AddModelError(string.Empty,
+                    _isSomali
+                      ? "Fadlan geli iimaylkaaga!"
+                      : "Please enter your email.");
             }
 
-            //if (!CheckIfEmailValid(Input.Email))
-            //    ModelState.AddModelError(string.Empty, Input.Email + " is not a UNOPS Official email address!");
-
-            if (nEmployeeId == 0)
+            // 1) Check Identity users
+            var existingUser = await _userManager.FindByEmailAsync(email);
+            if (existingUser != null)
             {
-                var errorMessage = _isSomali
-                ? $"{Input.Email} weli lama diiwaangelin, fadlan la xiriir Maamulaha Nidaamka!"
-                : $"{Input.Email} is not yet registered, please contact System Administrator!";
-                ModelState.AddModelError(string.Empty, errorMessage);
+                ModelState.AddModelError(string.Empty,
+                    _isSomali
+                      ? $"{email} horey xisaab ayuu u leeyahay!"
+                      : $"{email} already has an associated account!");
             }
 
-            if (ModelState.IsValid)
+            // 2) Pull your Employee record in one go
+            var employee = await _db.Employees
+                .SingleOrDefaultAsync(e => e.Email == email);
+
+            if (employee == null)
             {
-                var user = CreateUser();
-
-                await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
-                await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-                user.EmployeeId = nEmployeeId;
-
-                var result = await _userManager.CreateAsync(user, Input.Password);
-
-                if (result.Succeeded)
-                {
-                    _logger.LogInformation("User created a new account with password.");
-                    string initialRole = _db.Employees.Where(m => m.Id == nEmployeeId).FirstOrDefault().InitialRole.ToString();
-                    await _userManager.AddToRoleAsync(user, initialRole);
-
-                    var userId = await _userManager.GetUserIdAsync(user);
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                    var callbackUrl = Url.Page(
-                        "/Account/ConfirmEmail",
-                        pageHandler: null,
-                        values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
-                        protocol: Request.Scheme);
-
-
-                    string shortmessage = _isSomali
-                        ? "Akun ayaa laguu sameeyay <span style=\"font-weight:bold\">Nidaamka Maareynta Hantida ee MOD</span>, fadlan guji badhanka hoose si aad u raacdo tilmaamaha!"
-                        : "An account has been created for you at <span style=\"font-weight:bold\">MOD Asset Management System</span>, click the button below to follow the instructions!";
-
-                    string message = _func.FormatMessage("Account confirmation", shortmessage,
-                        Input.Email, HtmlEncoder.Default.Encode(callbackUrl), "Register");
-
-                    await _emailSender.SendEmailAsync(
-                        Input.Email,
-                        _isSomali ? "Confirm your email" : "Xaqiiji iimaylkaaga",
-                        message);
-
-
-                    if (_userManager.Options.SignIn.RequireConfirmedAccount)
-                    {
-                        return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
-                    }
-                    else
-                    {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                        return RedirectToAction("Index", "Home", new { area = "Users" });
-                    }
-                }
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
+                ModelState.AddModelError(string.Empty,
+                    _isSomali
+                      ? $"{email} weli lama diiwaangelin, fadlan la xiriir Maamulaha Nidaamka!"
+                      : $"{email} is not yet registered, please contact System Administrator!");
             }
 
-            // If we got this far, something failed, redisplay form
-            return Page();
+            // Bail out early if anything failed
+            if (!ModelState.IsValid)
+                return Page();
+
+            // 3) Create the user
+            var user = CreateUser();
+            user.UserName = email;
+            user.Email = email;
+            user.EmployeeId = employee.Id;
+            // navigation stays null → no phantom Employee inserts
+
+            var createResult = await _userManager.CreateAsync(user, Input.Password);
+            if (!createResult.Succeeded)
+            {
+                foreach (var err in createResult.Errors)
+                    ModelState.AddModelError(string.Empty, err.Description);
+                return Page();
+            }
+
+            _logger.LogInformation("Created new user for EmployeeId {EmployeeId}", employee.Id);
+
+            // 4) Assign their initial role
+            string role = employee.InitialRole.ToString();
+            await _userManager.AddToRoleAsync(user, role);
+
+            // 5) Email confirmation link
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+            var callbackUrl = Url.Page(
+                "/Account/ConfirmEmail",
+                pageHandler: null,
+                values: new { area = "Identity", userId = user.Id, code = token, returnUrl },
+                protocol: Request.Scheme);
+
+            string subject = _isSomali ? "Xaqiiji iimaylkaaga" : "Confirm your email";
+            string shortMessage = _isSomali
+                ? "Akun ayaa laguu sameeyay <strong>Nidaamka Maareynta Hantida ee MOD</strong>, fadlan guji badhanka hoose si aad u raacdo tilmaamaha!"
+                : "An account has been created for you at <strong>MOD Asset Management System</strong>, click the button below to follow the instructions!";
+
+            var htmlMessage = _func.FormatMessage(
+                "Account confirmation",
+                shortMessage,
+                email,
+                HtmlEncoder.Default.Encode(callbackUrl),
+                "Register");
+
+            await _emailSender.SendEmailAsync(email, subject, htmlMessage);
+
+            // 6) Final redirect
+            var safeReturn = Url.IsLocalUrl(returnUrl)
+               ? returnUrl
+               : Url.Content("~/");    // your home or dashboard
+
+            if (_userManager.Options.SignIn.RequireConfirmedAccount)
+            {
+                return RedirectToPage(
+                    "RegisterConfirmation",
+                    new { email = Input.Email, returnUrl = safeReturn });
+            }
+
+            await _signInManager.SignInAsync(user, isPersistent: false);
+            return LocalRedirect(safeReturn);
         }
+
 
         private ApplicationUser CreateUser()
         {

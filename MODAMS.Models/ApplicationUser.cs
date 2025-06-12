@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations.Schema;
 
 
 namespace MODAMS.Models
@@ -6,6 +7,8 @@ namespace MODAMS.Models
     public class ApplicationUser : IdentityUser
     {
         public int EmployeeId { get; set; }
-        public Employee Employees { get; set; } = new Employee();
+
+        [NotMapped]
+        public Employee Employees { get; set; }
     }
 }

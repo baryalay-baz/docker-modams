@@ -66,27 +66,37 @@ namespace MODAMS.ApplicationServices
                                     StoreId = store.Id
                                 };
                                 storeEmployees.Add(se);
-
-                                //Add store users
-                                var storeUsers = await _db.vwEmployees
-                                    .Where(m => m.SupervisorEmployeeId == empl.Id && m.RoleName == "User")
-                                    .ToListAsync();
-
-                                foreach (var user in storeUsers)
-                                {
-                                    vwStoreEmployee su = new vwStoreEmployee()
-                                    {
-                                        Id = user.Id,
-                                        ImageUrl = user.ImageUrl,
-                                        FullName = user.FullName,
-                                        Email = user.Email,
-                                        Role = user.RoleName,
-                                        StoreId = store.Id
-                                    };
-                                    storeEmployees.Add(su);
-                                }
                             }
                         }
+
+                        var storeUsers = await _db.StoreEmployees
+                            .Where(m => m.StoreId == store.Id && m.EmployeeId != store.EmployeeId)
+                            .Include(m => m.Employee)
+                            .Select(m => new vwStoreEmployee
+                            {
+                                Id = m.Employee.Id,
+                                FullName = m.Employee.FullName,
+                                Email = m.Employee.Email,
+                                Role = m.Employee.InitialRole,
+                                ImageUrl = m.Employee.ImageUrl,
+                                StoreId = store.Id
+                            })
+                            .ToListAsync();
+
+                        foreach (var user in storeUsers)
+                        {
+                            vwStoreEmployee su = new vwStoreEmployee()
+                            {
+                                Id = user.Id,
+                                ImageUrl = user.ImageUrl,
+                                FullName = user.FullName,
+                                Email = user.Email,
+                                Role = user.Role,
+                                StoreId = store.Id
+                            };
+                            storeEmployees.Add(su);
+                        }
+
                     }
                 }
 
@@ -146,60 +156,80 @@ namespace MODAMS.ApplicationServices
         {
             try
             {
-                var vwStore = await _db.vwStores.FirstOrDefaultAsync(m => m.Id == storeId);
-
+                // 1) Retrieve store
+                var vwStore = await _db.vwStores.FindAsync(storeId);
                 if (vwStore == null)
-                {
                     return Result<StoreDTO>.Failure("Store not available!");
+
+                // 2) Determine authorization
+                bool isAuthorized = false;
+                if (IsInRole("StoreOwner") && _employeeId == vwStore.EmployeeId)
+                {
+                    isAuthorized = true;
+                }
+                else if (IsInRole("User"))
+                {
+                    isAuthorized = await _func.IsStoreUser(_employeeId, storeId);
                 }
 
+                // 3) Fetch owner info
+                var storeOwnerInfo = await _func.GetStoreOwnerInfoAsync(storeId);
 
-                var dto = new StoreDTO
+                // 4) Load employees (owner + direct reports)
+                var employees = new List<Employee>();
+                if (vwStore.EmployeeId > 0)
                 {
-                    vwStore = vwStore,
-                    employees = new List<Employee>(),
-                    StoreOwnerInfo = await _func.GetStoreOwnerInfoAsync(storeId)
-                };
-
-                var empId = IsInRole("User") ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
-                if (empId == await _func.GetStoreOwnerIdAsync(storeId))
-                    dto.IsAuthorized = true;
-
-                var storeOwnerId = vwStore.EmployeeId;
-                if (storeOwnerId > 0)
-                {
-                    var storeOwner = await _db.Employees.FirstOrDefaultAsync(e => e.Id == storeOwnerId);
-                    if (storeOwner != null)
-                    {
-                        dto.employees.Add(storeOwner);
-                        dto.employees.AddRange(await _db.Employees
-                            .Where(e => e.SupervisorEmployeeId == storeOwnerId)
-                            .ToListAsync());
-                    }
+                    employees = await _db.Employees
+                        .Where(e => e.Id == vwStore.EmployeeId
+                                 || e.SupervisorEmployeeId == vwStore.EmployeeId)
+                        .ToListAsync();
                 }
-                dto.storeAssets = await _db.Assets
-                    .Where(a => a.AssetStatusId != SD.Asset_Deleted && a.StoreId == storeId)
+
+                // 5) Load store assets
+                var storeAssets = await _db.Assets
+                    .Where(a => a.StoreId == storeId
+                             && a.AssetStatusId != SD.Asset_Deleted)
                     .Include(a => a.SubCategory)
                     .Include(a => a.Condition)
                     .Include(a => a.AssetStatus)
                     .ToListAsync();
-                dto.StoreCategoryAssets = await _db.vwStoreCategoryAssets
-                    .Where(sca => sca.StoreId == storeId).OrderBy(m => m.CategoryId)
+
+                // 6) Load category-wise asset summary
+                var categoryAssets = await _db.vwStoreCategoryAssets
+                    .Where(sca => sca.StoreId == storeId)
+                    .OrderBy(sca => sca.CategoryId)
                     .ToListAsync();
 
-                dto.TransferredAssets = await _db.TransferDetails
-                .Include(td => td.Transfer)
-                    .CountAsync(td => td.Transfer.StoreFromId == storeId && td.Transfer.TransferStatusId == SD.Transfer_Completed);
+                // 7) Compute transfer and disposal counts
+                var transferredCount = await _db.TransferDetails
+                    .CountAsync(td => td.Transfer.StoreFromId == storeId
+                                   && td.Transfer.TransferStatusId == SD.Transfer_Completed);
 
-                dto.ReceivedAssets = await _db.TransferDetails
-                .Include(td => td.Transfer)
-                    .CountAsync(td => td.Transfer.StoreId == storeId && td.Transfer.TransferStatusId == SD.Transfer_Completed);
+                var receivedCount = await _db.TransferDetails
+                    .CountAsync(td => td.Transfer.StoreId == storeId
+                                   && td.Transfer.TransferStatusId == SD.Transfer_Completed);
 
-                dto.Handovers = 0;
-                dto.Disposals = await _db.Assets.Where(m => m.StoreId == storeId && m.AssetStatusId == SD.Asset_Disposed).CountAsync();
+                var disposedCount = await _db.Assets
+                    .CountAsync(a => a.StoreId == storeId
+                                  && a.AssetStatusId == SD.Asset_Disposed);
 
-                dto.StoreId = storeId;
-                dto.StoreName = _isSomali ? vwStore.NameSo : vwStore.Name;
+                // 8) Assemble DTO
+                var dto = new StoreDTO
+                {
+                    vwStore = vwStore,
+                    StoreOwnerInfo = storeOwnerInfo,
+                    IsAuthorized = isAuthorized,
+                    employees = employees,
+                    storeAssets = storeAssets,
+                    StoreCategoryAssets = categoryAssets,
+                    TransferredAssets = transferredCount,
+                    ReceivedAssets = receivedCount,
+                    Handovers = 0,
+                    Disposals = disposedCount,
+                    StoreId = storeId,
+                    StoreName = _isSomali ? vwStore.NameSo : vwStore.Name
+                };
+
                 return Result<StoreDTO>.Success(dto);
             }
             catch (Exception ex)
@@ -208,6 +238,8 @@ namespace MODAMS.ApplicationServices
                 return Result<StoreDTO>.Failure(ex.Message);
             }
         }
+
+
 
         //Private functions
         private bool IsInRole(string role) => _httpContextAccessor.HttpContext?.User?.IsInRole(role) ?? false;

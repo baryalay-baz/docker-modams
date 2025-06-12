@@ -304,18 +304,31 @@ namespace MODAMS.Utility
         }
         public async Task<int> GetStoreIdByEmployeeIdAsync(int employeeId)
         {
-            int storeId = 0;
-            var department = await _db.Departments.Where(m => m.EmployeeId == employeeId).FirstOrDefaultAsync();
-            if (department != null)
+            var email = await GetEmployeeEmailAsync();
+
+            if (await IsInRoleAsync(SD.Role_StoreOwner, email))
             {
-                var store = await _db.Stores.Where(m => m.DepartmentId == department.Id).FirstOrDefaultAsync();
-                if (store != null)
-                {
-                    storeId = store.Id;
-                }
+                var storeId = await _db.Departments
+                    .Where(d => d.EmployeeId == employeeId)
+                    .SelectMany(d => d.Stores)
+                    .Select(s => (int?)s.Id)
+                    .FirstOrDefaultAsync();
+
+                return storeId ?? 0;
             }
-            return storeId;
+
+            if (await IsInRoleAsync(SD.Role_User, email))
+            {
+                var storeId = await _db.StoreEmployees
+                    .Where(se => se.EmployeeId == employeeId)
+                    .Select(se => (int?)se.StoreId)
+                    .FirstOrDefaultAsync();
+
+                return storeId ?? 0;
+            }
+            return 0;
         }
+
         public async Task<int> GetStoreIdByDepartmentIdAsync(int departmentId)
         {
             int storeId = 0;
@@ -496,7 +509,6 @@ namespace MODAMS.Utility
 
             return emailMessage;
         }
-
         public async Task<int> GetStoreOwnerIdAsync(int storeId)
         {
             int departmentId = 0;
@@ -517,36 +529,51 @@ namespace MODAMS.Utility
         }
         public async Task<List<vwStore>> GetStoresByEmployeeIdAsync(int employeeId)
         {
-            string sRoleName = await GetRoleNameAsync(employeeId);
-            int supervisorEmployeeId = GetSupervisorId(employeeId);
+            var roleName = await GetRoleNameAsync(employeeId);
 
-            var stores = await _db.vwStores.OrderByDescending(m => m.TotalCount).ToListAsync();
-            var allStores = stores;
+            IQueryable<vwStore> query;
 
-            if (sRoleName == "User")
+            if (roleName == "User")
             {
-                stores = stores.Where(m => m.EmployeeId == supervisorEmployeeId).ToList();
+                query = _db.StoreEmployees
+                    .Where(se => se.EmployeeId == employeeId)
+                    .Join(
+                        _db.vwStores,
+                        se => se.StoreId,
+                        store => store.Id,
+                        (se, store) => store
+                    );
             }
-            else if (sRoleName == "StoreOwner")
+            else if (roleName == "StoreOwner")
             {
-                stores = stores.Where(m => m.EmployeeId == employeeId).ToList();
-                if (stores.Count > 0)
+                var ownerStore = await _db.vwStores
+                    .FirstOrDefaultAsync(s => s.EmployeeId == employeeId);
+                if (ownerStore == null)
+                    return new List<vwStore>();
+
+                var allStores = await _db.vwStores.ToListAsync();
+                var finder = new StoreFinder((int)ownerStore.DepartmentId, allStores);
+                return finder
+                    .GetStores()
+                    .OrderByDescending(s => s.TotalCount)
+                    .ToList();
+            }
+            else
+            {
+                query = _db.vwStores;
+            }
+            var result = await query
+                .OrderByDescending(s => s.TotalCount)
+                .ToListAsync();
+
+            if (roleName == "User")
+            {
+                foreach (var store in result)
                 {
-                    vwStore store = stores.First();
-                    if (store != null)
-                    {
-                        int nDeptId = (int)store.DepartmentId;
-                        var storeFinder = new StoreFinder(nDeptId, allStores);
-                        stores = storeFinder.GetStores();
-                    }
-                }
-                else
-                {
-                    stores = new List<vwStore>();
+                    store.StoreType = 1; // Set StoreType to primary store
                 }
             }
-
-            return stores;
+            return result;
         }
         public async Task<string> GetEmployeeNameByIdAsync(int employeeId)
         {
@@ -793,7 +820,13 @@ namespace MODAMS.Utility
 
             return result;
         }
-
+        public async Task<bool> IsStoreUser(int employeeId, int storeId)
+        {
+            var storeEmployee = await _db.StoreEmployees
+                .Where(se => se.EmployeeId == employeeId && se.StoreId == storeId)
+                .FirstOrDefaultAsync();
+            return storeEmployee != null;
+        }
         public void LogException(ILogger logger, Exception ex)
         {
             if (ex.InnerException != null)
@@ -811,7 +844,12 @@ namespace MODAMS.Utility
             await _db.SaveChangesAsync();
             await SendEmailAsync(notification.EmployeeTo, notification.Subject, notification.Message, notification.TargetRecordId, notification.NotificationSectionId);
         }
-
+        public async Task<bool> CanModifyStoreAsync(int storeId, int employeeId)
+        {
+            if (await GetStoreOwnerIdAsync(storeId) == employeeId) return true;
+            if (await IsStoreUser(employeeId, storeId)) return true;
+            return false;
+        }
 
 
         //Private methods
@@ -850,7 +888,7 @@ namespace MODAMS.Utility
             }
 
             var returnUrl = GenerateUrl(sectionId, recordId);
-            string sEmailMessage = FormatMessage(subject, message, sFullName, returnUrl, _isSomali? "Guji halkan" : "click here");
+            string sEmailMessage = FormatMessage(subject, message, sFullName, returnUrl, _isSomali ? "Guji halkan" : "click here");
 
             try
             {

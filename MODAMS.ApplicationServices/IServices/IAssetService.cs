@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using MODAMS.Models.ViewModels.Dto;
+using MODAMS.Models.ViewModels.Dto.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +29,7 @@ namespace MODAMS.ApplicationServices.IServices
 
 
 
-        Task<T> PopulateDtoAssetAsync<T>(T dto) where T : class, new();
+        Task<T> PopulateDtoListsAsync<T>(T dto) where T : IAssetDtoLists;
 
 
         //API Calls

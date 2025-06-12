@@ -8,6 +8,7 @@ using MODAMS.DataAccess.Data;
 using MODAMS.Models;
 using MODAMS.Models.ViewModels;
 using MODAMS.Models.ViewModels.Dto;
+using MODAMS.Models.ViewModels.Dto.Contracts;
 using MODAMS.Utilities;
 using MODAMS.Utility;
 using Newtonsoft.Json;
@@ -42,47 +43,63 @@ namespace MODAMS.ApplicationServices
         {
             try
             {
-
-                var assets = await _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted && m.StoreId == storeId).Include(m => m.AssetStatus)
-                .Include(m => m.SubCategory).ThenInclude(m => m.Category)
-                .Include(m => m.Condition).Include(m => m.Donor)
-                .Include(m => m.Store).ToListAsync();
+                var assetQuery = _db.Assets
+                    .Where(a => a.StoreId == storeId && a.AssetStatusId != SD.Asset_Deleted);
 
                 if (subCategoryId > 0)
-                {
-                    assets = assets.Where(m => m.SubCategoryId == subCategoryId).ToList();
-                }
-                var categories = await _db.vwStoreCategoryAssets.Where(m => m.StoreId == storeId).Select(m => new SelectListItem
-                {
-                    Text = _isSomali ? m.SubCategoryNameSo : m.SubCategoryName,
-                    Value = m.SubCategoryId.ToString(),
-                    Selected = (m.SubCategoryId == subCategoryId)
-                }).ToListAsync();
+                    assetQuery = assetQuery.Where(a => a.SubCategoryId == subCategoryId);
 
-                var dto = new AssetsDTO()
+                var assets = await assetQuery
+                    .Include(a => a.AssetStatus)
+                    .Include(a => a.SubCategory).ThenInclude(sc => sc.Category)
+                    .Include(a => a.Condition)
+                    .Include(a => a.Donor)
+                    .ToListAsync();
+
+                var categories = await _db.vwStoreCategoryAssets
+                    .Where(sca => sca.StoreId == storeId)
+                    .Select(sca => new SelectListItem
+                    {
+                        Text = _isSomali ? sca.SubCategoryNameSo : sca.SubCategoryName,
+                        Value = sca.SubCategoryId.ToString(),
+                        Selected = (sca.SubCategoryId == subCategoryId)
+                    })
+                    .ToListAsync();
+
+                var storeOwnerId = await _func.GetStoreOwnerIdAsync(storeId);
+                var storeOwnerInfo = await _func.GetStoreOwnerInfoAsync(storeId);
+                var storeName = await _func.GetStoreNameByStoreIdAsync(storeId);
+
+                bool isAuthorized = IsInRole("StoreOwner")
+                    ? _employeeId == storeOwnerId
+                    : (IsInRole("User") && await _func.IsStoreUser(_employeeId, storeId));
+
+                var subCategory = subCategoryId > 0
+                    ? await _db.SubCategories.FindAsync(subCategoryId)
+                    : null;
+
+                var defaultLabel = _isSomali ? "Hantida oo Dhan" : "All Assets";
+                int dtoSubCatId = subCategory?.Id ?? 0;
+                
+                string dtoSubCatName = subCategory != null
+                    ? (_isSomali ? subCategory.SubCategoryNameSo : subCategory.SubCategoryName)
+                    : defaultLabel;
+
+                var dto = new AssetsDTO
                 {
                     assets = assets,
-                    StoreOwnerId = await _func.GetStoreOwnerIdAsync(storeId),
-                    StoreOwnerInfo = await _func.GetStoreOwnerInfoAsync(storeId),
-                    CategorySelectList = categories
+                    CategorySelectList = categories,
+
+                    StoreOwnerId = storeOwnerId,
+                    StoreOwnerInfo = storeOwnerInfo,
+                    StoreId = storeId,
+                    StoreName = storeName,
+
+                    SubCategoryId = dtoSubCatId,
+                    SubCategoryName = dtoSubCatName,
+
+                    IsAuthorized = isAuthorized
                 };
-                var empId = IsInRole("User") ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
-                if (empId == await _func.GetStoreOwnerIdAsync(storeId))
-                    dto.IsAuthorized = true;
-
-                var subCategory = await _db.SubCategories.Where(m => m.Id == subCategoryId).FirstOrDefaultAsync();
-
-                dto.SubCategoryId = 0;
-                dto.SubCategoryName = _isSomali ? "Hantida oo Dhan" : "All Assets";
-
-                if (subCategory != null)
-                {
-                    dto.SubCategoryId = subCategory.Id;
-                    dto.SubCategoryName = _isSomali ? subCategory.SubCategoryNameSo : subCategory.SubCategoryName;
-                }
-
-                dto.StoreId = storeId;
-                dto.StoreName = await _func.GetStoreNameByStoreIdAsync(storeId);
 
                 return Result<AssetsDTO>.Success(dto);
             }
@@ -91,43 +108,59 @@ namespace MODAMS.ApplicationServices
                 _func.LogException(_logger, ex);
                 return Result<AssetsDTO>.Failure(ex.Message);
             }
-
         }
-        public async Task<Result<AssetListDTO>> GetAssetListAsync(int storeId)
+
+        public async Task<Result<AssetListDTO>> GetAssetListAsync(int categoryId)
         {
             try
             {
-                var assets = await _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted).Include(m => m.AssetStatus)
-                .Include(m => m.SubCategory).Include(m => m.Condition).Include(m => m.Donor)
-                .Include(m => m.Store).ToListAsync();
+                var assetQuery = _db.Assets.Where(a => a.AssetStatusId != SD.Asset_Deleted);
 
-                if (storeId > 0)
+                if (categoryId > 0)
                 {
-                    assets = assets.Where(m => m.SubCategory.CategoryId == storeId).ToList();
+                    assetQuery = assetQuery
+                        .Where(a => a.SubCategory.CategoryId == categoryId);
                 }
-                var categories = _db.Categories.ToList().Select(m => new SelectListItem
-                {
-                    Text = _isSomali ? m.CategoryNameSo : m.CategoryName,
-                    Value = m.Id.ToString(),
-                    Selected = (m.Id == storeId)
-                });
+                
+                var assets = await assetQuery
+                    .Include(a => a.AssetStatus)
+                    .Include(a => a.Condition)
+                    .Include(a => a.Donor)
+                    .Include(a => a.SubCategory).ThenInclude(sc => sc.Category)
+                    .Include(a => a.Store)
+                    .ToListAsync();
 
-                var dto = new AssetListDTO()
+                var categories = await _db.Categories
+                    .Select(c => new SelectListItem
+                    {
+                        Text = _isSomali ? c.CategoryNameSo : c.CategoryName,
+                        Value = c.Id.ToString(),
+                        Selected = c.Id == categoryId
+                    })
+                    .ToListAsync();
+
+                var defaultLabel = _isSomali ? "Hantida oo Dhan" : "All Assets";
+                string categoryName;
+
+                if (categoryId > 0)
                 {
-                    AssetList = assets,
-                    CategorySelectList = categories,
-                };
-                var category = await _db.Categories.Where(m => m.Id == storeId).FirstOrDefaultAsync();
-                if (category == null)
-                {
-                    dto.CategoryId = 0;
-                    dto.CategoryName = _isSomali ? "Hantida oo Dhan" : "All Assets";
+                    var category = await _db.Categories.FindAsync(categoryId);
+                    categoryName = category != null
+                        ? (_isSomali ? category.CategoryNameSo : category.CategoryName)
+                        : defaultLabel;
                 }
                 else
                 {
-                    dto.CategoryId = category.Id;
-                    dto.CategoryName = _isSomali ? category.CategoryNameSo : category.CategoryName;
+                    categoryName = defaultLabel;
                 }
+
+                var dto = new AssetListDTO
+                {
+                    AssetList = assets,
+                    CategorySelectList = categories,
+                    CategoryId = categoryId,
+                    CategoryName = categoryName
+                };
 
                 return Result<AssetListDTO>.Success(dto);
             }
@@ -141,19 +174,18 @@ namespace MODAMS.ApplicationServices
         {
             try
             {
-                var dto = new AssetCreateDTO();
-                dto = await PopulateDtoAssetAsync(dto);
+                var canModify = await _func.CanModifyStoreAsync(storeId, _employeeId);
+                var storeName = await _func.GetStoreNameByStoreIdAsync(storeId);
 
-                var empId = IsInRole("User") ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
-                if (await _func.GetStoreOwnerIdAsync(storeId) == empId)
+                var createDto = new AssetCreateDTO
                 {
-                    dto.IsAuthorized = true;
-                }
+                    StoreId = storeId,
+                    StoreName = storeName,
+                    IsAuthorized = canModify
+                };
+                await PopulateDtoListsAsync(createDto);
 
-                dto.StoreId = storeId;
-                dto.StoreName = await _func.GetStoreNameByStoreIdAsync(storeId);
-
-                return Result<AssetCreateDTO>.Success(dto);
+                return Result<AssetCreateDTO>.Success(createDto);
             }
             catch (Exception ex)
             {
@@ -163,112 +195,104 @@ namespace MODAMS.ApplicationServices
         }
         public async Task<Result<AssetCreateDTO>> CreateAssetAsync(AssetCreateDTO dto)
         {
-            using (var transaction = await _db.Database.BeginTransactionAsync())
+            if (!await _func.CanModifyStoreAsync(dto.StoreId, _employeeId))
             {
-                try
+                await PopulateDtoListsAsync(dto);
+                var message = _isSomali
+                    ? "Uma aad fasaxin inaad fuliso tallaabadan!"
+                    : "You are not authorized to perform this action!";
+                return Result<AssetCreateDTO>.Failure(message, dto);
+            }
+
+            if (await _db.Assets.AnyAsync(a => a.AssetStatusId != SD.Asset_Deleted && a.SerialNo == dto.SerialNo))
+            {
+                await PopulateDtoListsAsync(dto);
+                var message = _isSomali
+                    ? "Tirada Taxanaha hore ayaa loo isticmaalay"
+                    : "Serial Number already in use";
+                return Result<AssetCreateDTO>.Failure(message, dto);
+            }
+
+            if (await _db.Assets.AnyAsync(a => a.AssetStatusId != SD.Asset_Deleted && a.Barcode == dto.Barcode))
+            {
+                await PopulateDtoListsAsync(dto);
+                var message = _isSomali
+                    ? "Baar-koodhka hore ayaa loo isticmaalay"
+                    : "Barcode already in use";
+                return Result<AssetCreateDTO>.Failure(message, dto);
+            }
+
+            await using var tx = await _db.Database.BeginTransactionAsync();
+            try
+            {
+                var asset = new Asset
                 {
-                    var empId = IsInRole("User") ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
+                    Name = InputSanitizer.CleanText(dto.Name),
+                    Make = InputSanitizer.CleanText(dto.Make),
+                    Model = InputSanitizer.CleanText(dto.Model),
+                    Year = InputSanitizer.CleanText(dto.Year),
+                    ManufacturingCountry = InputSanitizer.CleanText(dto.ManufacturingCountry ?? string.Empty),
+                    SerialNo = InputSanitizer.CleanText(dto.SerialNo),
+                    Barcode = InputSanitizer.CleanText(dto.Barcode ?? string.Empty),
+                    Engine = InputSanitizer.CleanText(dto.Engine),
+                    Chasis = InputSanitizer.CleanText(dto.Chasis),
+                    Plate = InputSanitizer.CleanText(dto.Plate),
+                    Specifications = dto.Specifications,
+                    Cost = dto.Cost,
+                    PurchaseDate = dto.PurchaseDate,
+                    PONumber = dto.PONumber,
+                    RecieptDate = dto.RecieptDate,
+                    ProcuredBy = dto.ProcuredBy,
+                    Remarks = dto.Remarks,
+                    SubCategoryId = dto.SubCategoryId,
+                    ConditionId = dto.ConditionId,
+                    StoreId = dto.StoreId,
+                    DonorId = dto.DonorId,
+                    AssetStatusId = SD.Asset_Available
+                };
 
-                    dto.StoreName = await _func.GetStoreNameByStoreIdAsync(dto.StoreId);
+                await _db.Assets.AddAsync(asset);
 
-                    if (await _func.GetStoreOwnerIdAsync(dto.StoreId) != empId)
-                    {
-                        dto = await PopulateDtoAssetAsync(dto);
-                        var sError = _isSomali ? "Uma aad fasaxinid inaad fuliso tallaabadan!" : "You are not authorized to perform this action!";
-                        return Result<AssetCreateDTO>.Failure(sError, dto);
-                    }
-
-                    if (await _db.Assets.AnyAsync(m => m.AssetStatusId != SD.Asset_Deleted && m.SerialNo == dto.SerialNo))
-                    {
-                        dto = await PopulateDtoAssetAsync(dto);
-                        return Result<AssetCreateDTO>.Failure(_isSomali ? "Tirada Taxanaha hore ayaa loo isticmaalay" : "Serial Number already in use", dto);
-                    }
-
-                    if (await _db.Assets.AnyAsync(m => m.AssetStatusId != SD.Asset_Deleted && m.Barcode == dto.Barcode))
-                    {
-                        dto = await PopulateDtoAssetAsync(dto);
-                        return Result<AssetCreateDTO>.Failure(_isSomali ? "Baar-koodhka hore ayaa loo isticmaalay" : "Barcode already in use", dto);
-                    }
-                    if (dto == null)
-                    {
-                        dto = new AssetCreateDTO();
-                        dto = await PopulateDtoAssetAsync(dto);
-                        return Result<AssetCreateDTO>.Failure(_isSomali ? "Fadlan buuxi dhammaan meelaha munaasabka ah!" : "Please fill all the mandatory fields!", dto);
-                    }
-
-                    // Create the new asset
-                    var newAsset = new Asset
-                    {
-                        Name = InputSanitizer.CleanText(dto.Name),
-                        Make = InputSanitizer.CleanText(dto.Make),
-                        Model = InputSanitizer.CleanText(dto.Model),
-                        Year = InputSanitizer.CleanText(dto.Year),
-                        ManufacturingCountry = InputSanitizer.CleanText(dto.ManufacturingCountry ?? ""),
-                        SerialNo = InputSanitizer.CleanText(dto.SerialNo),
-                        Barcode = InputSanitizer.CleanText(dto.Barcode ?? ""),
-                        Engine = InputSanitizer.CleanText(dto.Engine),
-                        Chasis = InputSanitizer.CleanText(dto.Chasis),
-                        Plate = InputSanitizer.CleanText(dto.Plate),
-                        Specifications = dto.Specifications,
-                        Cost = dto.Cost,
-                        PurchaseDate = dto.PurchaseDate,
-                        PONumber = dto.PONumber,
-                        RecieptDate = dto.RecieptDate,
-                        ProcuredBy = dto.ProcuredBy,
-                        Remarks = dto.Remarks,
-                        SubCategoryId = dto.SubCategoryId,
-                        ConditionId = dto.ConditionId,
-                        StoreId = dto.StoreId,
-                        DonorId = dto.DonorId,
-                        AssetStatusId = SD.Asset_Available
-                    };
-
-                    await _db.Assets.AddAsync(newAsset);
-                    await _db.SaveChangesAsync();
-
-                    // Log the action to the NewsFeed
-                    string employeeName = await _func.GetEmployeeNameAsync();
-                    string storeName = await _func.GetStoreNameByStoreIdAsync(newAsset.StoreId);
-
-                    string message = $"{employeeName} registered a new asset ({newAsset.Name}) in {storeName}";
-                    if (_isSomali)
-                        message = $"{employeeName} waxa uu si rasmi ah uga diiwaangeliyey hanti cusub ({newAsset.Name}) gudaha {storeName}";
-
-                    await _func.LogNewsFeedAsync(message, "Users", "Assets", "AssetInfo", newAsset.Id);
-
-                    // Create asset history record
-                    var assetHistory = new AssetHistory
-                    {
-                        AssetId = newAsset.Id,
-                        Description = _isSomali ? "Hantida waxaa si rasmi ah u diiwaangeliyey " : "Asset Registered by " + employeeName,
-                        TimeStamp = DateTime.Now,
-                        TransactionRecordId = newAsset.Id,
-                        TransactionTypeId = SD.Transaction_Registration
-                    };
-
-                    await _db.AssetHistory.AddAsync(assetHistory);
-                    await _db.SaveChangesAsync();
-
-                    // Commit the transaction
-                    await transaction.CommitAsync();
-
-                    dto.Id = newAsset.Id;
-
-                    return Result<AssetCreateDTO>.Success(dto);
-                }
-                catch (Exception ex)
+                // History
+                var employeeName = await _func.GetEmployeeNameAsync();
+                var history = new AssetHistory
                 {
-                    await transaction.RollbackAsync();
-                    _func.LogException(_logger, ex);
-                    dto = await PopulateDtoAssetAsync(dto);
-                    return Result<AssetCreateDTO>.Failure(ex.Message, dto);
-                }
+                    AssetId = asset.Id,
+                    Description = _isSomali
+                        ? $"Hantida waxaa si rasmi ah u diiwaangeliyey {employeeName}"
+                        : "Asset Registered by " + employeeName,
+                    TimeStamp = DateTime.UtcNow,
+                    TransactionRecordId = asset.Id,
+                    TransactionTypeId = SD.Transaction_Registration
+                };
+                await _db.AssetHistory.AddAsync(history);
+
+                // Save both asset and history
+                await _db.SaveChangesAsync();
+                await tx.CommitAsync();
+
+                // Newsfeed
+                var nfMessage = _isSomali
+                    ? $"{employeeName} waxa uu si rasmi ah uga diiwaangeliyey hanti cusub ({asset.Name}) gudaha {dto.StoreName}"
+                    : $"{employeeName} registered a new asset ({asset.Name}) in {dto.StoreName}";
+                await _func.LogNewsFeedAsync(nfMessage, "Users", "Assets", "AssetInfo", asset.Id);
+
+                // Return with new Id
+                dto.Id = asset.Id;
+                return Result<AssetCreateDTO>.Success(dto);
+            }
+            catch (Exception ex)
+            {
+                await tx.RollbackAsync();
+                _func.LogException(_logger, ex);
+                await PopulateDtoListsAsync(dto);
+                return Result<AssetCreateDTO>.Failure(ex.Message, dto);
             }
         }
         public async Task<Result<AssetEditDTO>> GetEditAssetAsync(int id)
         {
             var dto = new AssetEditDTO();
-            dto = await PopulateDtoAssetAsync(dto);
+            dto = await PopulateDtoListsAsync(dto);
 
             try
             {
@@ -278,6 +302,15 @@ namespace MODAMS.ApplicationServices
 
                 if (assetInDb == null)
                     return Result<AssetEditDTO>.Failure(_isSomali ? "Hanti lama helin" : "Asset not found", dto);
+
+                if(!await _func.CanModifyStoreAsync(assetInDb.StoreId, _employeeId))
+                {
+                    var message = _isSomali
+                        ? "Uma aad fasaxin inaad fuliso tallaabadan!"
+                        : "You are not authorized to perform this action!";
+                    return Result<AssetEditDTO>.Failure(message, dto);
+                }
+
 
                 dto.Id = assetInDb.Id;
                 dto.CategoryId = assetInDb.SubCategory.CategoryId;
@@ -325,8 +358,6 @@ namespace MODAMS.ApplicationServices
                 // Check if the record is available
                 if (assetInDb == null)
                 {
-                    // Populate select lists before returning the DTO
-                    dto = await PopulateDtoAssetAsync(dto);
                     return Result<AssetEditDTO>.Failure(_isSomali ? "Hanti lama helin" : "Asset not found!", dto);
                 }
 
@@ -339,8 +370,6 @@ namespace MODAMS.ApplicationServices
                 {
                     if (recordWithSameSerialNo != null)
                     {
-                        // Populate select lists before returning the DTO
-                        dto = await PopulateDtoAssetAsync(dto);
                         var sError = _isSomali ? $"Tirada Taxanaha hore ayaa loo xilsaaray Hanti leh Aqoonsiga {recordWithSameSerialNo.Id};"
                             : $"Serial number already assigned to Asset with Id {recordWithSameSerialNo.Id}!";
 
@@ -356,9 +385,9 @@ namespace MODAMS.ApplicationServices
                 assetInDb.Engine = InputSanitizer.CleanText(dto.Engine);
                 assetInDb.Chasis = InputSanitizer.CleanText(dto.Chasis);
                 assetInDb.Plate = InputSanitizer.CleanText(dto.Plate);
-                assetInDb.ManufacturingCountry = InputSanitizer.CleanText(dto.ManufacturingCountry??"");
+                assetInDb.ManufacturingCountry = InputSanitizer.CleanText(dto.ManufacturingCountry ?? "");
                 assetInDb.SerialNo = InputSanitizer.CleanText(dto.SerialNo);
-                assetInDb.Barcode = InputSanitizer.CleanText(dto.Barcode??"");
+                assetInDb.Barcode = InputSanitizer.CleanText(dto.Barcode ?? "");
                 assetInDb.Specifications = dto.Specifications;
                 assetInDb.Cost = dto.Cost;
                 assetInDb.PurchaseDate = dto.PurchaseDate;
@@ -385,15 +414,13 @@ namespace MODAMS.ApplicationServices
 
                 // Return success with populated DTO
                 dto.StoreName = await _func.GetStoreNameByStoreIdAsync(dto.StoreId);
-                dto = await PopulateDtoAssetAsync(dto);
+                dto = await PopulateDtoListsAsync(dto);
                 return Result<AssetEditDTO>.Success(dto);
             }
             catch (Exception ex)
             {
                 _func.LogException(_logger, ex);
 
-                // Populate select lists and return the DTO on failure
-                dto = await PopulateDtoAssetAsync(dto);
                 dto.StoreName = await _func.GetStoreNameByStoreIdAsync(dto.StoreId);
                 return Result<AssetEditDTO>.Failure(ex.Message, dto);
             }
@@ -412,6 +439,16 @@ namespace MODAMS.ApplicationServices
 
                 int storeId = await _func.GetStoreIdByAssetIdAsync(assetId);
                 string storeName = await _func.GetStoreNameByStoreIdAsync(storeId);
+
+                if (!await _func.CanModifyStoreAsync(storeId, _employeeId))
+                {
+                    dto.StoreId = await _func.GetStoreIdByEmployeeIdAsync(_employeeId);
+                    return Result<AssetDocumentDTO>.Failure(
+                        _isSomali 
+                        ? "Ma haysid oggolaansho inaad aragto waxa ku jira bakhaarkan!" 
+                        : "You do not have access to the content of this store!", dto);
+                }
+                
 
                 dto.StoreId = storeId;
                 dto.StoreName = storeName;
@@ -434,6 +471,17 @@ namespace MODAMS.ApplicationServices
             {
                 string sFileName = "";
                 string sPath = "";
+
+                var assetInDb = await _db.Assets.FirstOrDefaultAsync(m => m.Id == assetId);
+                if (assetInDb == null)
+                {
+                    return Result.Failure(_isSomali ? "Hanti lama helin" : "Asset not found!");
+                }
+
+                if(!await _func.CanModifyStoreAsync(assetInDb.StoreId, _employeeId))
+                {
+                    return Result.Failure(_isSomali ? "Uma aad fasaxin inaad fuliso tallaabadan!" : "You are not authorized to perform this action!");
+                }
 
                 var documentType = await _db.DocumentTypes.FirstOrDefaultAsync(m => m.Id == documentTypeId);
                 if (documentType != null)
@@ -493,46 +541,52 @@ namespace MODAMS.ApplicationServices
 
             return Result.Failure(_isSomali ? "Fadlan dooro fayl ansax ah oo dib isku day" : "Please select a valid file and try again");
         }
-        public async Task<Result<AssetInfoDTO>> GetAssetInfoAsync(int id, int page = 1, int tab = 1, int categoryId = 0)
+        public async Task<Result<AssetInfoDTO>> GetAssetInfoAsync(int id,int page = 1,int tab = 1,int categoryId = 0)
         {
-            var dto = new AssetInfoDTO();
-
             try
             {
-                // Fetch asset details
-                var asset = await _db.Assets.Where(m => m.Id == id)
-                    .Include(m => m.SubCategory)
-                    .Include(m => m.Condition)
-                    .Include(m => m.SubCategory.Category)
-                    .Include(m => m.AssetStatus)
-                    .Include(m => m.Store)
-                    .Include(m => m.Donor)
-                    .FirstOrDefaultAsync();
+                var asset = await _db.Assets
+                    .AsNoTracking()
+                    .Where(a => a.Id == id)
+                    .Include(a => a.SubCategory).ThenInclude(sc => sc.Category)
+                    .Include(a => a.Condition)
+                    .Include(a => a.AssetStatus)
+                    .Include(a => a.Store)
+                    .Include(a => a.Donor)
+                    .SingleOrDefaultAsync();
 
                 if (asset == null)
                 {
-                    return Result<AssetInfoDTO>.Failure(_isSomali ? "Diiwaanka lama helin!" : "Record not found!");
+                    return Result<AssetInfoDTO>.Failure(
+                        _isSomali ? "Diiwaanka lama helin!" : "Record not found!"
+                    );
                 }
-
-                // Fetch asset documents
-                var documents = await _db.AssetDocuments.Where(m => m.AssetId == id)
-                    .Include(m => m.DocumentType)
+                
+                var documents = await _db.AssetDocuments
+                    .AsNoTracking()
+                    .Where(ad => ad.AssetId == id)
+                    .Include(ad => ad.DocumentType)
                     .ToListAsync();
 
-                // Fetch asset pictures
-                var assetPictures = await _db.AssetPictures.Where(m => m.AssetId == id).ToListAsync();
-                var dtoAssetPictures = new AssetPicturesDTO(assetPictures, 6);
-
-                // Fetch asset history
-                var assetHistory = await _db.AssetHistory.Where(m => m.AssetId == id)
-                    .OrderBy(m => m.TimeStamp)
+                var pictures = await _db.AssetPictures
+                    .AsNoTracking()
+                    .Where(ap => ap.AssetId == id)
                     .ToListAsync();
 
-                // Populate DTO
-                dto.Asset = asset;
-                dto.Documents = documents;
-                dto.dtoAssetPictures = dtoAssetPictures;
-                dto.AssetHistory = assetHistory;
+                var history = await _db.AssetHistory
+                    .AsNoTracking()
+                    .Where(ah => ah.AssetId == id)
+                    .OrderBy(ah => ah.TimeStamp)
+                    .ToListAsync();
+
+                // 3) Build and return the DTO
+                var dto = new AssetInfoDTO
+                {
+                    Asset = asset,
+                    Documents = documents,
+                    dtoAssetPictures = new AssetPicturesDTO(pictures, 6),
+                    AssetHistory = history
+                };
 
                 return Result<AssetInfoDTO>.Success(dto);
             }
@@ -551,10 +605,18 @@ namespace MODAMS.ApplicationServices
                     return Result<DeleteDocumentResultDTO>.Failure(_isSomali ? "Aqoonsiga dukumintiga ma ansax ah" : "Invalid document ID");
                 }
 
-                var assetDocument = await _db.AssetDocuments.FirstOrDefaultAsync(m => m.Id == documentId);
+                var assetDocument = await _db.AssetDocuments
+                    .Include(m=>m.Asset)
+                    .FirstOrDefaultAsync(m => m.Id == documentId);
                 if (assetDocument == null)
                 {
                     return Result<DeleteDocumentResultDTO>.Failure(_isSomali ? "Dukuminti lama helin!" : "Document not found!");
+                }
+
+                // Check if the user has permission to delete this document
+                if (!await _func.CanModifyStoreAsync(assetDocument.Asset.StoreId, _employeeId))
+                {
+                    return Result<DeleteDocumentResultDTO>.Failure(_isSomali ? "Uma aad fasaxin inaad fuliso tallaabadan!" : "You are not authorized to perform this action!");
                 }
 
                 // Extract the file name from the URL
@@ -599,6 +661,16 @@ namespace MODAMS.ApplicationServices
                 var storeId = await _func.GetStoreIdByAssetIdAsync(assetId);
                 var storeName = await _func.GetStoreNameByStoreIdAsync(storeId);
 
+                if (!await _func.CanModifyStoreAsync(storeId, _employeeId))
+                {
+                    dto.StoreId = await _func.GetStoreIdByEmployeeIdAsync(_employeeId);
+                    return Result<AssetPicturesDTO>.Failure(
+                        _isSomali 
+                        ? "Ma haysid oggolaansho inaad aragto waxa ku jira bakhaarkan!" 
+                        : "You do not have access to the content of this store!", dto);
+                }
+
+
                 dto.StoreName = storeName;
                 dto.StoreId = storeId;
                 dto.AssetId = assetId;
@@ -621,6 +693,13 @@ namespace MODAMS.ApplicationServices
             if (file == null)
             {
                 return Result<string>.Failure(_isSomali ? "Faylka ma jiro" : "File not available");
+            }
+
+            var storeId  = await _func.GetStoreIdByAssetIdAsync(assetId);
+
+            if (!await _func.CanModifyStoreAsync(storeId, _employeeId))
+            {
+                return Result<string>.Failure(_isSomali ? "Uma aad fasaxin inaad fuliso tallaabadan!" : "You are not authorized to perform this action!");
             }
 
             string wwwRootPath = _webHostEnvironment.WebRootPath;
@@ -669,11 +748,21 @@ namespace MODAMS.ApplicationServices
                 return Result<string>.Failure(_isSomali ? "Sawir lama helin!" : "Picture not found!");
             }
 
-            var assetPicture = await _db.AssetPictures.FirstOrDefaultAsync(m => m.Id == id);
+            var assetPicture = await _db.AssetPictures
+                .Include(m=> m.Asset)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
             if (assetPicture == null)
             {
                 return Result<string>.Failure(_isSomali ? "Sawir lama helin!" : "Picture not found!");
             }
+
+            // Check if the user has permission to delete this picture
+            if (!await _func.CanModifyStoreAsync(assetPicture.Asset.StoreId, _employeeId))
+            {
+                return Result<string>.Failure(_isSomali ? "Uma aad fasaxin inaad fuliso tallaabadan!" : "You are not authorized to perform this action!");
+            }
+
 
             // Remove file from disk
             string sFileName = assetPicture.ImageUrl.Substring(15); // Removes "/assetpictures/"
@@ -756,10 +845,9 @@ namespace MODAMS.ApplicationServices
         }
 
         //Populate Asset DTO
-        public async Task<T> PopulateDtoAssetAsync<T>(T dto) where T : class, new()
+        public async Task<T> PopulateDtoListsAsync<T>(T dto) where T : IAssetDtoLists
         {
-
-            // Use reflection to populate common fields for both DTOs
+            // Query all list data
             var categories = await _db.Categories
                 .Select(m => new SelectListItem
                 {
@@ -800,26 +888,17 @@ namespace MODAMS.ApplicationServices
                 })
                 .ToListAsync();
 
-            // Check the type of DTO and assign properties accordingly
-            if (dto is AssetCreateDTO createDto)
-            {
-                createDto.Categories = categories;
-                createDto.SubCategories = subCategories;
-                createDto.Donors = donors;
-                createDto.Statuses = statuses;
-                createDto.Conditions = conditions;
-            }
-            else if (dto is AssetEditDTO editDto)
-            {
-                editDto.Categories = categories;
-                editDto.SubCategories = subCategories;
-                editDto.Donors = donors;
-                editDto.Statuses = statuses;
-                editDto.Conditions = conditions;
-            }
+            // Assign to DTO
+            dto.Categories = categories;
+            dto.SubCategories = subCategories;
+            dto.Donors = donors;
+            dto.Statuses = statuses;
+            dto.Conditions = conditions;
 
             return dto;
         }
+
+
 
         //API Calls
         public async Task<Result<string>> GetCategoriesAsync()
