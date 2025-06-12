@@ -16,6 +16,7 @@ namespace MODAMS.Models.ViewModels
         public string DepartmentName { get; set; }
         public string Identification {  get; set; }
         public decimal Cost { get; set; }
+        public int AssetId { get; set; }
         public int StoreId { get; set; }
         public int DisposalTypeId { get; set; }
 

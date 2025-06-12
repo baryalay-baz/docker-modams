@@ -49,13 +49,11 @@ namespace MODAMS.ApplicationServices
         {
             try
             {
-                _employeeId = IsInRole("User") ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
                 _storeId = await _func.GetStoreIdByEmployeeIdAsync(_employeeId);
 
                 var dto = new DisposalsDTO();
 
-                if (_employeeId == await _func.GetStoreOwnerIdAsync(_employeeId))
-                    dto.IsAuthorized = true;
+                dto.IsAuthorized = await _func.CanModifyStoreAsync(_storeId, _employeeId);
 
                 var disposals = await _db.Disposals
                     .Include(m => m.DisposalType)
@@ -65,25 +63,24 @@ namespace MODAMS.ApplicationServices
 
                 if (IsInRole("User") || IsInRole("StoreOwner"))
                 {
-                    disposals = disposals.Where(m => m.EmployeeId == _employeeId).ToList();
+                    disposals = disposals.Where(m => m.Asset.StoreId == _storeId).ToList();
                 }
 
                 dto.Disposals = disposals;
                 dto.StoreId = _storeId;
                 dto.StoreName = await _func.GetStoreNameByStoreIdAsync(_storeId);
-                dto.IsAuthorized = (await _func.GetStoreOwnerIdAsync(_storeId) == _employeeId);
-
+                
                 var groupedDisposals = await _db.Disposals
                     .Join(_db.DisposalTypes,
                         disposal => disposal.DisposalTypeId,
                         disposalType => disposalType.Id,
                         (disposal, disposalType) => new { disposal, disposalType })
                     .GroupBy(
-                        x => new { x.disposalType.Type, x.disposal.EmployeeId })
+                        x => new { x.disposalType.Type, x.disposal.Asset.StoreId })
                     .Select(g => new
                     {
                         Type = g.Key.Type,
-                        EmployeeId = g.Key.EmployeeId,
+                        StoreId = g.Key.StoreId,
                         Count = g.Count()
                     })
                     .ToListAsync();
@@ -91,7 +88,7 @@ namespace MODAMS.ApplicationServices
                 if (IsInRole("User") || IsInRole("StoreOwner"))
                 {
                     groupedDisposals = groupedDisposals
-                        .Where(m => m.EmployeeId == _employeeId)
+                        .Where(m => m.StoreId == _storeId)
                         .ToList();
                 }
 
@@ -108,7 +105,7 @@ namespace MODAMS.ApplicationServices
                     chartData.Add(new DisposalChart
                     {
                         Type = _isSomali ? type.TypeSo : type.Type,
-                        EmployeeId = _employeeId,
+                        StoreId = _storeId,
                         Count = countsDict.TryGetValue(type.Type, out var count) ? count : 0
                     });
                 }

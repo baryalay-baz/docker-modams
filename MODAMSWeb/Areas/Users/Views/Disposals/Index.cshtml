@@ -220,6 +220,7 @@
 
             var labels = @Html.Raw(Json.Serialize(Model.ChartData.Select(item => item.Type)));
             var values = @Html.Raw(Json.Serialize(Model.ChartData.Select(item => item.Count)));
+            console.log(labels, values);
 
             var pieChart = new Chart(ctx, {
                 type: 'pie',

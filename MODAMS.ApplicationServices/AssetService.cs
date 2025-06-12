@@ -38,7 +38,6 @@ namespace MODAMS.ApplicationServices
             _isSomali = CultureInfo.CurrentUICulture.Name == "so";
             _webHostEnvironment = webHostEnvironment;
         }
-
         public async Task<Result<AssetsDTO>> GetIndexAsync(int storeId, int subCategoryId = 0)
         {
             try
@@ -70,9 +69,7 @@ namespace MODAMS.ApplicationServices
                 var storeOwnerInfo = await _func.GetStoreOwnerInfoAsync(storeId);
                 var storeName = await _func.GetStoreNameByStoreIdAsync(storeId);
 
-                bool isAuthorized = IsInRole("StoreOwner")
-                    ? _employeeId == storeOwnerId
-                    : (IsInRole("User") && await _func.IsStoreUser(_employeeId, storeId));
+                bool isAuthorized = await _func.CanModifyStoreAsync(storeId, _employeeId);
 
                 var subCategory = subCategoryId > 0
                     ? await _db.SubCategories.FindAsync(subCategoryId)
@@ -109,7 +106,6 @@ namespace MODAMS.ApplicationServices
                 return Result<AssetsDTO>.Failure(ex.Message);
             }
         }
-
         public async Task<Result<AssetListDTO>> GetAssetListAsync(int categoryId)
         {
             try
@@ -897,8 +893,6 @@ namespace MODAMS.ApplicationServices
 
             return dto;
         }
-
-
 
         //API Calls
         public async Task<Result<string>> GetCategoriesAsync()

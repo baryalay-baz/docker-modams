@@ -17,7 +17,7 @@ namespace MODAMS.Models.ViewModels.Dto
 
     public class DisposalChart{ 
         public string Type { get; set; }
-        public int? EmployeeId { get; set; }
+        public int? StoreId { get; set; }
         public int Count { get; set; }
     }
 }

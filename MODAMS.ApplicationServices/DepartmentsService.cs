@@ -202,66 +202,73 @@ namespace MODAMS.ApplicationServices
             try
             {
                 var department = await _db.Departments
-                    .Include(m => m.Stores)
-                    .Where(m => m.Id == departmentId)
-                    .FirstOrDefaultAsync();
+                    .Include(d => d.Stores)
+                    .AsNoTracking()
+                    .SingleOrDefaultAsync(d => d.Id == departmentId);
 
-                var storeId = department?.Stores.FirstOrDefault()?.Id ?? 0;
+                if (department == null)
+                    return Result<DepartmentHeadsDTO>.Failure(_isSomali? "Waaxda lama helin" : "Department not found");
+
+                int storeId = department.Stores.FirstOrDefault()?.Id ?? 0;
 
                 var departmentHeads = await _db.DepartmentHeads
-                    .Where(m => m.DepartmentId == departmentId)
-                    .Include(m => m.Employee)
-                    .Include(m => m.Department)
-                    .OrderByDescending(m => m.StartDate).ToListAsync();
-
-                var employees = await _db.vwAvailableEmployees.ToListAsync();
-
-                var availableStoreOwners = employees
-                    .Where(m => m.RoleName == "StoreOwner")
-                    .OrderBy(m => m.FullName)
-                    .Select(m => new SelectListItem
-                    {
-                        Text = $"{m.FullName} - {m.JobTitle}",
-                        Value = m.Id.ToString()
-                    }).ToList();
-
-                var availableStoreUsers = employees
-                    .Where(m => m.RoleName == "User")
-                    .OrderBy(m => m.FullName)
-                    .Select(m => new SelectListItem
-                    {
-                        Text = $"{m.FullName} - {m.JobTitle}",
-                        Value = m.Id.ToString()
-                    }).ToList();
-
-                int departmentHeadId = await _func.GetDepartmentHeadAsync(departmentId);
-                var storeOwner = await _func.GetEmployeeNameByIdAsync(departmentHeadId);
-
-                storeOwner = storeOwner == "Not found!" ? "Vacant" : storeOwner;
-
-                var storeUsers = await _db.StoreEmployees
-                    .Where(m => m.StoreId == storeId)
-                    .Select(m => new vwEmployees
-                    {
-                        Id = m.EmployeeId,
-                        FullName = m.Employee.FullName,
-                        JobTitle = m.Employee.JobTitle,
-                        SupervisorEmployeeId = m.Employee.SupervisorEmployeeId,
-                        ImageUrl = m.Employee.ImageUrl ?? "/assets/images/faces/profile_placeholder.png",
-                        Email = m.Employee.Email,
-                        Phone = m.Employee.Phone
-                    })
+                    .Where(h => h.DepartmentId == departmentId)
+                    .Include(h => h.Employee)
+                    .OrderByDescending(h => h.StartDate)
+                    .AsNoTracking()
                     .ToListAsync();
 
-                var dto = new DepartmentHeadsDTO()
+                var availableStoreOwners = await _db.vwAvailableEmployees
+                    .Where(e => e.RoleName == "StoreOwner")
+                    .OrderBy(e => e.FullName)
+                    .Select(e => new SelectListItem
+                    {
+                        Text = $"{e.FullName} - {e.JobTitle}",
+                        Value = e.Id.ToString()
+                    })
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                var availableStoreUsers = await _db.vwEmployees
+                    .Where(e =>
+                        e.RoleName == "User"
+                        && !_db.StoreEmployees.Any(se => se.EmployeeId == e.Id))
+                    .OrderBy(e => e.FullName)
+                    .Select(e => new SelectListItem
+                    {
+                        Text = $"{e.FullName} - {e.JobTitle}",
+                        Value = e.Id.ToString()
+                    })
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                var storeUsers = await _db.StoreEmployees
+                    .Where(se => se.StoreId == storeId)
+                    .Select(se => new vwEmployees
+                    {
+                        Id = se.EmployeeId,
+                        FullName = se.Employee.FullName,
+                        JobTitle = se.Employee.JobTitle,
+                        SupervisorEmployeeId = se.Employee.SupervisorEmployeeId,
+                        ImageUrl = se.Employee.ImageUrl ?? "/assets/images/faces/profile_placeholder.png",
+                        Email = se.Employee.Email,
+                        Phone = se.Employee.Phone
+                    })
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                var currentHead = departmentHeads.FirstOrDefault();
+                string owner = currentHead?.Employee.FullName ?? "Vacant";
+
+                var dto = new DepartmentHeadsDTO
                 {
                     DepartmentHeads = departmentHeads,
                     AvailableStoreOwners = availableStoreOwners,
                     AvailableUsers = availableStoreUsers,
                     DepartmentId = departmentId,
                     StoreId = storeId,
-                    DepartmentName = await _func.GetDepartmentNameByIdAsync(departmentId),
-                    Owner = storeOwner,
+                    DepartmentName = department.Name,
+                    Owner = owner,
                     DepartmentUsers = storeUsers
                 };
 
@@ -273,6 +280,7 @@ namespace MODAMS.ApplicationServices
                 return Result<DepartmentHeadsDTO>.Failure(ex.Message);
             }
         }
+
         public async Task<Result<bool>> AssignOwnerAsync(DepartmentHeadsDTO dto)
         {
             try
