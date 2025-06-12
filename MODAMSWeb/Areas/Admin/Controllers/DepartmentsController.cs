@@ -148,6 +148,12 @@ namespace MODAMSWeb.Areas.Admin.Controllers
         [Authorize(Roles = "SeniorManagement, Administrator, StoreOwner")]
         public async Task<IActionResult> DepartmentHeads(int id)
         {
+            if(id <= 0)
+            {
+                TempData["error"] = _isSomali ? "Fadlan dooro waax sax ah!" : "Please select a valid department!";
+                return RedirectToAction("Index", "Departments");
+            }
+
             var result = await _departmentsService.GetDepartmentHeadsAsync(id);
             var dto = result.Value;
 

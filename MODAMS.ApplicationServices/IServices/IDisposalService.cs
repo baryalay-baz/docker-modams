@@ -14,6 +14,7 @@ namespace MODAMS.ApplicationServices.IServices
         Task<Result<DisposalCreateDTO>> CreateDisposalAsync(DisposalCreateDTO dto);
         Task<Result<DisposalEditDTO>> GetEditDisposalAsync(int id);
         Task<Result<DisposalEditDTO>> EditDisposalAsync(DisposalEditDTO dto);
+        Task<Result<DisposalPreviewDTO>> GetDisposalPreviewAsync(int id);
         Task<Result<bool>> DeleteDisposalAsync(int id);
         Task<T> PopulateDisposalDtoAsync<T>(T dto) where T : class;
     }

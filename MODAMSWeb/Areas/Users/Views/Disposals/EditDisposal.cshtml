@@ -102,10 +102,25 @@
     </div>
 </div>
 @{
-    string sDisposalLabel = Model.CurrentDisposedAsset.Make + " - " + Model.CurrentDisposedAsset.Model + " - " + Model.CurrentDisposedAsset.Name;
-    string sIdentification = Model.CurrentDisposedAsset.SubCategory.Category.CategoryName == "Vehicles"
+    var asset = Model.CurrentDisposedAsset;
+    string sDisposalLabel;
+    string sIdentification;
+
+    if (asset != null)
+    {
+        // all three parts exist
+        sDisposalLabel = $"{asset.Make} – {asset.Model} – {asset.Name}";
+        sIdentification = asset.SubCategory.Category.CategoryName == "Vehicles"
                         ? (_isSomali ? "Taarikada: " : "Plate No: ") + Model.CurrentDisposedAsset.Plate
                         : (_isSomali ? "Sereelka: " : "SN: ") + Model.CurrentDisposedAsset.SerialNo;
+    }
+    else
+    {
+        // fallback if nothing was loaded
+        sDisposalLabel = _isSomali ? "Asset information lama helin" : "Asset information not available";
+        sIdentification = _isSomali ? "Asset information lama helin" : "Asset information not available";
+    }
+    
 }
 
 <div class="row">

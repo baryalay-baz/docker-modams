@@ -129,7 +129,6 @@
                                         <th class="text-white bg-transparent border-bottom-0 w-5">@Localizer["SNo"]</th>
                                         <th class="text-white bg-transparent border-bottom-0 w-10">@Localizer["Date"]</th>
                                         <th class="text-white bg-transparent border-bottom-0 w-10">@Localizer["DisposalType"]</th>
-                                        <th class="text-white bg-transparent border-bottom-0 w-10">@Localizer["Category"]</th>
                                         <th class="text-white bg-transparent border-bottom-0 w-20">@Localizer["AssetName"]</th>
                                         <th class="text-white bg-transparent border-bottom-0 w-10">@Localizer["Identification"]</th>
                                         <th class="text-white bg-transparent border-bottom-0 w-10 no-btn">@Localizer["Action"]</th>
@@ -154,11 +153,13 @@
                                                     <td>@sCounter</td>
                                                     <td>@disposal.DisposalDate.ToString("dd-MMM-yyyy")</td>
                                                     <td>@(_isSomali? disposal.DisposalType.TypeSo : disposal.DisposalType.Type)</td>
-                                                    <td>@(_isSomali? disposal.Asset.SubCategory.SubCategoryNameSo : disposal.Asset.SubCategory.SubCategoryName)</td>
                                                     <td>@disposal.Asset.Name</td>
                                                     <td>@sIdentification</td>
                                                     <td class="text-muted fs-15 fw-semibold">
                                                         <div class="d-flex align-items-stretch">
+                                                            <button onclick="previewDisposal(@disposal.Id)" class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="tooltip" data-bs-original-title="@Localizer["PreviewDisposal"]">
+                                                                <i class="fe fe-eye"></i>
+                                                            </button>
                                                             <a asp-controller="Disposals" asp-action="EditDisposal" asp-route-id="@disposal.Id" class="btn btn-sm btn-outline-info me-1 @sDisabled" data-bs-toggle="tooltip" data-bs-original-title="Edit Disposal">
                                                                 <i class="fe fe-edit"></i>
                                                             </a>
@@ -188,6 +189,121 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="mdlPreviewDisposal" tabindex="-1" aria-labelledby="mdlPreviewDisposalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content rounded-4 shadow">
+
+            <!-- Header -->
+            <div class="modal-header bg-primary-gradient text-white rounded-top-4 p-4">
+                <h5 class="modal-title" id="mdlPreviewDisposalLabel">
+                    <i class="bi bi-eye-fill me-1"></i>@Localizer["PreviewDisposal"]
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- Body -->
+            <div class="modal-body bg-light-transparent p-5">
+                <div class="row gx-2 gy-2">
+
+                    <!-- Left: Fields -->
+                    <div class="col-lg-8">
+                        <div class="row gx-1 gy-1">
+
+                            <div class="col-sm-6">
+                                <label for="txtDepartmentName" class="form-label fw-semibold" style="font-size:1rem;">
+                                    @Localizer["DepartmentName"]
+                                </label>
+                                <input type="text"
+                                       readonly
+                                       class="form-control form-control-md bg-light-transparent"
+                                       id="txtDepartmentName"
+                                       style="font-size:1rem;">
+                            </div>
+
+                            <div class="col-sm-6">
+                                <label for="txtDisposalType" class="form-label fw-semibold" style="font-size:1rem;">
+                                    @Localizer["DisposalType"]
+                                </label>
+                                <input type="text"
+                                       readonly
+                                       class="form-control form-control-md bg-light-transparent"
+                                       id="txtDisposalType"
+                                       style="font-size:1rem;">
+                            </div>
+
+                            <div class="col-sm-6">
+                                <label for="txtSubCategoryName" class="form-label fw-semibold" style="font-size:1rem;">
+                                    @Localizer["SubCategoryName"]
+                                </label>
+                                <input type="text"
+                                       readonly
+                                       class="form-control form-control-md bg-light-transparent"
+                                       id="txtSubCategoryName"
+                                       style="font-size:1rem;">
+                            </div>
+
+                            <div class="col-sm-6">
+                                <label for="txtAssetName" class="form-label fw-semibold" style="font-size:1rem;">
+                                    @Localizer["AssetName"]
+                                </label>
+                                <input type="text"
+                                       readonly
+                                       class="form-control form-control-md bg-light-transparent"
+                                       id="txtAssetName"
+                                       style="font-size:1rem;">
+                            </div>
+
+                            <div class="col-12">
+                                <label for="txtIdentification" class="form-label fw-semibold" style="font-size:1rem;">
+                                    @Localizer["Identification"]
+                                </label>
+                                <input type="text"
+                                       readonly
+                                       class="form-control form-control-md bg-light-transparent"
+                                       id="txtIdentification"
+                                       style="font-size:1rem;">
+                            </div>
+
+                            <div class="col-12">
+                                <label for="txtDisposalNotes" class="form-label fw-semibold" style="font-size:1rem;">
+                                    @Localizer["DisposalNotes"]
+                                </label>
+                                <textarea readonly
+                                          class="form-control form-control-md bg-light-transparent"
+                                          id="txtDisposalNotes"
+                                          style="font-size:1rem; height:120px;"></textarea>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Right: Image -->
+                    <div class="col-lg-4 d-flex align-items-center justify-content-center">
+                        <div class="border rounded-3 p-2 bg-white shadow-sm">
+                            <img src="/assets/images/placeholders/pictureplaceholder.jpg"
+                                 alt="Disposal Picture"
+                                 class="img-fluid rounded-3"
+                                 style="max-height:350px;"
+                                 id="imgDisposalPreview" />
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="modal-footer border-0 bg-gray-lightest justify-content-end py-2 px-3">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fa fa-times me-1"></i>@Localizer["Close"]
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
 
 @await Html.PartialAsync("~/Views/Shared/_Confirmation.cshtml")
 
@@ -201,8 +317,8 @@
             hideMenu();
             makeDataTable('#tblDisposals', 1, 5);
             pieChartDisposals();
-
         });
+
         const deleteDisposal = (id) =>{
             const options = {
                     actionUrl: `/Users/Disposals/DeleteDisposal/${id}`,
@@ -253,5 +369,44 @@
                 }
             });
         }
+
+                async function previewDisposal(disposalId) {
+          try {
+            const res = await fetch(`/Users/Disposals/GetPreview/${disposalId}`, {
+              headers: { 'Accept': 'application/json' }
+            });
+
+            if (!res.ok) {
+              // show and bail out early
+              showErrorMessageJs(`Error ${res.status}: ${res.statusText}`);
+              return;
+            }
+
+            const dto = await res.json();
+
+            // Populate fields
+            document.getElementById('txtDepartmentName').value  = dto.departmentName;
+            document.getElementById('txtDisposalType').value    = dto.disposalType;
+            document.getElementById('txtSubCategoryName').value = dto.subCategoryName;
+            document.getElementById('txtAssetName').value       = dto.assetName;
+            document.getElementById('txtIdentification').value  = dto.identification;
+            document.getElementById('txtDisposalNotes').value   = dto.disposalNotes;
+
+            // Update image
+            const imgEl = document.getElementById('imgDisposalPreview');
+            imgEl.src = dto.imageUrl || '/assets/images/placeholders/pictureplaceholder.jpg';
+
+            // Show modal
+            const modalEl = document.getElementById('mdlPreviewDisposal');
+            const modal   = new bootstrap.Modal(modalEl);
+            modal.show();
+          }
+          catch (error) {
+            console.error("previewDisposal error:", error);
+            showErrorMessageJs(`Error: ${error.message}`);
+          }
+        }
+
+
     </script>
 }

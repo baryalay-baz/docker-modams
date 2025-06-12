@@ -132,6 +132,9 @@
   <data name="Category" xml:space="preserve">
     <value>Category</value>
   </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
   <data name="Confirm" xml:space="preserve">
     <value>Confirm</value>
   </data>
@@ -150,6 +153,12 @@
   <data name="DeleteDisposal" xml:space="preserve">
     <value>Delete Disposal</value>
   </data>
+  <data name="DepartmentName" xml:space="preserve">
+    <value>Department Name</value>
+  </data>
+  <data name="DisposalNotes" xml:space="preserve">
+    <value>Disposal Notes</value>
+  </data>
   <data name="Disposals" xml:space="preserve">
     <value>Disposals</value>
   </data>
@@ -165,7 +174,13 @@
   <data name="Others" xml:space="preserve">
     <value>Others</value>
   </data>
+  <data name="PreviewDisposal" xml:space="preserve">
+    <value>Preview Disposal</value>
+  </data>
   <data name="SNo" xml:space="preserve">
     <value>S.No</value>
+  </data>
+  <data name="SubCategoryName" xml:space="preserve">
+    <value>Sub Category Name</value>
   </data>
 </root>

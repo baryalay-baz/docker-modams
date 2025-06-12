@@ -132,6 +132,9 @@
   <data name="Category" xml:space="preserve">
     <value>Qayb</value>
   </data>
+  <data name="Close" xml:space="preserve">
+    <value>Xir</value>
+  </data>
   <data name="Confirm" xml:space="preserve">
     <value>Xaqiiji</value>
   </data>
@@ -150,6 +153,12 @@
   <data name="DeleteDisposal" xml:space="preserve">
     <value>Tirtir Qashinka Hantida</value>
   </data>
+  <data name="DepartmentName" xml:space="preserve">
+    <value>Magaca Waaxda</value>
+  </data>
+  <data name="DisposalNotes" xml:space="preserve">
+    <value>Fiirooyinka Baabi’inta</value>
+  </data>
   <data name="Disposals" xml:space="preserve">
     <value>Dafaacyada</value>
   </data>
@@ -165,7 +174,13 @@
   <data name="Others" xml:space="preserve">
     <value>Kuwa Kale</value>
   </data>
+  <data name="PreviewDisposal" xml:space="preserve">
+    <value>Soo Bandhig Baabi’inta</value>
+  </data>
   <data name="SNo" xml:space="preserve">
     <value>T.T</value>
+  </data>
+  <data name="SubCategoryName" xml:space="preserve">
+    <value>Magaca Hoosaadka</value>
   </data>
 </root>

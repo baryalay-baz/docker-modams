@@ -1,5 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Office2010.Excel;
 using DocumentFormat.OpenXml.Wordprocessing;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -20,14 +21,17 @@ namespace MODAMS.ApplicationServices
         private readonly ApplicationDbContext _db;
         private readonly IAMSFunc _func;
         private readonly ILogger<DepartmentsService> _logger;
-
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly int _employeeId;
         private readonly bool _isSomali;
-        public DepartmentsService(ApplicationDbContext db, IAMSFunc func, ILogger<DepartmentsService> logger)
+        public DepartmentsService(ApplicationDbContext db, IAMSFunc func, ILogger<DepartmentsService> logger, IHttpContextAccessor httpContextAccessor)
         {
             _db = db;
             _func = func;
             _logger = logger;
+            _httpContextAccessor = httpContextAccessor;
 
+            _employeeId = _func.GetEmployeeId();
             _isSomali = CultureInfo.CurrentCulture.Name == "so";
         }
         public async Task<Result<DepartmentsDTO>> GetIndexAsync()
@@ -36,6 +40,12 @@ namespace MODAMS.ApplicationServices
             {
                 List<vwDepartments> depts = await _db.vwDepartments
                     .OrderByDescending(m => m.EmployeeId).ToListAsync();
+
+                if (IsInRole("StoreOwner"))
+                {
+                    depts = depts.Where(m => m.EmployeeId == _employeeId).ToList();
+                }
+
                 var storeUsers = await _db.StoreEmployees
                     .Select(m => new StoreUsersDTO
                     {
@@ -199,6 +209,15 @@ namespace MODAMS.ApplicationServices
         }
         public async Task<Result<DepartmentHeadsDTO>> GetDepartmentHeadsAsync(int departmentId)
         {
+
+            if (IsInRole("StoreOwner"))
+            {
+                var storeId = await _func.GetStoreIdByDepartmentIdAsync(departmentId);
+                if (!await _func.CanModifyStoreAsync(storeId, _employeeId))
+                {
+                    return Result<DepartmentHeadsDTO>.Failure(_isSomali ? "Uma haysid oggolaansho inaad waaxdan wax ka beddesho" : "You are not authorized to modify this department");
+                }
+            }
             try
             {
                 var department = await _db.Departments
@@ -207,7 +226,7 @@ namespace MODAMS.ApplicationServices
                     .SingleOrDefaultAsync(d => d.Id == departmentId);
 
                 if (department == null)
-                    return Result<DepartmentHeadsDTO>.Failure(_isSomali? "Waaxda lama helin" : "Department not found");
+                    return Result<DepartmentHeadsDTO>.Failure(_isSomali ? "Waaxda lama helin" : "Department not found");
 
                 int storeId = department.Stores.FirstOrDefault()?.Id ?? 0;
 
@@ -280,7 +299,6 @@ namespace MODAMS.ApplicationServices
                 return Result<DepartmentHeadsDTO>.Failure(ex.Message);
             }
         }
-
         public async Task<Result<bool>> AssignOwnerAsync(DepartmentHeadsDTO dto)
         {
             try
@@ -338,7 +356,8 @@ namespace MODAMS.ApplicationServices
                 return Result<bool>.Failure(ex.Message, false);
             }
         }
-        public async Task<Result<bool>> NewUserAsync(DepartmentHeadsDTO dto) {
+        public async Task<Result<bool>> NewUserAsync(DepartmentHeadsDTO dto)
+        {
             var employeeId = dto.EmployeeId;
             var storeId = dto.StoreId;
 
@@ -480,6 +499,7 @@ namespace MODAMS.ApplicationServices
 
 
         //private functions
+        private bool IsInRole(string role) => _httpContextAccessor.HttpContext?.User?.IsInRole(role) ?? false;
         private async Task CreateStoreAsync(Department department)
         {
             var store = new Store()

@@ -125,6 +125,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             else
             {
                 TempData["error"] = result.ErrorMessage;
+                dto = await _disposalService.PopulateDisposalDtoAsync(dto);
                 return View(dto);
             }
         }
@@ -144,5 +145,18 @@ namespace MODAMSWeb.Areas.Users.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetPreview(int id)
+        {
+            var result = await _disposalService.GetDisposalPreviewAsync(id);
+
+            if (result.IsSuccess)
+            {
+                return Ok(result.Value);
+            }
+            else {
+                return NotFound(new { message = result.ErrorMessage });
+            }
+        }
     }
 }

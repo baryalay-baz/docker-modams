@@ -85,28 +85,52 @@ namespace MODAMS.ApplicationServices
         }
         public async Task<Result<EmployeeDTO>> CreateEmployeeAsync(EmployeeDTO dto)
         {
+            if (dto?.Employee == null)
+                return Result<EmployeeDTO>.Failure(_isSomali
+                    ? "Macluumaad shaqaale lama hayo"
+                    : "No employee data provided.");
+
+            if (await _db.Employees.AnyAsync(e => e.Email == dto.Employee.Email))
+                return Result<EmployeeDTO>.Failure(_isSomali
+                    ? "Shaqaale leh email-kan hore ayuu u jiray"
+                    : "Employee with this email already exists");
+
+            var employee = dto.Employee;
+            employee.ImageUrl = "/assets/images/faces/profile_placeholder.png";
+            employee.IsActive = true;
+            
+            await using var tx = await _db.Database.BeginTransactionAsync();
             try
             {
-                var employeeInDb = await _db.Employees.FirstOrDefaultAsync(m => m.Email == dto.Employee.Email);
-
-                if (employeeInDb != null)
-                    return Result<EmployeeDTO>.Failure(_isSomali? "Shaqaale leh email-kan hore ayuu u jiray" : "Employee with this email already exists");
-
-                dto.Employee.ImageUrl = "/assets/images/faces/profile_placeholder.png";
-                dto.Employee.IsActive = true;
-
-                await _db.Employees.AddAsync(dto.Employee);
+                await _db.Employees.AddAsync(employee);
                 await _db.SaveChangesAsync();
-                dto = await PopulateEmployeeDTOAsync(dto);
-                return Result<EmployeeDTO>.Success(dto);
+
+                if (IsInRole("StoreOwner"))
+                {
+                    var storeId = await _func.GetStoreIdByEmployeeIdAsync(_employeeId);
+                    var storeEmployee = new StoreEmployee
+                    {
+                        StoreId = storeId,
+                        EmployeeId = employee.Id
+                    };
+                    await _db.StoreEmployees.AddAsync(storeEmployee);
+                    await _db.SaveChangesAsync();
+                }
+                await tx.CommitAsync();
+
+                var resultDto = await PopulateEmployeeDTOAsync(dto);
+                return Result<EmployeeDTO>.Success(resultDto);
             }
             catch (Exception ex)
             {
+                await tx.RollbackAsync();
                 _func.LogException(_logger, ex);
-                dto = await PopulateEmployeeDTOAsync(dto);
-                return Result<EmployeeDTO>.Failure(ex.Message, dto);
+
+                var errorDto = await PopulateEmployeeDTOAsync(dto);
+                return Result<EmployeeDTO>.Failure(ex.Message, errorDto);
             }
         }
+
         public async Task<Result<EmployeeDTO>> GetEditEmployeeAsync(int employeeId)
         {
             try
@@ -134,48 +158,65 @@ namespace MODAMS.ApplicationServices
         }
         public async Task<Result<EmployeeDTO>> EditEmployeeAsync(EmployeeDTO dto)
         {
+            if (dto?.Employee == null)
+                return Result<EmployeeDTO>.Failure(_isSomali
+                    ? "Macluumaad shaqaale lama hayo"
+                    : "No employee data provided.");
+
+            var employee = await _db.Employees
+                .FirstOrDefaultAsync(e => e.Id == dto.Employee.Id);
+
+            if (employee == null)
+                return Result<EmployeeDTO>.Failure(
+                    _isSomali ? "Shaqaale lama helin!" : "Employee not found!",
+                    await PopulateEmployeeDTOAsync(dto)
+                );
+
+            if (!string.Equals(employee.Email, dto.Employee.Email, StringComparison.OrdinalIgnoreCase))
+            {
+                if (await _db.Employees.AnyAsync(e => e.Email == dto.Employee.Email))
+                    return Result<EmployeeDTO>.Failure(
+                        _isSomali ? "Email-kan shaqaale kale ayuu leeyahay!" : "Another employee already uses this email.",
+                        await PopulateEmployeeDTOAsync(dto)
+                    );
+                employee.Email = dto.Employee.Email;
+            }
+
+            await using var tx = await _db.Database.BeginTransactionAsync();
             try
             {
-                var employee = await _db.Employees.FirstOrDefaultAsync(m => m.Email == dto.Employee.Email);
-
-                if (employee == null)
-                {
-                    dto = await PopulateEmployeeDTOAsync(dto);
-                    return Result<EmployeeDTO>.Failure(_isSomali? "Shaqaale lama helin!" : "Employee not found!", dto);
-                }
-
                 employee.FullName = dto.Employee.FullName;
                 employee.JobTitle = dto.Employee.JobTitle;
                 employee.CardNumber = dto.Employee.CardNumber;
                 employee.SupervisorEmployeeId = dto.Employee.SupervisorEmployeeId;
                 employee.Phone = dto.Employee.Phone;
-
+            
                 var user = await _userManager.FindByEmailAsync(employee.Email);
-                if (user != null)
+                if (user != null && !string.IsNullOrEmpty(dto.roleId))
                 {
-                    var role = await _userManager.GetRolesAsync(user);
-                    string roleName = "User";
+                    var currentRoles = await _userManager.GetRolesAsync(user);
+                    var currentRole = currentRoles.FirstOrDefault() ?? "User";
 
-                    if (role != null)
+                    if (!string.Equals(currentRole, dto.roleId, StringComparison.OrdinalIgnoreCase))
                     {
-                        roleName = role[0];
-                    }
-
-                    var result = await _userManager.RemoveFromRoleAsync(user, roleName);
-                    if (result.Succeeded)
-                    {
-                        result = await _userManager.AddToRoleAsync(user, dto.roleId);
+                        await _userManager.RemoveFromRoleAsync(user, currentRole);
+                        await _userManager.AddToRoleAsync(user, dto.roleId);
                     }
                 }
+
                 await _db.SaveChangesAsync();
-                dto = await PopulateEmployeeDTOAsync(dto);
-                return Result<EmployeeDTO>.Success(dto);
+                await tx.CommitAsync();
+
+                var resultDto = await PopulateEmployeeDTOAsync(dto);
+                return Result<EmployeeDTO>.Success(resultDto);
             }
             catch (Exception ex)
             {
+                await tx.RollbackAsync();
                 _func.LogException(_logger, ex);
-                dto = await PopulateEmployeeDTOAsync(dto);
-                return Result<EmployeeDTO>.Failure(ex.Message, dto);
+
+                var errorDto = await PopulateEmployeeDTOAsync(dto);
+                return Result<EmployeeDTO>.Failure(ex.Message, errorDto);
             }
         }
         public async Task<Result<bool>> LockAccountAsync(int employeeId)

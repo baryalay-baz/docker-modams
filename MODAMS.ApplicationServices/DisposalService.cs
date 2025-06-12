@@ -15,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -44,7 +45,6 @@ namespace MODAMS.ApplicationServices
             _isSomali = CultureInfo.CurrentUICulture.Name == "so";
         }
 
-
         public async Task<Result<DisposalsDTO>> GetIndexAsync()
         {
             try
@@ -69,7 +69,7 @@ namespace MODAMS.ApplicationServices
                 dto.Disposals = disposals;
                 dto.StoreId = _storeId;
                 dto.StoreName = await _func.GetStoreNameByStoreIdAsync(_storeId);
-                
+
                 var groupedDisposals = await _db.Disposals
                     .Join(_db.DisposalTypes,
                         disposal => disposal.DisposalTypeId,
@@ -120,7 +120,6 @@ namespace MODAMS.ApplicationServices
                 return Result<DisposalsDTO>.Failure(ex.Message);
             }
         }
-
         public async Task<Result<DisposalCreateDTO>> GetCreateDisposalAsync()
         {
             try
@@ -138,81 +137,88 @@ namespace MODAMS.ApplicationServices
         }
         public async Task<Result<DisposalCreateDTO>> CreateDisposalAsync(DisposalCreateDTO dto)
         {
-            using var transaction = await _db.Database.BeginTransactionAsync(); // Start a new transaction
+            if (dto?.Disposal == null)
+                return Result<DisposalCreateDTO>.Failure(_isSomali
+                    ? "Macluumaadka baabi’inta lama hayo."
+                    : "No disposal data provided.");
+
+            var storeId = await _func.GetStoreIdByAssetIdAsync(dto.Disposal.AssetId);
+            if (!await _func.CanModifyStoreAsync(storeId, _employeeId))
+            {
+                return Result<DisposalCreateDTO>.Failure(_isSomali
+                    ? "Ma haysatid rukhsad ku habboon inaad wax ka beddesho kaydkan."
+                    : "You do not have permission to modify this store.");
+            }
+
+            string fileName = string.Empty;
+            if (dto.file != null)
+            {
+                var wwwRoot = _webHostEnvironment.WebRootPath;
+                var uploadDir = Path.Combine(wwwRoot, "disposaldocuments");
+                Directory.CreateDirectory(uploadDir); // ensure folder exists
+
+                var ext = Path.GetExtension(dto.file.FileName);
+                var uniqueName = $"{Guid.NewGuid()}{ext}";
+                var fullPath = Path.Combine(uploadDir, uniqueName);
+
+                await using var stream = new FileStream(fullPath, FileMode.Create);
+                await dto.file.CopyToAsync(stream);
+
+                fileName = uniqueName;
+            }
+
+            await using var tx = await _db.Database.BeginTransactionAsync();
             try
             {
-                _employeeId = IsInRole("User") ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
-
-                string sFileName = "";
-
-                if (dto.file != null)
-                {
-                    // Construct the file path
-                    string wwwRootPath = _webHostEnvironment.WebRootPath;
-                    var fileNameGuid = Guid.NewGuid().ToString();
-                    var targetDir = "disposaldocuments"; // Change this to your desired directory
-                    var fileExtension = Path.GetExtension(dto.file.FileName);
-                    var uniqueFileName = fileNameGuid + fileExtension;
-                    var filePath = Path.Combine(wwwRootPath, targetDir, uniqueFileName);
-
-                    // Save the uploaded file to the directory
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        dto.file.CopyTo(stream);
-                    }
-
-                    sFileName = uniqueFileName;
-                }
-
                 var disposal = dto.Disposal;
-                disposal.ImageUrl = sFileName;
+                disposal.ImageUrl = fileName;
                 disposal.EmployeeId = _employeeId;
 
-                // Add and save the disposal entity
                 _db.Disposals.Add(disposal);
-                await _db.SaveChangesAsync();
 
-                // Update asset status if an asset is associated with the disposal
-                var asset = await _db.Assets.FirstOrDefaultAsync(m => m.Id == disposal.AssetId);
+                var asset = await _db.Assets.FindAsync(disposal.AssetId);
                 if (asset != null)
                 {
                     asset.AssetStatusId = SD.Asset_Disposed;
-                    await _db.SaveChangesAsync(); // Save changes to the asset status
                 }
 
-                var assetHistory = new AssetHistory()
+                var employeeName = await _func.GetEmployeeNameAsync();
+                var history = new AssetHistory
                 {
-                    TimeStamp = DateTime.Now,
+                    TimeStamp = DateTime.UtcNow,
                     AssetId = disposal.AssetId,
                     TransactionRecordId = disposal.AssetId,
                     TransactionTypeId = SD.Transaction_Disposal,
                     Description = _isSomali
-                    ? "Hantida waxaa baabi’iyay " + await _func.GetEmployeeNameAsync()
-                    : "Asset disposed by " + await _func.GetEmployeeNameAsync()
+                        ? $"Hantida waxaa baabi’iyay {employeeName}"
+                        : $"Asset disposed by {employeeName}"
                 };
-                await _db.AssetHistory.AddAsync(assetHistory);
+                _db.AssetHistory.Add(history);
+
                 await _db.SaveChangesAsync();
 
-                // Log NewsFeed
-                string employeeName = await _func.GetEmployeeNameAsync();
-                string assetName = await _func.GetAssetNameAsync(disposal.AssetId);
-                string storeName = await _func.GetStoreNameByStoreIdAsync(await _func.GetStoreIdByAssetIdAsync(disposal.AssetId));
-                string message = _isSomali
-                ? $"{employeeName} wuxuu baabi’iyay hanti ({assetName}) oo ku taal {storeName}"
-                : $"{employeeName} disposed an asset ({assetName}) in {storeName}";
-                await _func.LogNewsFeedAsync(message, "Users", "Disposals", "EditDisposal", disposal.AssetId);
+                var assetName = await _func.GetAssetNameAsync(disposal.AssetId);
+                var storeName = await _func.GetStoreNameByStoreIdAsync(storeId);
+                var message = _isSomali
+                    ? $"{employeeName} wuxuu baabi’iyay hanti ({assetName}) oo ku taal {storeName}"
+                    : $"{employeeName} disposed an asset ({assetName}) in {storeName}";
+                await _func.LogNewsFeedAsync(
+                    message,
+                    "Users",
+                    "Disposals",
+                    "EditDisposal",
+                    disposal.AssetId
+                );
 
-                // Commit the transaction
-                await transaction.CommitAsync();
-                dto = await PopulateDisposalDtoAsync(dto);
-                return Result<DisposalCreateDTO>.Success(dto);
+                await tx.CommitAsync();
+
+                var resultDto = await PopulateDisposalDtoAsync(dto);
+                return Result<DisposalCreateDTO>.Success(resultDto);
             }
             catch (Exception ex)
             {
-                // Rollback the transaction on any error
-                await transaction.RollbackAsync();
+                await tx.RollbackAsync();
                 _func.LogException(_logger, ex);
-                dto = await PopulateDisposalDtoAsync(dto);
                 return Result<DisposalCreateDTO>.Failure(ex.Message);
             }
         }
@@ -220,9 +226,7 @@ namespace MODAMS.ApplicationServices
         {
             try
             {
-                var employeeId = IsInRole("User") ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
-                var storeId = await _func.GetStoreIdByEmployeeIdAsync(employeeId);
-
+                var storeId = await _func.GetStoreIdByEmployeeIdAsync(_employeeId);
 
                 var disposal = await _db.Disposals
                     .Where(m => m.Id == id)
@@ -261,76 +265,123 @@ namespace MODAMS.ApplicationServices
         }
         public async Task<Result<DisposalEditDTO>> EditDisposalAsync(DisposalEditDTO dto)
         {
-            using var transaction = await _db.Database.BeginTransactionAsync();
+            if (dto?.Disposal == null)
+                return Result<DisposalEditDTO>.Failure(_isSomali
+                    ? "Macluumaadka baabi’inta lama hayo."
+                    : "No disposal data provided.");
+
+            await using var tx = await _db.Database.BeginTransactionAsync();
             try
             {
-                // Get the supervisor ID if the user is in the "User" role
-                _employeeId = IsInRole("User") ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
-                string sFileName = string.Empty;
+                var existing = await _db.Disposals
+                    .FirstOrDefaultAsync(d => d.Id == dto.Disposal.Id);
 
-                // Handle file upload if provided
+                if (existing == null)
+                    return Result<DisposalEditDTO>.Failure(_isSomali
+                        ? "Diiwaanka lama helin!"
+                        : "Record not found!");
+
+                string newFileName = existing.ImageUrl ?? string.Empty;
                 if (dto.file != null)
                 {
-                    sFileName = await UploadFileAsync(dto.file);
-                    if (string.IsNullOrEmpty(sFileName))
-                    {
-                        return Result<DisposalEditDTO>.Failure(_isSomali ? "Soo gelinta faylka way guuldareysatay" : "File upload failed");
-                    }
+                    var uploaded = await UploadFileAsync(dto.file);
+                    if (string.IsNullOrEmpty(uploaded))
+                        return Result<DisposalEditDTO>.Failure(_isSomali
+                            ? "Soo gelinta faylka way guuldareysatay"
+                            : "File upload failed");
+
+                    // Delete old file (if any)
+                    if (!string.IsNullOrEmpty(existing.ImageUrl))
+                        await DeleteFileAsync(existing.ImageUrl, "disposaldocuments");
+
+                    newFileName = uploaded;
                 }
 
-                // Fetch existing disposal from the database
-                var disposalInDb = await _db.Disposals.FirstOrDefaultAsync(d => d.Id == dto.Disposal.Id);
-                if (disposalInDb == null)
+                var employeeName = await _func.GetEmployeeNameAsync();
+                int previousAssetId = existing.AssetId;
+                int newAssetId = dto.Disposal.AssetId;
+
+                existing.ImageUrl = newFileName;
+                existing.EmployeeId = _employeeId;
+                existing.AssetId = newAssetId;
+                existing.Notes = dto.Disposal.Notes;
+
+                if (newAssetId != previousAssetId)
                 {
-                    return Result<DisposalEditDTO>.Failure(_isSomali ? "Diiwaanka lama helin!" : "Record not found!");
+                    // previous asset: mark available + history
+                    await UpdateAssetStatusAsync(previousAssetId, SD.Asset_Available);
+                    await AddAssetHistoryAsync(previousAssetId,
+                        _isSomali
+                            ? $"Hantida dib ayaa loo celiyay {employeeName}"
+                            : $"Asset un-disposed by {employeeName}");
+
+                    // new asset: mark disposed + history
+                    await UpdateAssetStatusAsync(newAssetId, SD.Asset_Disposed);
+                    await AddAssetHistoryAsync(newAssetId,
+                        _isSomali
+                            ? $"Hantida waxaa baabi’iyay {employeeName}"
+                            : $"Asset disposed by {employeeName}");
                 }
-
-                int prevAssetId = disposalInDb.AssetId;
-
-                // Update disposal details
-                if (dto.file != null && disposalInDb.ImageUrl != null)
+                else
                 {
-                    // Delete the old file if a new one is uploaded
-                    string oldFileName = disposalInDb.ImageUrl.Substring(19); // Removes "/disposaldocuments/"
-                    DeleteFile(oldFileName, "disposaldocuments");
-                }
-                dto.Disposal.ImageUrl = sFileName != string.Empty ? sFileName : disposalInDb.ImageUrl;
-                dto.Disposal.EmployeeId = _employeeId;
-                _db.Entry(disposalInDb).CurrentValues.SetValues(dto.Disposal);
-
-                // Check if AssetId has changed
-                if (dto.Disposal.AssetId != prevAssetId)
-                {
-                    // Update previous asset status
-                    await UpdateAssetStatusAsync(prevAssetId, SD.Asset_Available);
-                    await AddAssetHistoryAsync(prevAssetId, _isSomali
-                    ? $"Hantida waxaa dib loo joojiyay baabi’inteeda ee uu sameeyay {await _func.GetEmployeeNameAsync()}"
-                    : $"Asset un-disposed by {await _func.GetEmployeeNameAsync()}");
-
-                    // Update new asset history
-                    await AddAssetHistoryAsync(dto.Disposal.AssetId, _isSomali
-                    ? $"Hantida waxaa baabi’iyay {await _func.GetEmployeeNameAsync()}"
-                    : $"Asset disposed by {await _func.GetEmployeeNameAsync()}");
+                    // if AssetId unchanged, just update its status to disposed
+                    await UpdateAssetStatusAsync(newAssetId, SD.Asset_Disposed);
                 }
 
-                // Update current asset status if associated
-                await UpdateAssetStatusAsync(dto.Disposal.AssetId, SD.Asset_Disposed);
+                await LogNewsFeedAsync(
+                    disposalId: existing.Id,
+                    assetId: newAssetId
+                );
 
-                // Log NewsFeed
-                await LogNewsFeedAsync(dto.Disposal.Id, dto.Disposal.AssetId);
-
-                // Commit transaction
                 await _db.SaveChangesAsync();
-                await transaction.CommitAsync();
+                await tx.CommitAsync();
 
-                dto = await PopulateDisposalDtoAsync(dto);
-                return Result<DisposalEditDTO>.Success(dto);
+                var resultDto = await PopulateDisposalDtoAsync(dto);
+                return Result<DisposalEditDTO>.Success(resultDto);
             }
             catch (Exception ex)
             {
-                await transaction.RollbackAsync();
+                await tx.RollbackAsync();
                 _func.LogException(_logger, ex);
                 return Result<DisposalEditDTO>.Failure(ex.Message);
+            }
+        }
+        public async Task<Result<DisposalPreviewDTO>> GetDisposalPreviewAsync(int id)
+        {
+            try
+            {
+                var dto = await _db.Disposals
+                    .AsNoTracking()
+                    .Where(d => d.Id == id)
+                    .Select(d => new DisposalPreviewDTO
+                    {
+                        Id = d.Id,
+                        DepartmentName = _isSomali ? d.Asset.Store.Department.NameSo : d.Asset.Store.Department.Name,
+                        DisposalType = _isSomali ? d.DisposalType.TypeSo : d.DisposalType.Type,
+                        SubCategoryName = _isSomali ? d.Asset.SubCategory.SubCategoryNameSo : d.Asset.SubCategory.SubCategoryName,
+                        AssetName = d.Asset.Name,
+                        Identification =
+                            d.Asset.SubCategory.Category.CategoryName == "Vehicles"
+                                ? (_isSomali ? "Taarikada: " : "Plate No: ") + d.Asset.Plate
+                                : (_isSomali ? "Sereelka: " : "SN: ") + d.Asset.SerialNo,
+                        DisposalDate = d.DisposalDate,
+                        ImageUrl = string.IsNullOrEmpty(d.ImageUrl)
+                            ? string.Empty
+                            : $"/disposaldocuments/{d.ImageUrl}",
+                        DisposalNotes = d.Notes ?? string.Empty
+                    })
+                    .FirstOrDefaultAsync();
+
+                if (dto == null)
+                    return Result<DisposalPreviewDTO>.Failure(
+                        _isSomali ? "Baabi’in lama helin!" : "Disposal not found!");
+
+                return Result<DisposalPreviewDTO>.Success(dto);
+            }
+            catch (Exception ex)
+            {
+                _func.LogException(_logger, ex);
+                return Result<DisposalPreviewDTO>.Failure(ex.Message);
             }
         }
         public async Task<Result<bool>> DeleteDisposalAsync(int id)
@@ -392,7 +443,7 @@ namespace MODAMS.ApplicationServices
             var assetsField = dto.GetType().GetProperty("Assets");
             var disposalTypeListField = dto.GetType().GetProperty("DisposalTypeList");
 
-            _employeeId = IsInRole("User") ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
+            //_employeeId = IsInRole("User") ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
             _storeId = await _func.GetStoreIdByEmployeeIdAsync(_employeeId);
 
             // Populate Assets
@@ -421,7 +472,7 @@ namespace MODAMS.ApplicationServices
             // Populate IsAuthorized (only if the property exists)
             if (isAuthorizedField != null)
             {
-                var isAuthorized = await _func.GetStoreOwnerIdAsync(_storeId) == _employeeId;
+                var isAuthorized = await _func.CanModifyStoreAsync(_storeId, _employeeId);
                 isAuthorizedField.SetValue(dto, isAuthorized);
             }
 
@@ -470,8 +521,8 @@ namespace MODAMS.ApplicationServices
             }
 
             // Remove file from disk
-            string sFileName = disposalInDb.ImageUrl.Substring(19); // Removes "/disposaldocuments/"
-            bool fileDeleted = DeleteFile(sFileName, "disposaldocuments");
+            var sFileName = disposalInDb?.ImageUrl?.Substring(19) ?? ""; // Removes "/disposaldocuments/"
+            bool fileDeleted = await DeleteFileAsync(sFileName, "disposaldocuments");
             if (!fileDeleted)
             {
                 return Result<string>.Failure(_isSomali ? "Khalad ayaa ka dhacay tirtirka sawirka kaydka!" : "Error deleting picture from storage!");
@@ -479,19 +530,25 @@ namespace MODAMS.ApplicationServices
 
             return Result<string>.Success(_isSomali ? "Sawirku si guul leh ayaa loo tirtiray!" : "Picture deleted successfully!");
         }
-        private bool DeleteFile(string fileName, string folderName)
+        private async Task<bool> DeleteFileAsync(string fileName, string folderName)
         {
-            string wwwRootPath = _webHostEnvironment.WebRootPath;
-            string folderPath = Path.Combine(wwwRootPath, folderName);
-            string filePath = Path.Combine(folderPath, fileName);
+            if (string.IsNullOrWhiteSpace(fileName) || string.IsNullOrWhiteSpace(folderName))
+                return false;
+
+            var wwwRoot = _webHostEnvironment.WebRootPath;
+            var filePath = Path.Combine(wwwRoot, folderName, fileName);
+
+            if (!System.IO.File.Exists(filePath))
+                return false;
 
             try
             {
-                System.IO.File.Delete(filePath);
+                await Task.Run(() => System.IO.File.Delete(filePath));
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Failed to delete file at {FilePath}", filePath);
                 return false;
             }
         }
