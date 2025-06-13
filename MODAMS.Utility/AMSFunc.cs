@@ -127,6 +127,17 @@ namespace MODAMS.Utility
             }
             return blnResult;
         }
+        public async Task<bool> IsInRoleAsync(string sRole, int employeeId)
+        {
+            bool blnResult = false;
+            
+            var rec = await _db.vwEmployees.Where(m => m.Id == employeeId && m.RoleName == sRole).FirstOrDefaultAsync();
+            if (rec != null)
+            {
+                blnResult = true;
+            }
+            return blnResult;
+        }
         public async Task<string> GetRoleNameAsync(string email)
         {
             string sResult = "-";
@@ -207,40 +218,41 @@ namespace MODAMS.Utility
             };
             return dto;
         }
-        public async Task<int> GetDepartmentIdAsync(int nEmployeeId)
+        public async Task<int> GetDepartmentIdByEmployeeIdAsync(int employeeId)
         {
-            var employeeRole = await _db.vwEmployees.Where(m => m.Id == nEmployeeId).Select(m => m.RoleName).FirstOrDefaultAsync();
+            var role = await GetRoleNameAsync(employeeId);
 
-            nEmployeeId = employeeRole == "User" ? GetSupervisorId(nEmployeeId) : nEmployeeId;
-
-            int departmentId = 0;
-            var department = _db.Departments.Where(m => m.EmployeeId == nEmployeeId).FirstOrDefault();
-            if (department != null)
+            return role switch
             {
-                departmentId = department.Id;
-            }
-            return departmentId;
+                SD.Role_User => await _db.StoreEmployees
+                    .Where(se => se.EmployeeId == employeeId)
+                    .Select(se => se.Store.DepartmentId)
+                    .FirstOrDefaultAsync(),
+
+                SD.Role_StoreOwner => await _db.Departments
+                    .Where(d => d.EmployeeId == employeeId)
+                    .Select(d => d.Id)
+                    .FirstOrDefaultAsync(),
+
+                _ => 0
+            };
         }
         public async Task<string> GetDepartmentNameAsync(int nEmployeeId)
         {
-            string sResult = "Department not available!";
-            int nDepartmentId = await GetDepartmentIdAsync(nEmployeeId);
-            var department = _db.Departments.Where(m => m.EmployeeId == nEmployeeId).FirstOrDefault();
-            if (department != null)
-            {
-                sResult = _isSomali ? department.NameSo : department.Name;
-            }
-            return sResult;
+            int nDepartmentId = await GetDepartmentIdByEmployeeIdAsync(nEmployeeId);
+            return await GetDepartmentNameByIdAsync(nDepartmentId);
         }
-        public async Task<string> GetDepartmentNameByIdAsync(int nDepartmentId)
+        public async Task<string> GetDepartmentNameByIdAsync(int departmentId)
         {
-            string sResult = "Department not available!";
-            var department = await _db.Departments.Where(m => m.Id == nDepartmentId).FirstOrDefaultAsync();
-            if (department != null)
-            {
-                sResult = _isSomali ? department.NameSo : department.Name;
-            }
-            return sResult;
+            var name = await _db.Departments
+                .AsNoTracking()
+                .Where(d => d.Id == departmentId)
+                .Select(d => _isSomali ? d.NameSo : d.Name)
+                .FirstOrDefaultAsync(); 
+
+            return string.IsNullOrWhiteSpace(name)
+                ? (_isSomali ? "Waax lama heli karo!" : "Department not available!")
+                : name;
         }
         public async Task<string> GetRoleNameAsync(int nEmployeeId)
         {
@@ -304,9 +316,7 @@ namespace MODAMS.Utility
         }
         public async Task<int> GetStoreIdByEmployeeIdAsync(int employeeId)
         {
-            var email = await GetEmployeeEmailAsync();
-
-            if (await IsInRoleAsync(SD.Role_StoreOwner, email))
+            if (await IsInRoleAsync(SD.Role_StoreOwner, employeeId))
             {
                 var storeId = await _db.Departments
                     .Where(d => d.EmployeeId == employeeId)
@@ -317,7 +327,7 @@ namespace MODAMS.Utility
                 return storeId ?? 0;
             }
 
-            if (await IsInRoleAsync(SD.Role_User, email))
+            if (await IsInRoleAsync(SD.Role_User, employeeId))
             {
                 var storeId = await _db.StoreEmployees
                     .Where(se => se.EmployeeId == employeeId)
@@ -328,7 +338,6 @@ namespace MODAMS.Utility
             }
             return 0;
         }
-
         public async Task<int> GetStoreIdByDepartmentIdAsync(int departmentId)
         {
             int storeId = 0;

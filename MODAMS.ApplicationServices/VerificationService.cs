@@ -42,25 +42,21 @@ namespace MODAMS.ApplicationServices
             try
             {
                 var dto = new VerificationsDTO();
+                var storeId = await _func.GetStoreIdByEmployeeIdAsync(_employeeId);
                 var schedules = await _db.VerificationSchedules
+                    .AsNoTracking()
                     .Include(m => m.Store).ThenInclude(m => m.Department)
                     .Include(m => m.VerificationTeams).ThenInclude(m => m.Employee)
                     .ToListAsync();
 
-                if (IsInRole(SD.Role_User))
+                if (IsInRole(SD.Role_User) || IsInRole(SD.Role_StoreOwner))
                 {
-                    var _supervisorEmployeeId = await _func.GetSupervisorIdAsync(_employeeId);
-                    schedules = schedules
-                        .Where(m => m.Store.Department.EmployeeId == _supervisorEmployeeId)
-                        .ToList();
+                    schedules = schedules.Where(m => m.StoreId == storeId).ToList();
                 }
-                else if (IsInRole(SD.Role_StoreOwner))
-                {
-                    schedules = schedules
-                        .Where(m => m.Store.Department.EmployeeId == _employeeId)
-                        .ToList();
-                }
+
                 dto.Schedules = schedules;
+                dto.IsAuthorized = (await _func.CanModifyStoreAsync(storeId, _employeeId) && IsInRole(SD.Role_StoreOwner));
+
                 return Result<VerificationsDTO>.Success(dto);
             }
             catch (Exception ex)
@@ -69,48 +65,89 @@ namespace MODAMS.ApplicationServices
                 return Result<VerificationsDTO>.Failure(ex.Message);
             }
         }
+        // 2) Refactor your service to populate those
         public async Task<Result<VerificationScheduleCreateDTO>> GetCreateScheduleAsync()
         {
             try
             {
-                var dto = new VerificationScheduleCreateDTO();
-
-                var store = await _db.Stores
-                    .Include(m => m.Department)
-                    .Where(m => m.Department.EmployeeId == _employeeId).FirstOrDefaultAsync();
-
-                if (store != null)
+                var dto = new VerificationScheduleCreateDTO
                 {
-                    dto.StoreId = store.Id;
-                    dto.Store = store;
-                    var assets = await _db.Assets.Where(m => m.StoreId == store.Id).ToListAsync();
+                    IsSomali = _isSomali
+                };
 
-                    dto.NumberOfAssets = assets.Count;
-                }
-                else
-                {
-                    return Result<VerificationScheduleCreateDTO>.Failure(_isSomali ? "Kayd lama heli karo" : "Store not available");
-                }
+                // 1) Resolve which store this user belongs to
+                var storeId = await _func.GetStoreIdByEmployeeIdAsync(_employeeId);
+                if (storeId == 0)
+                    return Result<VerificationScheduleCreateDTO>.Failure(
+                        _isSomali ? "Kayd lama heli karo" : "Store not available");
 
-                var employees = await _db.Employees.ToListAsync();
-
-                if (IsInRole(SD.Role_User))
-                {
-                    int _supervisorEmployeeId = await _func.GetSupervisorIdAsync(_employeeId);
-                    employees = employees.Where(m => m.SupervisorEmployeeId == _supervisorEmployeeId).ToList();
-                }
-                else if (IsInRole(SD.Role_StoreOwner))
-                {
-                    employees = employees.Where(m => (m.Id == _employeeId) || (m.SupervisorEmployeeId == _employeeId)).ToList();
-                }
-
-                dto.Employees = employees;
-                dto.EmployeesList = employees
-                    .Select(m => new SelectListItem
+                // 2) Load only the Store’s basic info + Department name
+                var storeInfo = await _db.Stores
+                    .AsNoTracking()
+                    .Where(s => s.Id == storeId)
+                    .Select(s => new
                     {
-                        Text = $"{m.FullName} ({m.JobTitle})",
-                        Value = m.Id.ToString()
-                    });
+                        s.Id,
+                        StoreName = _isSomali ? s.NameSo : s.Name,
+                        DepartmentName = _isSomali
+                                           ? s.Department.NameSo
+                                           : s.Department.Name
+                    })
+                    .FirstOrDefaultAsync();
+
+                if (storeInfo == null)
+                    return Result<VerificationScheduleCreateDTO>.Failure(
+                        _isSomali ? "Kayd lama heli karo" : "Store not available");
+
+                dto.StoreId = storeInfo.Id;
+                dto.StoreName = storeInfo.StoreName;
+                dto.DepartmentName = storeInfo.DepartmentName;
+
+                // 3) Count the assets in SQL
+                dto.NumberOfAssets = await _db.Assets
+                    .AsNoTracking()
+                    .CountAsync(a => a.StoreId == storeId);
+
+                // 4) Build the list of selectable employees
+                var employeeItems = await _db.StoreEmployees
+                    .AsNoTracking()
+                    .Where(se => se.StoreId == storeId && se.EmployeeId != _employeeId)
+                    .Select(se => new
+                    {
+                        se.Employee.Id,
+                        Label = se.Employee.FullName + " (" + se.Employee.JobTitle + ")"
+                    })
+                    .ToListAsync();
+
+                if (IsInRole(SD.Role_StoreOwner))
+                {
+                    var me = await _db.Employees
+                        .AsNoTracking()
+                        .Where(e => e.Id == _employeeId)
+                        .Select(e => new
+                        {
+                            e.Id,
+                            Label = e.FullName + " (" + e.JobTitle + ")"
+                        })
+                        .FirstOrDefaultAsync();
+                    if (me != null && employeeItems.All(x => x.Id != me.Id))
+                        employeeItems.Add(me);
+                }
+
+                // 5) Populate both Employees and EmployeesList
+                dto.Employees = employeeItems
+                    .Select(x => new Employee { Id = x.Id, FullName = x.Label, JobTitle = "" })
+                    .ToList();
+
+                dto.EmployeesList = employeeItems
+                    .Select(x => new SelectListItem
+                    {
+                        Text = x.Label,
+                        Value = x.Id.ToString()
+                    })
+                    .ToList();
+
+                // 6) NewSchedule & NewTeam are left at their defaults
 
                 return Result<VerificationScheduleCreateDTO>.Success(dto);
             }
@@ -120,6 +157,9 @@ namespace MODAMS.ApplicationServices
                 return Result<VerificationScheduleCreateDTO>.Failure(ex.Message);
             }
         }
+
+
+
         public async Task<Result<VerificationScheduleCreateDTO>> CreateScheduleAsync(VerificationScheduleCreateDTO dto, string teamMembersData)
         {
             try

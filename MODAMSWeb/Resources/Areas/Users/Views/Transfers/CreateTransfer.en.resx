@@ -126,6 +126,9 @@
   <data name="Barcode" xml:space="preserve">
     <value>Barcode</value>
   </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
   <data name="Category" xml:space="preserve">
     <value>Category</value>
   </data>

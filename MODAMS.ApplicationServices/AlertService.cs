@@ -154,7 +154,7 @@ namespace MODAMS.ApplicationServices
             if (IsInRole("StoreOwner") || IsInRole("User"))
             {
                 var allStores = _db.vwStores.ToList();
-                int DepartmentId = await _func.GetDepartmentIdAsync(_employeeId);
+                int DepartmentId = await _func.GetDepartmentIdByEmployeeIdAsync(_employeeId);
                 var storeFinder = new StoreFinder(DepartmentId, allStores);
 
                 var stores = storeFinder.GetStores();
@@ -283,7 +283,7 @@ namespace MODAMS.ApplicationServices
             if (IsInRole("StoreOwner") || IsInRole("User"))
             {
                 var allStores = _db.vwStores.ToList();
-                int DepartmentId = await _func.GetDepartmentIdAsync(_employeeId);
+                int DepartmentId = await _func.GetDepartmentIdByEmployeeIdAsync(_employeeId);
                 var storeFinder = new StoreFinder(DepartmentId, allStores);
 
                 var stores = storeFinder.GetStores();

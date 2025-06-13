@@ -15,8 +15,9 @@ namespace MODAMS.Utility
         public Task<string> GetEmployeeNameAsync(int nEmloyeeId);
         public Task<string> GetEmployeeEmailAsync();
         public Task<bool> IsInRoleAsync(string sRole, string email);
+        public Task<bool> IsInRoleAsync(string sRole, int employeeId);
         public Task<string> GetRoleNameAsync(string email);
-        public Task<int> GetDepartmentIdAsync(int nEmployeeId);
+        public Task<int> GetDepartmentIdByEmployeeIdAsync(int nEmployeeId);
         public Task<int> GetDepartmentHeadAsync(int departmentId);
         public Task<List<Employee>> GetDepartmentMembersAsync(int nDepartmentId);
         public Task NotifyDepartmentAsync(int departmentId, Notification notification);

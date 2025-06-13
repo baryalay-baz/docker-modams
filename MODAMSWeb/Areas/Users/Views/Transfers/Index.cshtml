@@ -27,32 +27,12 @@
         <div class="card">
             <div class="card-body">
                 @{
-                    bool readOnly = (User.IsInRole("User") || User.IsInRole("StoreOwner")) ? true : false;
-
-                    if (readOnly)
-                    {
-                        <select asp-for="StoreId" asp-items="@Model.StoreList"
-                                class="form-control select2 form-select" disabled>
-                        </select>
-                    }
-                    else
-                    {
-                        if (Model.StoreList.Any())
-                        {
-                            <select asp-for="StoreId" asp-items="@Model.StoreList"
-                                    class="form-control select2 form-select">
-                            </select>
-                        }
-                        else
-                        {
-                            <select class="form-control select2 form-select">
-                                <option disabled>-@Localizer["NoTransfersAvailable"]-</option>
-                            </select>
-                        }
-                    }
-                }
-                @{
                     bool _isSomali = CultureInfo.CurrentUICulture.Name == "so";
+                    var isStoreListEnabled = (User.IsInRole("User")) ? "" : "disabled:";
+
+                    <select asp-for="StoreId" asp-items="@Model.StoreList"
+                            class="form-control select2 form-select @isStoreListEnabled">
+                    </select>
                 }
                 <div class="row">
                     <div class="col-12 col-sm-12">
@@ -191,7 +171,10 @@
                                                                     </table>
                                                                 </div>
                                                                 <br />
-                                                                <a asp-action="CreateTransfer" asp-controller="Transfers" id="btnCreate" class="btn btn-info-gradient pt-1"><i class="fe fe-plus-circle"></i>&nbsp;@Localizer["NewTransfer"]</a>
+                                                                @{
+                                                                    var isCreateDisabled = Model.IsAuthorized ? "" : "disabled";
+                                                                }
+                                                                <a asp-action="CreateTransfer" asp-controller="Transfers" id="btnCreate" class="btn btn-info-gradient pt-1 @isCreateDisabled"><i class="fe fe-plus-circle"></i>&nbsp;@Localizer["NewTransfer"]</a>
                                                             </div>
                                                             <div class="col-4 col-sm-4">
                                                                 <div class="card">
@@ -288,7 +271,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>  
+                        </div>
                     </div>
                 </div>
             </div>
@@ -327,9 +310,9 @@
             pieChartIncoming();
         });
         const pieChartOutgoing = () => {
-            
+
             var data = '@Html.Raw(Json.Serialize(Model.OutgoingChartData))';
-            
+
             var ctx = document.getElementById('pieChartOutgoing').getContext('2d');
 
             var labels = @Html.Raw(Json.Serialize(Model.OutgoingChartData.Select(item => item.SubCategoryName)));
@@ -419,7 +402,7 @@
 
             const sData = '@Json.Serialize(Model.OutgoingTransfers)'.trim();
             const result = tryParseJson(sData, "OutgoingTransfers");
-            
+
             if (result.status === "error") {
                 Notify("error", result.message);
                 return;
@@ -498,13 +481,13 @@
         const generateTableIncoming = (id) => {
             const sData = '@Json.Serialize(Model.IncomingTransfers)'.trim();
             const result = tryParseJson(sData, "IncomingTransfers");
-            
+
             if (result.status === "error") {
                 Notify("error", result.message);
                 return;
             }
             const Data = result.data;
-            
+
             let sHtml = `
                 <table id="tblTransfersIncoming" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
                     <thead class="bg-info-gradient ms-auto divShadow">

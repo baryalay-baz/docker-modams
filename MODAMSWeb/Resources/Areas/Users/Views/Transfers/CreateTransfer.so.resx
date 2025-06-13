@@ -126,6 +126,9 @@
   <data name="Barcode" xml:space="preserve">
     <value>Barcode-ka</value>
   </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Jooji</value>
+  </data>
   <data name="Category" xml:space="preserve">
     <value>Qayb</value>
   </data>

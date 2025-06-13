@@ -35,114 +35,42 @@ namespace MODAMS.ApplicationServices
             _employeeId = _func.GetEmployeeId();
             _isSomali = CultureInfo.CurrentUICulture.Name == "so";
         }
-        
         public async Task<Result<TransferDTO>> GetIndexAsync(int id = 0, int transferStatusId = 0)
         {
             try
             {
-                _employeeId = (IsInRole("User")) ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
-                transferStatusId = 0;
-                var stores = await _db.Stores.ToListAsync();
                 var dto = new TransferDTO();
+                var allStores = await _db.vwStores.ToListAsync();
+                var accessibleStores = await GetAccessibleStoresWithTransfersOnlyAsync(allStores);
 
-                if (id == 0)
+                _storeId = id > 0
+                    ? id
+                    : accessibleStores.FirstOrDefault()?.Id ?? 0;
+
+                dto.StoreList = accessibleStores.Select(s => new SelectListItem
                 {
-                    if (IsInRole("User") || IsInRole("StoreOwner"))
-                    {
-                        _storeId = await _func.GetStoreIdByEmployeeIdAsync(_employeeId);
-                        var storeList = stores.ToList().Select(m => new SelectListItem
-                        {
-                            Text = _isSomali ? m.NameSo : m.Name,
-                            Value = m.Id.ToString(),
-                            Selected = (m.Id == _storeId)
-                        });
-                        dto.StoreList = storeList;
-                    }
-                    else
-                    {
-                        var sl = await _db.vwTransfers.Select(m => new { m.StoreFromId, m.StoreFrom }).Distinct().ToListAsync();
+                    Text = _isSomali ? s.NameSo : s.Name,
+                    Value = s.Id.ToString(),
+                    Selected = s.Id == _storeId
+                }).ToList();
 
-                        if (sl.Count > 0)
-                        {
-                            int firstStoreId = sl.Select(m => m.StoreFromId).FirstOrDefault();
-                            var storeList = sl.Select(m => new SelectListItem
-                            {
-                                Text = m.StoreFrom,
-                                Value = m.StoreFromId.ToString(),
-                                Selected = (m.StoreFromId == firstStoreId)
-                            });
-                            dto.StoreList = storeList;
-                            _storeId = firstStoreId;
-                        }
-                        else
-                        {
-                            int firstStoreId = sl.Select(m => m.StoreFromId).FirstOrDefault();
-                            var storeList = sl.Select(m => new SelectListItem
-                            {
-                                Text = m.StoreFrom,
-                                Value = m.StoreFromId.ToString(),
-                                Selected = (m.StoreFromId == firstStoreId)
-                            }).ToList();
-
-                            if (!storeList.Any())
-                            {
-                                storeList.Add(new SelectListItem
-                                {
-                                    Text = _isSomali ? "Wax wareejin ah lama heli karo" : "No Transfer available",
-                                    Value = "0",
-                                    Selected = true // Select this item if there are no stores
-                                });
-                            }
-
-                            dto.StoreList = storeList;
-                            _storeId = firstStoreId;
-                        }
-                    }
-                }
-                else
-                {
-                    _storeId = id;
-                    var sl = await _db.vwTransfers.Select(m => new { m.StoreFromId, m.StoreFrom }).Distinct().ToListAsync();
-                    if (sl.Count > 0)
-                    {
-                        int firstStoreId = sl.Select(m => m.StoreFromId).First();
-
-                        var storeList = sl.Select(m => new SelectListItem
-                        {
-                            Text = m.StoreFrom,
-                            Value = m.StoreFromId.ToString(),
-                            Selected = (m.StoreFromId == firstStoreId)
-                        });
-                        dto.StoreList = storeList;
-                    }
-                }
-                if (_employeeId == await _func.GetStoreOwnerIdAsync(_storeId))
-                    dto.IsAuthorized = true;
-
-                var transfers = await _db.vwTransfers.Where(m => m.StoreFromId == _storeId)
-                    .OrderBy(m => m.TransferStatusId).ToListAsync();
-
-                if (transferStatusId > 0)
-                    transfers = transfers.Where(m => m.TransferStatusId == transferStatusId).ToList();
-
+                dto.IsAuthorized = await _func.CanModifyStoreAsync(_storeId, _employeeId);
+                dto.StoreId = _storeId;
                 dto.TransferStatus = transferStatusId;
 
-                dto.StoreId = _storeId;
-                dto.OutgoingTransfers = transfers;
+                var outgoingQuery = _db.vwTransfers.Where(m => m.StoreFromId == _storeId);
+                if (transferStatusId > 0)
+                    outgoingQuery = outgoingQuery.Where(m => m.TransferStatusId == transferStatusId);
 
-                transfers = await _db.vwTransfers
+                dto.OutgoingTransfers = await outgoingQuery.OrderBy(m => m.TransferStatusId).ToListAsync();
+
+                dto.IncomingTransfers = await _db.vwTransfers
                     .Where(m => m.StoreId == _storeId && m.TransferStatusId != SD.Transfer_Pending)
                     .OrderBy(m => m.TransferStatusId)
                     .ToListAsync();
 
-                dto.IncomingTransfers = transfers;
-
-                List<TransferChartDTO> outgoingChartData = await GetChartDataAsync(1);
-                List<TransferChartDTO> incomingChartData = await GetChartDataAsync(2);
-
-                dto.IncomingChartData = incomingChartData;
-                dto.OutgoingChartData = outgoingChartData;
-
+                dto.OutgoingChartData = await GetChartDataAsync(1);
+                dto.IncomingChartData = await GetChartDataAsync(2);
                 dto.TotalTransferValue = await GetTotalTransferValueAsync(_storeId);
                 dto.TotalReceivedValue = await GetTotalReceivedValueAsync(_storeId);
 
@@ -158,49 +86,69 @@ namespace MODAMS.ApplicationServices
         {
             try
             {
-                _employeeId = (IsInRole("User")) ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
+                var storeFromId = await _func.GetStoreIdByEmployeeIdAsync(_employeeId);
+                var storeFrom = await _func.GetDepartmentNameAsync(_employeeId);
 
-                var dto = new TransferCreateDTO();
-                List<MODAMS.Models.Asset> assets = await GetAssetsAsync();
-                List<TransferAssetDTO> transferAssets = new List<TransferAssetDTO>();
+                var assets = await _db.Assets
+                    .AsNoTracking()
+                    .Include(a => a.SubCategory.Category)
+                    .Where(a => a.AssetStatusId == SD.Asset_Available
+                             && a.StoreId == storeFromId)
+                    .ToListAsync();
 
+                var pendingIds = await _db.TransferDetails
+                    .AsNoTracking()
+                    .Where(td => td.Transfer.TransferStatusId == SD.Transfer_Pending
+                              || td.Transfer.TransferStatusId == SD.Transfer_SubmittedForAcknowledgement)
+                    .Select(td => td.AssetId)
+                    .Distinct()
+                    .ToListAsync();
 
-                dto.StoreFrom = await _func.GetDepartmentNameAsync(_employeeId);
+                var imageMap = await _db.AssetPictures
+                    .AsNoTracking()
+                    .Where(p => assets.Select(a => a.Id).Contains(p.AssetId))
+                    .GroupBy(p => p.AssetId)
+                    .Select(g => new { g.Key, Url = g.First().ImageUrl })
+                    .ToDictionaryAsync(x => x.Key, x => x.Url);
 
-                if (assets.Count > 0)
-                {
-                    foreach (var asset in assets)
+                var transferAssets = assets
+                    .Where(a => !pendingIds.Contains(a.Id))
+                    .Select(a => new TransferAssetDTO
                     {
-                        var transferAsset = new TransferAssetDTO()
-                        {
-                            AssetId = asset.Id,
-                            AssetName = asset.Name,
-                            Category = _isSomali ? asset.SubCategory.Category.CategoryNameSo : asset.SubCategory.Category.CategoryName,
-                            SubCategory = _isSomali ? asset.SubCategory.SubCategoryNameSo : asset.SubCategory.SubCategoryName,
-                            Make = asset.Make,
-                            Model = asset.Model,
-                            Barcode = asset.Barcode?.ToString() ?? "",
-                            SerialNumber = asset.SerialNo,
-                            ImageUrl = await GetAssetImageAsync(asset.Id),
-                            IsSelected = false
-                        };
-                        transferAssets.Add(transferAsset);
-                    }
-                }
-                if (transferAssets.Count > 0)
-                {
-                    dto.Assets = transferAssets;
-                }
-                int currentStoreId = await GetCurrentStoreIdAsync();
+                        AssetId = a.Id,
+                        AssetName = a.Name,
+                        Category = _isSomali
+                                         ? a.SubCategory.Category.CategoryNameSo
+                                         : a.SubCategory.Category.CategoryName,
+                        SubCategory = _isSomali
+                                         ? a.SubCategory.SubCategoryNameSo
+                                         : a.SubCategory.SubCategoryName,
+                        Make = a.Make,
+                        Model = a.Model,
+                        Barcode = a.Barcode ?? string.Empty,
+                        SerialNumber = a.SerialNo,
+                        ImageUrl = imageMap.GetValueOrDefault(a.Id, string.Empty),
+                        IsSelected = false
+                    })
+                    .ToList();
 
-                var storeList = await _db.Stores.Where(m => m.Id != currentStoreId).Select(m => new SelectListItem
+                var dto = new TransferCreateDTO
                 {
-                    Text = _isSomali ? m.NameSo : m.Name,
-                    Value = m.Id.ToString(),
-                }).ToListAsync();
+                    StoreFrom = storeFrom,
+                    Assets = transferAssets,
+                };
 
-                dto.Transfer.TransferNumber = await GetTransferNumberAsync(currentStoreId);
-                dto.StoreList = storeList;
+                dto.StoreList = await _db.Stores
+                    .AsNoTracking()
+                    .Where(s => s.Id != storeFromId)
+                    .Select(s => new SelectListItem
+                    {
+                        Text = _isSomali ? s.NameSo : s.Name,
+                        Value = s.Id.ToString(),
+                    })
+                    .ToListAsync();
+
+                dto.Transfer.TransferNumber = await GetTransferNumberAsync(storeFromId);
 
                 return Result<TransferCreateDTO>.Success(dto);
             }
@@ -214,64 +162,54 @@ namespace MODAMS.ApplicationServices
         {
             try
             {
-                _employeeId = (IsInRole("User")) ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
-                var storeId = await _func.GetStoreIdByEmployeeIdAsync(_employeeId);
+                var storeFromId = await _func.GetStoreIdByEmployeeIdAsync(_employeeId);
+                var prevStoreId = await GetCurrentStoreIdAsync();
 
-                using (var transaction = await _db.Database.BeginTransactionAsync())
+                using var tx = await _db.Database.BeginTransactionAsync();
+                
+                var transfer = new Transfer
                 {
-                    try
+                    TransferDate = transferDTO.Transfer.TransferDate,
+                    EmployeeId = _employeeId,
+                    StoreFromId = storeFromId,
+                    StoreId = transferDTO.Transfer.StoreId,
+                    TransferNumber = transferDTO.Transfer.TransferNumber,
+                    TransferStatusId = SD.Transfer_Pending,
+                    Notes = transferDTO.Transfer.Notes ?? "-",
+                    SubmissionForAcknowledgementDate = DateTime.UtcNow
+                };
+
+                await _db.Transfers.AddAsync(transfer);
+                await _db.SaveChangesAsync();
+
+                var assetIds = (selectedAssets ?? "")
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(idText => int.TryParse(idText, out var id) ? id : (int?)null)
+                    .Where(id => id.HasValue)
+                    .Select(id => id.Value)
+                    .ToList();
+
+                if (assetIds.Any())
+                {
+                    var assetNames = await _db.Assets
+                        .Where(a => assetIds.Contains(a.Id))
+                        .Select(a => a.Name)
+                        .ToListAsync();
+                    
+                    var details = assetIds.Select(id => new TransferDetail
                     {
-                        var transfer = new Transfer()
-                        {
-                            TransferDate = transferDTO.Transfer.TransferDate,
-                            EmployeeId = _employeeId,
-                            StoreFromId = storeId,
-                            StoreId = transferDTO.Transfer.StoreId,
-                            TransferNumber = transferDTO.Transfer.TransferNumber,
-                            TransferStatusId = 1,
-                            Notes = transferDTO.Transfer.Notes == null ? "-" : transferDTO.Transfer.Notes,
-                            SubmissionForAcknowledgementDate = DateTime.Now
-                        };
-                        await _db.Transfers.AddAsync(transfer);
-                        await _db.SaveChangesAsync();
-
-                        string assetNamesForLog = "";
-                        int prevStoreId = await GetCurrentStoreIdAsync();
-
-                        if (!string.IsNullOrEmpty(selectedAssets))
-                        {
-                            var selectedIds = selectedAssets.Split(',').Select(id => int.Parse(id));
-                            List<TransferDetail> transferDetails = new List<TransferDetail>();
-
-                            foreach (var asset in selectedIds)
-                            {
-                                var transferDetail = new TransferDetail()
-                                {
-                                    AssetId = asset,
-                                    PrevStoreId = prevStoreId,
-                                    TransferId = transfer.Id
-                                };
-                                transferDetails.Add(transferDetail);
-                                assetNamesForLog += await _func.GetAssetNameAsync(asset) + ", ";
-                            }
-                            _db.TransferDetails.AddRange(transferDetails);
-                            await _db.SaveChangesAsync();
-                        }
-
-                        await _db.Database.CommitTransactionAsync();
-                        transferDTO.Transfer.Id = transfer.Id;
-
-                        //success
-                        return Result<TransferCreateDTO>.Success(transferDTO);
-                    }
-                    catch (Exception ex)
-                    {
-                        await transaction.RollbackAsync();
-                        _func.LogException(_logger, ex);
-                        return Result<TransferCreateDTO>.Failure(ex.Message, transferDTO);
-                    }
+                        AssetId = id,
+                        PrevStoreId = prevStoreId,
+                        TransferId = transfer.Id
+                    });
+                    await _db.TransferDetails.AddRangeAsync(details);
+                    await _db.SaveChangesAsync();
                 }
 
+                await tx.CommitAsync();
+
+                transferDTO.Transfer.Id = transfer.Id;
+                return Result<TransferCreateDTO>.Success(transferDTO);
             }
             catch (Exception ex)
             {
@@ -283,57 +221,77 @@ namespace MODAMS.ApplicationServices
         {
             try
             {
-                _employeeId = (IsInRole("User")) ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
+                var transfer = await _db.Transfers
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(t => t.Id == transferId);
 
-
-                var transfer = await _db.Transfers.FirstOrDefaultAsync(m => m.Id == transferId);
                 if (transfer == null)
-                {
-                    return Result<TransferEditDTO>.Failure(_isSomali ? "Wareejin lama helin!" : "Transfer not found!");
-                }
-                var dto = new TransferEditDTO();
+                    return Result<TransferEditDTO>.Failure(
+                        _isSomali
+                          ? "Wareejin lama helin!"
+                          : "Transfer not found!");
 
-                dto.StoreFrom = await _func.GetDepartmentNameAsync(_employeeId);
+                var currentStoreId = await GetCurrentStoreIdAsync();
 
-                List<MODAMS.Models.Asset> assets = await GetAssetsAsync();
-                List<TransferAssetDTO> transferAssets = new List<TransferAssetDTO>();
+                var assets = await _db.Assets
+                    .AsNoTracking()
+                    .Include(a => a.SubCategory)
+                        .ThenInclude(sc => sc.Category)
+                    .Where(a => a.AssetStatusId == SD.Asset_Available
+                             && a.StoreId == currentStoreId)
+                    .ToListAsync();
 
-                dto.Transfer = transfer;
-                var transferDetails = await _db.TransferDetails.Where(m => m.TransferId == transfer.Id).ToListAsync();
+                var selectedAssetIds = await _db.TransferDetails
+                    .AsNoTracking()
+                    .Where(td => td.TransferId == transferId)
+                    .Select(td => td.AssetId)
+                    .ToListAsync();
 
-                if (assets != null)
-                {
-                    foreach (var asset in assets)
+                var imageMap = await _db.AssetPictures
+                    .AsNoTracking()
+                    .Where(p => assets.Select(a => a.Id).Contains(p.AssetId))
+                    .GroupBy(p => p.AssetId)
+                    .Select(g => new { AssetId = g.Key, Url = g.First().ImageUrl })
+                    .ToDictionaryAsync(x => x.AssetId, x => x.Url);
+
+                var transferAssets = assets
+                    .Select(a => new TransferAssetDTO
                     {
-                        var transferAsset = new TransferAssetDTO()
-                        {
-                            AssetId = asset.Id,
-                            AssetName = asset.Name,
-                            Category = _isSomali ? asset.SubCategory.Category.CategoryNameSo : asset.SubCategory.Category.CategoryName,
-                            SubCategory = _isSomali ? asset.SubCategory.SubCategoryNameSo : asset.SubCategory.SubCategoryName,
-                            Make = asset.Make,
-                            Model = asset.Model,
-                            Barcode = asset.Barcode.ToString(),
-                            SerialNumber = asset.SerialNo,
-                            IsSelected = IsAssetSelected(asset.Id, transferDetails),
-                            ImageUrl = await GetAssetImageAsync(asset.Id)
-                        };
-                        transferAssets.Add(transferAsset);
-                    }
-                }
-                if (transferAssets.Count > 0)
-                {
-                    dto.Assets = transferAssets.OrderByDescending(m => m.IsSelected).ToList();
-                }
-                int currentStoreId = await GetCurrentStoreIdAsync();
+                        AssetId = a.Id,
+                        AssetName = a.Name,
+                        Category = _isSomali
+                                          ? a.SubCategory.Category.CategoryNameSo
+                                          : a.SubCategory.Category.CategoryName,
+                        SubCategory = _isSomali
+                                          ? a.SubCategory.SubCategoryNameSo
+                                          : a.SubCategory.SubCategoryName,
+                        Make = a.Make,
+                        Model = a.Model,
+                        Barcode = a.Barcode ?? string.Empty,
+                        SerialNumber = a.SerialNo,
+                        IsSelected = selectedAssetIds.Contains(a.Id),
+                        ImageUrl = imageMap.GetValueOrDefault(a.Id, string.Empty)
+                    })
+                    .OrderByDescending(x => x.IsSelected)
+                    .ToList();
 
-                var storeList = _db.Stores.Where(m => m.Id != currentStoreId).ToList().Select(m => new SelectListItem
-                {
-                    Text = _isSomali ? m.NameSo : m.Name,
-                    Value = m.Id.ToString(),
-                });
+                var storeList = await _db.Stores
+                    .AsNoTracking()
+                    .Where(s => s.Id != currentStoreId)
+                    .Select(s => new SelectListItem
+                    {
+                        Text = _isSomali ? s.NameSo : s.Name,
+                        Value = s.Id.ToString()
+                    })
+                    .ToListAsync();
 
-                dto.StoreList = storeList;
+                var dto = new TransferEditDTO
+                {
+                    StoreFrom = await _func.GetDepartmentNameAsync(_employeeId),
+                    Transfer = transfer,
+                    Assets = transferAssets,
+                    StoreList = storeList
+                };
 
                 return Result<TransferEditDTO>.Success(dto);
             }
@@ -347,143 +305,127 @@ namespace MODAMS.ApplicationServices
         {
             try
             {
-                _employeeId = IsInRole("User") ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
-                var storeId = await _func.GetStoreIdByEmployeeIdAsync(_employeeId);
+                var storeFromId = await _func.GetStoreIdByEmployeeIdAsync(_employeeId);
+                var prevStoreId = await GetCurrentStoreIdAsync();
 
-                var transfer = await _db.Transfers.Where(m => m.Id == transferDTO.Transfer.Id).FirstOrDefaultAsync();
+                var transfer = await _db.Transfers
+                    .FirstOrDefaultAsync(t => t.Id == transferDTO.Transfer.Id);
+
                 if (transfer == null)
+                    return Result<TransferEditDTO>.Failure(
+                        _isSomali ? "Wareejin lama helin!" : "Transfer not found!",
+                        transferDTO);
+
+                var assetIds = (selectedAssets ?? "")
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(text => int.TryParse(text, out var id) ? (int?)id : null)
+                    .Where(x => x.HasValue)
+                    .Select(x => x.Value)
+                    .ToList();
+
+                using var tx = await _db.Database.BeginTransactionAsync();
+
+                transfer.TransferDate = transferDTO.Transfer.TransferDate;
+                transfer.EmployeeId = _employeeId;
+                transfer.StoreFromId = storeFromId;
+                transfer.StoreId = transferDTO.Transfer.StoreId;
+                transfer.TransferNumber = transferDTO.Transfer.TransferNumber;
+                transfer.TransferStatusId = SD.Transfer_Pending;
+                transfer.Notes = transferDTO.Transfer.Notes ?? "-";
+
+                var existingDetails = await _db.TransferDetails
+                    .Where(td => td.TransferId == transfer.Id)
+                    .ToListAsync();
+                _db.TransferDetails.RemoveRange(existingDetails);
+
+                if (assetIds.Count > 0)
                 {
-                    return Result<TransferEditDTO>.Failure(_isSomali ? "Wareejin lama helin!" : "Transfer not found!");
-                }
-                using (var transaction = await _db.Database.BeginTransactionAsync())
-                {
-                    try
+                    var newDetails = assetIds.Select(aid => new TransferDetail
                     {
-                        transfer.TransferDate = transferDTO.Transfer.TransferDate;
-                        transfer.EmployeeId = _employeeId;
-                        transfer.StoreFromId = storeId;
-                        transfer.StoreId = transferDTO.Transfer.StoreId;
-                        transfer.TransferNumber = transferDTO.Transfer.TransferNumber;
-                        transfer.TransferStatusId = 1;
-                        transfer.Notes = transferDTO.Transfer.Notes;
-                        await _db.SaveChangesAsync();
-
-                        var transferDetails = await _db.TransferDetails
-                            .Where(m => m.TransferId == transferDTO.Transfer.Id).ToListAsync();
-
-                        _db.RemoveRange(transferDetails);
-                        await _db.SaveChangesAsync();
-
-                        if (!string.IsNullOrEmpty(selectedAssets))
-                        {
-                            var selectedIds = selectedAssets.Split(',').Select(id => int.Parse(id));
-                            transferDetails = new List<TransferDetail>();
-
-                            foreach (var asset in selectedIds)
-                            {
-                                var transferDetail = new TransferDetail()
-                                {
-                                    AssetId = asset,
-                                    PrevStoreId = await GetCurrentStoreIdAsync(),
-                                    TransferId = transfer.Id
-                                };
-                                transferDetails.Add(transferDetail);
-                            }
-                            await _db.TransferDetails.AddRangeAsync(transferDetails);
-                            await _db.SaveChangesAsync();
-                        }
-                        await _db.Database.CommitTransactionAsync();
-
-                        //success
-                        return Result<TransferEditDTO>.Success(transferDTO);
-                    }
-                    catch (Exception ex)
-                    {
-                        await transaction.RollbackAsync();
-                        _func.LogException(_logger, ex);
-                        return Result<TransferEditDTO>.Failure(ex.Message, transferDTO);
-                    }
+                        AssetId = aid,
+                        PrevStoreId = prevStoreId,
+                        TransferId = transfer.Id
+                    });
+                    await _db.TransferDetails.AddRangeAsync(newDetails);
                 }
+
+                await _db.SaveChangesAsync();
+                await tx.CommitAsync();
+
+                return Result<TransferEditDTO>.Success(transferDTO);
             }
             catch (Exception ex)
             {
                 _func.LogException(_logger, ex);
-                return Result<TransferEditDTO>.Failure(ex.Message);
+                return Result<TransferEditDTO>.Failure(ex.Message, transferDTO);
             }
         }
         public async Task<Result<TransferPreviewDTO>> GetPreviewTransferAsync(int transferId)
         {
             try
             {
-                _employeeId = (IsInRole("User")) ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
+                var transfer = await _db.vwTransfers
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(v => v.Id == transferId);
 
-                var transfer = _db.vwTransfers.Where(m => m.Id == transferId).FirstOrDefault();
                 if (transfer == null)
-                    transfer = new vwTransfer();
+                    return Result<TransferPreviewDTO>.Failure(
+                        _isSomali ? "Wareejin lama helin!" : "Transfer not found!");
 
-                var dto = new TransferPreviewDTO();
-                dto.vwTransfer = transfer;
-
-                var transferDetails = await _db.TransferDetails.Where(m => m.TransferId == transfer.Id).ToListAsync();
-                var assets = await _db.Assets.Include(m => m.SubCategory.Category).Include(m => m.Condition).Select(m => new
-                {
-                    m.Id,
-                    m.Name,
-                    m.SubCategory.Category.CategoryName,
-                    m.SubCategory.Category.CategoryNameSo,
-                    m.SubCategory.SubCategoryName,
-                    m.SubCategory.SubCategoryNameSo,
-                    m.Make,
-                    m.Model,
-                    m.Barcode,
-                    m.SerialNo,
-                    m.Condition.ConditionName,
-                    m.Condition.ConditionNameSo,
-                    m.Plate
-                }).ToListAsync();
-
-                var transferAssets = new List<TransferAssetDTO>();
-
-                foreach (var transferDetail in transferDetails)
-                {
-                    var asset = assets.Where(m => m.Id == transferDetail.AssetId).FirstOrDefault();
-                    if (asset == null)
+                var transferAssets = await _db.TransferDetails
+                    .AsNoTracking()
+                    .Where(td => td.TransferId == transferId)
+                    .Select(td => new TransferAssetDTO
                     {
-                        break;
-                    }
-                    var sIdentification = (asset.CategoryName == "Vehicles") ? _isSomali ? "Taariko" : "Plate No: " + asset.Plate.ToString() : _isSomali ? "L.T" : "S.N: " + asset.SerialNo.ToString();
-
-                    var transferAsset = new TransferAssetDTO()
-                    {
-                        AssetId = asset.Id,
-                        AssetName = asset.Name,
-                        Category = _isSomali ? asset.CategoryNameSo : asset.CategoryName,
-                        SubCategory = _isSomali ? asset.SubCategoryNameSo : asset.SubCategoryName,
-                        Make = asset.Make,
-                        Model = asset.Model,
-                        Barcode = asset.Barcode.ToString(),
-                        SerialNumber = sIdentification,
-                        Condition = _isSomali ? asset.ConditionNameSo : asset.ConditionName,
+                        AssetId = td.Asset.Id,
+                        AssetName = td.Asset.Name,
+                        Category = _isSomali
+                                         ? td.Asset.SubCategory.Category.CategoryNameSo
+                                         : td.Asset.SubCategory.Category.CategoryName,
+                        SubCategory = _isSomali
+                                         ? td.Asset.SubCategory.SubCategoryNameSo
+                                         : td.Asset.SubCategory.SubCategoryName,
+                        Make = td.Asset.Make,
+                        Model = td.Asset.Model,
+                        Barcode = td.Asset.Barcode ?? "-",
+                        SerialNumber = td.Asset.SubCategory.Category.CategoryName == "Vehicles"
+                            ? (_isSomali ? "Taariko: " : "Plate No: ") + td.Asset.Plate
+                            : (_isSomali ? "L.T: " : "S.N: ") + td.Asset.SerialNo,
+                        Condition = _isSomali
+                                         ? td.Asset.Condition.ConditionNameSo
+                                         : td.Asset.Condition.ConditionName,
                         IsSelected = true
-                    };
-                    transferAssets.Add(transferAsset);
-                }
-                dto.transferAssets = transferAssets;
+                    })
+                    .OrderByDescending(a => a.Category == (_isSomali ? "Gaadiid" : "Vehicles")) 
+                    .ToListAsync();
 
-                int senderId = await _func.GetStoreOwnerIdAsync(transfer.StoreFromId);
-                int receiverId = await _func.GetStoreOwnerIdAsync(transfer.StoreId);
+                var senderId = await _func.GetStoreOwnerIdAsync(transfer.StoreFromId);
+                var receiverId = await _func.GetStoreOwnerIdAsync(transfer.StoreId);
+                bool isSender = senderId == _employeeId;
+                bool isReceiver = receiverId == _employeeId;
 
-                dto.IsSender = (senderId == _employeeId) ? true : false;
-                dto.IsReceiver = (receiverId == _employeeId) ? true : false;
+                string transferBy = transfer.SenderBarcode ?? "";
+                string receivedBy = transfer.ReceiverBarcode ?? "";
 
-                dto.TransferBy = transfer.SenderBarcode;
-                dto.ReceivedBy = transfer.ReceiverBarcode;
+                var fromSignature = !string.IsNullOrWhiteSpace(transferBy)
+                    ? Barcode.GenerateBarCode(transferBy)
+                    : null;
 
-                if (transfer.SenderBarcode != "")
-                    dto.FromSignature = MODAMS.Utility.Barcode.GenerateBarCode(dto.TransferBy);
+                var toSignature = !string.IsNullOrWhiteSpace(receivedBy)
+                    ? Barcode.GenerateBarCode(receivedBy)
+                    : null;
 
-                if (transfer.ReceiverBarcode != "")
-                    dto.ToSignature = MODAMS.Utility.Barcode.GenerateBarCode(dto.ReceivedBy);
+                var dto = new TransferPreviewDTO
+                {
+                    vwTransfer = transfer,
+                    transferAssets = transferAssets,
+                    IsSender = isSender,
+                    IsReceiver = isReceiver,
+                    TransferBy = transferBy,
+                    ReceivedBy = receivedBy,
+                    FromSignature = fromSignature ?? "",
+                    ToSignature = toSignature ?? ""
+                };
 
                 return Result<TransferPreviewDTO>.Success(dto);
             }
@@ -525,61 +467,57 @@ namespace MODAMS.ApplicationServices
         {
             try
             {
-                _employeeId = (IsInRole("User")) ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
-
-                var transfer = await _db.Transfers.Where(m => m.Id == transferId).FirstOrDefaultAsync();
+                var transfer = await _db.Transfers
+                    .FirstOrDefaultAsync(t => t.Id == transferId);
 
                 if (transfer == null)
-                {
-                    return Result.Failure(_isSomali ? "Diiwaanka wareejinta lama helin!" : "Transfer not found!");
-                }
+                    return Result.Failure(
+                        _isSomali
+                          ? "Diiwaanka wareejinta lama helin!"
+                          : "Transfer not found!");
 
-                int nEmployeeId = await _func.GetEmployeeIdAsync();
                 transfer.TransferStatusId = SD.Transfer_SubmittedForAcknowledgement;
-                transfer.SenderBarcode = await _func.GetEmployeeNameAsync(nEmployeeId);
+                transfer.SenderBarcode = await _func.GetEmployeeNameAsync(_employeeId);
 
                 await _db.SaveChangesAsync();
-                string sMessage = "";
-                if (_isSomali)
-                {
-                    sMessage = $"Wareejin cusub waxaa soo gudbiyay " +
-                        $"{await _func.GetEmployeeNameByIdAsync(_employeeId)}" +
-                        $" si aad u oggolaato. Fadlan guji xiriirka hoose oo raac tilmaamaha.";
-                }
-                else
-                {
-                    sMessage = $"A new transfer has been submitted by " +
-                        $"{await _func.GetEmployeeNameByIdAsync(_employeeId)}" +
-                        $" for your acknowledgement. Please click the following link and follow the instructions.";
-                }
 
-                Notification notification = new Notification()
+                var senderName = await _func.GetEmployeeNameByIdAsync(_employeeId);
+                var receiverId = await _func.GetStoreOwnerIdAsync(transfer.StoreId);
+                var departmentId = await _func.GetDepartmentIdByEmployeeIdAsync(receiverId);
+
+                string subject = _isSomali
+                    ? "Wareejintu waxay sugaysaa oggolaansho"
+                    : "Transfer awaiting acknowledgement";
+
+                string messageTemplate = _isSomali
+                    ? "Wareejin cusub waxaa soo gudbiyay {0} si aad u oggolaato. Fadlan guji xiriirka hoose oo raac tilmaamaha."
+                    : "A new transfer has been submitted by {0} for your acknowledgement. Please click the following link and follow the instructions.";
+
+                var notification = new Notification
                 {
                     EmployeeFrom = _employeeId,
-                    EmployeeTo = await _func.GetStoreOwnerIdAsync(transfer.StoreId),
-                    Subject = _isSomali ? "Wareejintu waxay sugaysaa oggolaansho" : "Transfer awaiting acknowledgement",
-                    Message = sMessage,
-                    DateTime = DateTime.Now,
+                    EmployeeTo = receiverId,
+                    Subject = subject,
+                    Message = string.Format(messageTemplate, senderName),
+                    DateTime = DateTime.UtcNow,
                     IsViewed = false,
                     TargetRecordId = transfer.Id,
                     NotificationSectionId = SD.NS_Transfer
                 };
-                int departmentId = await _func.GetDepartmentIdAsync(notification.EmployeeTo);
 
                 await _func.NotifyDepartmentAsync(departmentId, notification);
 
-                //Log NewsFeed
-                string employeeName = await _func.GetEmployeeNameAsync();
+                var actorName = await _func.GetEmployeeNameAsync();
+                string newsMessage = _isSomali
+                    ? $"{actorName} wuxuu soo gudbiyay wareejinta ({transfer.TransferNumber}) si loo oggolaado"
+                    : $"{actorName} submitted the transfer ({transfer.TransferNumber}) for acknowledgement";
 
-                if (_isSomali)
-                {
-                    sMessage = $"{employeeName} wuxuu soo gudbiyay wareejinta ({transfer.TransferNumber}) si loo oggolaado";
-                }
-                else
-                {
-                    sMessage = $"{employeeName} submitted the transfer ({transfer.TransferNumber}) for acknowledgement";
-                }
-                await _func.LogNewsFeedAsync(sMessage, "Users", "Transfers", "PreviewTransfer", transfer.Id);
+                await _func.LogNewsFeedAsync(
+                    newsMessage,
+                    area: "Users",
+                    controller: "Transfers",
+                    action: "PreviewTransfer",
+                    sourceRecordId: transfer.Id);
 
                 return Result.Success();
             }
@@ -591,154 +529,161 @@ namespace MODAMS.ApplicationServices
         }
         public async Task<Result> AcknowledgeTransferAsync(int transferId)
         {
-            using var transaction = await _db.Database.BeginTransactionAsync();
-
+            await using var tx = await _db.Database.BeginTransactionAsync();
             try
             {
-                _employeeId = IsInRole("User") ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
-
-                var transfer = await _db.Transfers.FirstOrDefaultAsync(m => m.Id == transferId);
+                var transfer = await _db.Transfers
+                    .FirstOrDefaultAsync(t => t.Id == transferId);
 
                 if (transfer == null)
-                {
-                    return Result.Failure(_isSomali ? "Diiwaanka wareejinta lama helin!" : "Transfer not found!");
-                }
+                    return Result.Failure(
+                        _isSomali
+                          ? "Diiwaanka wareejinta lama helin!"
+                          : "Transfer not found!");
 
-                var transferDetails = await _db.TransferDetails
-                    .Where(m => m.TransferId == transferId)
+                var assetIds = await _db.TransferDetails
+                    .Where(td => td.TransferId == transferId)
+                    .Select(td => td.AssetId)
                     .ToListAsync();
 
-                foreach (var item in transferDetails)
+                if (assetIds.Any())
                 {
-                    var asset = await _db.Assets.FirstOrDefaultAsync(m => m.Id == item.AssetId);
-                    if (asset == null)
-                        continue;
+                    var assets = await _db.Assets
+                        .Where(a => assetIds.Contains(a.Id))
+                        .ToListAsync();
 
-                    var fromStoreName = await _func.GetStoreNameByStoreIdAsync(transfer.StoreFromId);
-                    var toStoreName = await _func.GetStoreNameByStoreIdAsync(transfer.StoreId);
+                    var fromStore = await _func.GetStoreNameByStoreIdAsync(transfer.StoreFromId);
+                    var toStore = await _func.GetStoreNameByStoreIdAsync(transfer.StoreId);
 
-                    string sDesc = "";
-                    if (_isSomali)
+                    var histories = assets.Select(a => new AssetHistory
                     {
-                        sDesc = $"Hanti ayaa laga wareejiyay {fromStoreName} loona wareejiyay {toStoreName}";
-                    }
-                    else
-                    {
-                        sDesc = $"Asset Transferred from {fromStoreName} to {toStoreName}";
-                    }
-                    var assetHistory = new AssetHistory
-                    {
-                        AssetId = item.AssetId,
-                        Description = sDesc,
-                        TimeStamp = DateTime.Now,
-                        TransactionRecordId = item.TransferId,
+                        AssetId = a.Id,
+                        Description = _isSomali
+                            ? $"Hanti ayaa laga wareejiyay {fromStore} loona wareejiyay {toStore}"
+                            : $"Asset Transferred from {fromStore} to {toStore}",
+                        TimeStamp = DateTime.UtcNow,
+                        TransactionRecordId = transferId,
                         TransactionTypeId = SD.Transaction_Transfer
-                    };
+                    }).ToList();
 
-                    _db.AssetHistory.Add(assetHistory);
+                    _db.AssetHistory.AddRange(histories);
 
-                    // Update the asset's current store
-                    asset.StoreId = transfer.StoreId;
+                    assets.ForEach(a => a.StoreId = transfer.StoreId);
                 }
 
-                await _db.SaveChangesAsync();
-
-                // Update transfer status
                 transfer.TransferStatusId = SD.Transfer_Completed;
                 transfer.ReceiverBarcode = await _func.GetEmployeeNameAsync(_employeeId);
-                transfer.AcknowledgementDate = DateTime.Now;
+                transfer.AcknowledgementDate = DateTime.UtcNow;
 
                 await _db.SaveChangesAsync();
 
                 var ownerId = await _func.GetStoreOwnerIdAsync(transfer.StoreFromId);
-                var employeeName = await _func.GetEmployeeNameByIdAsync(_employeeId);
-                string sMessage = "";
-                if (_isSomali)
-                {
-                    sMessage = $"Lambarka Wareejinta: <b>{transfer.TransferNumber}</b> waxaa oggolaaday {employeeName}.";
-                }
-                else
-                {
-                    sMessage = $"Transfer Number: <b>{transfer.TransferNumber}</b> has been acknowledged by {employeeName}.";
-                }
+                var actor = await _func.GetEmployeeNameByIdAsync(_employeeId);
+
+                string notifSubject = _isSomali
+                    ? "Wareejinta waa la oggolaaday"
+                    : "Transfer acknowledged";
+
+                string notifMessage = _isSomali
+                    ? $"{actor} ayaa oggolaaday wareejinta ({transfer.TransferNumber})."
+                    : $"Transfer Number: <b>{transfer.TransferNumber}</b> has been acknowledged by {actor}.";
 
                 var notification = new Notification
                 {
                     EmployeeFrom = _employeeId,
                     EmployeeTo = ownerId,
-                    Subject = _isSomali ? "Wareejinta waa la oggolaaday" : "Transfer acknowledged",
-                    Message = sMessage,
-                    DateTime = DateTime.Now,
+                    Subject = notifSubject,
+                    Message = notifMessage,
+                    DateTime = DateTime.UtcNow,
                     IsViewed = false,
-                    TargetRecordId = transfer.Id,
+                    TargetRecordId = transferId,
                     NotificationSectionId = SD.NS_Transfer
                 };
 
-                var departmentId = await _func.GetDepartmentIdAsync(notification.EmployeeTo);
-                await _func.NotifyDepartmentAsync(departmentId, notification);
+                var deptId = await _func.GetDepartmentIdByEmployeeIdAsync(ownerId);
+                await _func.NotifyDepartmentAsync(deptId, notification);
 
-                string message = $"{employeeName} acknowledged the transfer ({transfer.TransferNumber})";
-                if (_isSomali)
-                    message = $"{employeeName} ayaa oggolaaday wareejinta ({transfer.TransferNumber})";
+                string newsMsg = _isSomali
+                    ? $"{actor} ayaa oggolaaday wareejinta ({transfer.TransferNumber})"
+                    : $"{actor} acknowledged the transfer ({transfer.TransferNumber})";
 
-                await _func.LogNewsFeedAsync(message, "Users", "Transfers", "PreviewTransfer", transfer.Id);
-                await transaction.CommitAsync();
+                await _func.LogNewsFeedAsync(
+                    newsMsg,
+                    area: "Users",
+                    controller: "Transfers",
+                    action: "PreviewTransfer",
+                    sourceRecordId: transferId);
 
+                await tx.CommitAsync();
                 return Result.Success();
             }
             catch (Exception ex)
             {
-                await transaction.RollbackAsync();
+                await tx.RollbackAsync();
                 _func.LogException(_logger, ex);
-                var sError = (_isSomali) ? "Khalad ayaa dhacay inta lagu jiray oggolaanshaha wareejinta" : "Error acknowledging transfer";
-                return Result.Failure($"{sError}: {ex.Message}");
+
+                var err = _isSomali
+                    ? "Khalad ayaa dhacay inta lagu jiray oggolaanshaha wareejinta"
+                    : "Error acknowledging transfer";
+
+                return Result.Failure($"{err}: {ex.Message}");
             }
         }
         public async Task<Result> RejectTransferAsync(int transferId, string txtReason = "")
         {
             try
             {
-                _employeeId = (IsInRole("User")) ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
-                var transfer = _db.Transfers.FirstOrDefault(m => m.Id == transferId);
-
+                var transfer = await _db.Transfers
+                    .FirstOrDefaultAsync(t => t.Id == transferId);
                 if (transfer == null)
-                    return Result.Failure(_isSomali ? "Diiwaanka wareejinta lama helin!" : "Transfer record not found!");
-
+                    return Result.Failure(
+                        _isSomali
+                          ? "Diiwaanka wareejinta lama helin!"
+                          : "Transfer record not found!");
 
                 transfer.TransferStatusId = SD.Transfer_Rejected;
-                transfer.AcknowledgementDate = DateTime.Now;
+                transfer.AcknowledgementDate = DateTime.UtcNow;
                 transfer.ReceiverBarcode = await _func.GetEmployeeNameAsync(_employeeId);
 
                 await _db.SaveChangesAsync();
 
                 var ownerId = await _func.GetStoreOwnerIdAsync(transfer.StoreFromId);
-                var employeeName = await _func.GetEmployeeNameByIdAsync(_employeeId);
+                var actorName = await _func.GetEmployeeNameByIdAsync(_employeeId);
+                var transferNum = transfer.TransferNumber;
 
-                var sMessage = $"Transfer Number: <b>{transfer.TransferNumber}</b> has been rejected by {employeeName}, please click the following link for details";
-                if (_isSomali)
-                    sMessage = $"Lambarka Wareejinta: <b>{transfer.TransferNumber}</b> waxaa diiday {employeeName}, fadlan guji xiriirka hoose si aad u aragto faahfaahinta.";
+                string subject = _isSomali
+                    ? "Wareejinta waa la diiday"
+                    : "Transfer rejected";
+
+                string notifTemplate = _isSomali
+                    ? "Lambarka Wareejinta: <b>{0}</b> waxaa diiday {1}, fadlan guji xiriirka hoose si aad u aragto faahfaahinta."
+                    : "Transfer Number: <b>{0}</b> has been rejected by {1}, please click the following link for details.";
 
                 var notification = new Notification
                 {
                     EmployeeFrom = _employeeId,
                     EmployeeTo = ownerId,
-                    Subject = _isSomali ? "Wareejinta waa la diiday" : "Transfer rejected",
-                    Message = sMessage,
-                    DateTime = DateTime.Now,
+                    Subject = subject,
+                    Message = string.Format(notifTemplate, transferNum, actorName),
+                    DateTime = DateTime.UtcNow,
                     IsViewed = false,
                     TargetRecordId = transfer.Id,
                     NotificationSectionId = SD.NS_Transfer
                 };
 
-                var departmentId = await _func.GetDepartmentIdAsync(notification.EmployeeTo);
+                var departmentId = await _func.GetDepartmentIdByEmployeeIdAsync(ownerId);
                 await _func.NotifyDepartmentAsync(departmentId, notification);
 
-                //Log NewsFeed
-                sMessage = $"{employeeName} rejected the transfer ({transfer.TransferNumber})";
-                if (_isSomali)
-                    sMessage = $"{employeeName} ayaa diiday wareejinta ({transfer.TransferNumber})";
+                string newsTemplate = _isSomali
+                    ? "{1} ayaa diiday wareejinta ({0})"
+                    : "{1} rejected the transfer ({0})";
 
-                await _func.LogNewsFeedAsync(sMessage, "Users", "Transfers", "PreviewTransfer", transfer.Id);
+                await _func.LogNewsFeedAsync(
+                    string.Format(newsTemplate, transferNum, actorName),
+                    area: "Users",
+                    controller: "Transfers",
+                    action: "PreviewTransfer",
+                    sourceRecordId: transfer.Id);
 
                 return Result.Success();
             }
@@ -949,34 +894,37 @@ namespace MODAMS.ApplicationServices
 
             return $"{currentStoreId}-{paddedNumber}";
         }
-        private async Task<List<MODAMS.Models.Asset>> GetAssetsAsync([CallerMemberName] string caller = "")
+        private async Task<List<Asset>> GetAssetsAsync([CallerMemberName] string caller = "")
         {
-            var assets = await _db.Assets
-                .Include(m => m.Store.Department)
-                .Include(m => m.SubCategory.Category)
-                .Where(m => m.AssetStatusId == 1 && m.Store.Department.EmployeeId == _employeeId)
-                .ToListAsync();
+            var storeId = await _func.GetStoreIdByEmployeeIdAsync(_employeeId);
 
-            var transferDetails = await _db.TransferDetails
-                .Include(m => m.Transfer)
-                .Where(m => m.Transfer.TransferStatusId == SD.Transfer_Pending ||
-                m.Transfer.TransferStatusId == SD.Transfer_SubmittedForAcknowledgement)
-                .ToListAsync();
-            if (caller == "GetCreateTransferAsync")
+            var query = _db.Assets
+                .AsNoTracking()
+                .Include(a => a.Store.Department)
+                .Include(a => a.SubCategory.Category)
+                .Where(a => a.AssetStatusId == SD.Asset_Available
+                         && a.StoreId == storeId);
+
+            if (caller == nameof(GetCreateTransferAsync))
             {
-                assets = assets
-                .Where(m => !transferDetails.Any(detail => detail.AssetId == m.Id))
-                .ToList();
+                var pendingStatuses = new[]
+                {
+                    SD.Transfer_Pending,
+                    SD.Transfer_SubmittedForAcknowledgement
+                };
+
+                query = query.Where(a => !_db.TransferDetails
+                        .Where(td => pendingStatuses.Contains(td.Transfer.TransferStatusId))
+                        .Select(td => td.AssetId)
+                        .Contains(a.Id));
             }
 
-
-            return assets;
+            return await query.ToListAsync();
         }
         private async Task<int> GetCurrentStoreIdAsync()
         {
-            int departmentId = await _func.GetDepartmentIdAsync(_employeeId);
+            int departmentId = await _func.GetDepartmentIdByEmployeeIdAsync(_employeeId);
             return await _func.GetStoreIdByDepartmentIdAsync(departmentId);
-
         }
         private async Task<decimal> GetTotalTransferValueAsync(int storeId)
         {
@@ -1030,5 +978,38 @@ namespace MODAMS.ApplicationServices
 
             return imageUrl ?? "/assets/images/placeholders/pictureplaceholder.jpg";
         }
+        private async Task<List<vwStore>> GetAccessibleStoresWithTransfersOnlyAsync(List<vwStore> allStores)
+        {
+            List<vwStore> stores = new();
+
+            if (IsInRole("User"))
+            {
+                int storeId = await _func.GetStoreIdByEmployeeIdAsync(_employeeId);
+                stores = allStores.Where(s => s.Id == storeId).ToList();
+            }
+            else if (IsInRole("StoreOwner"))
+            {
+                var ownedStores = allStores.Where(s => s.EmployeeId == _employeeId).ToList();
+                if (ownedStores.Any())
+                {
+                    var mainDeptId = ownedStores.First().DepartmentId;
+                    var storeFinder = new StoreFinder(mainDeptId, allStores);
+                    stores = storeFinder.GetStores();
+                }
+            }
+            else
+            {
+                stores = allStores;
+            }
+
+            // Filter to stores that have at least one transfer record
+            var storeIdsWithTransfers = await _db.vwTransfers
+                .Select(t => t.StoreFromId)
+                .Distinct()
+                .ToListAsync();
+
+            return stores.Where(s => storeIdsWithTransfers.Contains(s.Id)).ToList();
+        }
+
     }
 }

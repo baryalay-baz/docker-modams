@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.Globalization;
 
 namespace MODAMS.Models.ViewModels.Dto
@@ -6,6 +7,9 @@ namespace MODAMS.Models.ViewModels.Dto
     public class VerificationsDTO
     {
         public List<VerificationSchedule> Schedules { get; set; }
+
+        [ValidateNever]
+        public bool IsAuthorized { get; set; }
 
         public List<ScheduleBarChartItem> GetBarChartData()
         {

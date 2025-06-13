@@ -1,8 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Mvc.Localization
-@using System.Globalization
-
 @inject IViewLocalizer Localizer
-
 @model MODAMS.Models.ViewModels.Dto.VerificationScheduleCreateDTO
 
 <style>
@@ -67,9 +64,7 @@
         padding: 5px 10px;
     }
 </style>
-@{
-    bool _isSomali = CultureInfo.CurrentUICulture.Name == "so";
-}
+
 <div class="page-header">
     <div>
         <h1 class="page-title">@Localizer["AssetVerificationSchedule"]</h1>
@@ -111,7 +106,7 @@
                                                 <div class="col-md-6">
                                                     <div class="mb-3 form-group">
                                                         <label class="text-black">@Localizer["Department"]</label>
-                                                        <input type="text" value="@(_isSomali? Model.Store.Department.NameSo:Model.Store.Department.Name)" disabled class="form-control" />
+                                                        <input type="text" value="@Model.DepartmentName" disabled class="form-control" />
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
@@ -240,7 +235,6 @@
         </div>
     </div>
 </div>
-
 
 @section Scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/jquery.validate.min.js"></script>
