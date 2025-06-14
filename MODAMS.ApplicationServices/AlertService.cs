@@ -147,7 +147,8 @@ namespace MODAMS.ApplicationServices
 
             if (IsInRole("User"))
             {
-                _employeeId = await _func.GetSupervisorIdAsync(_employeeId);
+                var storeId = await _func.GetStoreIdByEmployeeIdAsync(_employeeId);
+                _employeeId = await _func.GetStoreOwnerIdAsync(storeId);
             }
 
 
@@ -171,7 +172,11 @@ namespace MODAMS.ApplicationServices
         }
         private async Task<List<vwAlert>> GetMissingDataAlerts()
         {
-            _employeeId = IsInRole("User") ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
+            if (IsInRole("User"))
+            {
+                var storeId = await _func.GetStoreIdByEmployeeIdAsync(_employeeId);
+                _employeeId = await _func.GetStoreOwnerIdAsync(storeId);
+            }
 
             var assets = await _db.Assets
                 .Include(m => m.SubCategory.Category)

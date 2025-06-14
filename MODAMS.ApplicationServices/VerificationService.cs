@@ -65,7 +65,6 @@ namespace MODAMS.ApplicationServices
                 return Result<VerificationsDTO>.Failure(ex.Message);
             }
         }
-        // 2) Refactor your service to populate those
         public async Task<Result<VerificationScheduleCreateDTO>> GetCreateScheduleAsync()
         {
             try
@@ -112,10 +111,11 @@ namespace MODAMS.ApplicationServices
                 var employeeItems = await _db.StoreEmployees
                     .AsNoTracking()
                     .Where(se => se.StoreId == storeId && se.EmployeeId != _employeeId)
-                    .Select(se => new
+                    .Select(se => new Employee
                     {
-                        se.Employee.Id,
-                        Label = se.Employee.FullName + " (" + se.Employee.JobTitle + ")"
+                        Id = se.Employee.Id,
+                        FullName = se.Employee.FullName + " (" + se.Employee.JobTitle + ")",
+                        ImageUrl = se.Employee.ImageUrl
                     })
                     .ToListAsync();
 
@@ -124,25 +124,27 @@ namespace MODAMS.ApplicationServices
                     var me = await _db.Employees
                         .AsNoTracking()
                         .Where(e => e.Id == _employeeId)
-                        .Select(e => new
+                        .Select(e => new Employee
                         {
-                            e.Id,
-                            Label = e.FullName + " (" + e.JobTitle + ")"
+                            Id = e.Id,
+                            FullName = e.FullName + " (" + e.JobTitle + ")",
+                            ImageUrl = e.ImageUrl
                         })
                         .FirstOrDefaultAsync();
+
                     if (me != null && employeeItems.All(x => x.Id != me.Id))
                         employeeItems.Add(me);
                 }
 
                 // 5) Populate both Employees and EmployeesList
                 dto.Employees = employeeItems
-                    .Select(x => new Employee { Id = x.Id, FullName = x.Label, JobTitle = "" })
+                    .Select(x => new Employee { Id = x.Id, FullName = x.FullName, JobTitle = "", ImageUrl = x.ImageUrl})
                     .ToList();
 
                 dto.EmployeesList = employeeItems
                     .Select(x => new SelectListItem
                     {
-                        Text = x.Label,
+                        Text = x.FullName,
                         Value = x.Id.ToString()
                     })
                     .ToList();
@@ -157,65 +159,45 @@ namespace MODAMS.ApplicationServices
                 return Result<VerificationScheduleCreateDTO>.Failure(ex.Message);
             }
         }
-
-
-
         public async Task<Result<VerificationScheduleCreateDTO>> CreateScheduleAsync(VerificationScheduleCreateDTO dto, string teamMembersData)
         {
             try
             {
-                using (var transaction = await _db.Database.BeginTransactionAsync())
+                using var tx = await _db.Database.BeginTransactionAsync();
+
+                dto.NewSchedule.EmployeeId = _employeeId;
+                dto.NewSchedule.VerificationStatus = "Pending";
+
+                await _db.VerificationSchedules.AddAsync(dto.NewSchedule);
+                await _db.SaveChangesAsync();
+
+                var members = JsonConvert
+                    .DeserializeObject<List<TeamMemberDto>>(teamMembersData)
+                    ?? new List<TeamMemberDto>();
+
+                var scheduleId = dto.NewSchedule.Id;
+
+                if (members.Count > 0)
                 {
-                    try
+                    var teamEntities = members.Select(m => new VerificationTeam
                     {
-                        var storeOwnerId = await _func.GetStoreOwnerIdAsync(dto.NewSchedule.StoreId);
-                        dto.NewSchedule.EmployeeId = storeOwnerId;
-                        dto.NewSchedule.VerificationStatus = "Pending";
+                        EmployeeId = m.EmployeeId,
+                        Role = m.Role,
+                        VerificationScheduleId = scheduleId
+                    }).ToList();
 
-                        await _db.VerificationSchedules.AddAsync(dto.NewSchedule);
-                        await _db.SaveChangesAsync();
-
-                        var selectedTeamMembers = JsonConvert.DeserializeObject<List<VerificationTeam>>(teamMembersData);
-                        if (selectedTeamMembers != null)
-                        {
-                            var newVerificationTeam = new List<VerificationTeam>();
-
-                            foreach (var teamMember in selectedTeamMembers)
-                            {
-                                newVerificationTeam.Add(new VerificationTeam
-                                {
-                                    EmployeeId = teamMember.EmployeeId,
-                                    Role = teamMember.Role,
-                                    VerificationScheduleId = dto.NewSchedule.Id
-                                });
-                                await NotifyTeamMemberAsync(dto.NewSchedule.Id, teamMember.EmployeeId, teamMember.Role);
-                            }
-
-                            if (newVerificationTeam.Any())
-                            {
-                                await _db.VerificationTeams.AddRangeAsync(newVerificationTeam);
-                            }
-
-                            await _db.SaveChangesAsync();
-                        }
-                        await transaction.CommitAsync();
-                        return Result<VerificationScheduleCreateDTO>.Success(dto);
-                    }
-                    catch (Exception ex)
-                    {
-                        try
-                        {
-                            await _db.Database.RollbackTransactionAsync();
-                        }
-                        catch (Exception rollbackEx)
-                        {
-                            _func.LogException(_logger, rollbackEx);
-                            return Result<VerificationScheduleCreateDTO>.Failure(rollbackEx.Message);
-                        }
-                        _func.LogException(_logger, ex);
-                        return Result<VerificationScheduleCreateDTO>.Failure(ex.Message);
-                    }
+                    await _db.VerificationTeams.AddRangeAsync(teamEntities);
+                    await _db.SaveChangesAsync();
                 }
+
+                await tx.CommitAsync();
+
+                foreach (var m in members)
+                {
+                    await NotifyTeamMemberAsync(scheduleId, m.EmployeeId, m.Role);
+                }
+
+                return Result<VerificationScheduleCreateDTO>.Success(dto);
             }
             catch (Exception ex)
             {
@@ -223,6 +205,7 @@ namespace MODAMS.ApplicationServices
                 return Result<VerificationScheduleCreateDTO>.Failure(ex.Message);
             }
         }
+
         public async Task<Result<VerificationScheduleEditDTO>> GetEditScheduleAsync(int id)
         {
             try
@@ -278,90 +261,74 @@ namespace MODAMS.ApplicationServices
                 return Result<VerificationScheduleEditDTO>.Failure(ex.Message);
             }
         }
-        public async Task<Result<VerificationScheduleEditDTO>> EditScheduleAsync(VerificationScheduleEditDTO dto, string teamMembersData)
+        public async Task<Result<VerificationScheduleEditDTO>> EditScheduleAsync(VerificationScheduleEditDTO dto,string teamMembersData)
         {
+            var schedule = await _db.VerificationSchedules
+                                    .Include(s => s.VerificationTeams)
+                                    .FirstOrDefaultAsync(s => s.Id == dto.Id);
+            if (schedule == null)
+                return Result<VerificationScheduleEditDTO>
+                    .Failure(_isSomali
+                        ? "Jadwalka Hubinta lama helin!"
+                        : "Verification Schedule not found!");
+
+            using var tx = await _db.Database.BeginTransactionAsync();
             try
             {
-                var scheduleInDb = await _db.VerificationSchedules.FirstOrDefaultAsync(m => m.Id == dto.Id);
+                
+                dto.EmployeeId = _employeeId;
+                dto.VerificationStatus = "Pending";
 
-                if (scheduleInDb == null)
-                    return Result<VerificationScheduleEditDTO>.Failure(_isSomali ? "Jadwalka Hubinta lama helin!" : "Verification Schedule not found!");
+                _db.Entry(schedule).CurrentValues.SetValues(dto);
 
-
-                using (var transaction = await _db.Database.BeginTransactionAsync())
+                if (!string.IsNullOrWhiteSpace(teamMembersData))
                 {
-                    try
-                    {
-                        var storeOwnerId = await _func.GetStoreOwnerIdAsync(scheduleInDb.StoreId);
-                        dto.EmployeeId = storeOwnerId;
-                        dto.VerificationStatus = "Pending";
+                    var edits = JsonConvert.DeserializeObject<List<VerificationTeamEditDTO>>(teamMembersData)
+                        ?? new List<VerificationTeamEditDTO>();
 
-                        // Update the schedule with the new values from dto
-                        _db.Entry(scheduleInDb).CurrentValues.SetValues(dto);
+                    _db.VerificationTeams.RemoveRange(schedule.VerificationTeams);
 
-                        await _db.SaveChangesAsync();
-
-                        // Handle team members
-                        if (!string.IsNullOrWhiteSpace(teamMembersData))
+                    var freshTeams = edits
+                        .Select(tm => new VerificationTeam
                         {
-                            var selectedTeamMembers = JsonConvert.DeserializeObject<List<VerificationTeamEditDTO>>(teamMembersData);
+                            VerificationScheduleId = schedule.Id,
+                            EmployeeId = tm.EmployeeId,
+                            Role = tm.Role
+                        })
+                        .ToList();
 
-                            if (selectedTeamMembers != null)
-                            {
-                                // Remove existing team members
-                                var currentTeam = await _db.VerificationTeams
-                                                           .Where(m => m.VerificationScheduleId == dto.Id)
-                                                           .ToListAsync();
-
-                                _db.VerificationTeams.RemoveRange(currentTeam);
-                                await _db.SaveChangesAsync();
-
-                                // Add new team members
-                                var newTeamMembers = selectedTeamMembers.Select(teamMember => new VerificationTeam
-                                {
-                                    EmployeeId = teamMember.EmployeeId,
-                                    Role = teamMember.Role,
-                                    VerificationScheduleId = dto.Id
-                                }).ToList();
-
-                                await _db.VerificationTeams.AddRangeAsync(newTeamMembers);
-                                await _db.SaveChangesAsync();
-                            }
-                        }
-                        await transaction.CommitAsync();
-                        return Result<VerificationScheduleEditDTO>.Success(dto);
-                    }
-                    catch (Exception ex)
-                    {
-                        try
-                        {
-                            await _db.Database.RollbackTransactionAsync();
-                        }
-                        catch (Exception rollbackEx)
-                        {
-                            _func.LogException(_logger, rollbackEx);
-                            return Result<VerificationScheduleEditDTO>.Failure(rollbackEx.Message);
-                        }
-                        _func.LogException(_logger, ex);
-                        return Result<VerificationScheduleEditDTO>.Failure(ex.Message);
-                    }
+                    await _db.VerificationTeams.AddRangeAsync(freshTeams);
                 }
+
+                await _db.SaveChangesAsync();
+                await tx.CommitAsync();
+
+                return Result<VerificationScheduleEditDTO>.Success(dto);
+            }
+            catch (DbUpdateConcurrencyException ce)
+            {
+                await tx.RollbackAsync();
+                _logger.LogWarning(ce, "Concurrency conflict updating schedule {ScheduleId}", dto.Id);
+                return Result<VerificationScheduleEditDTO>
+                    .Failure(_isSomali
+                        ? "Isku dhacyada xogta ayaa dhacay. Fadlan isku day mar kale."
+                        : "The schedule was modified by someone else. Please reload and try again.");
             }
             catch (Exception ex)
             {
-                _func.LogException(_logger, ex);
-                return Result<VerificationScheduleEditDTO>.Failure(ex.Message);
+                await tx.RollbackAsync();
+                _logger.LogError(ex, "Failed to update schedule {ScheduleId}", dto.Id);
+                return Result<VerificationScheduleEditDTO>
+                    .Failure(_isSomali
+                        ? "Waxaa dhacay khalad ku saabsan keydinta xogta."
+                        : "An error occurred while saving changes.");
             }
         }
+
         public async Task<Result<VerificationSchedulePreviewDTO>> GetPreviewScheduleAsync(int id)
         {
             try
             {
-                var employees = await _db.Employees.Where(m => m.Id == _employeeId || m.SupervisorEmployeeId == _employeeId).ToListAsync();
-                var storeList = await _db.Stores
-                    .Include(m => m.Department)
-                    .Where(m => m.Department.EmployeeId == _employeeId).ToListAsync();
-
                 var schedule = await _db.VerificationSchedules
                     .AsNoTracking()
                     .Where(m => m.Id == id)
@@ -379,8 +346,19 @@ namespace MODAMS.ApplicationServices
                     })
                     .FirstOrDefaultAsync();
 
-                if (schedule == null) return Result<VerificationSchedulePreviewDTO>.Failure(_isSomali ? "Jadwalka Hubinta lama helin!" : "Verification Schedule Not found!");
+                if(schedule == null) return Result<VerificationSchedulePreviewDTO>.Failure(_isSomali ? "Jadwalka Hubinta lama helin!" : "Verification Schedule Not found!");
 
+                var employees = await _func.GetStoreEmployeesByStoreIdAsync(schedule.StoreId);
+                var emp = await _db.Employees
+                    .AsNoTracking()
+                    .Where(m => m.Id == schedule.EmployeeId).FirstOrDefaultAsync();
+                if(emp!=null)
+                    employees.Add(emp);
+
+                var storeList = await _db.Stores
+                    .Include(m => m.Department)
+                    .Where(m => m.Department.EmployeeId == schedule.EmployeeId).ToListAsync();
+                
                 int verifiedAssets = await _db.VerificationRecords.Where(m => m.VerificationScheduleId == id).CountAsync();
 
                 var dto = new VerificationSchedulePreviewDTO
@@ -939,5 +917,11 @@ namespace MODAMS.ApplicationServices
             }
         }
 
+        private class TeamMemberDto
+        {
+            public int EmployeeId { get; set; }
+            public string Role { get; set; } = string.Empty;
+        }
     }
+
 }

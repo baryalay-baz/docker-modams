@@ -859,7 +859,14 @@ namespace MODAMS.Utility
             if (await IsStoreUser(employeeId, storeId)) return true;
             return false;
         }
-
+        public async Task<List<Employee>> GetStoreEmployeesByStoreIdAsync(int storeId)
+        {
+            var employees = await _db.StoreEmployees
+                .Where(se => se.StoreId == storeId)
+                .Select(se => se.Employee)
+                .ToListAsync();
+            return employees;
+        }
 
         //Private methods
         private async Task NotifyAsync(int[] arrEmpIds, Notification notification)

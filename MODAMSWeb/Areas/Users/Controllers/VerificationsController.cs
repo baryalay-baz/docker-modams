@@ -103,7 +103,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                                               .Select(e => e.ErrorMessage)
                                               .ToList();
                 TempData["error"] = _isSomali ? "Ansaxintu way guuldareysatay: " : "Validation failed: " + string.Join("; ", errors);
-                return View(dto);
+                return RedirectToAction("EditSchedule", new { id = dto.Id });
             }
 
             var result = await _verificationService.EditScheduleAsync(dto, teamMembersData);

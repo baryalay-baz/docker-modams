@@ -69,4 +69,18 @@
         </div>
     </div>
 }
-
+<script>
+    $(function(){
+      setTimeout(function(){
+        $('.alert-dismissible').each(function(){
+          // fade opacity to 0 over 500ms, then slide up over 500ms…
+          $(this)
+            .fadeTo(500, 0)
+            .slideUp(500, function(){
+              // …and once that’s done, let Bootstrap fully remove it
+              $(this).alert('close');
+            });
+        });
+      }, 5000);
+    });
+</script>

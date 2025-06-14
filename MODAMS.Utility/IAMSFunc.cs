@@ -53,7 +53,7 @@ namespace MODAMS.Utility
         public Task<AssetSearchDTO> AssetGlobalSearchAsync(string search);
         public Task<List<vwCategoryAsset>> GetvwCategoryAssetsAsync();
         public Task<bool>IsStoreUser(int employeeId, int storeId);
-
+        public Task<List<Employee>> GetStoreEmployeesByStoreIdAsync(int storeId);
         public void LogException(ILogger logger, Exception ex);
         public Task SendNotificationAsync(Notification notification);
         public Task<bool> CanModifyStoreAsync(int storeId, int employeeId);
