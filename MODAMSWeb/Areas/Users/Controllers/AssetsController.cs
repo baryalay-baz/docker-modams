@@ -205,6 +205,20 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 return RedirectToAction("Index", "Assets");
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> AssetReport(int id)
+        {
+            var result = await _assetService.GetAssetReportAsync(id);
+            if (result.IsSuccess)
+            {
+                return View(result.Value);
+            }
+            else
+            {
+                TempData["error"] = result.ErrorMessage;
+                return RedirectToAction("Index", "Assets");
+            }
+        }
         [Authorize(Roles = "StoreOwner, User")]
         public async Task<IActionResult> DeleteDocument(int id)
         {

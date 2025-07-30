@@ -9,7 +9,7 @@
 <link href="~/css/assetinfo.css" rel="stylesheet" />
 <div class="page-header">
     <div>
-        <h1 class="page-title">@Localizer["AssetInformation"]</h1>
+        <h1 class="page-title">@Localizer["AssetReport"]</h1>
     </div>
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
@@ -28,7 +28,7 @@
                     <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Assets" asp-action="Index" asp-route-id="@TempData["storeId"]">@Localizer["Assets"]</a></li>
                 }
             }
-            <li class="breadcrumb-item active" aria-current="page">@Localizer["AssetInformation"]</li>
+            <li class="breadcrumb-item active" aria-current="page">@Localizer["Asset Report"]</li>
         </ol>
     </div>
 </div>
@@ -124,7 +124,7 @@
                                             <strong>@Localizer["Status"] : </strong>
                                             <span class="text-primary">
                                                 <span class="mb-0 mt-1 badge rounded-pill bg-@sBackground-transparent text-@sBackground">
-                                                    @(isSomali ? Model.Asset.AssetStatus.StatusNameSo : Model.Asset.AssetStatus.StatusName)
+                                                    @(isSomali? Model.Asset.AssetStatus.StatusNameSo : Model.Asset.AssetStatus.StatusName)
                                                 </span>
                                             </span>
                                         </div>
@@ -302,7 +302,7 @@
                                                         sCounter = nCounter < 10 ? '0' + nCounter.ToString() : nCounter.ToString();
                                                         <tr>
                                                             <td class="text-muted text-center fs-15 fw-semibold">@sCounter.</td>
-                                                            <td class="text-muted fs-15 fw-semibold">@(isSomali ? doc.DocumentType.NameSo : doc.DocumentType.Name)</td>
+                                                            <td class="text-muted fs-15 fw-semibold">@(isSomali? doc.DocumentType.NameSo : doc.DocumentType.Name)</td>
                                                             <td class="text-muted fs-15 fw-semibold">
                                                                 @{
                                                                     if (doc.Id > 0)
@@ -379,7 +379,7 @@
                                         @for (int i = 1; i <= Model.dtoAssetPictures.PageCount(); i++)
                                         {
                                             <li class="@(i == Model.dtoAssetPictures.CurrentPage ? "page-item active" : "page-item")">
-                                                <a class="page-link" href="@Url.Action("AssetInfo", new { id=Model.Asset.Id, page = i, tab = 3 })">@i</a>
+                                                <a class="page-link" href="@Url.Action("AssetInfo", new { id = Model.Asset.Id, page = i, tab = 3 })">@i</a>
                                             </li>
                                         }
                                         @*<li class="page-item page-next">
@@ -416,93 +416,3 @@
     </div>
 </div>
 @await Html.PartialAsync("~/Views/Shared/_Confirmation.cshtml")
-
-@section scripts {
-    <!-- GALLERY JS -->
-    <script src="~/assets/plugins/gallery/picturefill.js"></script>
-    <script src="~/assets/plugins/gallery/lightgallery.js"></script>
-    <script src="~/assets/plugins/gallery/lightgallery-1.js"></script>
-    <script src="~/assets/plugins/gallery/lg-pager.js"></script>
-    <script src="~/assets/plugins/gallery/lg-autoplay.js"></script>
-    <script src="~/assets/plugins/gallery/lg-fullscreen.js"></script>
-    <script src="~/assets/plugins/gallery/lg-zoom.js"></script>
-    <script src="~/assets/plugins/gallery/lg-hash.js"></script>
-    <script src="~/assets/plugins/gallery/lg-share.js"></script>
-
-    <script>
-        $(document).ready(function () {
-            hideMenu();
-
-            makeDataTable('#tblDocuments', 10);
-            adjustMainContainerHeight();
-
-            setTab();
-        });
-        const deleteAsset = (id) =>{
-            const options = {
-                    actionUrl: `/Users/Assets/DeleteAsset/${id}`,
-                    title: '@Localizer["DeleteAsset"]',
-                    message: '@Localizer["DeleteConfirmationMessage"]',
-                    btnConfirmText: '@Localizer["Confirm"]',
-                    btnCancelText: '@Localizer["Cancel"]'
-                };
-                //console.log(options);
-                openConfirmation(options);
-        }
-        function adjustMainContainerHeight() {
-            const mainContainer = document.getElementById('dvMainContainer');
-            mainContainer.style.height = 'auto'; // Reset height
-            mainContainer.style.height = `${mainContainer.scrollHeight}px`; // Set to content height
-            setCardBodyHeight();
-        }
-
-        function setCardBodyHeight() {
-            const mainContainer = document.getElementById('dvMainContainer');
-
-            const cardBody = document.getElementById('dvHistoryCard');
-
-            if (mainContainer && cardBody) {
-                cardBody.style.height = `${mainContainer.scrollHeight - 80}px`;
-            }
-
-            console.log(`${mainContainer.scrollHeight} - ${cardBody.scrollHeight}`);
-
-        }
-
-        const setTab = () => {
-            var tab = '@TempData["tab"]';
-
-            if (tab == "1" || tab == null) {
-                $("#tab_1").addClass("active");
-                $("#a_tab_1").addClass("active");
-
-                $("#tab_2").removeClass("active");
-                $("#a_tab_2").removeClass("active");
-
-                $("#tab_3").removeClass("active");
-                $("#a_tab_3").removeClass("active");
-            } else if (tab == "2") {
-                $("#tab_1").removeClass("active");
-                $("#a_tab_1").removeClass("active");
-
-                $("#tab_2").addClass("active");
-                $("#a_tab_2").addClass("active");
-
-                $("#tab_3").removeClass("active");
-                $("#a_tab_3").removeClass("active");
-            } else {
-                $("#tab_1").removeClass("active");
-                $("#a_tab_1").removeClass("active");
-
-                $("#tab_2").removeClass("active");
-                $("#a_tab_2").removeClass("active");
-
-                $("#tab_3").addClass("active");
-                $("#a_tab_3").addClass("active");
-            }
-        }
-
-
-
-    </script>
-}

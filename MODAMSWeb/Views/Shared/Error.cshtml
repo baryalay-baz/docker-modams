@@ -1,14 +1,30 @@
-﻿@model ErrorViewModel
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization
+@inject IViewLocalizer Localizer
+
+@model ErrorViewModel
 
 @{
     Layout = "_Layout2";
-
+    bool _isSomali = CultureInfo.CurrentUICulture.Name == "so";
 }
 
-<h2 class="text-white mb-2">500<span class="fs-20">error</span></h2>
+<h2 class="text-white mb-2">500<span class="fs-20">@_isSomali ? "" : "error"</span></h2>
 <h5 class="error-details text-white">
-    Oops! Some error has occured, Please contact System Administrator!
+    @{
+        if (_isSomali)
+        {
+            <text>Qalad ayaa dhacay, Fadlan la xiriir Maamulaha Nidaamka!</text>
+        }
+        else
+        {
+            <text>Some error has occurred, Please contact System Administrator!</text>
+        }
+    }
 </h5>
 <div class="text-center">
-    <a class="btn btn-primary mt-5 mb-5" asp-area="Users" asp-controller="Home" asp-action="Index"> <i class="fa fa-long-arrow-left"></i> Back to Home </a>
+    <a class="btn btn-primary mt-5 mb-5" asp-area="Users" asp-controller="Home" asp-action="Index">
+        <i class="fa fa-long-arrow-left"></i>
+        @_isSomali ? "Ku noqo Bogga Hore" : "Back to Home"
+    </a>
 </div>

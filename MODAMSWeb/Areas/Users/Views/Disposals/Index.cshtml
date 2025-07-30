@@ -302,9 +302,6 @@
     </div>
 </div>
 
-
-
-
 @await Html.PartialAsync("~/Views/Shared/_Confirmation.cshtml")
 
 @section scripts {
@@ -370,7 +367,7 @@
             });
         }
 
-                async function previewDisposal(disposalId) {
+        async function previewDisposal(disposalId) {
           try {
             const res = await fetch(`/Users/Disposals/GetPreview/${disposalId}`, {
               headers: { 'Accept': 'application/json' }

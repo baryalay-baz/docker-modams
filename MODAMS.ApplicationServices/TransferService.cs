@@ -1003,12 +1003,16 @@ namespace MODAMS.ApplicationServices
             }
 
             // Filter to stores that have at least one transfer record
-            var storeIdsWithTransfers = await _db.vwTransfers
-                .Select(t => t.StoreFromId)
-                .Distinct()
-                .ToListAsync();
+            if(!(IsInRole("User") || IsInRole("StoreOwner")))
+            {
+                var storeIdsWithTransfers = await _db.vwTransfers
+                   .Select(t => t.StoreFromId)
+                   .Distinct()
+                   .ToListAsync();
 
-            return stores.Where(s => storeIdsWithTransfers.Contains(s.Id)).ToList();
+                return stores.Where(s => storeIdsWithTransfers.Contains(s.Id)).ToList();
+            }
+            return stores;
         }
 
     }

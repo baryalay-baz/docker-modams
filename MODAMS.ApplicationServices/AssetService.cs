@@ -592,6 +592,70 @@ namespace MODAMS.ApplicationServices
                 return Result<AssetInfoDTO>.Failure(ex.Message);
             }
         }
+        public async Task<Result<AssetInfoDTO>> GetAssetReportAsync(int id) {
+            try
+            {
+                var asset = await _db.Assets
+                    .AsNoTracking()
+                    .Where(a => a.Id == id)
+                    .Include(a => a.SubCategory).ThenInclude(sc => sc.Category)
+                    .Include(a => a.Condition)
+                    .Include(a => a.AssetStatus)
+                    .Include(a => a.Store)
+                    .Include(a => a.Donor)
+                    .SingleOrDefaultAsync();
+
+                if (asset == null)
+                {
+                    return Result<AssetInfoDTO>.Failure(
+                        _isSomali ? "Diiwaanka lama helin!" : "Record not found!"
+                    );
+                }
+
+                var documents = await _db.AssetDocuments
+                    .AsNoTracking()
+                    .Where(ad => ad.AssetId == id)
+                    .Include(ad => ad.DocumentType)
+                    .ToListAsync();
+
+                var pictures = await _db.AssetPictures
+                    .AsNoTracking()
+                    .Where(ap => ap.AssetId == id)
+                    .ToListAsync();
+
+                var history = await _db.AssetHistory
+                    .AsNoTracking()
+                    .Where(ah => ah.AssetId == id)
+                    .OrderBy(ah => ah.TimeStamp)
+                    .ToListAsync();
+                var transfersDetails = await _db.TransferDetails
+                    .AsNoTracking()
+                    .Where(m => m.AssetId == id)
+                    .Include(m => m.Transfer)
+                    .ToListAsync();
+                var transferIds = transfersDetails.Select(td => td.TransferId).ToList();
+                var transfers = await _db.Transfers
+                    .Where(t => transferIds.Contains(t.Id))
+                    .ToListAsync();
+
+                // 3) Build and return the DTO
+                var dto = new AssetInfoDTO
+                {
+                    Asset = asset,
+                    Documents = documents,
+                    dtoAssetPictures = new AssetPicturesDTO(pictures, 6),
+                    AssetHistory = history,
+                    Transfers = transfers
+                };
+
+                return Result<AssetInfoDTO>.Success(dto);
+            }
+            catch (Exception ex)
+            {
+                _func.LogException(_logger, ex);
+                return Result<AssetInfoDTO>.Failure(ex.Message);
+            }
+        }
         public async Task<Result<DeleteDocumentResultDTO>> DeleteDocumentAsync(int documentId)
         {
             try

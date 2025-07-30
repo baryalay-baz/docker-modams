@@ -539,19 +539,19 @@ namespace MODAMS.Utility
         public async Task<List<vwStore>> GetStoresByEmployeeIdAsync(int employeeId)
         {
             var roleName = await GetRoleNameAsync(employeeId);
-
-            IQueryable<vwStore> query;
+            List<vwStore> result;
 
             if (roleName == "User")
             {
-                query = _db.StoreEmployees
+                result = await _db.StoreEmployees
                     .Where(se => se.EmployeeId == employeeId)
-                    .Join(
-                        _db.vwStores,
-                        se => se.StoreId,
-                        store => store.Id,
-                        (se, store) => store
-                    );
+                    .Join(_db.vwStores,
+                          se => se.StoreId,
+                          store => store.Id,
+                          (_, store) => store)
+                    .ToListAsync();
+
+                result.ForEach(s => s.StoreType = 1);
             }
             else if (roleName == "StoreOwner")
             {
@@ -560,30 +560,23 @@ namespace MODAMS.Utility
                 if (ownerStore == null)
                     return new List<vwStore>();
 
-                var allStores = await _db.vwStores.ToListAsync();
-                var finder = new StoreFinder((int)ownerStore.DepartmentId, allStores);
-                return finder
-                    .GetStores()
-                    .OrderByDescending(s => s.TotalCount)
-                    .ToList();
+                var all = await _db.vwStores.ToListAsync();
+                var finder = new StoreFinder((int)ownerStore.DepartmentId, all);
+                result = finder.GetStores().ToList();
+
+                result.ForEach(s => s.StoreType = (s.Id == ownerStore.Id) ? 1 : 0);
             }
             else
             {
-                query = _db.vwStores;
+                result = await _db.vwStores.ToListAsync();
             }
-            var result = await query
-                .OrderByDescending(s => s.TotalCount)
-                .ToListAsync();
 
-            if (roleName == "User")
-            {
-                foreach (var store in result)
-                {
-                    store.StoreType = 1; // Set StoreType to primary store
-                }
-            }
-            return result;
+            return result
+                .OrderByDescending(s => s.StoreType)
+                .ThenByDescending(s => s.TotalCount)
+                .ToList();
         }
+
         public async Task<string> GetEmployeeNameByIdAsync(int employeeId)
         {
             string EmployeeName = "Not found!";
