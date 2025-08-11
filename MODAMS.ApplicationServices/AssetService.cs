@@ -246,8 +246,10 @@ namespace MODAMS.ApplicationServices
                     DonorId = dto.DonorId,
                     AssetStatusId = SD.Asset_Available
                 };
+                dto.StoreName = await _func.GetStoreNameByStoreIdAsync(dto.StoreId);
 
                 await _db.Assets.AddAsync(asset);
+                await _db.SaveChangesAsync();
 
                 // History
                 var employeeName = await _func.GetEmployeeNameAsync();
@@ -575,13 +577,24 @@ namespace MODAMS.ApplicationServices
                     .OrderBy(ah => ah.TimeStamp)
                     .ToListAsync();
 
+                var transfersDetails = await _db.TransferDetails
+                    .AsNoTracking()
+                    .Where(m => m.AssetId == id)
+                    .Include(m => m.Transfer)
+                    .ToListAsync();
+                var transferIds = transfersDetails.Select(td => td.TransferId).ToList();
+                var transfers = await _db.Transfers
+                    .Where(t => transferIds.Contains(t.Id))
+                    .ToListAsync();
+
                 // 3) Build and return the DTO
                 var dto = new AssetInfoDTO
                 {
                     Asset = asset,
                     Documents = documents,
                     dtoAssetPictures = new AssetPicturesDTO(pictures, 6),
-                    AssetHistory = history
+                    AssetHistory = history,
+                    Transfers = transfers
                 };
 
                 return Result<AssetInfoDTO>.Success(dto);

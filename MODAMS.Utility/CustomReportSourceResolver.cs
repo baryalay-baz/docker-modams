@@ -32,7 +32,8 @@ namespace MODAMS.Utility
         {
             string reportPath = Path.Combine(this.ReportsPath, reportId);
             var reportPackager = new ReportPackager();
-            Report report = null;
+            Report report = new Report();
+            
             using (var sourceStream = System.IO.File.OpenRead(reportPath))
             {
                 report = (Report)reportPackager.UnpackageDocument(sourceStream);
@@ -204,19 +205,19 @@ namespace MODAMS.Utility
                     Make = asset.Make,
                     Model = asset.Model,
                     Year = asset.Year,
-                    ManufacturingCountry = asset.ManufacturingCountry,
+                    ManufacturingCountry = asset.ManufacturingCountry ?? string.Empty,
                     SerialNo = asset.SerialNo,
-                    BarCode = asset.Barcode,
+                    BarCode = asset.Barcode ?? string.Empty,
                     Engine = asset.Engine,
                     Chasis = asset.Chasis,
                     Plate = asset.Plate,
                     Specifications = asset.Specifications,
                     Cost = asset.Cost,
                     PurchaseDate = asset.PurchaseDate,
-                    PONumber = asset.PONumber,
+                    PONumber = asset.PONumber ?? string.Empty,
                     RecieptDate = asset.RecieptDate,
-                    ProcuredBy = asset.ProcuredBy,
-                    Remarks = asset.Remarks,
+                    ProcuredBy = asset.ProcuredBy ?? string.Empty,
+                    Remarks = asset.Remarks ?? string.Empty,
                     ConditionId = asset.ConditionId,
                     StoreId = asset.StoreId,
                     AssetStatusId = asset.AssetStatusId,

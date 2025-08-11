@@ -42,7 +42,7 @@
                     {
                         int employeeId = await _func.GetEmployeeIdAsync();
                         int supervisorId = await _func.GetSupervisorIdAsync(employeeId);
-                        string departmentName = await _func.GetDepartmentNameAsync(supervisorId);
+                        string departmentName = await _func.GetDepartmentNameAsync(employeeId);
 
                         <div class="pb-3 text-info">Store User</div>
                         <div>@departmentName</div>

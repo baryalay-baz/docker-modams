@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AssetDisposal" xml:space="preserve">
-    <value>Ka-takhalusid Hanti</value>
+    <value>Xalaad ka Saarid Hanti Halawdey</value>
   </data>
   <data name="AssetTransfers" xml:space="preserve">
     <value>Hanti-Wareejin</value>
@@ -127,10 +127,10 @@
     <value>Dashboard-ka</value>
   </data>
   <data name="DisposalDescription" xml:space="preserve">
-    <value>Ka-takhalusidda Hantida oo ay ka mid tahay iibinta, Dib-u-warshadeynta, sadaqeynta, ama qalidda hantida</value>
+    <value>Hantida halawdey in lagu sameeyo iibinta, Dib-u-warshadeynta, sadaqeynta, ama qalidda hantida</value>
   </data>
   <data name="Disposal" xml:space="preserve">
-    <value>Ka-takhalusid</value>
+    <value>Halaabey</value>
   </data>
   <data name="StoreDescription" xml:space="preserve">
     <value>Bakhaarada hantida ee waax kasta oo ka mid ah wasaaradda, ku dar, tifaftir, cusbooneysii hantida ku jirta qaybtan.</value>

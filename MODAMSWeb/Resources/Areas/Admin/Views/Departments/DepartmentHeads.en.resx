@@ -202,4 +202,7 @@
   <data name="NewUser" xml:space="preserve">
     <value>New User</value>
   </data>
+  <data name="AssignUser" xml:space="preserve">
+    <value>Assign User</value>
+  </data>
 </root>
