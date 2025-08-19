@@ -224,29 +224,35 @@
         $(document).ready(() => {
             $('.select2').select2();
 
+            //console.log(stores);
 
 
            resizeCards();
 
-           $('#StoreFromId').on('change', function () {
-                var selectedStore = $(this).val()+"";
-                var currentStoreId = '@Model.AssetStoreId';
-                var currentStoreName = getStoreName(currentStoreId);
-                var selectedStoreName = getStoreName(selectedStore);
+           // $('#StoreFromId').on('change', function () {
+           //      var selectedStore = $(this).val()+"";
+           //      var currentStoreId = '@Model.AssetStoreId';
+           //      console.log("Current Store: " + currentStoreId);
+           //      if(currentStoreId === null || currentStoreId === undefined || currentStoreId=="0")
+           //          return;
+                
+           //      var currentStoreName = "";//getStoreName(currentStoreId);
+           //      var selectedStoreName = "";//getStoreName(selectedStore);
+                
 
-                if(selectedStore !== currentStoreId) {
-                    $('#StoreToId').empty().append($`<option selected value="{currentStoreId}">{currentStoreName}</option>`);
-                }else
-                {
-                    var storesData = JSON.parse(stores);
-                    var filteredStores = storesData.filter(store => store.Value !== selectedStore);
+           //      if(selectedStore !== currentStoreId) {
+           //          $('#StoreToId').empty().append($`<option selected value="{currentStoreId}">{currentStoreName}</option>`);
+           //      }else
+           //      {
+           //          var storesData = JSON.parse(stores);
+           //          var filteredStores = storesData.filter(store => store.Value !== selectedStore);
 
-                    $('#StoreToId').empty().append('<option value="0">@Localizer["AllStores"]</option>');
-                    filteredStores.forEach(store => {
-                        $('#StoreToId').append(`<option value="${store.Value}">${store.Text}</option>`);
-                    });
-                }
-            });
+           //          $('#StoreToId').empty().append('<option value="0">@Localizer["AllStores"]</option>');
+           //          filteredStores.forEach(store => {
+           //              $('#StoreToId').append(`<option value="${store.Value}">${store.Text}</option>`);
+           //          });
+           //      }
+           //  });
 
         });
 

@@ -68,10 +68,11 @@ namespace MODAMSWeb.Areas.Users.Controllers
             //Populate Asset Report
             var stores = await _db.vwStores.OrderByDescending(m => m.TotalCount).ToListAsync();
             var allStores = stores;
+            var storeId = await _func.GetStoreIdByEmployeeIdAsync(_employeeId);
 
             if (User.IsInRole("User"))
-            {
-                stores = stores.Where(m => m.EmployeeId == _supervisorEmployeeId).ToList();
+            {    
+                stores = stores.Where(m => m.Id == storeId).ToList();
             }
             else if (User.IsInRole("StoreOwner"))
             {
@@ -124,6 +125,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 Value = m.Id.ToString()
             }).ToListAsync();
 
+            dto.AssetStoreId = storeId;
             dto.AssetStores = storeSelectList;
             dto.AssetStatuses = assetStatuses;
             dto.Categories = categories;
@@ -143,7 +145,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 Value = m.Id.ToString()
             }).ToListAsync();
 
-            //Populate Disposal= Report
+            //Populate Disposal Report
             var disposalTypes = await _db.DisposalTypes.ToListAsync();
             dto.DisposalTypes = disposalTypes.ToList().Select(m => new SelectListItem
             {

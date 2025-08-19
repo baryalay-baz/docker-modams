@@ -18,6 +18,9 @@
 </div>
 <!-- PAGE-HEADER END -->
 <!--ROW OPENED-->
+@{
+    bool _isSomali = CultureInfo.CurrentUICulture.Name == "so";
+}
 <div class="row">
     <div class="col-md-12">
         <div class="card">
@@ -55,7 +58,7 @@
                                 <th class="bg-transparent border-bottom-0">@Localizer["FullName"]</th>
                                 <th class="bg-transparent border-bottom-0">@Localizer["JobTitle"]</th>
                                 <th class="bg-transparent border-bottom-0">@Localizer["RoleName"]</th>
-                                <th class="bg-transparent border-bottom-0">@Localizer["Supervisor"]</th>
+                                <th class="bg-transparent border-bottom-0">@Localizer["Department"]</th>
                                 <th class="bg-transparent border-bottom-0">@Localizer["IsActive"]</th>
                                 <th class="bg-transparent border-bottom-0 no-btn">@Localizer["Action"]</th>
                             </tr>
@@ -64,11 +67,22 @@
                             @{
                                 var nCounter = 0;
                                 var sCounter = "";
+                                var sDepartmentName = "";
+
+                                //var notAssignedEn = "No Department Assigned";
+                                //var notAssignedSo = "Waax aan la qoondeyn"; // Somali translation
 
                                 foreach (var employee in Model)
                                 {
                                     nCounter++;
                                     sCounter = (nCounter < 10) ? "0" + nCounter : nCounter.ToString();
+
+                                    sDepartmentName = _isSomali ? employee.DepartmentNameSo : employee.DepartmentName;
+                                    sDepartmentName = sDepartmentName == "No Department Assigned" ? "" : sDepartmentName;
+
+                                    // sDepartmentName = _isSomali
+                                    // ? (employee.DepartmentNameSo == notAssignedEn ? notAssignedSo : employee.DepartmentNameSo)
+                                    // : employee.DepartmentName;
 
                                     <tr>
                                         <td class="text-muted fs-15 fw-semibold text-center">@sCounter.</td>
@@ -87,7 +101,7 @@
                                         </td>
                                         <td class="text-muted fs-15 fw-semibold">@employee.JobTitle</td>
                                         <td class="text-muted fs-15 fw-semibold">@employee.RoleName</td>
-                                        <td class="text-muted fs-15 fw-semibold">@employee.SupervisorName</td>
+                                        <td class="text-muted fs-15 fw-semibold">@sDepartmentName</td>
                                         <td class="text-muted fs-15 fw-semibold">
                                             @{
                                                 if (employee.IsActive)

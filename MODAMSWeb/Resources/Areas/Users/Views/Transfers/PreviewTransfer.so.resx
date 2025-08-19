@@ -204,4 +204,7 @@
   <data name="PreviewTransfer" xml:space="preserve">
     <value>Sii-eeg Wareejinta</value>
   </data>
+  <data name="Status" xml:space="preserve">
+    <value>Heerka</value>
+  </data>
 </root>

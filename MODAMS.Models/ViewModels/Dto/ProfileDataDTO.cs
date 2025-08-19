@@ -25,9 +25,7 @@ namespace MODAMS.Models.ViewModels.Dto
         [Display(Name = "JobTitle", ResourceType = typeof(ProfileDataLabels))]
         public string JobTitle { get; set; } = string.Empty;
 
-        [Required(
-            ErrorMessageResourceType = typeof(ValidationMessages),
-            ErrorMessageResourceName = "Required")]
+        [ValidateNever]
         [Display(Name = "Department", ResourceType = typeof(ProfileDataLabels))]
         public string Department { get; set; } = string.Empty;
 

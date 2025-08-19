@@ -212,7 +212,9 @@ namespace MODAMS.ApplicationServices
                 var disposedCount = await _db.Assets
                     .CountAsync(a => a.StoreId == storeId
                                   && a.AssetStatusId == SD.Asset_Disposed);
-
+                var registeredAssets = await _db.Assets
+                    .CountAsync(a => a.InitialStoreId == storeId
+                                  && a.AssetStatusId != SD.Asset_Deleted);
                 // 8) Assemble DTO
                 var dto = new StoreDTO
                 {
@@ -221,6 +223,7 @@ namespace MODAMS.ApplicationServices
                     IsAuthorized = isAuthorized,
                     employees = employees,
                     storeAssets = storeAssets,
+                    RegisteredAssets = registeredAssets,
                     StoreCategoryAssets = categoryAssets,
                     TransferredAssets = transferredCount,
                     ReceivedAssets = receivedCount,

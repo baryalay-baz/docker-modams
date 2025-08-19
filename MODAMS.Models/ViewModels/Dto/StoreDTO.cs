@@ -21,6 +21,7 @@ namespace MODAMS.Models.ViewModels.Dto
         {
             return storeAssets.Where(m => m.SubCategoryId == id).ToList();
         }
+        public int RegisteredAssets { get; set; }
         public int TransferredAssets { get; set; }
         public int ReceivedAssets { get; set; }
         public int Handovers { get; set; }
@@ -43,7 +44,7 @@ namespace MODAMS.Models.ViewModels.Dto
             int handover = Handovers;
             int disposed = Disposals;
 
-            balance = TotalAssets() - transferred + received - handover - disposed;
+            balance = RegisteredAssets - transferred + received - handover - disposed;
 
             return balance;
         }

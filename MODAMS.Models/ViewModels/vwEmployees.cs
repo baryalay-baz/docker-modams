@@ -22,6 +22,7 @@ namespace MODAMS.Models.ViewModels
         public string CardNumber { get; set; }
         public string DisplayMode { get; set; }
         public bool IsActive { get; set; }
-
+        public string DepartmentName { get; set; } = string.Empty;
+        public string DepartmentNameSo { get; set; } = string.Empty;
     }
 }

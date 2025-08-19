@@ -97,6 +97,8 @@ namespace MODAMS.Models
         [Display(Name="Status")]
         public int AssetStatusId { get; set; }
 
+        [ValidateNever]
+        public int InitialStoreId { get; set; }
 
         [ValidateNever]
         public SubCategory SubCategory { get; set; }
