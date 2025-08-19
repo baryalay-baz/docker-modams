@@ -244,7 +244,8 @@ namespace MODAMS.ApplicationServices
                     ConditionId = dto.ConditionId,
                     StoreId = dto.StoreId,
                     DonorId = dto.DonorId,
-                    AssetStatusId = SD.Asset_Available
+                    AssetStatusId = SD.Asset_Available,
+                    InitialStoreId = dto.StoreId
                 };
                 dto.StoreName = await _func.GetStoreNameByStoreIdAsync(dto.StoreId);
 
