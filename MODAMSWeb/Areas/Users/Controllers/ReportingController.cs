@@ -56,11 +56,11 @@ namespace MODAMSWeb.Areas.Users.Controllers
             return View("ReportViewer", dto);
         }
         [HttpPost]
-        public async Task<IActionResult> ReportViewer(ReportingDTO dto)
+        public IActionResult ReportViewer(ReportingDTO dto)
         {
             dto.ReportId = _isSomali? dto.ReportId + "So" : dto.ReportId;
             
-            dto = await PopulateDTO(dto);
+            //dto = await PopulateDTO(dto);
             return View(dto);
         }
         private async Task<ReportingDTO> PopulateDTO(ReportingDTO dto)
