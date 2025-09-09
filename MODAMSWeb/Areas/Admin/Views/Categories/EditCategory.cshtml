@@ -81,6 +81,26 @@
             $("#btnSubmit").on("click", () => {
                 $("#frmCategory").submit();
             });
+
+            $("#CategoryName").on("change", () => {
+                generateCategoryCode();
+            });
         });
+
+        function generateCategoryCode() {
+            let categoryName = $("#CategoryName").val().trim();
+            let categoryCode = "MOD-";
+            if (categoryName) {
+                // Remove any non-alphabet characters and get first 3 letters
+                let lettersOnly = categoryName.replace(/[^a-zA-Z]/g, '');
+                let codePart = lettersOnly.substring(0, 4).toUpperCase();
+                // Pad with X if less than 3 letters
+                codePart = codePart.padEnd(3, 'X');
+                categoryCode += codePart;
+            } else {
+                categoryCode = '';
+            }
+            $("#CategoryCode").val(categoryCode);
+        }
     </script>
 }

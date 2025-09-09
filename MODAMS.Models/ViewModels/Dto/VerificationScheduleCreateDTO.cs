@@ -27,7 +27,8 @@ namespace MODAMS.Models.ViewModels.Dto
 
         [ValidateNever]
         public int NumberOfAssets { get; set; }
-
+        [ValidateNever]
+        public List<Asset> StoreAssets { get; set; } = new();
         [ValidateNever]
         public bool IsSomali { get; set; } = false;
     }

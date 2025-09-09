@@ -51,64 +51,48 @@ namespace MODAMS.ApplicationServices
             {
                 _storeId = await _func.GetStoreIdByEmployeeIdAsync(_employeeId);
 
-                var dto = new DisposalsDTO();
+                var dto = new DisposalsDTO
+                {
+                    IsAuthorized = await _func.CanModifyStoreAsync(_storeId, _employeeId),
+                    StoreId = _storeId,
+                    StoreName = await _func.GetStoreNameByStoreIdAsync(_storeId)
+                };
 
-                dto.IsAuthorized = await _func.CanModifyStoreAsync(_storeId, _employeeId);
+                bool isScopedToStore = IsInRole("User") || IsInRole("StoreOwner");
 
-                var disposals = await _db.Disposals
+                var disposalsQuery = _db.Disposals
                     .Include(m => m.DisposalType)
                     .Include(m => m.Asset).ThenInclude(a => a.Store)
                     .Include(m => m.Asset.SubCategory).ThenInclude(sc => sc.Category)
-                    .ToListAsync();
+                    .AsQueryable();
 
-                if (IsInRole("User") || IsInRole("StoreOwner"))
+                if (isScopedToStore)
                 {
-                    disposals = disposals.Where(m => m.Asset.StoreId == _storeId).ToList();
+                    disposalsQuery = disposalsQuery.Where(m => m.Asset.StoreId == _storeId);
                 }
 
-                dto.Disposals = disposals;
-                dto.StoreId = _storeId;
-                dto.StoreName = await _func.GetStoreNameByStoreIdAsync(_storeId);
+                dto.Disposals = await disposalsQuery.ToListAsync();
 
-                var groupedDisposals = await _db.Disposals
-                    .Join(_db.DisposalTypes,
-                        disposal => disposal.DisposalTypeId,
-                        disposalType => disposalType.Id,
-                        (disposal, disposalType) => new { disposal, disposalType })
-                    .GroupBy(
-                        x => new { x.disposalType.Type, x.disposal.Asset.StoreId })
+                // --- Group for chart: ALWAYS by Type; scope by store only when needed ---
+                var groupedByType = await _db.Disposals
+                    .Where(d => !isScopedToStore || d.Asset.StoreId == _storeId)
+                    .GroupBy(d => d.DisposalType.Type) // English key only
                     .Select(g => new
                     {
-                        Type = g.Key.Type,
-                        StoreId = g.Key.StoreId,
+                        Type = g.Key,
                         Count = g.Count()
                     })
                     .ToListAsync();
 
-                if (IsInRole("User") || IsInRole("StoreOwner"))
-                {
-                    groupedDisposals = groupedDisposals
-                        .Where(m => m.StoreId == _storeId)
-                        .ToList();
-                }
-
+                var countsDict = groupedByType.ToDictionary(k => k.Type, v => v.Count);
                 var disposalTypes = await _db.DisposalTypes.ToListAsync();
 
-                // Create a dictionary for quick lookup
-                var countsDict = groupedDisposals
-                    .ToDictionary(k => k.Type, v => v.Count);
-
-                var chartData = new List<DisposalChart>();
-
-                foreach (var type in disposalTypes)
+                var chartData = disposalTypes.Select(type => new DisposalChart
                 {
-                    chartData.Add(new DisposalChart
-                    {
-                        Type = _isSomali ? type.TypeSo : type.Type,
-                        StoreId = _storeId,
-                        Count = countsDict.TryGetValue(type.Type, out var count) ? count : 0
-                    });
-                }
+                    Type = _isSomali ? type.TypeSo : type.Type,
+                    StoreId = _storeId,
+                    Count = countsDict.TryGetValue(type.Type, out var cnt) ? cnt : 0
+                }).ToList();
 
                 dto.ChartData = chartData;
 

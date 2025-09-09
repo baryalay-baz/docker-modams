@@ -102,10 +102,12 @@ namespace MODAMS.ApplicationServices
                 dto.StoreName = storeInfo.StoreName;
                 dto.DepartmentName = storeInfo.DepartmentName;
 
-                // 3) Count the assets in SQL
-                dto.NumberOfAssets = await _db.Assets
+                dto.StoreAssets = await _db.Assets
                     .AsNoTracking()
-                    .CountAsync(a => a.StoreId == storeId);
+                    .Where(m => m.StoreId == storeId).ToListAsync();
+
+                // 3) Count the assets in SQL
+                dto.NumberOfAssets = dto.StoreAssets.Count();
 
                 // 4) Build the list of selectable employees
                 var employeeItems = await _db.StoreEmployees
