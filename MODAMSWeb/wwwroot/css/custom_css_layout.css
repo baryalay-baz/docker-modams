@@ -72,5 +72,132 @@ hr.customHR {
 
 .custom-badge {
     font-size: 0.4rem; /* Adjust font size as needed */
-    padding:  0.6em 0.8em; /* Adjust padding to make it smaller */
+    padding: 0.6em 0.8em; /* Adjust padding to make it smaller */
+}
+
+/* ============================
+   🌟 PAMS TOUR POPOVER THEME
+   ============================ */
+
+/* Main popover container */
+.driver-popover {
+    /*background: linear-gradient(145deg, #0d6efd 0%, #004aad 100%);
+    color: #fff;*/
+    background: linear-gradient(145deg, #ffeb3b 0%, #ff9800 100%);
+    color: #000;
+    border-radius: 14px;
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.35);
+    max-width: 340px;
+    padding: 16px 18px;
+    font-family: "Segoe UI", Roboto, sans-serif;
+    border: none;
+    animation: pams-fade-in 0.3s ease-out;
+}
+    /*Page of Pages*/
+    .driver-popover .driver-popover-progress-text {
+        background: rgba(255, 255, 255, 0.15);
+        color: #333333 !important; /* force override */
+        font-weight: 600;
+        font-size: 0.7rem;
+        padding: 2px 8px;
+        border-radius: 999px;
+        display: inline-block;
+    }
+    /* ✨ Title section */
+    .driver-popover .driver-popover-title {
+        display: flex;
+        color: #212121;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.0rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+        line-height: 1.4;
+    }
+
+        .driver-popover .driver-popover-title i {
+            font-size: 1.0rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 6px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+    /* 📄 Description text */
+    .driver-popover .driver-popover-description {
+        font-size: 0.8rem;
+        line-height: 1.5;
+        color: #333333;
+        margin-bottom: 12px;
+    }
+
+    /* 🔘 Buttons (Next / Prev / Close) */
+    .driver-popover .driver-popover-buttons {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        margin-top: 4px;
+    }
+
+    .driver-popover .driver-popover-button {
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff;
+        border: none;
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        transition: all 0.2s ease;
+    }
+
+        .driver-popover .driver-popover-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .driver-popover .driver-popover-button.driver-close-btn {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .driver-popover .driver-popover-button.driver-prev-btn {
+            background: rgba(0, 0, 0, 0.15);
+        }
+
+        .driver-popover .driver-popover-button.driver-next-btn {
+            background: #ffc107;
+            color: #000;
+            font-weight: 600;
+        }
+
+    /* Arrow styling */
+    .driver-popover .driver-popover-arrow {
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+    }
+
+    /* ✅ Progress bar at the top */
+    .driver-popover .driver-popover-progress {
+        background: rgba(255, 255, 255, 0.3);
+        height: 4px;
+        border-radius: 999px;
+        overflow: hidden;
+        margin-bottom: 8px;
+    }
+
+    .driver-popover .driver-popover-progress-bar {
+        background: #ffc107;
+        height: 100%;
+        transition: width 0.3s ease;
+    }
+
+/* ✨ Fade-in animation */
+@keyframes pams-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

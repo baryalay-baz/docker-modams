@@ -236,6 +236,63 @@
     </div>
 </div>
 
+<div class="modal fade" id="mdlStoreAssets" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content modal-content-demo">
+            <div class="modal-header bg-gray-300">
+                <h5 class="modal-title">@Localizer["StoreAssets"]</h5>
+                <button aria-label="Close" class="btn-close" data-bs-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="verificationOverlay" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0, 0, 0, 0.5); z-index:1000; text-align:center;">
+                    <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);">
+                        <i class="fa fa-spinner fa-spin" style="font-size:3rem; color:white;"></i>
+                    </div>
+                </div>
+                <div class="modal-notification"></div>
+                <div class="card">
+                    <div class="card-body">
+                        <label class="h3" id="lblTitle">@Localizer["ListOfAssetsInStore"]</label>
+                        <div class="table-responsive export-table">
+                            <table id="tblStoreAssets" class="table text-nowrap mb-0 table-bordered key-buttons border-top border-bottom project-list-main">
+                                <thead class="bg-primary-gradient ms-auto divShadow">
+                                    <tr>
+                                        <th class="text-black bg-transparent border-bottom-0 w-2"></th>
+                                        <th class="text-black bg-transparent border-bottom-0 w-10">@Localizer["Make"]</th>
+                                        <th class="text-black bg-transparent border-bottom-0 w-10">@Localizer["Model"]</th>
+                                        <th class="text-black bg-transparent border-bottom-0 w-10">@Localizer["AssetName"]</th>
+                                        <th class="text-black bg-transparent border-bottom-0 w-30">@Localizer["SerialNo"]</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-body-verified">
+                                    @{
+                                        foreach(var item in Model.StoreAssets)
+                                        {
+                                            <tr>
+                                                <td class="text-black bg-transparent border-bottom-0 w-2"></td>
+                                                <td class="text-black bg-transparent border-bottom-0 w-10">@item.Make</td>
+                                                <td class="text-black bg-transparent border-bottom-0 w-10">@item.Model</td>
+                                                <td class="text-black bg-transparent border-bottom-0 w-10">@item.Name</td>
+                                                <td class="text-black bg-transparent border-bottom-0 w-30">@item.SerialNo</td>
+                                            </tr>
+                                        }
+                                    }
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-light" data-bs-dismiss="modal">@Localizer["Close"]</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/jquery.validate.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"></script>
@@ -255,6 +312,7 @@
             hideMenu();
 
             sData = '@Html.Raw(Json.Serialize(Model.Employees))';
+            sStoreAssets = '@Html.Raw(Json.Serialize(Model.StoreAssets))';
 
             $('.select2').select2();
             $('.picker').datepicker({
@@ -262,7 +320,6 @@
                 format: 'dd-MM-yyyy',
                 todayHighlight: true
             });
-
 
             $(".btn-add-record").on("click", () => {
                 // Get the selected employee name and role
@@ -306,7 +363,6 @@
                     }
                 }
             });
-
             $('#verificationTypeDropdown').change(function () {
                 var assetCount = $('#NumberOfAssets').val();
 
@@ -319,45 +375,63 @@
                 }
             });
 
-            $("#btn-submit").on("click", () => {
-                var blnCheck = true;
+            //function to submit the form      
+            $(function () {
+              const $btn  = $("#btn-submit");
+              const $form = $("#frmCreateSchedule");
+              const $spanMsg = $("#spanNumberOfAssetsToVerify");
 
-                // Get the value of assets to verify and convert to number
-                var assetsToVerify = parseInt($('#NumberOfAssetsToVerify').val(), 10);
-                var assetCount = parseInt($('#NumberOfAssets').val(), 10);
+              // cache original state once
+              const origClass = $btn.attr("class");
+              const origHtml  = $btn.html();
 
-                // Validate that the number is greater than or equal to 1
-                if (isNaN(assetsToVerify) || assetsToVerify < 1 || assetsToVerify > assetCount) {
-                    const message = isSomali
+              function setLoading() {
+                $btn.addClass("btn-loading btn-icon").prop("disabled", true);
+              }
+              function resetBtn() {
+                $btn.attr("class", origClass).html(origHtml).prop("disabled", false);
+              }
+
+              // prevent double-binding if this file runs more than once
+              $btn.off("click.btn").on("click.btn", () => {
+                let blnCheck = true;
+                resetBtn(); // in case it was left spinning from a previous try
+
+                const assetsToVerify = parseInt($("#NumberOfAssetsToVerify").val(), 10);
+                const assetCount     = parseInt($("#NumberOfAssets").val(), 10) || 0;
+
+                if (!Number.isInteger(assetsToVerify) || assetsToVerify < 1 || assetsToVerify > assetCount) {
+                  const message = isSomali
                     ? `Qiimaha waa inuu u dhexeeyaa 1 iyo ${assetCount}`
                     : `Value should be between 1 and ${assetCount}`;
-
-                    $("#spanNumberOfAssetsToVerify").text(message);
-
-                    blnCheck = false;
+                  $spanMsg.text(message);
+                  blnCheck = false;
                 } else {
-                    $("#spanNumberOfAssetsToVerify").text(""); // Clear the error message if valid
+                  $spanMsg.text("");
                 }
 
-                // Check if validation passed and team members are selected
-                if (blnCheck && selectedTeamMembers.length > 0) {
-                    $("#teamMembersData").val(JSON.stringify(selectedTeamMembers));
-                    $("#NewSchedule_NumberOfAssetsToVerify").prop("disabled", false);
-                    $("#frmCreateSchedule").submit();
-                    //$("#btn-submit").addClass("btn-loading btn-icon disabled");
-
-                } else if (selectedTeamMembers.length === 0) {
+                if (!blnCheck || !(selectedTeamMembers && selectedTeamMembers.length > 0)) {
+                  if (!selectedTeamMembers || selectedTeamMembers.length === 0) {
                     notif({
-                        type: "error",
-                        msg: isSomali?"<b>Khalad: </b>Xubno Kooxeed lama xulin!":"<b>Error: </b>No Team members selected!",
-                        position: "center",
-                        width: 500,
-                        height: 60,
-                        autohide: true
+                      type: "error",
+                      msg: isSomali ? "<b>Khalad: </b>Xubno Kooxeed lama xulin!" : "<b>Error: </b>No Team members selected!",
+                      position: "center",
+                      width: 500, height: 60, autohide: true
                     });
+                  }
+                  resetBtn();
+                  return;
                 }
-            });
 
+                $("#teamMembersData").val(JSON.stringify(selectedTeamMembers));
+                $("#NewSchedule_NumberOfAssetsToVerify").prop("disabled", false);
+                setLoading();
+
+                $form.trigger("submit");
+              });
+
+              $form.on("invalid-form.validate", resetBtn);
+            });
         });
         const removeMember = id => {
             $(`#member-${id}`).remove();

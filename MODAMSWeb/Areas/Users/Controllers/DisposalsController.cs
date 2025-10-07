@@ -144,7 +144,6 @@ namespace MODAMSWeb.Areas.Users.Controllers
                 return RedirectToAction("Index", "Disposals");
             }
         }
-
         [HttpGet]
         public async Task<IActionResult> GetPreview(int id)
         {

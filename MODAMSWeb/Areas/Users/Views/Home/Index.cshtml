@@ -3,7 +3,9 @@
 @model MODAMS.Models.ViewModels.Dto.DashboardDTO
 @inject IViewLocalizer Localizer
 
-
+@{
+    ViewData["TourPageKey"] = "Home/Index";
+}
 
 <link href="~/assets/plugins/c3-0.7.20/c3.min.css" rel="stylesheet" />
 <style>
@@ -16,7 +18,7 @@
         overflow: hidden;
         position: relative;
         width: 100%;
-        height: 30px; /* Adjust the height as needed */
+        height: 30px;
     }
 
     .marquee {
@@ -35,23 +37,16 @@
         }
     }
 
-
     .news-item.text-muted {
-        /* Your regular styles here */
-        /* For example, you can set the text color and other styles */
         color: #333;
         font-size: 16px;
-        /* Add any other styles you need */
-        /* Add the glow effect */
         transition: box-shadow 0.3s ease-in-out;
     }
 
         .news-item.text-muted:hover {
-            box-shadow: 0 0 10px 2px rgba(234, 220, 71, 0.8); /* Adjust the glow color and size as needed */
+            box-shadow: 0 0 10px 2px rgba(234, 220, 71, 0.8);
         }
 
-</style>
-<style>
     .hover-effect {
         position: relative;
         left: 0;
@@ -67,7 +62,7 @@
         min-height: 170px;
     }
 
-    .pnlHeightFooter{
+    .pnlHeightFooter {
         max-height: 120px;
         min-height: 120px;
     }
@@ -90,14 +85,14 @@
 
         .page-header .marquee-container {
             width: 70% !important;
-            margin: 0 auto; /* Center the container horizontally */
+            margin: 0 auto;
             text-align: center;
             display: flex;
             align-items: center;
         }
-
 </style>
-<div class="page-header">
+
+<div class="page-header" data-tour="dashboard.header">
     <div>
         <h1 class="page-title">@Localizer["Dashboard"]</h1>
     </div>
@@ -113,16 +108,14 @@
                                 <style>
                                     svg {
                                         fill: lightblue
-                                    }
-                                </style>
+                                    }</style>
                                 <path d="M0 256L28.5 28c2-16 15.6-28 31.8-28H228.9c15 0 27.1 12.1 27.1 27.1c0 3.2-.6 6.5-1.7 9.5L208 160H347.3c20.2 0 36.7 16.4 36.7 36.7c0 7.4-2.2 14.6-6.4 20.7l-192.2 281c-5.9 8.6-15.6 13.7-25.9 13.7h-2.9c-15.7 0-28.5-12.8-28.5-28.5c0-2.3 .3-4.6 .9-6.9L176 288H32c-17.7 0-32-14.3-32-32z" />
                             </svg>
                             @newsfeed.Description
                         </span>
-
-                        @Html.Raw("&nbsp; &nbsp; &nbsp;")
+                        @Html.Raw("&nbsp;&nbsp;&nbsp;")
                     }
-                    @if (Model.NewsFeed.Count > 0)
+                    if (Model.NewsFeed.Count > 0)
                     {
                         <a asp-area="Users" asp-controller="Home" asp-action="Newsfeed">
                             <span class="news-item text-muted p-2">
@@ -130,15 +123,13 @@
                                     <style>
                                         svg {
                                             fill: lightblue
-                                        }
-                                    </style>
+                                        }</style>
                                     <path d="M0 256L28.5 28c2-16 15.6-28 31.8-28H228.9c15 0 27.1 12.1 27.1 27.1c0 3.2-.6 6.5-1.7 9.5L208 160H347.3c20.2 0 36.7 16.4 36.7 36.7c0 7.4-2.2 14.6-6.4 20.7l-192.2 281c-5.9 8.6-15.6 13.7-25.9 13.7h-2.9c-15.7 0-28.5-12.8-28.5-28.5c0-2.3 .3-4.6 .9-6.9L176 288H32c-17.7 0-32-14.3-32-32z" />
                                 </svg>
                                 more...
                             </span>
                         </a>
                     }
-
                 }
             </a>
         </div>
@@ -146,13 +137,13 @@
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
             <li class="breadcrumb-item active"><a href="javascript:void(0);">@Localizer["Dashboard"]</a></li>
-            @*<li class="breadcrumb-item active" aria-current="page">Profile</li>*@
         </ol>
     </div>
 </div>
 
-
-<div class="row">
+<!-- ✅ Tour: Tiles -->
+<div class="row" data-tour="dashboard.tiles">
+    <!-- Stores -->
     <div class="col-md-3">
         <a asp-area="Users" asp-controller="Stores" asp-action="Index">
             <div class="card divShadow">
@@ -165,14 +156,14 @@
                         </div>
                         <div class="col col-auto top-icn dash">
                             <div class="counter-icon bg-primary dash ms-auto box-shadow-primary">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-archive" viewBox="0 0 16 16"> <path d="M0 2a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1v7.5a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 1 12.5V5a1 1 0 0 1-1-1V2zm2 3v7.5A1.5 1.5 0 0 0 3.5 14h9a1.5 1.5 0 0 0 1.5-1.5V5H2zm13-3H1v2h14V2zM5 7.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z" /> </svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-archive" viewBox="0 0 16 16">
+                                    <path d="M0 2a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1v7.5a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 1 12.5V5a1 1 0 0 1-1-1V2zm2 3v7.5A1.5 1.5 0 0 0 3.5 14h9a1.5 1.5 0 0 0 1.5-1.5V5H2zm13-3H1v2h14V2zM5 7.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z" />
+                                </svg>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col">
-                                <small class="text-muted">
-                                    @Localizer["StoreDescription"]
-                                </small>
+                                <small class="text-muted">@Localizer["StoreDescription"]</small>
                             </div>
                         </div>
                     </div>
@@ -180,6 +171,8 @@
             </div>
         </a>
     </div>
+
+    <!-- Transfers -->
     <div class="col-md-3">
         <a asp-area="Users" asp-controller="Transfers" asp-action="Index" class="text-secondary">
             <div class="card divShadow">
@@ -192,15 +185,14 @@
                         </div>
                         <div class="col col-auto top-icn dash">
                             <div class="counter-icon bg-secondary dash ms-auto box-shadow-primary">
-                                @*<svg xmlns="http://www.w3.org/2000/svg" class="side-menu__icon" enable-background="new 0 0 24 24" viewBox="0 0 24 24"><path d="M16.6766357,7.3233643C15.7435303,4.2431641,12.8848267,2,9.5,2C5.3578491,2,2,5.3578491,2,9.5c0,3.3848267,2.2431641,6.2435303,5.3233643,7.1766357C8.2564697,19.7568359,11.1151733,22,14.5,22c4.1402588-0.0045166,7.4954834-3.3597412,7.5-7.5C22,11.1151733,19.7568359,8.2564697,16.6766357,7.3233643z M16,9.5c0,0.8760376-0.1757202,1.7103882-0.4899292,2.4730225l-3.4830933-3.4830933C12.7896118,8.1757202,13.6239624,8,14.5,8c0.4649658,0.0005493,0.9176636,0.0518799,1.3549194,0.1450806C15.9481201,8.5823364,15.9994507,9.0350342,16,9.5z M15.0283203,12.906311c-0.5328369,0.862854-1.2597656,1.5897217-2.1226807,2.1224365l-3.9343872-3.9343872c0.5328369-0.8630981,1.2598877-1.5901489,2.1229858-2.1230469L15.0283203,12.906311z M7.0787354,15.5289917C4.6891479,14.5682983,3,12.2332764,3,9.5C3,5.9101562,5.9101562,3,9.5,3c2.7313232,0.0031738,5.06427,1.6907959,6.0264893,4.0783081C15.1900635,7.0321655,14.8491211,7,14.5,7C10.3578491,7,7,10.3578491,7,14.5C7,14.8500366,7.0323486,15.1917114,7.0787354,15.5289917z M8,14.5c0-0.8759766,0.1757812-1.7103271,0.4899292-2.4729614l3.4830322,3.4830322C11.2103271,15.8242188,10.3759766,16,9.5,16c-0.465332,0-0.918457-0.0509644-1.3560791-0.1439209C8.0509644,15.418457,8,14.965332,8,14.5z M14.5,21c-2.7332764,0-5.0682983-1.6891479-6.0289917-4.0787354C8.8082886,16.9676514,9.1499634,17,9.5,17c4.1402588-0.0045166,7.4954834-3.3597412,7.5-7.5c0-0.3491211-0.0321655-0.6900635-0.0783081-1.0264893C19.3092041,9.43573,20.9968262,11.7686768,21,14.5C21,18.0898438,18.0898438,21,14.5,21z" /></svg>*@
-                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-arrow-left-right" viewBox="0 0 16 16"> <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z" /> </svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-arrow-left-right" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z" />
+                                </svg>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col">
-                                <small class="text-muted">
-                                    @Localizer["TransferDescription"]
-                                </small>
+                                <small class="text-muted">@Localizer["TransferDescription"]</small>
                             </div>
                         </div>
                     </div>
@@ -208,6 +200,8 @@
             </div>
         </a>
     </div>
+
+    <!-- Disposals -->
     <div class="col-md-3">
         <a asp-area="Users" asp-controller="Disposals" asp-action="Index" class="text-info">
             <div class="card divShadow">
@@ -221,15 +215,16 @@
                         <div class="col col-auto top-icn dash">
                             <div class="counter-icon bg-info dash ms-auto box-shadow-primary">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-basket3" viewBox="0 0 25 25">
-                                    <g> <path fill="none" d="M0 0H24V24H0z"></path> <path d="M19.562 12.098l1.531 2.652c.967 1.674.393 3.815-1.28 4.781-.533.307-1.136.469-1.75.469H16v2l-5-3.5 5-3.5v2h2.062c.088 0 .174-.023.25-.067.213-.123.301-.378.221-.601l-.038-.082-1.531-2.652 2.598-1.5zM7.737 9.384l.53 6.08-1.73-1-1.032 1.786c-.044.076-.067.162-.067.25 0 .245.177.45.41.492l.09.008H9v3H5.938c-1.933 0-3.5-1.567-3.5-3.5 0-.614.162-1.218.469-1.75l1.031-1.786-1.732-1 5.53-2.58zm6.013-6.415c.532.307.974.749 1.281 1.281l1.03 1.786 1.733-1-.53 6.08-5.532-2.58 1.732-1-1.031-1.786c-.044-.076-.107-.14-.183-.183-.213-.123-.478-.072-.631.11l-.052.073-1.53 2.652-2.599-1.5 1.53-2.652c.967-1.674 3.108-2.248 4.782-1.281z"></path> </g>
+                                    <g>
+                                        <path fill="none" d="M0 0H24V24H0z"></path>
+                                        <path d="M19.562 12.098l1.531 2.652c.967 1.674.393 3.815-1.28 4.781-.533.307-1.136.469-1.75.469H16v2l-5-3.5 5-3.5v2h2.062c.088 0 .174-.023.25-.067.213-.123.301-.378.221-.601l-.038-.082-1.531-2.652 2.598-1.5zM7.737 9.384l.53 6.08-1.73-1-1.032 1.786c-.044.076-.067.162-.067.25 0 .245.177.45.41.492l.09.008H9v3H5.938c-1.933 0-3.5-1.567-3.5-3.5 0-.614.162-1.218.469-1.75l1.031-1.786-1.732-1 5.53-2.58zm6.013-6.415c.532.307.974.749 1.281 1.281l1.03 1.786 1.733-1-.53 6.08-5.532-2.58 1.732-1-1.031-1.786c-.044-.076-.107-.14-.183-.183-.213-.123-.478-.072-.631.11l-.052.073-1.53 2.652-2.599-1.5 1.53-2.652c.967-1.674 3.108-2.248 4.782-1.281z"></path>
+                                    </g>
                                 </svg>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col">
-                                <small class="text-muted">
-                                    @Localizer["DisposalDescription"]
-                                </small>
+                                <small class="text-muted">@Localizer["DisposalDescription"]</small>
                             </div>
                         </div>
                     </div>
@@ -237,6 +232,8 @@
             </div>
         </a>
     </div>
+
+    <!-- Reports -->
     <div class="col-md-3">
         <a asp-area="Users" asp-controller="Reporting" asp-action="Index" class="text-warning">
             <div class="card divShadow">
@@ -249,14 +246,15 @@
                         </div>
                         <div class="col col-auto top-icn dash">
                             <div class="counter-icon bg-warning dash ms-auto box-shadow-primary">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-printer" viewBox="0 0 16 16"> <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z" /> <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z" /> </svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-printer" viewBox="0 0 16 16">
+                                    <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z" />
+                                    <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z" />
+                                </svg>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col">
-                                <small class="text-muted">
-                                    @Localizer["ReportingDescription"]
-                                </small>
+                                <small class="text-muted">@Localizer["ReportingDescription"]</small>
                             </div>
                         </div>
                     </div>
@@ -266,11 +264,13 @@
     </div>
 </div>
 
+<!-- ✅ Table & Chart -->
 <div class="card">
     <div class="card-body">
         <div class="row">
             <div class="row">
-                <div class="col-md-6 mb-3">
+                <!-- ✅ Tour: Table -->
+                <div class="col-md-6 mb-3" data-tour="dashboard.table">
                     <div class="table-responsive">
                         <table id="tblCategories" class="table text-nowrap mb-0 table-bordered border-top border-bottom divShadow">
                             <thead class="bg-primary-gradient ms-auto divShadow">
@@ -281,47 +281,40 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @{
-                                    if (Model.CategoryAssets.Count > 0)
-                                    {
-                                        foreach (var sca in Model.CategoryAssets)
-                                        {
-                                            <tr>
-                                                <td class="text-muted fs-15 fw-semibold">
-                                                    <a asp-action="AssetList" asp-controller="Assets"
-                                                       asp-route-id="@sca.Id"
-                                                       class="text-muted hover-effect">
-                                                        @sca.CategoryName
-                                                    </a>
-                                                </td>
-                                                <td class="text-muted fs-15 fw-semibold">@sca.TotalAssets</td>
-                                                <td class="text-muted fs-15 fw-semibold text-end">@sca.TotalCost.ToString("N2")</td>
-                                            </tr>
-                                        }
-                                        //<tr>
-                                        //    <td class="text-muted fs-15 fw-semibold"><span class="text-bold float-end">Total Assets Registered:</span></td>
-                                        //    <td class="text-muted fs-15 fw-semibold"><span class="text-bold">@Model.TotalAssets()</span></td>
-                                        //</tr>
-                                    }
-                                    else
+                                @if (Model.CategoryAssets.Count > 0)
+                                {
+                                    foreach (var sca in Model.CategoryAssets)
                                     {
                                         <tr>
-                                            <td colspan="2">No Assets available!</td>
+                                            <td class="text-muted fs-15 fw-semibold">
+                                                <a asp-action="AssetList" asp-controller="Assets" asp-route-id="@sca.Id" class="text-muted hover-effect">
+                                                    @sca.CategoryName
+                                                </a>
+                                            </td>
+                                            <td class="text-muted fs-15 fw-semibold">@sca.TotalAssets</td>
+                                            <td class="text-muted fs-15 fw-semibold text-end">@sca.TotalCost.ToString("N2")</td>
                                         </tr>
                                     }
                                 }
-
+                                else
+                                {
+                                    <tr><td colspan="3">No Assets available!</td></tr>
+                                }
                             </tbody>
                         </table>
                     </div>
                 </div>
-                <div class="col-md-6 mt-5 container">
+
+                <!-- ✅ Tour: Chart -->
+                <div class="col-md-6 mt-5 container" data-tour="dashboard.chart">
                     <div id="chart"></div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="card-footer">
+
+    <!-- ✅ Tour: Summary -->
+    <div class="card-footer" data-tour="dashboard.summary">
         <div class="row">
             <div class="col-md-3">
                 <div class="card ">
@@ -345,7 +338,7 @@
                     <div class="card-body pnlHeightFooter">
                         <div class="row">
                             <div class="col-8">
-                                <h5 class="text-muted tw-semibold">@Localizer["TotalCost"]</h5>
+                                <h5 class="text-muted">@Localizer["TotalCost"]</h5>
                                 <p class="text-muted text-bold">@(Model.TotalCost().ToString("n2") ?? "0")</p>
                             </div>
                             <div class="col-4">
@@ -396,8 +389,8 @@
         </div>
     </div>
 </div>
-@section scripts {
 
+@section scripts {
     <script src="~/assets/plugins/c3-0.7.20/c3.min.js"></script>
     <script src="~/assets/plugins/c3-0.7.20/d3-5.8.2.min.js"></script>
 
@@ -408,7 +401,6 @@
 
             const marqueeContainer = document.getElementById("marquee-container");
             const marquee = document.getElementById("marquee");
-
             let isPaused = false;
 
             marqueeContainer.addEventListener("mouseover", () => {
@@ -423,13 +415,11 @@
                     isPaused = false;
                 }
             });
-
         });
 
         const pieChart = () => {
             var sData = '@Html.Raw(Json.Serialize(Model.CategoryAssets))';
             var result = tryParseJson(sData, "Chart Data");
-
             if (result.status === "error") {
                 showErrorMessageJs(result.message);
                 return;
@@ -441,51 +431,30 @@
             Data.forEach(function (e) {
                 labels.push(e.categoryName);
                 data[e.categoryName] = e.totalAssets;
-                //console.log(e.subCategoryName + ' -> ' + e.totalAssets);
             });
+
             chart = c3.generate({
-                pie: {
-                    label: {
-                        show: true
-                    }
-                },
-                data: {
-                    json: [data],
-                    keys: {
-                        value: labels,
-                    },
-                    type: 'pie'
-                },
-                legend: {
-                    show: false
-                },
+                pie: { label: { show: true } },
+                data: { json: [data], keys: { value: labels }, type: 'pie' },
+                legend: { show: false },
                 color: {
-                    pattern: ['#1f77b4', '#aec7e8', '#ff7f0e', '#ffbb78', '#2ca02c', '#98df8a', '#d62728', '#ff9896', '#9467bd', '#c5b0d5', '#8c564b', '#c49c94', '#e377c2', '#f7b6d2', '#7f7f7f', '#c7c7c7', '#bcbd22', '#dbdb8d', '#17becf', '#9edae5']
+                    pattern: ['#1f77b4','#aec7e8','#ff7f0e','#ffbb78','#2ca02c','#98df8a','#d62728','#ff9896','#9467bd','#c5b0d5']
                 }
             });
-            d3.select('.container').insert('div', '.chart').attr('class', 'legend w-100 text-center p-2').selectAll('span')
+
+            d3.select('.container').insert('div', '.chart')
+                .attr('class', 'legend w-100 text-center p-2')
+                .selectAll('span')
                 .data(labels)
                 .enter().append('span')
-                .attr('data-id', function (id) { return id; })
-                .html(function (id) { return id; })
+                .attr('data-id', id => id)
+                .html(id => id)
                 .each(function (id) {
                     d3.select(this).style('background-color', chart.color(id));
                 })
-                .on('mouseover', function (id) {
-                    chart.focus(id);
-                })
-                .on('mouseout', function (id) {
-                    chart.revert();
-                })
-                .on('click', function (id) {
-                    chart.toggle(id);
-                });
-        }
-
-        function toggle(id) {
-            chart.toggle(id);
+                .on('mouseover', id => chart.focus(id))
+                .on('mouseout', id => chart.revert())
+                .on('click', id => chart.toggle(id));
         }
     </script>
-
-
 }

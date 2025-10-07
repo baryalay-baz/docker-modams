@@ -7,107 +7,114 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    <!-- Charts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.bundle.min.js"></script>
     <script src="~/assets/plugins/chart/chartjs-plugin-labels.js"></script>
-    
+
     <!-- FAVICON -->
     <link rel="shortcut icon" type="image/x-icon" href="~/assets/images/brand/favicon.ico" />
 
-    <!-- TITLE -->
     <title>MOD Asset Management System</title>
 
-    <!-- BOOTSTRAP CSS -->
-    @* <link id="style" href="~/assets/plugins/bootstrap/css/bootstrap.min.css" asp-append-version="true" rel="stylesheet" /> *@
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Driver.js CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@latest/dist/driver.css" />
+
+    <style>
+        /* Floating Help button */
+        .pams-help-fab {
+            position: fixed;
+            right: 18px;
+            bottom: 18px;
+            z-index: 9999;
+            background: #0d6efd;
+            color: #fff;
+            border: none;
+            border-radius: 999px;
+            width: 48px;
+            height: 48px;
+            font-size: 22px;
+            line-height: 48px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,.15);
+            cursor: pointer;
+            display: inline-block;
+            vertical-align:middle;
+        }
+
+            .pams-help-fab:hover {
+                filter: brightness(0.95);
+            }
+    </style>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
     <!-- Bootstrap Datepicker CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.9.0/dist/css/bootstrap-datepicker.min.css" rel="stylesheet">
 
-
-    <!--SELECT2-->
+    <!-- SELECT2 -->
     <link href="~/assets/plugins/select2/css/select2.css" rel="stylesheet" asp-append-version="true" />
 
-    <!-- STYLE CSS -->
+    <!-- Theme CSS -->
     <link href="~/assets/css/style.css" rel="stylesheet" asp-append-version="true" />
     <link href="~/assets/css/skin-modes.css" rel="stylesheet" asp-append-version="true" />
-
-    <!--- FONT-ICONS CSS -->
     <link href="~/assets/css/icons.css" rel="stylesheet" asp-append-version="true" />
     <link href="~/css/custom_css_layout.css" rel="stylesheet" />
 
-    @* Add the Kendo UI scripts: *@
+    <!-- Add FontAwesome in <head> if not added -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-    <link href="https://kendo.cdn.telerik.com/themes/7.0.2/bootstrap/bootstrap-main.css" rel="stylesheet" type="text/css" />
 
+    <!-- Kendo UI -->
+    <link href="https://kendo.cdn.telerik.com/themes/7.0.2/bootstrap/bootstrap-main.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.kendostatic.com/2023.2.606/js/jquery.min.js"></script>
     <script src="https://cdn.kendostatic.com/2023.2.606/js/jszip.min.js"></script>
     <script src="https://cdn.kendostatic.com/2023.2.606/js/kendo.all.min.js"></script>
     <script src="https://cdn.kendostatic.com/2023.2.606/js/kendo.aspnetmvc.min.js"></script>
-    <script src="~/js/utils.js"></script>
 
+    <script src="~/js/utils.js"></script>
 </head>
-<body class="app sidebar-mini ltr">
+
+<body class="app sidebar-mini ltr" data-page="@((ViewData["TourPageKey"] ?? "").ToString())">
 
     <!-- GLOBAL-LOADER -->
     <div id="global-loader">
         <img src="~/assets/images/loader.svg" class="loader-img" alt="Loader">
     </div>
-    <!-- /GLOBAL-LOADER -->
-    <!-- PAGE -->
+
     <div class="page">
         <div class="page-main">
-            <!-- app header code -->
             <partial name="layouts/_app-header.cshtml" />
-            <!-- End app header Code -->
-            <!-- app sidebar Code -->
             <partial name="layouts/_app-sidebar.cshtml" />
-            <!-- End app sidebar Code -->
-            <!--app-content open-->
+
             <div class="app-content main-content mt-0">
                 <div class="side-app">
-
-                    <!-- CONTAINER -->
                     <div class="main-container container-fluid">
                         <div class="js-notification"></div>
                         @RenderBody()
                     </div>
                 </div>
             </div>
-            <!-- CONTAINER END -->
         </div>
         <partial name="layouts/-selector-model.cshtml" />
         <partial name="layouts/_footer.cshtml" />
     </div>
 
-    <section id="dvNotificationsData" style="display:none;"></section>
-    <!-- BACK-TO-TOP -->
-    <a href="#top" id="back-to-top"><i class="fa fa-long-arrow-up"></i></a>
+    <button id="PamsHelpFab" class="pams-help-fab" title="Tutor">
+        <i class="bi bi-mortarboard-fill"></i>
+    </button>
 
-    <!-- JQUERY JS -->
-    @**@
-
-    <!-- Bootstrap JS (required) -->
-    @* <script src="~/assets/plugins/bootstrap/js/bootstrap.min.js"></script> *@
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-
-    <!-- Bootstrap Datepicker JS -->
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.9.0/dist/js/bootstrap-datepicker.min.js"></script>
-
-    <!-- SIDE-MENU JS -->
     <script src="~/assets/plugins/sidemenu/sidemenu.js"></script>
-
-    <!--Notification Scripts-->
     <script src="~/assets/plugins/notify/js/rainbow.js"></script>
-    @*<script src="~/assets/plugins/notify/js/sample.js"></script>*@
     <script src="~/assets/plugins/notify/js/jquery.growl.js"></script>
     <script src="~/assets/plugins/notify/js/notifIt.js"></script>
-    <!--End Notification Scripts-->
-    <!-- SELECT2 JS -->
     <script src="~/assets/plugins/select2/select2.full.min.js"></script>
 
-    <!--DATA TABLES-->
+    <!-- Datatables -->
     <script src="~/assets/plugins/datatable/js/jquery.dataTables.min.js"></script>
     <script src="~/assets/plugins/datatable/js/dataTables.bootstrap5.js"></script>
     <script src="~/assets/plugins/datatable/js/dataTables.buttons.min.js"></script>
@@ -120,38 +127,23 @@
     <script src="~/assets/plugins/datatable/dataTables.responsive.min.js"></script>
     <script src="~/assets/plugins/datatable/responsive.bootstrap5.min.js"></script>
 
-    <!--PERFECT SCROLLBAR-->
     <script src="~/assets/plugins/p-scroll/perfect-scrollbar.js"></script>
-
-    <!-- FORMVALIDATION JS -->
     <script src="~/assets/js/form-validation.js"></script>
-
-    <!-- Perfect SCROLLBAR JS-->
-    @*			<script src="~/assets/plugins/p-scroll/perfect-scrollbar.js"></script>
-    <script src="~/assets/plugins/p-scroll/pscroll.js"></script>
-    *@
-    <!-- STICKY JS -->
     <script src="~/assets/js/sticky.js"></script>
     <partial name="_ValidationScriptsPartial" />
     <partial name="_Notification" />
-
-    @* @RenderSection("Scripts",false/*required*/) *@
     @await RenderSectionAsync("Scripts", required: false)
-
-    <!-- COLOR THEME JS -->
     <script src="~/assets/js/themeColors.js"></script>
-
-    <!-- CUSTOM JS -->
     <script src="~/assets/js/custom.js"></script>
-
-    <!-- TELERIK SCRIPTS -->
     <script src="~/js/kendo-ui-license.js"></script>
-    <section id="dvProfileData" style="display:none;"></section>
     <script src="~/assets/plugins/moment/moment.js"></script>
-
-    @* <script src="~/assets/plugins/bootstrap/js/popper.min.js"></script> *@
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/umd/popper.min.js" integrity="sha512-TPh2Oxlg1zp+kz3nFA0C5vVC6leG/6mm1z9+mA81MI5eaUVqasPLO8Cuk4gMF4gUfP5etR73rgU/8PNMsSesoQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/umd/popper.min.js"></script>
     <script src="~/js/custom_script_layout.js"></script>
-    
+
+    <!-- Driver.js + Registry -->
+    <script src="https://cdn.jsdelivr.net/npm/driver.js@latest/dist/driver.js.iife.js"></script>
+    <!-- PAMS Tours -->
+    <script src="~/js/tours-loader.js"></script>
+
 </body>
 </html>

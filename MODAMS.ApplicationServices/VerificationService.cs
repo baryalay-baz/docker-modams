@@ -73,14 +73,12 @@ namespace MODAMS.ApplicationServices
                 {
                     IsSomali = _isSomali
                 };
-
-                // 1) Resolve which store this user belongs to
+                
                 var storeId = await _func.GetStoreIdByEmployeeIdAsync(_employeeId);
                 if (storeId == 0)
                     return Result<VerificationScheduleCreateDTO>.Failure(
                         _isSomali ? "Kayd lama heli karo" : "Store not available");
 
-                // 2) Load only the Store’s basic info + Department name
                 var storeInfo = await _db.Stores
                     .AsNoTracking()
                     .Where(s => s.Id == storeId)
@@ -106,10 +104,8 @@ namespace MODAMS.ApplicationServices
                     .AsNoTracking()
                     .Where(m => m.StoreId == storeId).ToListAsync();
 
-                // 3) Count the assets in SQL
                 dto.NumberOfAssets = dto.StoreAssets.Count();
 
-                // 4) Build the list of selectable employees
                 var employeeItems = await _db.StoreEmployees
                     .AsNoTracking()
                     .Where(se => se.StoreId == storeId && se.EmployeeId != _employeeId)
@@ -138,7 +134,6 @@ namespace MODAMS.ApplicationServices
                         employeeItems.Add(me);
                 }
 
-                // 5) Populate both Employees and EmployeesList
                 dto.Employees = employeeItems
                     .Select(x => new Employee { Id = x.Id, FullName = x.FullName, JobTitle = "", ImageUrl = x.ImageUrl})
                     .ToList();
@@ -150,8 +145,6 @@ namespace MODAMS.ApplicationServices
                         Value = x.Id.ToString()
                     })
                     .ToList();
-
-                // 6) NewSchedule & NewTeam are left at their defaults
 
                 return Result<VerificationScheduleCreateDTO>.Success(dto);
             }
@@ -207,7 +200,6 @@ namespace MODAMS.ApplicationServices
                 return Result<VerificationScheduleCreateDTO>.Failure(ex.Message);
             }
         }
-
         public async Task<Result<VerificationScheduleEditDTO>> GetEditScheduleAsync(int id)
         {
             try
@@ -326,7 +318,6 @@ namespace MODAMS.ApplicationServices
                         : "An error occurred while saving changes.");
             }
         }
-
         public async Task<Result<VerificationSchedulePreviewDTO>> GetPreviewScheduleAsync(int id)
         {
             try
@@ -563,7 +554,6 @@ namespace MODAMS.ApplicationServices
                 return Result.Failure($"An unexpected error occurred while deleting the Verification Record with Id {id}");
             }
         }
-
 
         //Private functions
         private bool IsInRole(string role) => _httpContextAccessor.HttpContext?.User?.IsInRole(role) ?? false;

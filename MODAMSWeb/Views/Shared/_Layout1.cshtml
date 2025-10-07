@@ -21,6 +21,19 @@
     <!--- FONT-ICONS CSS -->
     <link href="~/assets/css/icons.css" rel="stylesheet" asp-append-version="true" />
 
+    <!-- Driver.js (v1) CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@latest/dist/driver.css" />
+
+    <style>
+        /* Floating Help button */
+        .pams-help-fab{
+          position: fixed; right: 18px; bottom: 18px; z-index: 9999;
+          background:#0d6efd; color:#fff; border:none; border-radius:999px;
+          width:48px; height:48px; font-size:22px; line-height:48px; text-align:center;
+          box-shadow: 0 4px 12px rgba(0,0,0,.15); cursor:pointer; display:none;
+        }
+        .pams-help-fab:hover{ filter: brightness(0.95); }
+    </style>
 
 
 </head>
