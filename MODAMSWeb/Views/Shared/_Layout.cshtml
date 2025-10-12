@@ -74,6 +74,7 @@
     <script src="https://cdn.kendostatic.com/2023.2.606/js/kendo.aspnetmvc.min.js"></script>
 
     <script src="~/js/utils.js"></script>
+    <link rel="stylesheet" href="~/css/pams-tutor.css" />
 </head>
 
 <body class="app sidebar-mini ltr" data-page="@((ViewData["TourPageKey"] ?? "").ToString())">
@@ -138,12 +139,17 @@
     <script src="~/js/kendo-ui-license.js"></script>
     <script src="~/assets/plugins/moment/moment.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/umd/popper.min.js"></script>
-    <script src="~/js/custom_script_layout.js"></script>
+    
+    <script src="https://unpkg.com/feather-icons"></script>
 
     <!-- Driver.js + Registry -->
     <script src="https://cdn.jsdelivr.net/npm/driver.js@latest/dist/driver.js.iife.js"></script>
     <!-- PAMS Tours -->
     <script src="~/js/tours-loader.js"></script>
+    @* <script src="~/js/tours/pams-tutor.js"></script> *@
+    <script src="~/js/tutor/pams-tutor-core.js"></script>
+    <script src="~/js/custom_script_layout.js"></script>
+    
 
 </body>
 </html>

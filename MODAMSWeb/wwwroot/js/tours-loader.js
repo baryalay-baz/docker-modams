@@ -1,7 +1,7 @@
 ﻿(function () {
     const driverFactory = window?.driver?.js?.driver;
     if (!driverFactory) {
-        console.error("❌ Driver.js not loaded.");
+        console.error("Driver.js not loaded.");
         return;
     }
 
@@ -42,14 +42,15 @@
         const pageKey = getPageKey();
         const fab = document.getElementById("PamsHelpFab");
 
-        if (!pageKey) return;
+        if (!pageKey || !fab) return;
 
-        // Load the page-specific tour script dynamically
         const scriptUrl = `/js/tours/${pageKey.replace(/\//g, '-').toLowerCase()}-tour.js`;
         const script = document.createElement("script");
         script.src = scriptUrl;
+
         script.onload = () => {
             console.log(`Tour script loaded: ${scriptUrl}`);
+
             if (window.PAMS_TOUR_REGISTRY?.[pageKey]) {
                 fab.style.display = "inline-block";
                 fab.onclick = () => startTourFor(pageKey);
@@ -57,7 +58,9 @@
                 console.warn(`Tour for ${pageKey} not found after script load.`);
             }
         };
+
         script.onerror = () => console.error(`Failed to load tour script: ${scriptUrl}`);
         document.body.appendChild(script);
     });
+
 })();

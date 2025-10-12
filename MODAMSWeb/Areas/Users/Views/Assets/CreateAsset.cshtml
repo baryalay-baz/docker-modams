@@ -1,9 +1,14 @@
-﻿@using System.Globalization
+﻿<meta name="pams-tutor-page" content="Assets/CreateAsset" />
+
+@using System.Globalization
 @using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer Localizer
 
 @model MODAMS.Models.ViewModels.Dto.AssetCreateDTO
 
+@{
+    ViewData["TourPageKey"] = "Assets/CreateAsset";
+}
 
 <style>
     input[type="date"]::-webkit-calendar-picker-indicator {
@@ -43,10 +48,9 @@
                                 <input asp-for="Id" hidden />
                                 <input asp-for="StoreId" hidden value="@Model.StoreId" />
 
-                                @*<input asp-for="Employee.RoleName" hidden />*@
                                 <div class="row">
                                     <div class="col-sm-4">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="ca.category">
                                             <label asp-for="CategoryId"></label>
                                             <select asp-for="CategoryId" asp-items="@Model.Categories"
                                                     class="form-control select2 form-select">
@@ -55,89 +59,100 @@
                                             <span asp-validation-for="CategoryId" class="text-danger"></span>
                                         </div>
                                     </div>
+
                                     <div class="col-sm-4">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="ca.subcategory">
                                             <label asp-for="SubCategoryId"></label>
                                             <select asp-for="SubCategoryId" asp-items="@Model.SubCategories"
-                                                    class="form-control select2 form-select">
+                                                    class="form-control select2 form-select" >
                                                 <option disabled selected>-@Localizer["SelectSubCategory"]-</option>
                                             </select>
                                             <span asp-validation-for="SubCategoryId" class="text-danger"></span>
                                         </div>
                                     </div>
+
                                     <div class="col-sm-4">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="ca.name">
                                             <label asp-for="Name"></label>
-                                            <input asp-for="Name" class="form-control" aria-required="true" />
+                                            <input asp-for="Name" class="form-control" aria-required="true" autocomplete="off"/>
                                             <span asp-validation-for="Name" class="text-danger"></span>
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row">
                                     <div class="col-sm-4">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="ca.make">
                                             <label asp-for="Make"></label>
-                                            <input asp-for="Make" class="form-control" aria-required="true" />
+                                            <input asp-for="Make" class="form-control" aria-required="true" autocomplete="off"/>
                                             <span asp-validation-for="Make" class="text-danger"></span>
                                         </div>
                                     </div>
+
                                     <div class="col-sm-4">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="ca.model">
                                             <label asp-for="Model"></label>
-                                            <input asp-for="Model" class="form-control" aria-required="true" />
+                                            <input asp-for="Model" class="form-control" aria-required="true" autocomplete="off" />
                                             <span asp-validation-for="Model" class="text-danger"></span>
                                         </div>
                                     </div>
+
                                     <div class="col-sm-4">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="ca.year">
                                             <label asp-for="Year"></label>
-                                            <input asp-for="Year" class="form-control" aria-required="true" />
+                                            <input asp-for="Year" class="form-control" aria-required="true" autocomplete="off" />
                                             <span asp-validation-for="Year" class="text-danger"></span>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row" id="dvVehicleIdentification" style="display:none;">
+
+                                <div class="row" id="dvVehicleIdentification" style="display:none;" data-tour="ca.vehicleinfo">
                                     <div class="col-sm-4">
                                         <div class="mb-3 form-group">
                                             <label asp-for="Engine"></label>
-                                            <input asp-for="Engine" class="form-control" aria-required="true" />
+                                            <input asp-for="Engine" class="form-control" aria-required="true" autocomplete="off" />
                                             <span asp-validation-for="Engine" class="text-danger"></span>
                                         </div>
                                     </div>
+
                                     <div class="col-sm-4">
                                         <div class="mb-3 form-group">
                                             <label asp-for="Chasis"></label>
-                                            <input asp-for="Chasis" class="form-control" aria-required="true" />
+                                            <input asp-for="Chasis" class="form-control" aria-required="true" autocomplete="off"/>
                                             <span asp-validation-for="Chasis" class="text-danger"></span>
                                         </div>
                                     </div>
+
                                     <div class="col-sm-4">
                                         <div class="mb-3 form-group">
                                             <label asp-for="Plate"></label>
-                                            <input asp-for="Plate" class="form-control" aria-required="true" />
+                                            <input asp-for="Plate" class="form-control" aria-required="true" autocomplete="off"/>
                                             <span asp-validation-for="Plate" class="text-danger"></span>
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row">
                                     <div class="col-sm-4">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="ca.country">
                                             <label asp-for="ManufacturingCountry"></label>
-                                            <input asp-for="ManufacturingCountry" class="form-control" aria-required="true" />
+                                            <input asp-for="ManufacturingCountry" class="form-control" aria-required="true" autocomplete="off"/>
                                             <span asp-validation-for="ManufacturingCountry" class="text-danger"></span>
                                         </div>
                                     </div>
+
                                     <div class="col-sm-4">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="ca.serial">
                                             <label asp-for="SerialNo"></label>
-                                            <input asp-for="SerialNo" class="form-control" aria-required="true" />
+                                            <input asp-for="SerialNo" class="form-control" aria-required="true" autocomplete="off"/>
                                             <span asp-validation-for="SerialNo" class="text-danger"></span>
                                         </div>
                                     </div>
+
                                     <div class="col-sm-4">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="ca.barcode">
                                             <label asp-for="Barcode"></label>
-                                            <input asp-for="Barcode" class="form-control" aria-required="true" />
+                                            <input asp-for="Barcode" class="form-control" aria-required="true" autocomplete="off"/>
                                             <span asp-validation-for="Barcode" class="text-danger"></span>
                                         </div>
                                     </div>
@@ -145,46 +160,57 @@
 
                                 <div class="row">
                                     <div class="col-sm-12">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="ca.specifications">
                                             <label asp-for="Specifications"></label>
-                                            <textarea asp-for="Specifications" class="form-control mb-4" placeholder="" rows="3"></textarea>
+                                            <textarea asp-for="Specifications" class="form-control mb-4" rows="3"></textarea>
                                             <span asp-validation-for="Specifications" class="text-danger"></span>
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row">
                                     <div class="col-sm-4">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="ca.cost">
                                             <label asp-for="Cost"></label>
-                                            <input asp-for="Cost" class="form-control" aria-required="true" />
+                                            <input asp-for="Cost" class="form-control" aria-required="true" autocomplete="off"/>
                                             <span asp-validation-for="Cost" class="text-danger"></span>
                                         </div>
                                     </div>
+
                                     <div class="col-sm-4">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="ca.purchasedate">
                                             <label asp-for="PurchaseDate"></label>
-                                            <input asp-for="PurchaseDate" asp-format="{0:dd-MMM-yyyy}" class="form-control picker" aria-required="true" type="text" />
+                                            <input asp-for="PurchaseDate" asp-format="{0:dd-MMM-yyyy}" 
+                                            class="form-control picker" aria-required="true" type="text"
+                                            autocomplete="off"
+                                            />
                                             <span asp-validation-for="PurchaseDate" class="text-danger"></span>
                                         </div>
                                     </div>
+
                                     <div class="col-sm-4">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="ca.receiptdate">
                                             <label asp-for="RecieptDate"></label>
-                                            <input asp-for="RecieptDate" asp-format="{0:dd-MMM-yyyy}" class="form-control picker" aria-required="true" type="text" />
+                                            <input asp-for="RecieptDate" asp-format="{0:dd-MMM-yyyy}" 
+                                            class="form-control picker" aria-required="true" type="text"
+                                            autocomplete="off"
+                                            />
                                             <span asp-validation-for="RecieptDate" class="text-danger"></span>
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row">
                                     <div class="col-sm-4">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="ca.po">
                                             <label asp-for="PONumber"></label>
-                                            <input asp-for="PONumber" class="form-control" aria-required="true" />
+                                            <input asp-for="PONumber" class="form-control" aria-required="true" autocomplete="off" />
                                             <span asp-validation-for="PONumber" class="text-danger"></span>
                                         </div>
                                     </div>
+
                                     <div class="col-sm-4">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="ca.procuredby">
                                             <label asp-for="ProcuredBy"></label>
                                             <select asp-for="ProcuredBy" class="form-control select2 form-select" aria-required="true">
                                                 <option selected disabled>-@Localizer["SelectProcurementEntity"]-</option>
@@ -196,8 +222,9 @@
                                             <span asp-validation-for="ProcuredBy" class="text-danger"></span>
                                         </div>
                                     </div>
+
                                     <div class="col-sm-4">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="ca.donor">
                                             <label asp-for="DonorId"></label>
                                             <select asp-for="DonorId" asp-items="Model.Donors" class="form-control select2 form-select">
                                                 <option disabled selected>-@Localizer["SelectDonor"]-</option>
@@ -206,9 +233,10 @@
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row">
                                     <div class="col-sm-4">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="ca.condition">
                                             <label asp-for="ConditionId"></label>
                                             <select asp-for="ConditionId" asp-items="Model.Conditions" class="form-control select2 form-select">
                                                 <option disabled selected>-@Localizer["SelectCondition"]-</option>
@@ -216,21 +244,24 @@
                                             <span asp-validation-for="ConditionId" class="text-danger"></span>
                                         </div>
                                     </div>
+
                                     <div class="col-sm-8">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="ca.remarks">
                                             <label asp-for="Remarks"></label>
-                                            <input asp-for="Remarks" class="form-control" aria-required="true" />
+                                            <input asp-for="Remarks" class="form-control" aria-required="true" autocomplete="off" />
                                             <span asp-validation-for="Remarks" class="text-danger"></span>
                                         </div>
                                     </div>
                                 </div>
+
                             </div>
                         </form>
+
                     </div>
                 </div>
                 <div class="row p-5">
                     <div class="btn-list">
-                        <button id="btnSubmit" class="btn btn-info-gradient"><i class="fa fa-save"></i>&nbsp;@Localizer["SaveAsset"]</button>
+                        <button id="btnSubmit" class="btn btn-info-gradient" data-tour="ca.submit"><i class="fa fa-save"></i>&nbsp;@Localizer["SaveAsset"]</button>
                         <a asp-action="Index" asp-controller="Assets" asp-route-id="@Model.StoreId" id="btnCancel" class="btn btn-gray"><i class="fa fa-close"></i>&nbsp;@Localizer["Cancel"]</a>
                     </div>
                 </div>
@@ -243,6 +274,7 @@
 
 <!--ROW CLOSED-->
 @section scripts {
+    <script src="~/js/tutor/tips/assets-createasset.js"></script>
     <script>
         $(document).ready(() => {
             hideMenu();
@@ -371,7 +403,7 @@
                 })
 
                 $("#CategoryId").html("").html(sHtml);
-                console.log(sHtml);
+                //console.log(sHtml);
             } else {
                 showErrorMessageJs(result.message);
             }

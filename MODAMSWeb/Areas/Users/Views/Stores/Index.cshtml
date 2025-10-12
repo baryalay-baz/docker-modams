@@ -4,6 +4,10 @@
 @model MODAMS.Models.ViewModels.Dto.StoresDTO
 @inject IViewLocalizer Localizer
 
+@{
+    ViewData["TourPageKey"] = "Stores/Index";
+}
+
 <style>
     .card.divBackground {
         position: relative;
@@ -78,9 +82,9 @@
             <div class="card-body p-4">
                 <div class="d-flex align-items-center justify-content-between">
 
-                    <div class="col-md-3"><input type="text" id="txtSearchStore" class="form-control" placeholder="@Localizer["SearchForStore"]" /></div>
+                    <div class="col-md-3" data-tour="stores.search"><input type="text" id="txtSearchStore" class="form-control" placeholder="@Localizer["SearchForStore"]" /></div>
 
-                    <div class="btn-list">
+                    <div class="btn-list" data-tour="stores.assetreport">
                         <a class="btn btn-outline-info" data-bs-target="#mdl-asset-report" data-bs-toggle="modal"><i class="fe fe-printer"></i> @Localizer["AssetReports"]</a>
                     </div>
                 </div>
@@ -93,16 +97,23 @@
 }
 <div class="row">
     <div class="col-md-12">
-        <div clsas="card">
-            <div clsas="card-body p-4">
+        <div class="card">
+            <div class="card-body p-4">
                 <div class="card">
                     <div id="dvCardBody" class="card-body project-list-table-container">
                         <div class="row" id="dvMainRow">
                             @{
                                 if (Model.vwStores.Count > 0)
                                 {
+                                    bool isLabeled = false;
+                                    string sStoreTypeTour = "";
+                                    string sMemberList = "";
+
                                     foreach (var store in Model.vwStores)
                                     {
+                                        sStoreTypeTour = !isLabeled ? " data-tour=stores.storetype" : "";
+                                        sMemberList = !isLabeled ? " data-tour=stores.memberlist" : "";
+
                                         var bgType = (store.StoreType == 1) ? "bg-info" : "bg-info-transparent";
                                         <div class="col-sm-12 col-md-12 col-lg-12 col-xl-4">
                                             <div class="card divShadow divBackground">
@@ -118,7 +129,7 @@
                                                                         <div class="ms-1">
                                                                             <h6 class="mb-1"> <a class="float-start text-bold" asp-area="Users" asp-controller="Stores" asp-action="StoreDetails" asp-route-id="@store.Id">@(_isSomali? store.NameSo: store.Name)</a></h6>
                                                                             <span class="text-muted pe-2 fs-11 float-start mt-1">
-                                                                                <span class="@(store.StoreType == 1 ? "text-primary text-bold" : "")">
+                                                                                <span @(sStoreTypeTour) class="@(store.StoreType == 1 ? "text-primary text-bold" : "")">
                                                                                     @(store.StoreType == 1 ? Localizer["Primary Store"] : Localizer["Secondary Store"])
                                                                                 </span>
                                                                             </span>
@@ -133,7 +144,7 @@
                                                             <div class="row align-items-center">
                                                                 <div class="col">
                                                                     <p class="m-0 mb-2">@Localizer["Members"]</p>
-                                                                    <div class="avatar-list avatar-list-stacked">
+                                                                    <div class="avatar-list avatar-list-stacked" @(sMemberList)>
                                                                         @{
                                                                             var storeEmps = Model.storeEmployees.Where(m => m.StoreId == store.Id).OrderByDescending(m => m.Role).ToList();
                                                                             if (storeEmps.Count > 0)
@@ -187,6 +198,7 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        isLabeled = true;
                                     }
                                 }
                                 else

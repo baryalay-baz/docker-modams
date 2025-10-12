@@ -1,5 +1,4 @@
-﻿// wwwroot/js/tours/home-index-tour.js
-(function () {
+﻿(function () {
     const driverFactory = window?.driver?.js?.driver;
     const lang = getCurrentLanguage(); // returns "en" or "so"
 
@@ -8,17 +7,17 @@
         return;
     }
 
-    // 🌍 Translation helper
+    // Translation helper
     const t = (enText, soText) => (lang === 'so' ? soText : enText);
 
-    // 🧠 Make sure the registry exists globally
+    // Make sure the registry exists globally
     window.PAMS_TOUR_REGISTRY = window.PAMS_TOUR_REGISTRY || {};
 
-    // 🏡 Register the Home/Index tour
+    // Register the Home/Index tour
     window.PAMS_TOUR_REGISTRY["Home/Index"] = {
         version: "v1",
         steps: [
-            // === 🧭 HEADER SECTION ===
+            // === HEADER SECTION ===
             {
                 element: '[data-tour="header.logo"]',
                 popover: {
@@ -39,7 +38,10 @@
                 element: '[data-tour="header.search"]',
                 popover: {
                     title: t('Global Search', 'Raadin Guud'),
-                    description: t('Scan or type a barcode here to quickly find assets.', 'Halkan ka baar ama geli barcode si degdeg ah loo helo hanti.'),
+                    description: t(
+                        'Scan or type a barcode here to quickly find assets, handover documents and transfer documents.',
+                        'Halkan ka sawir ama ku qor baar-koodh si aad si degdeg ah u hesho hantida, dukumentiyada dhiibista (handover), iyo dukumentiyada kala wareejinta (transfer).'
+                    ),
                     side: 'bottom'
                 }
             },
@@ -63,7 +65,8 @@
                 element: '[data-tour="header.shortcuts"]',
                 popover: {
                     title: t('Shortcuts', 'Jidka Degdegga ah'),
-                    description: t('Access frequently used pages quickly.', 'Si degdeg ah u gal bogagga inta badan la isticmaalo.'),
+                    description: t('Access system settings and other system shortcuts here',
+                        'Halkan ka geli dejimaha nidaamka iyo gaabisyada kale ee nidaamka.'),
                     side: 'bottom'
                 },
                 onNextClick: () => {
@@ -149,7 +152,10 @@
                 element: '[data-tour="sidebar.transfers"]',
                 popover: {
                     title: t('Transfers', 'Wareejinta'),
-                    description: t('Access asset transfer operations between locations.', 'Maamul wareejinta hantida meelaha kala duwan.'),
+                    description: t(
+                        'Access asset transfer operations between stores.',
+                        'Gali howlaha wareejinta hantida ee u dhexeeya bakhaarada.'
+                    ),
                     side: 'right'
                 }
             },

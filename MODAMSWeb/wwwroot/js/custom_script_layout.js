@@ -17,7 +17,7 @@
             document.body.classList.remove('sidenav-toggled'); // force hide sidebar on mobile
         }
     });
-
+    feather.replace();
 });
 
 const loadProfileData = () => {
