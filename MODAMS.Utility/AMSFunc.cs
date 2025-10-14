@@ -715,62 +715,143 @@ namespace MODAMS.Utility
                 .Select(c => (int?)c.Id)
                 .FirstOrDefaultAsync() ?? 0;
 
-            var search = rawSearch.Trim().ToUpperInvariant();
-            var like = $"%{search}%";
+            var searchU = rawSearch.Trim().ToUpperInvariant();
+            var likeU = $"%{searchU}%";
 
-            var q = _db.Assets
+            var baseQ = _db.Assets
                 .AsNoTracking()
-                .Where(a => a.AssetStatusId != SD.Asset_Deleted);
-
-            var results = await q
-                .Where(a =>
-                    (a.Barcode != null && (a.Barcode.ToUpper() == search || a.Barcode.ToUpper().StartsWith(search) || EF.Functions.Like(a.Barcode.ToUpper(), like))) ||
-                    (a.SerialNo != null && (a.SerialNo.ToUpper() == search || a.SerialNo.ToUpper().StartsWith(search) || EF.Functions.Like(a.SerialNo.ToUpper(), like))) ||
-                    (a.Plate != null && (a.Plate.ToUpper() == search || a.Plate.ToUpper().StartsWith(search) || EF.Functions.Like(a.Plate.ToUpper(), like))) ||
-                    (a.Engine != null && (a.Engine.ToUpper() == search || a.Engine.ToUpper().StartsWith(search) || EF.Functions.Like(a.Engine.ToUpper(), like))) ||
-                    (a.Chasis != null && (a.Chasis.ToUpper() == search || a.Chasis.ToUpper().StartsWith(search) || EF.Functions.Like(a.Chasis.ToUpper(), like)))
-                )
+                .Where(a => a.AssetStatusId != SD.Asset_Deleted)
                 .Select(a => new
                 {
+                    A = a,
+                    CatName = _isSomali ? a.SubCategory.Category.CategoryNameSo : a.SubCategory.Category.CategoryName,
+                    SubName = _isSomali ? a.SubCategory.SubCategoryNameSo : a.SubCategory.SubCategoryName,
+                    StoreName = _isSomali ? a.Store.NameSo : a.Store.Name
+                });
+
+            var results = await baseQ
+                .Where(x =>
+                    (x.A.Barcode != null && (
+                        x.A.Barcode.ToUpper() == searchU ||
+                        x.A.Barcode.ToUpper().StartsWith(searchU) ||
+                        EF.Functions.Like(x.A.Barcode.ToUpper(), likeU)
+                    )) ||
+
+                    (x.A.SerialNo != null && (
+                        x.A.SerialNo.ToUpper() == searchU ||
+                        x.A.SerialNo.ToUpper().StartsWith(searchU) ||
+                        EF.Functions.Like(x.A.SerialNo.ToUpper(), likeU)
+                    )) ||
+
+                    (x.A.Plate != null && (
+                        x.A.Plate.ToUpper() == searchU ||
+                        x.A.Plate.ToUpper().StartsWith(searchU) ||
+                        EF.Functions.Like(x.A.Plate.ToUpper(), likeU)
+                    )) ||
+
+                    (x.A.Engine != null && (
+                        x.A.Engine.ToUpper() == searchU ||
+                        x.A.Engine.ToUpper().StartsWith(searchU) ||
+                        EF.Functions.Like(x.A.Engine.ToUpper(), likeU)
+                    )) ||
+
+                    (x.A.Chasis != null && (
+                        x.A.Chasis.ToUpper() == searchU ||
+                        x.A.Chasis.ToUpper().StartsWith(searchU) ||
+                        EF.Functions.Like(x.A.Chasis.ToUpper(), likeU)
+                    )) ||
+
+                    (x.A.Model != null && (
+                        x.A.Model.ToUpper() == searchU ||
+                        x.A.Model.ToUpper().StartsWith(searchU) ||
+                        EF.Functions.Like(x.A.Model.ToUpper(), likeU)
+                    )) ||
+
+                    (x.A.Make != null && (
+                        x.A.Make.ToUpper() == searchU ||
+                        x.A.Make.ToUpper().StartsWith(searchU) ||
+                        EF.Functions.Like(x.A.Make.ToUpper(), likeU)
+                    )) ||
+
+                    (x.A.Name != null && (
+                        x.A.Name.ToUpper() == searchU ||
+                        x.A.Name.ToUpper().StartsWith(searchU) ||
+                        EF.Functions.Like(x.A.Name.ToUpper(), likeU)
+                    )) ||
+
+                    // language-aware fields
+                    (x.SubName != null && (
+                        x.SubName.ToUpper() == searchU ||
+                        x.SubName.ToUpper().StartsWith(searchU) ||
+                        EF.Functions.Like(x.SubName.ToUpper(), likeU)
+                    )) ||
+
+                    (x.CatName != null && (
+                        x.CatName.ToUpper() == searchU ||
+                        x.CatName.ToUpper().StartsWith(searchU) ||
+                        EF.Functions.Like(x.CatName.ToUpper(), likeU)
+                    ))
+                )
+                .Select(x => new
+                {
                     Score =
-                        (a.Barcode != null && a.Barcode.ToUpper() == search ? 300 : 0) +
-                        (a.SerialNo != null && a.SerialNo.ToUpper() == search ? 300 : 0) +
-                        (a.Plate != null && a.Plate.ToUpper() == search ? 300 : 0) +
-                        (a.Engine != null && a.Engine.ToUpper() == search ? 300 : 0) +
-                        (a.Chasis != null && a.Chasis.ToUpper() == search ? 300 : 0) +
-                        (a.Barcode != null && a.Barcode.ToUpper().StartsWith(search) ? 30 : 0) +
-                        (a.SerialNo != null && a.SerialNo.ToUpper().StartsWith(search) ? 30 : 0) +
-                        (a.Plate != null && a.Plate.ToUpper().StartsWith(search) ? 30 : 0) +
-                        (a.Engine != null && a.Engine.ToUpper().StartsWith(search) ? 30 : 0) +
-                        (a.Chasis != null && a.Chasis.ToUpper().StartsWith(search) ? 30 : 0) +
-                        (a.Barcode != null && EF.Functions.Like(a.Barcode.ToUpper(), like) ? 3 : 0) +
-                        (a.SerialNo != null && EF.Functions.Like(a.SerialNo.ToUpper(), like) ? 3 : 0) +
-                        (a.Plate != null && EF.Functions.Like(a.Plate.ToUpper(), like) ? 3 : 0) +
-                        (a.Engine != null && EF.Functions.Like(a.Engine.ToUpper(), like) ? 3 : 0) +
-                        (a.Chasis != null && EF.Functions.Like(a.Chasis.ToUpper(), like) ? 3 : 0),
+                        // exact matches (highest weight)
+                        (x.A.Barcode != null && x.A.Barcode.ToUpper() == searchU ? 300 : 0) +
+                        (x.A.SerialNo != null && x.A.SerialNo.ToUpper() == searchU ? 300 : 0) +
+                        (x.A.Plate != null && x.A.Plate.ToUpper() == searchU ? 300 : 0) +
+                        (x.A.Engine != null && x.A.Engine.ToUpper() == searchU ? 300 : 0) +
+                        (x.A.Chasis != null && x.A.Chasis.ToUpper() == searchU ? 300 : 0) +
+                        (x.A.Name != null && x.A.Name.ToUpper() == searchU ? 300 : 0) +
+                        (x.SubName != null && x.SubName.ToUpper() == searchU ? 250 : 0) +
+                        (x.CatName != null && x.CatName.ToUpper() == searchU ? 200 : 0) +
+                        (x.A.Make != null && x.A.Make.ToUpper() == searchU ? 120 : 0) +
+                        (x.A.Model != null && x.A.Model.ToUpper() == searchU ? 120 : 0) +
+
+                        // startswith (medium weight)
+                        (x.A.Barcode != null && x.A.Barcode.ToUpper().StartsWith(searchU) ? 30 : 0) +
+                        (x.A.SerialNo != null && x.A.SerialNo.ToUpper().StartsWith(searchU) ? 30 : 0) +
+                        (x.A.Plate != null && x.A.Plate.ToUpper().StartsWith(searchU) ? 30 : 0) +
+                        (x.A.Engine != null && x.A.Engine.ToUpper().StartsWith(searchU) ? 30 : 0) +
+                        (x.A.Chasis != null && x.A.Chasis.ToUpper().StartsWith(searchU) ? 30 : 0) +
+                        (x.A.Name != null && x.A.Name.ToUpper().StartsWith(searchU) ? 30 : 0) +
+                        (x.SubName != null && x.SubName.ToUpper().StartsWith(searchU) ? 25 : 0) +
+                        (x.CatName != null && x.CatName.ToUpper().StartsWith(searchU) ? 20 : 0) +
+                        (x.A.Make != null && x.A.Make.ToUpper().StartsWith(searchU) ? 15 : 0) +
+                        (x.A.Model != null && x.A.Model.ToUpper().StartsWith(searchU) ? 15 : 0) +
+
+                        // contains / LIKE (low weight)
+                        (x.A.Barcode != null && EF.Functions.Like(x.A.Barcode.ToUpper(), likeU) ? 3 : 0) +
+                        (x.A.SerialNo != null && EF.Functions.Like(x.A.SerialNo.ToUpper(), likeU) ? 3 : 0) +
+                        (x.A.Plate != null && EF.Functions.Like(x.A.Plate.ToUpper(), likeU) ? 3 : 0) +
+                        (x.A.Engine != null && EF.Functions.Like(x.A.Engine.ToUpper(), likeU) ? 3 : 0) +
+                        (x.A.Chasis != null && EF.Functions.Like(x.A.Chasis.ToUpper(), likeU) ? 3 : 0) +
+                        (x.A.Name != null && EF.Functions.Like(x.A.Name.ToUpper(), likeU) ? 3 : 0) +
+                        (x.SubName != null && EF.Functions.Like(x.SubName.ToUpper(), likeU) ? 3 : 0) +
+                        (x.CatName != null && EF.Functions.Like(x.CatName.ToUpper(), likeU) ? 3 : 0) +
+                        (x.A.Make != null && EF.Functions.Like(x.A.Make.ToUpper(), likeU) ? 2 : 0) +
+                        (x.A.Model != null && EF.Functions.Like(x.A.Model.ToUpper(), likeU) ? 2 : 0),
 
                     DTO = new AssetSearchDTO
                     {
-                        Id = a.Id,
-                        Category = a.SubCategory.Category.CategoryName,
-                        SubCategory = a.SubCategory.SubCategoryName,
-                        Make = a.Make ?? string.Empty,
-                        Model = a.Model ?? string.Empty,
-                        Name = a.Name ?? string.Empty,
-                        Specifications = a.Specifications ?? string.Empty,
-                        StoreName = a.Store.Name,
-                        Barcode = a.Barcode ?? string.Empty,
-                        SerialNo = a.SerialNo ?? string.Empty,
-                        IsVehicle = a.SubCategory.Category.Id == vehicleCategoryId,
-                        Plate = a.Plate ?? string.Empty,
-                        Engine = a.Engine ?? string.Empty,
-                        Chasis = a.Chasis ?? string.Empty,
-                        // Grab the first picture URL for this asset (no Include needed)
+                        Id = x.A.Id,
+                        Category = x.CatName ?? string.Empty,
+                        SubCategory = x.SubName ?? string.Empty,
+                        Make = x.A.Make ?? string.Empty,
+                        Model = x.A.Model ?? string.Empty,
+                        Name = x.A.Name ?? string.Empty,
+                        Specifications = x.A.Specifications ?? string.Empty,
+                        StoreName = x.StoreName ?? string.Empty,
+                        Barcode = x.A.Barcode ?? string.Empty,
+                        SerialNo = x.A.SerialNo ?? string.Empty,
+                        IsVehicle = x.A.SubCategory.Category.Id == vehicleCategoryId,
+                        Plate = x.A.Plate ?? string.Empty,
+                        Engine = x.A.Engine ?? string.Empty,
+                        Chasis = x.A.Chasis ?? string.Empty,
                         AssetPicture = _db.AssetPictures
-                                           .Where(p => p.AssetId == a.Id)
-                                           .OrderBy(p => p.Id)        // if you later add IsPrimary, order by it first
-                                           .Select(p => p.ImageUrl)
-                                           .FirstOrDefault() ?? string.Empty
+                            .Where(p => p.AssetId == x.A.Id)
+                            .OrderBy(p => p.Id)
+                            .Select(p => p.ImageUrl)
+                            .FirstOrDefault() ?? string.Empty
                     }
                 })
                 .OrderByDescending(x => x.Score)
@@ -781,6 +862,7 @@ namespace MODAMS.Utility
 
             return results;
         }
+
 
 
         public async Task<List<vwCategoryAsset>> GetvwCategoryAssetsAsync()
