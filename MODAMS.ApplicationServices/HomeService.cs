@@ -355,16 +355,12 @@ namespace MODAMS.ApplicationServices
                 }
 
                 // Search for asset if transfer is not found
-                var asset = await _func.AssetGlobalSearchAsync(barcode.Trim());
+                var assets = await _func.AssetGlobalSearchAsync(barcode.Trim(),100);
                 GlobalSearchDTO dto = new GlobalSearchDTO();
 
-                if (asset != null)
-                {
-                    var assetPicture = await _db.AssetPictures.FirstOrDefaultAsync(m => m.AssetId == asset.Id);
-                    dto.Asset = asset;
-                    dto.AssetPicture = assetPicture == null ? new Models.AssetPicture() : assetPicture;
-                }
-
+                if (assets != null)
+                    dto.Assets = assets;
+                
                 return Result<GlobalSearchDTO>.Success(dto);
             }
             catch (Exception ex)

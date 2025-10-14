@@ -16,8 +16,3 @@ html {
 body {
   margin-bottom: 60px;
 }
-.input-validated {
-    border-color: #28a745 !important;
-    box-shadow: 0 0 6px rgba(40, 167, 69, 0.4);
-    transition: all 0.3s ease-in-out;
-}

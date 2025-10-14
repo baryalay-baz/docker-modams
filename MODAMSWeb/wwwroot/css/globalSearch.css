@@ -1,0 +1,188 @@
+﻿/* ================================
+   ASSET CARDS – FULL STYLE SHEET
+   ================================ */
+
+/* Grid & card polish */
+.asset-grid { /* wrapper row already uses Bootstrap g-3 */
+}
+
+.asset-card {
+    /* Keep it light + professional */
+    --bs-card-bg: #ffffff; /* play nice with Bootstrap */
+    background-color: #f2f4f7; /* base */
+    background-image: linear-gradient(180deg, #f5f6f8, #eef1f6); /* subtle depth */
+
+    border: 1px solid rgba(20,20,20,.06);
+    border-radius: .5rem; /* gentle rounding on the card */
+    transition: transform .15s ease, box-shadow .15s ease;
+    color: #111;
+}
+
+    .asset-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 .75rem 1.5rem rgba(0,0,0,.10);
+    }
+
+/* ---- IMAGE: hard stop on any rounding/mask from themes ---- */
+.asset-thumb {
+    position: relative;
+    aspect-ratio: 16 / 9; /* stable header ratio */
+    width: 100%;
+    overflow: hidden;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    -webkit-mask-image: none !important;
+    mask-image: none !important;
+    clip-path: none !important;
+}
+
+/* Use this class on your <img> instead of .card-img-top */
+.asset-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* annihilate theme rounding */
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    -webkit-mask-image: none !important;
+    mask-image: none !important;
+    clip-path: none !important;
+}
+
+/* Last-resort nuke if the template targets .card-img-top or ancestors */
+.card.asset-card,
+.card.asset-card img,
+.card.asset-card .card-img,
+.card.asset-card .card-img-top {
+    border-radius: 0 !important;
+}
+
+/* ---- Store chip (bold) ---- */
+.asset-chip {
+    position: absolute;
+    left: .5rem;
+    bottom: .5rem;
+    background: rgba(255,255,255,.92);
+    backdrop-filter: blur(3px);
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 999px;
+    padding: .15rem .6rem;
+    font-size: .8rem;
+    font-weight: 700; /* bold */
+    color: #222;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+/* ---- Text clamping for specs ---- */
+.clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* ---- Identifier grid (Barcode/Serial/Plate/Engine/Chassis) ---- */
+.id-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: .35rem;
+}
+
+.id-row {
+    display: grid;
+    grid-template-columns: 84px 1fr; /* label / value */
+    align-items: center;
+    column-gap: .5rem;
+}
+
+.id-label {
+    color: #6c757d;
+    font-weight: 600;
+    font-size: .9rem;
+}
+
+.id-value {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    display: inline-block;
+    max-width: 100%;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    background: rgba(0,0,0,.035);
+    padding: .1rem .35rem;
+    border-radius: .25rem;
+    border: 1px solid rgba(0,0,0,.05);
+    font-size: .9rem;
+    color: #111;
+}
+
+/* ---- Category/Subcategory pill fallback if Bootstrap < 5.3 ---- */
+.bg-secondary-subtle {
+    background-color: rgba(108,117,125,.12) !important;
+}
+
+/* ---- Buttons in card footer ---- */
+.asset-card .btn {
+    border-radius: .5rem;
+    box-shadow: 0 .25rem .75rem rgba(0,0,0,.06);
+}
+
+/* ---- Misc utilities ---- */
+.object-fit-cover {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* ---- Responsive tweaks ---- */
+@media (max-width: 575.98px) {
+    .id-row {
+        grid-template-columns: 92px 1fr;
+    }
+
+    .asset-chip {
+        font-size: .78rem;
+        padding: .12rem .5rem;
+    }
+}
+
+@media (min-width: 992px) {
+    .id-grid {
+        gap: .3rem;
+    }
+}
+
+/* ---- Keep cards light even if the page uses dark mode ---- */
+@media (prefers-color-scheme: dark) {
+    .asset-card,
+    [data-bs-theme="dark"] .asset-card,
+    .dark .asset-card,
+    .theme-dark .asset-card {
+        --bs-card-bg: #ffffff;
+        background-color: #f2f4f7; /* base */
+        background-image: linear-gradient(180deg, #f5f6f8, #eef1f6); /* subtle depth */
+
+        color: #111 !important;
+        border-color: rgba(20,20,20,.08) !important;
+    }
+
+        .asset-card:hover {
+            box-shadow: 0 .75rem 1.5rem rgba(0,0,0,.25);
+        }
+
+    .asset-chip {
+        background: rgba(255,255,255,.92);
+        color: #222;
+        border-color: rgba(0,0,0,.08);
+    }
+
+    .id-value {
+        background: rgba(0,0,0,.035);
+        border-color: rgba(0,0,0,.05);
+        color: #111;
+    }
+}

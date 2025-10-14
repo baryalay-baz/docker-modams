@@ -48,7 +48,6 @@ const displayProfile = (data) => {
     $("#profileImage").html(profileImageHtml);
     $("#profile-heading").html(profileHeadingHtml);
 }
-
 const getAlertCount = () => {
     var postData = {};
     $.ajax({
@@ -65,7 +64,6 @@ const getAlertCount = () => {
         }
     });
 }
-
 const loadNotificationsData = () => {
     var postData = {};
     $.ajax({
@@ -144,7 +142,6 @@ const displayNotifications = (data) => {
     }
 
 }
-
 const clearNotifications = () => {
     var postData = {};
     $.ajax({

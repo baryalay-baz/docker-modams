@@ -16,5 +16,12 @@ namespace MODAMS.Models.ViewModels.Dto
         public string Name { get; set; } = string.Empty;
         public string Specifications { get; set; } = string.Empty;
         public string StoreName { get; set; } = string.Empty;
+        public string Barcode { get; set; } = string.Empty;
+        public string SerialNo { get; set; } = string.Empty;
+        public string Engine{ get; set; } = string.Empty;
+        public string Chasis { get; set; } = string.Empty;
+        public string Plate { get; set; } = string.Empty;
+        public string AssetPicture { get; set; } = string.Empty;
+        public bool IsVehicle { get; set; } = false;
     }
 }

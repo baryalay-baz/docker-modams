@@ -50,7 +50,7 @@ namespace MODAMS.Utility
         public Task<string> GetAssetNameAsync(int assetId);
         public Task RecordLoginAsync(string userId);
         public Task<int> GetEmployeeIdByUserIdAsync(string userId);
-        public Task<AssetSearchDTO> AssetGlobalSearchAsync(string search);
+        public Task<List<AssetSearchDTO>> AssetGlobalSearchAsync(string search, int take);
         public Task<List<vwCategoryAsset>> GetvwCategoryAssetsAsync();
         public Task<bool>IsStoreUser(int employeeId, int storeId);
         public Task<List<Employee>> GetStoreEmployeesByStoreIdAsync(int storeId);

@@ -1,8 +1,5 @@
-﻿// pams-tutor-core.js
-window.addEventListener("load", () => {
-    console.log("💡 PAMS Tutor (Feather Edition) initialized");
-
-    // 🧠 Detect language
+﻿window.addEventListener("load", () => {
+    // Detect language
     function getLang() {
         try {
             if (typeof getCurrentLanguage === "function") {
@@ -12,7 +9,7 @@ window.addEventListener("load", () => {
         return "en";
     }
 
-    // ✨ Create tooltip container
+    // Create tooltip container
     const tipBox = document.createElement("div");
     tipBox.id = "pams-tutor-tip";
     tipBox.className = "pams-tutor-tip";
@@ -20,7 +17,7 @@ window.addEventListener("load", () => {
 
     let currentEl = null;
 
-    // 🎯 Show tooltip below focused input
+    // Show tooltip below focused input
     function showTip(el, text) {
         const rect = el.getBoundingClientRect();
         tipBox.innerHTML = `<i data-feather="info" class="pams-tutor-icon"></i><span>${text}</span>`;
@@ -38,7 +35,7 @@ window.addEventListener("load", () => {
         if (window.feather) feather.replace();
     }
 
-    // 🧹 Hide tooltip
+    // Hide tooltip
     function hideTip() {
         tipBox.classList.remove("visible");
         setTimeout(() => {
@@ -49,7 +46,7 @@ window.addEventListener("load", () => {
         currentEl = null;
     }
 
-    // 🧭 Reposition tooltip on scroll/resize
+    // Reposition tooltip on scroll/resize
     function positionTip() {
         if (!currentEl) return;
         const rect = currentEl.getBoundingClientRect();
@@ -62,7 +59,7 @@ window.addEventListener("load", () => {
     window.addEventListener("scroll", positionTip);
     window.addEventListener("resize", positionTip);
 
-    // 🔍 Event listeners for focus
+    // Event listeners for focus
     document.addEventListener("focusin", e => {
         const el = e.target.closest("[data-tour]");
         if (!el) return;

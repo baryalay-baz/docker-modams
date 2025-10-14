@@ -1,4 +1,4 @@
-﻿// ✅ PAMS Tutor Tips for Assets/CreateAsset
+﻿// PAMS Tutor Tips for Assets/CreateAsset
 window.PAMS_TIPS = {
     "ca.category": {
         en: "Select the main category that best represents this asset.",

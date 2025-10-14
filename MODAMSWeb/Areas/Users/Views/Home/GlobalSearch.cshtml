@@ -29,6 +29,8 @@
             margin: 0 auto; /* Centers the image horizontally within the cell */
         }
 </style>
+<link href="~/css/globalsearch.css" rel="stylesheet" />
+
 
 <div class="page-header">
     <div>
@@ -52,51 +54,98 @@
         </div>
         <div class="card">
             <div class="card-body">
-                <table>
-                    <tbody>
-                        <tr>
-                            <td class="picture-cell" width="300px">
-                                @{
-                                    string sImageUrl;
-                                    if (Model.AssetPicture.ImageUrl != null)
-                                    {
-                                        sImageUrl = Model.AssetPicture.ImageUrl;
-                                    }
-                                    else
-                                    {
-                                        sImageUrl = "/assets/images/placeholders/pictureplaceholder.png";
-                                    }
-                                }
-                                @Html.Raw("<img style=\"height:200px;\" class=\"img-responsive br-5\" src=\"" + sImageUrl + "\" alt=\"Asset Picture\">")
-                            </td>
-                            <td width="70%">
-                                @{
-                                    if (Model.Asset.Name!= "")
-                                    {
-                                        <h5>@Model.Asset.Category - @Model.Asset.SubCategory</h5>
-                                        <p class="h5">@Model.Asset.Make - @Model.Asset.Model</p>
-                                        <h3>@Model.Asset.Name</h3>
-                                        <p class="h5">@Model.Asset.Specifications</p>
-                                        <p class="h5 text-bold">@Model.Asset.StoreName</p>
+                @if (Model.Assets is { Count: > 0 })
+                {
+                    <div class="row g-3 asset-grid">
+                        @foreach (var item in Model.Assets)
+                        {
+                            var imgUrl = !string.IsNullOrWhiteSpace(item.AssetPicture)
+                            ? item.AssetPicture
+                            : "/assets/images/placeholders/pictureplaceholder.png";
 
-                                        <a class="btn btn-primary-gradient trShadow " href="/Users/Assets/AssetInfo/@Model.Asset.Id">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
-                                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
-                                                <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"></path>
-                                            </svg>
-                                            Asset Details
-                                        </a>
-                                    }
-                                    else
-                                    {
-                                        <h3>@Localizer["AssetNotFound"]</h3>
-                                    }
-                                }
-                                
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                            <div class="col-12 col-sm-6 col-lg-4">
+                                <div class="card h-100 shadow-sm asset-card">
+                                    <div class="asset-thumb">
+                                        <img src="@imgUrl" alt="Asset picture" class="asset-img" loading="lazy">
+                                        <span class="asset-chip fw-bold">@item.StoreName</span>
+                                    </div>
+
+                                    <div class="card-body d-flex flex-column">
+                                        <div class="d-flex align-items-center gap-2 mb-1 small text-muted">
+                                            <span class="badge bg-light text-dark border">@item.Category</span>
+                                            <span class="text-secondary">/</span>
+                                            <span class="badge bg-secondary-subtle text-secondary">@item.SubCategory</span>
+                                        </div>
+
+                                        <h5 class="card-title mb-1">@item.Name</h5>
+                                        <div class="text-muted mb-2">@item.Make - @item.Model</div>
+
+                                        @if (!string.IsNullOrWhiteSpace(item.Specifications))
+                                        {
+                                            <p class="card-text clamp-3 mb-3">@item.Specifications</p>
+                                        }
+
+                                        <div class="id-grid small">
+                                            @if (!string.IsNullOrWhiteSpace(item.Barcode))
+                                            {
+                                                <div class="id-row">
+                                                    <span class="id-label">Barcode</span>
+                                                    <code class="id-value" title="@item.Barcode">@item.Barcode</code>
+                                                </div>
+                                            }
+                                            @if (!string.IsNullOrWhiteSpace(item.SerialNo))
+                                            {
+                                                <div class="id-row">
+                                                    <span class="id-label">Serial</span>
+                                                    <code class="id-value" title="@item.SerialNo">@item.SerialNo</code>
+                                                </div>
+                                            }
+
+                                            @* Vehicles only *@
+                                            @if (item.IsVehicle && !string.IsNullOrWhiteSpace(item.Plate))
+                                            {
+                                                <div class="id-row">
+                                                    <span class="id-label">Plate</span>
+                                                    <code class="id-value" title="@item.Plate">@item.Plate</code>
+                                                </div>
+                                            }
+                                            @if (item.IsVehicle && !string.IsNullOrWhiteSpace(item.Engine))
+                                            {
+                                                <div class="id-row">
+                                                    <span class="id-label">Engine</span>
+                                                    <code class="id-value" title="@item.Engine">@item.Engine</code>
+                                                </div>
+                                            }
+                                            @if (item.IsVehicle && !string.IsNullOrWhiteSpace(item.Chasis))
+                                            {
+                                                <div class="id-row">
+                                                    <span class="id-label">Chassis</span>
+                                                    <code class="id-value" title="@item.Chasis">@item.Chasis</code>
+                                                </div>
+                                            }
+                                        </div>
+
+                                        <div class="mt-auto pt-2">
+                                            <a class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2"
+                                               href="/Users/Assets/AssetInfo/@item.Id">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16" aria-hidden="true">
+                                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
+                                                    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"></path>
+                                                </svg>
+                                                Asset Details
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center text-muted py-5">No assets found.</div>
+                }
+
             </div>
         </div>
     </div>

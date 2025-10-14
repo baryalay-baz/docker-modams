@@ -37,7 +37,6 @@ namespace MODAMS.Utility
         public const int NS_Schedule = 4;
 
 
-        
     }
 
     

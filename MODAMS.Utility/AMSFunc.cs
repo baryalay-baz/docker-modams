@@ -130,7 +130,7 @@ namespace MODAMS.Utility
         public async Task<bool> IsInRoleAsync(string sRole, int employeeId)
         {
             bool blnResult = false;
-            
+
             var rec = await _db.vwEmployees.Where(m => m.Id == employeeId && m.RoleName == sRole).FirstOrDefaultAsync();
             if (rec != null)
             {
@@ -248,7 +248,7 @@ namespace MODAMS.Utility
                 .AsNoTracking()
                 .Where(d => d.Id == departmentId)
                 .Select(d => _isSomali ? d.NameSo : d.Name)
-                .FirstOrDefaultAsync(); 
+                .FirstOrDefaultAsync();
 
             return string.IsNullOrWhiteSpace(name)
                 ? (_isSomali ? "Waax lama heli karo!" : "Department not available!")
@@ -705,101 +705,84 @@ namespace MODAMS.Utility
             _db.LoginHistory.Add(login);
             _db.SaveChanges();
         }
-        public async Task<AssetSearchDTO> AssetGlobalSearchAsync(string search)
+        public async Task<List<AssetSearchDTO>> AssetGlobalSearchAsync(string rawSearch, int take = 100)
         {
-            var asset = await _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted && m.Barcode == search)
-                .Include(m => m.SubCategory).ThenInclude(m => m.Category)
-                .Select(m => new AssetSearchDTO
-                {
-                    Id = m.Id,
-                    Category = m.SubCategory.Category.CategoryName,
-                    SubCategory = m.SubCategory.SubCategoryName,
-                    Make = m.Make,
-                    Model = m.Model,
-                    Name = m.Name,
-                    Specifications = m.Specifications,
-                    StoreName = m.Store.Name
-                })
-                .FirstOrDefaultAsync();
+            if (string.IsNullOrWhiteSpace(rawSearch))
+                return new();
 
-            //Search by Serial Number
-            if (asset == null)
-            {
-                asset = await _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted && m.SerialNo == search)
-                .Include(m => m.SubCategory).ThenInclude(m => m.Category)
-                .Select(m => new AssetSearchDTO
-                {
-                    Id = m.Id,
-                    Category = m.SubCategory.Category.CategoryName,
-                    SubCategory = m.SubCategory.SubCategoryName,
-                    Make = m.Make,
-                    Model = m.Model,
-                    Name = m.Name,
-                    Specifications = m.Specifications,
-                    StoreName = m.Store.Name
-                })
-                .FirstOrDefaultAsync();
-            }
+            int vehicleCategoryId = await _db.Categories
+                .Where(c => c.CategoryName == "Vehicles")
+                .Select(c => (int?)c.Id)
+                .FirstOrDefaultAsync() ?? 0;
 
-            //Search by Plate Number
-            if (asset == null)
-            {
-                asset = await _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted && m.Plate == search)
-                .Include(m => m.SubCategory).ThenInclude(m => m.Category)
-                .Select(m => new AssetSearchDTO
-                {
-                    Id = m.Id,
-                    Category = m.SubCategory.Category.CategoryName,
-                    SubCategory = m.SubCategory.SubCategoryName,
-                    Make = m.Make,
-                    Model = m.Model,
-                    Name = m.Name,
-                    Specifications = m.Specifications,
-                    StoreName = m.Store.Name
-                })
-                .FirstOrDefaultAsync();
-            }
+            var search = rawSearch.Trim().ToUpperInvariant();
+            var like = $"%{search}%";
 
-            //Search by Engine Number
-            if (asset == null)
-            {
-                asset = await _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted && m.Engine == search)
-                .Include(m => m.SubCategory).ThenInclude(m => m.Category)
-                .Select(m => new AssetSearchDTO
-                {
-                    Id = m.Id,
-                    Category = m.SubCategory.Category.CategoryName,
-                    SubCategory = m.SubCategory.SubCategoryName,
-                    Make = m.Make,
-                    Model = m.Model,
-                    Name = m.Name,
-                    Specifications = m.Specifications,
-                    StoreName = m.Store.Name
-                })
-                .FirstOrDefaultAsync();
-            }
+            var q = _db.Assets
+                .AsNoTracking()
+                .Where(a => a.AssetStatusId != SD.Asset_Deleted);
 
-            //Search by Chasis Number
-            if (asset == null)
-            {
-                asset = await _db.Assets.Where(m => m.AssetStatusId != SD.Asset_Deleted && m.Chasis == search)
-                .Include(m => m.SubCategory).ThenInclude(m => m.Category)
-                .Select(m => new AssetSearchDTO
+            var results = await q
+                .Where(a =>
+                    (a.Barcode != null && (a.Barcode.ToUpper() == search || a.Barcode.ToUpper().StartsWith(search) || EF.Functions.Like(a.Barcode.ToUpper(), like))) ||
+                    (a.SerialNo != null && (a.SerialNo.ToUpper() == search || a.SerialNo.ToUpper().StartsWith(search) || EF.Functions.Like(a.SerialNo.ToUpper(), like))) ||
+                    (a.Plate != null && (a.Plate.ToUpper() == search || a.Plate.ToUpper().StartsWith(search) || EF.Functions.Like(a.Plate.ToUpper(), like))) ||
+                    (a.Engine != null && (a.Engine.ToUpper() == search || a.Engine.ToUpper().StartsWith(search) || EF.Functions.Like(a.Engine.ToUpper(), like))) ||
+                    (a.Chasis != null && (a.Chasis.ToUpper() == search || a.Chasis.ToUpper().StartsWith(search) || EF.Functions.Like(a.Chasis.ToUpper(), like)))
+                )
+                .Select(a => new
                 {
-                    Id = m.Id,
-                    Category = m.SubCategory.Category.CategoryName,
-                    SubCategory = m.SubCategory.SubCategoryName,
-                    Make = m.Make,
-                    Model = m.Model,
-                    Name = m.Name,
-                    Specifications = m.Specifications,
-                    StoreName = m.Store.Name
-                })
-                .FirstOrDefaultAsync();
-            }
+                    Score =
+                        (a.Barcode != null && a.Barcode.ToUpper() == search ? 300 : 0) +
+                        (a.SerialNo != null && a.SerialNo.ToUpper() == search ? 300 : 0) +
+                        (a.Plate != null && a.Plate.ToUpper() == search ? 300 : 0) +
+                        (a.Engine != null && a.Engine.ToUpper() == search ? 300 : 0) +
+                        (a.Chasis != null && a.Chasis.ToUpper() == search ? 300 : 0) +
+                        (a.Barcode != null && a.Barcode.ToUpper().StartsWith(search) ? 30 : 0) +
+                        (a.SerialNo != null && a.SerialNo.ToUpper().StartsWith(search) ? 30 : 0) +
+                        (a.Plate != null && a.Plate.ToUpper().StartsWith(search) ? 30 : 0) +
+                        (a.Engine != null && a.Engine.ToUpper().StartsWith(search) ? 30 : 0) +
+                        (a.Chasis != null && a.Chasis.ToUpper().StartsWith(search) ? 30 : 0) +
+                        (a.Barcode != null && EF.Functions.Like(a.Barcode.ToUpper(), like) ? 3 : 0) +
+                        (a.SerialNo != null && EF.Functions.Like(a.SerialNo.ToUpper(), like) ? 3 : 0) +
+                        (a.Plate != null && EF.Functions.Like(a.Plate.ToUpper(), like) ? 3 : 0) +
+                        (a.Engine != null && EF.Functions.Like(a.Engine.ToUpper(), like) ? 3 : 0) +
+                        (a.Chasis != null && EF.Functions.Like(a.Chasis.ToUpper(), like) ? 3 : 0),
 
-            return asset;
+                    DTO = new AssetSearchDTO
+                    {
+                        Id = a.Id,
+                        Category = a.SubCategory.Category.CategoryName,
+                        SubCategory = a.SubCategory.SubCategoryName,
+                        Make = a.Make ?? string.Empty,
+                        Model = a.Model ?? string.Empty,
+                        Name = a.Name ?? string.Empty,
+                        Specifications = a.Specifications ?? string.Empty,
+                        StoreName = a.Store.Name,
+                        Barcode = a.Barcode ?? string.Empty,
+                        SerialNo = a.SerialNo ?? string.Empty,
+                        IsVehicle = a.SubCategory.Category.Id == vehicleCategoryId,
+                        Plate = a.Plate ?? string.Empty,
+                        Engine = a.Engine ?? string.Empty,
+                        Chasis = a.Chasis ?? string.Empty,
+                        // Grab the first picture URL for this asset (no Include needed)
+                        AssetPicture = _db.AssetPictures
+                                           .Where(p => p.AssetId == a.Id)
+                                           .OrderBy(p => p.Id)        // if you later add IsPrimary, order by it first
+                                           .Select(p => p.ImageUrl)
+                                           .FirstOrDefault() ?? string.Empty
+                    }
+                })
+                .OrderByDescending(x => x.Score)
+                .ThenBy(x => x.DTO.Name)
+                .Select(x => x.DTO)
+                .Take(take)
+                .ToListAsync();
+
+            return results;
         }
+
+
         public async Task<List<vwCategoryAsset>> GetvwCategoryAssetsAsync()
         {
             var result = await _db.Assets
