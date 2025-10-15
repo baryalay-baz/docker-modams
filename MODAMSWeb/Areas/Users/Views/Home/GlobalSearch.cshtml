@@ -1,8 +1,12 @@
 ﻿@using Microsoft.AspNetCore.Mvc.Localization
 @using MODAMS.Models.ViewModels.Dto
 @inject IViewLocalizer Localizer
-
 @model MODAMS.Models.ViewModels.Dto.GlobalSearchDTO
+
+@{
+    ViewData["TourPageKey"] = "Home/GlobalSearch";
+}
+
 
 <link href="~/css/globalsearch.css" rel="stylesheet" />
 
@@ -55,8 +59,22 @@
                 {
                     var total = Model.Assets?.Count ?? 0;
                     var noun = total == 1 ? "Asset" : "Assets";
+                    bool isLabeled = false;
 
-                    <div class="d-flex align-items-center justify-content-between mb-3" aria-live="polite">
+                    var tourLabels = new Dictionary<string, string>
+                    {
+                        ["picture"] = " data-tour=gs.assetpicture",
+                        ["department"] = " data-tour=gs.department",
+                        ["category"] = " data-tour=gs.category",
+                        ["subcategory"] = " data-tour=gs.subcategory",
+                        ["assetname"] = " data-tour=gs.assetname",
+                        ["make"] = " data-tour=gs.make",
+                        ["model"] = " data-tour=gs.model",
+                        ["specs"] = " data-tour=gs.specs",
+                        ["assetinfo"] = " data-tour=gs.assetinfo"
+                    };
+
+                    <div class="d-flex align-items-center justify-content-between mb-3" aria-live="polite" data-tour="gs.counter">
                         <span class="badge rounded-pill text-bg-light border fw-semibold py-2 px-3">
                             <i class="bi bi-box-seam me-1" aria-hidden="true"></i>
                             @total.ToString("N0") @noun found
@@ -70,12 +88,11 @@
                             var imgUrl = !string.IsNullOrWhiteSpace(item.AssetPicture)
                             ? item.AssetPicture
                             : "/assets/images/placeholders/pictureplaceholder.png";
-
                             <div class="col-12 col-sm-6 col-lg-4">
                                 <div class="card h-100 shadow-sm asset-card">
                                     <div class="asset-thumb">
-                                        <img src="@imgUrl" alt="Asset picture" class="asset-img" loading="lazy">
-                                        <span class="asset-chip fw-bold">@item.StoreName</span>
+                                        <img @(!isLabeled? tourLabels["picture"] : "") src="@imgUrl" alt="Asset picture" class="asset-img" loading="lazy">
+                                        <span @(!isLabeled? tourLabels["department"] : "") class="asset-chip fw-bold">@item.StoreName</span>
                                     </div>
 
                                     <div class="card-body d-flex flex-column">
@@ -85,12 +102,12 @@
                                                 var catClass = MatchClass(item.MatchExactMask, item.MatchPrefixMask, item.MatchContainsMask, AssetMatch.Cat);
                                                 var subClass = MatchClass(item.MatchExactMask, item.MatchPrefixMask, item.MatchContainsMask, AssetMatch.Sub);
                                             }
-                                            <span class="badge bg-light text-dark text-bold border @catClass"
+                                            <span @(!isLabeled? tourLabels["category"] : "") class="badge bg-light text-dark text-bold border @catClass"
                                                   title="@MatchTitle(item.MatchExactMask, item.MatchPrefixMask, item.MatchContainsMask, AssetMatch.Cat)">
                                                 @item.Category
                                             </span>
                                             <span class="text-secondary">/</span>
-                                            <span class="badge bg-secondary-subtle text-bold text-secondary @subClass"
+                                            <span @(!isLabeled? tourLabels["subcategory"] : "") class="badge bg-secondary-subtle text-bold text-secondary @subClass"
                                                   title="@MatchTitle(item.MatchExactMask, item.MatchPrefixMask, item.MatchContainsMask, AssetMatch.Sub)">
                                                 @item.SubCategory
                                             </span>
@@ -98,19 +115,19 @@
 
                                         @* Name, Make, Model — subtle underline if matched *@
                                         <h5 class="card-title mb-1">
-                                            <span class="text-chip @MatchClass(item.MatchExactMask, item.MatchPrefixMask, item.MatchContainsMask, AssetMatch.Name)"
+                                            <span @(!isLabeled? tourLabels["assetname"] : "") class="text-chip @MatchClass(item.MatchExactMask, item.MatchPrefixMask, item.MatchContainsMask, AssetMatch.Name)"
                                                   title="@MatchTitle(item.MatchExactMask, item.MatchPrefixMask, item.MatchContainsMask, AssetMatch.Name)">
                                                 @item.Name
                                             </span>
                                         </h5>
 
                                         <div class="text-muted mb-2">
-                                            <span class="text-chip @MatchClass(item.MatchExactMask, item.MatchPrefixMask, item.MatchContainsMask, AssetMatch.Make)"
+                                            <span @(!isLabeled? tourLabels["make"] : "") class="text-chip @MatchClass(item.MatchExactMask, item.MatchPrefixMask, item.MatchContainsMask, AssetMatch.Make)"
                                                   title="@MatchTitle(item.MatchExactMask, item.MatchPrefixMask, item.MatchContainsMask, AssetMatch.Make)">
                                                 @item.Make
                                             </span>
                                             -
-                                            <span class="text-chip @MatchClass(item.MatchExactMask, item.MatchPrefixMask, item.MatchContainsMask, AssetMatch.Model)"
+                                            <span @(!isLabeled?tourLabels["model"]:"") class="text-chip @MatchClass(item.MatchExactMask, item.MatchPrefixMask, item.MatchContainsMask, AssetMatch.Model)"
                                                   title="@MatchTitle(item.MatchExactMask, item.MatchPrefixMask, item.MatchContainsMask, AssetMatch.Model)">
                                                 @item.Model
                                             </span>
@@ -118,7 +135,7 @@
 
                                         @if (!string.IsNullOrWhiteSpace(item.Specifications))
                                         {
-                                            <p class="card-text clamp-3 mb-3">@item.Specifications</p>
+                                            <p @(!isLabeled ? tourLabels["specs"] : "") class="card-text clamp-3 mb-3">@item.Specifications</p>
                                         }
 
                                         <div class="id-grid small">
@@ -172,7 +189,7 @@
                                         </div>
 
                                         <div class="mt-auto pt-2">
-                                            <a class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2"
+                                            <a @(!isLabeled ? tourLabels["assetinfo"] : "") class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2"
                                                href="/Users/Assets/AssetInfo/@item.Id">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16" aria-hidden="true">
                                                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
@@ -184,6 +201,9 @@
                                     </div>
                                 </div>
                             </div>
+
+                            if(!isLabeled)
+                                isLabeled = true;   
                         }
                     </div>
                 }
