@@ -6,6 +6,21 @@ using System.Threading.Tasks;
 
 namespace MODAMS.Models.ViewModels.Dto
 {
+    [Flags]
+    public enum AssetMatch
+    {
+        None = 0,
+        Barcode = 1 << 0,
+        Serial = 1 << 1,
+        Plate = 1 << 2,
+        Engine = 1 << 3,
+        Chasis = 1 << 4,
+        Name = 1 << 5,
+        Make = 1 << 6,
+        Model = 1 << 7,
+        Sub = 1 << 8,
+        Cat = 1 << 9
+    }
     public class AssetSearchDTO
     {
         public int Id { get; set; }
@@ -23,5 +38,9 @@ namespace MODAMS.Models.ViewModels.Dto
         public string Plate { get; set; } = string.Empty;
         public string AssetPicture { get; set; } = string.Empty;
         public bool IsVehicle { get; set; } = false;
+
+        public int MatchExactMask { get; set; }
+        public int MatchPrefixMask { get; set; }
+        public int MatchContainsMask { get; set; }
     }
 }

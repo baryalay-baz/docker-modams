@@ -1,36 +1,31 @@
 ﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using MODAMS.Models.ViewModels.Dto
 @inject IViewLocalizer Localizer
 
 @model MODAMS.Models.ViewModels.Dto.GlobalSearchDTO
 
-<style>
-    table {
-        border-collapse: collapse;
-        width: 100%;
-    }
-
-    td {
-        padding: 10px;
-        vertical-align: top;
-    }
-
-    /* Set the height for the Pictures column */
-    .picture-cell {
-        height: 200px;
-        width: 300px;
-        vertical-align: top; /* To align the content to the top of the cell */
-    }
-
-        /* Ensure images fit within the fixed height without stretching */
-        .picture-cell img {
-            max-height: 100%;
-            max-width: 100%;
-            display: block; /* Ensures the image is treated as a block element */
-            margin: 0 auto; /* Centers the image horizontally within the cell */
-        }
-</style>
 <link href="~/css/globalsearch.css" rel="stylesheet" />
 
+@functions {
+    // returns hit-exact | hit-prefix | hit-contains | ""
+    string MatchClass(int exactMask, int prefixMask, int containsMask, AssetMatch flag)
+    {
+        int f = (int)flag;
+        if ((exactMask & f) != 0) return "hit-exact";
+        if ((prefixMask & f) != 0) return "hit-prefix";
+        if ((containsMask & f) != 0) return "hit-contains";
+        return string.Empty;
+    }
+
+    string MatchTitle(int exactMask, int prefixMask, int containsMask, AssetMatch flag)
+    {
+        int f = (int)flag;
+        if ((exactMask & f) != 0) return "Matched: exact";
+        if ((prefixMask & f) != 0) return "Matched: starts with";
+        if ((containsMask & f) != 0) return "Matched: contains";
+        return "";
+    }
+}
 
 <div class="page-header">
     <div>
@@ -43,6 +38,7 @@
         </ol>
     </div>
 </div>
+
 <div class="row">
     <div class="col-md-12">
         <div class="card divShadow">
@@ -52,6 +48,7 @@
                 </div>
             </div>
         </div>
+
         <div class="card">
             <div class="card-body">
                 @if (Model.Assets != null && Model.Assets.Count > 0)
@@ -64,10 +61,9 @@
                             <i class="bi bi-box-seam me-1" aria-hidden="true"></i>
                             @total.ToString("N0") @noun found
                         </span>
-
-                        @* Optional right-side meta *@
                         @* <span class="text-muted small">Sorted by: Name • Showing page 1</span> *@
                     </div>
+
                     <div class="row g-3 asset-grid">
                         @foreach (var item in Model.Assets)
                         {
@@ -83,14 +79,42 @@
                                     </div>
 
                                     <div class="card-body d-flex flex-column">
+                                        @* Category / Subcategory badges with match outline *@
                                         <div class="d-flex align-items-center gap-2 mb-1 small text-muted">
-                                            <span class="badge bg-light text-dark text-bold border">@item.Category</span>
+                                            @{
+                                                var catClass = MatchClass(item.MatchExactMask, item.MatchPrefixMask, item.MatchContainsMask, AssetMatch.Cat);
+                                                var subClass = MatchClass(item.MatchExactMask, item.MatchPrefixMask, item.MatchContainsMask, AssetMatch.Sub);
+                                            }
+                                            <span class="badge bg-light text-dark text-bold border @catClass"
+                                                  title="@MatchTitle(item.MatchExactMask, item.MatchPrefixMask, item.MatchContainsMask, AssetMatch.Cat)">
+                                                @item.Category
+                                            </span>
                                             <span class="text-secondary">/</span>
-                                            <span class="badge bg-secondary-subtle text-bold text-secondary">@item.SubCategory</span>
+                                            <span class="badge bg-secondary-subtle text-bold text-secondary @subClass"
+                                                  title="@MatchTitle(item.MatchExactMask, item.MatchPrefixMask, item.MatchContainsMask, AssetMatch.Sub)">
+                                                @item.SubCategory
+                                            </span>
                                         </div>
 
-                                        <h5 class="card-title mb-1">@item.Name</h5>
-                                        <div class="text-muted mb-2">@item.Make - @item.Model</div>
+                                        @* Name, Make, Model — subtle underline if matched *@
+                                        <h5 class="card-title mb-1">
+                                            <span class="text-chip @MatchClass(item.MatchExactMask, item.MatchPrefixMask, item.MatchContainsMask, AssetMatch.Name)"
+                                                  title="@MatchTitle(item.MatchExactMask, item.MatchPrefixMask, item.MatchContainsMask, AssetMatch.Name)">
+                                                @item.Name
+                                            </span>
+                                        </h5>
+
+                                        <div class="text-muted mb-2">
+                                            <span class="text-chip @MatchClass(item.MatchExactMask, item.MatchPrefixMask, item.MatchContainsMask, AssetMatch.Make)"
+                                                  title="@MatchTitle(item.MatchExactMask, item.MatchPrefixMask, item.MatchContainsMask, AssetMatch.Make)">
+                                                @item.Make
+                                            </span>
+                                            -
+                                            <span class="text-chip @MatchClass(item.MatchExactMask, item.MatchPrefixMask, item.MatchContainsMask, AssetMatch.Model)"
+                                                  title="@MatchTitle(item.MatchExactMask, item.MatchPrefixMask, item.MatchContainsMask, AssetMatch.Model)">
+                                                @item.Model
+                                            </span>
+                                        </div>
 
                                         @if (!string.IsNullOrWhiteSpace(item.Specifications))
                                         {
@@ -100,14 +124,18 @@
                                         <div class="id-grid small">
                                             @if (!string.IsNullOrWhiteSpace(item.Barcode))
                                             {
-                                                <div class="id-row">
+                                                var cls = MatchClass(item.MatchExactMask, item.MatchPrefixMask, item.MatchContainsMask, AssetMatch.Barcode);
+                                                <div class="id-row @cls"
+                                                     title="@MatchTitle(item.MatchExactMask, item.MatchPrefixMask, item.MatchContainsMask, AssetMatch.Barcode)">
                                                     <span class="id-label">Barcode</span>
                                                     <code class="id-value" title="@item.Barcode">@item.Barcode</code>
                                                 </div>
                                             }
                                             @if (!string.IsNullOrWhiteSpace(item.SerialNo))
                                             {
-                                                <div class="id-row">
+                                                var cls = MatchClass(item.MatchExactMask, item.MatchPrefixMask, item.MatchContainsMask, AssetMatch.Serial);
+                                                <div class="id-row @cls"
+                                                     title="@MatchTitle(item.MatchExactMask, item.MatchPrefixMask, item.MatchContainsMask, AssetMatch.Serial)">
                                                     <span class="id-label">Serial</span>
                                                     <code class="id-value" title="@item.SerialNo">@item.SerialNo</code>
                                                 </div>
@@ -116,21 +144,27 @@
                                             @* Vehicles only *@
                                             @if (item.IsVehicle && !string.IsNullOrWhiteSpace(item.Plate))
                                             {
-                                                <div class="id-row">
+                                                var cls = MatchClass(item.MatchExactMask, item.MatchPrefixMask, item.MatchContainsMask, AssetMatch.Plate);
+                                                <div class="id-row @cls"
+                                                     title="@MatchTitle(item.MatchExactMask, item.MatchPrefixMask, item.MatchContainsMask, AssetMatch.Plate)">
                                                     <span class="id-label">Plate</span>
                                                     <code class="id-value" title="@item.Plate">@item.Plate</code>
                                                 </div>
                                             }
                                             @if (item.IsVehicle && !string.IsNullOrWhiteSpace(item.Engine))
                                             {
-                                                <div class="id-row">
+                                                var cls = MatchClass(item.MatchExactMask, item.MatchPrefixMask, item.MatchContainsMask, AssetMatch.Engine);
+                                                <div class="id-row @cls"
+                                                     title="@MatchTitle(item.MatchExactMask, item.MatchPrefixMask, item.MatchContainsMask, AssetMatch.Engine)">
                                                     <span class="id-label">Engine</span>
                                                     <code class="id-value" title="@item.Engine">@item.Engine</code>
                                                 </div>
                                             }
                                             @if (item.IsVehicle && !string.IsNullOrWhiteSpace(item.Chasis))
                                             {
-                                                <div class="id-row">
+                                                var cls = MatchClass(item.MatchExactMask, item.MatchPrefixMask, item.MatchContainsMask, AssetMatch.Chasis);
+                                                <div class="id-row @cls"
+                                                     title="@MatchTitle(item.MatchExactMask, item.MatchPrefixMask, item.MatchContainsMask, AssetMatch.Chasis)">
                                                     <span class="id-label">Chassis</span>
                                                     <code class="id-value" title="@item.Chasis">@item.Chasis</code>
                                                 </div>
@@ -157,7 +191,6 @@
                 {
                     <div class="text-center text-muted py-5">No assets found.</div>
                 }
-
             </div>
         </div>
     </div>
