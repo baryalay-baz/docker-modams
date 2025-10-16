@@ -7,51 +7,8 @@
     ViewData["TourPageKey"] = "Stores/StoreDetails";
 }
 
-@*<link href="~/assets/plugins/c3/c3.min.css" rel="stylesheet" />*@
-<link href="~/assets/plugins/c3-0.7.20/c3.min.css" rel="stylesheet" />
-@* <link href="~/css/home-index.css" rel="stylesheet" /> *@
-
-<style>
-    .clickable-row {
-        cursor: pointer;
-        transition: background-color 0.2s ease, transform 0.1s ease;
-    }
-
-        .clickable-row:hover {
-            background: linear-gradient(90deg, rgba(13,110,253,0.08), rgba(0,212,255,0.08));
-            transform: scale(1.01);
-        }
-
-        .clickable-row:active {
-            background-color: #e2ecff;
-        }
-
-        .clickable-row td {
-            cursor: pointer;
-        }
-</style>
-
-<style>
-    .legend span {
-        padding-block: 3px;
-        padding-left: 5px;
-        padding-right: 5px;
-        display: inline-block;
-        text-align: center;
-        cursor: pointer;
-        color: white;
-    }
-
-    .hover-effect {
-        position: relative;
-        left: 0;
-        transition: left 0.3s ease-in-out;
-    }
-
-        .hover-effect:hover {
-            left: 10px;
-        }
-</style>
+<link rel="stylesheet" href="~/assets/plugins/c3-0.7.20/c3.min.css" />
+<link href="~/css/store-details.css" rel="stylesheet" />
 
 <div class="page-header">
     <div>
@@ -266,13 +223,11 @@
                                                 .Count();
                                             }
 
-                                            // alternate background color per category group
                                             sbgClass = (sbgClass == "") ? "bg-light-transparent" : "";
 
                                             <tr class="clickable-row @sbgClass"
                                                 data-href="@Url.Action("Index", "Assets", new { id = sca.StoreId, subCategoryId = sca.SubCategoryId })">
 
-                                                @* Category cell (with rowspan, not clickable) *@
                                                 @if (CategoryCheck)
                                                 {
                                                     <td rowspan="@nCategoryCount" class="text-muted fs-15 fw-semibold align-middle bg-white">
@@ -341,88 +296,17 @@
 
 <section id="dvChartData" style="display:none;"></section>
 @section scripts {
-
-    <script src="~/assets/plugins/c3-0.7.20/c3.min.js"></script>
+    
     <script src="~/assets/plugins/c3-0.7.20/d3-5.8.2.min.js"></script>
+    <script src="~/assets/plugins/c3-0.7.20/c3.min.js"></script>
 
+    <!-- expose data for external JS (no Razor inside .js files) -->
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            document.querySelectorAll(".clickable-row").forEach(row => {
-                row.addEventListener("click", () => {
-                    window.location = row.dataset.href;
-                });
-            });
-        });
+        window.storeDetailsData = {
+            // Use the localized & pre-shaped data you built above
+            subcategoryAssets: @Html.Raw(jsonData)
+        };
     </script>
-
-    <script>
-        $(document).ready(function () {
-            hideMenu();
-            //makeDataTable('#tblCategories', "1");
-
-            pieChart();
-
-        });
-
-        const pieChart = () => {
-            //var sData = '@Html.Raw(Json.Serialize(Model.StoreCategoryAssets))';
-            var sData = '@Html.Raw(jsonData)';
-
-            if (sData == "No Records Found" || sData == "") {
-            } else {
-                var Data = JSON.parse(sData);
-                var data = {};
-                var labels = [];
-
-                Data.forEach(function (e) {
-                    labels.push(e.subCategoryName);
-                    data[e.subCategoryName] = e.totalAssets;
-                    //console.log(e.subCategoryName + ' -> ' + e.totalAssets);
-                });
-                chart = c3.generate({
-                    pie: {
-                        label: {
-                            show: true
-                        }
-                    },
-                    data: {
-                        json: [data],
-                        keys: {
-                            value: labels,
-                        },
-                        type: 'pie'
-                    },
-                    legend: {
-                        show: false,
-                        position: 'center'
-
-                    },
-                    color: {
-                        pattern: ['#1f77b4', '#aec7e8', '#ff7f0e', '#ffbb78', '#2ca02c', '#98df8a', '#d62728', '#ff9896', '#9467bd', '#c5b0d5', '#8c564b', '#c49c94', '#e377c2', '#f7b6d2', '#7f7f7f', '#c7c7c7', '#bcbd22', '#dbdb8d', '#17becf', '#9edae5']
-                    }
-                });
-
-                d3.select('.container').insert('div', '.chart').attr('class', 'legend w-100 text-center p-2').selectAll('span')
-                    .data(labels)
-                    .enter().append('span')
-                    .attr('data-id', function (id) { return id; })
-                    .html(function (id) { return id; })
-                    .each(function (id) {
-                        d3.select(this).style('background-color', chart.color(id));
-                    })
-                    .on('mouseover', function (id) {
-                        chart.focus(id);
-                    })
-                    .on('mouseout', function (id) {
-                        chart.revert();
-                    })
-                    .on('click', function (id) {
-                        chart.toggle(id);
-                    });
-            }
-        }
-        function toggle(id) {
-            chart.toggle(id);
-        }
-    </script>
+   
+    <script src="~/js/store-details.js"></script>
 }

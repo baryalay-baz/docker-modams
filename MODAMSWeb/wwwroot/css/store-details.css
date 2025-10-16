@@ -1,0 +1,42 @@
+﻿.container .chart, #chart {
+    min-height: 380px !important;
+}
+.card-body, .col, .row {
+    overflow: visible;
+}
+.legend {
+    text-align: center;
+}
+
+    .legend span {
+        display: inline-block;
+        padding: 3px 6px;
+        margin: 0 2px 2px 0;
+        border-radius: 6px;
+        color: #fff;
+        cursor: pointer;
+        user-select: none;
+        line-height: 1;
+        font-size: 12px;
+    }
+        .legend span:hover {
+            filter: brightness(1.05);
+        }
+
+.clickable-row {
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+    .clickable-row:hover {
+        background: linear-gradient(90deg, rgba(13,110,253,0.08), rgba(0,212,255,0.08));
+        transform: scale(1.01);
+    }
+
+    .clickable-row:active {
+        background-color: #e2ecff;
+    }
+
+    .clickable-row td {
+        cursor: pointer;
+    }

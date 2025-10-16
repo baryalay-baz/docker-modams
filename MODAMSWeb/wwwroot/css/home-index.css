@@ -1,10 +1,8 @@
-﻿/* Base */
-body {
+﻿body {
     margin: 0;
     padding: 0;
 }
 
-/* Panels */
 .pnlHeight {
     max-height: 170px;
     min-height: 170px;
@@ -15,7 +13,6 @@ body {
     min-height: 120px;
 }
 
-/* Clickable rows */
 .clickable-row {
     cursor: pointer;
     transition: background-color .2s ease, transform .1s ease;
@@ -33,7 +30,6 @@ body {
         font-weight: bolder;
     }
 
-/* Page header */
 .page-header {
     display: flex;
     justify-content: space-between;
@@ -48,7 +44,6 @@ body {
         align-items: center;
     }
 
-/* News Ticker (background-free) */
 .news-ticker-wrapper {
     position: relative;
     overflow: hidden;
@@ -56,7 +51,7 @@ body {
     border: 0;
     box-shadow: none;
     padding: 0;
-    max-width: 850px;
+    max-width: 960px;
     margin: 0 auto;
 }
 
@@ -112,7 +107,6 @@ body {
     to {
         transform: translateX(-50%);
     }
-    /* relies on JS duplication */
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -121,8 +115,6 @@ body {
     }
 }
 
-/* Chart sizing / overflow safety */
-/* Chart sizing / overflow safety */
 .container .chart, #chart {
     min-height: 380px !important;
 }
@@ -131,7 +123,6 @@ body {
     overflow: visible;
 }
 
-/* Legend visual polish */
 #chart .c3-legend-item text {
     fill: #fff !important;
     font-size: 12px;
