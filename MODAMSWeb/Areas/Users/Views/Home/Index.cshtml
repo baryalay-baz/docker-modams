@@ -7,133 +7,51 @@
     ViewData["TourPageKey"] = "Home/Index";
 }
 
-<link href="~/assets/plugins/c3-0.7.20/c3.min.css" rel="stylesheet" />
-<style>
-    body {
-        margin: 0;
-        padding: 0;
-    }
-
-    .marquee-container {
-        overflow: hidden;
-        position: relative;
-        width: 100%;
-        height: 30px;
-    }
-
-    .marquee {
-        white-space: nowrap;
-        position: absolute;
-        animation: marquee 20s linear infinite;
-    }
-
-    @@keyframes marquee {
-        0% {
-            margin-left: 100%;
-        }
-
-        100% {
-            margin-left: -100%;
-        }
-    }
-
-    .news-item.text-muted {
-        color: #333;
-        font-size: 16px;
-        transition: box-shadow 0.3s ease-in-out;
-    }
-
-        .news-item.text-muted:hover {
-            box-shadow: 0 0 10px 2px rgba(234, 220, 71, 0.8);
-        }
-
-    .hover-effect {
-        position: relative;
-        left: 0;
-        transition: left 0.3s ease-in-out;
-    }
-
-        .hover-effect:hover {
-            left: 10px;
-        }
-
-    .pnlHeight {
-        max-height: 170px;
-        min-height: 170px;
-    }
-
-    .pnlHeightFooter {
-        max-height: 120px;
-        min-height: 120px;
-    }
-
-    .legend span {
-        padding-block: 3px;
-        padding-left: 5px;
-        padding-right: 5px;
-        display: inline-block;
-        text-align: center;
-        cursor: pointer;
-        color: white;
-    }
-
-    .page-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-        .page-header .marquee-container {
-            width: 70% !important;
-            margin: 0 auto;
-            text-align: center;
-            display: flex;
-            align-items: center;
-        }
-</style>
+<link href="~/css/home-index.css" rel="stylesheet" />
 
 <div class="page-header" data-tour="dashboard.header">
     <div>
         <h1 class="page-title">@Localizer["Dashboard"]</h1>
     </div>
     <br />
-    <div class="marquee-container" id="marquee-container">
-        <div class="marquee" id="marquee">
-            <a asp-area="Users" asp-controller="Home" asp-action="Newsfeed">
-                @{
-                    foreach (var newsfeed in Model.NewsFeed)
-                    {
-                        <span class="news-item text-muted p-2 text-info">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512">
-                                <style>
-                                    svg {
-                                        fill: lightblue
-                                    }</style>
-                                <path d="M0 256L28.5 28c2-16 15.6-28 31.8-28H228.9c15 0 27.1 12.1 27.1 27.1c0 3.2-.6 6.5-1.7 9.5L208 160H347.3c20.2 0 36.7 16.4 36.7 36.7c0 7.4-2.2 14.6-6.4 20.7l-192.2 281c-5.9 8.6-15.6 13.7-25.9 13.7h-2.9c-15.7 0-28.5-12.8-28.5-28.5c0-2.3 .3-4.6 .9-6.9L176 288H32c-17.7 0-32-14.3-32-32z" />
-                            </svg>
-                            @newsfeed.Description
-                        </span>
-                        @Html.Raw("&nbsp;&nbsp;&nbsp;")
-                    }
-                    if (Model.NewsFeed.Count > 0)
-                    {
-                        <a asp-area="Users" asp-controller="Home" asp-action="Newsfeed">
-                            <span class="news-item text-muted p-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512">
-                                    <style>
-                                        svg {
-                                            fill: lightblue
-                                        }</style>
-                                    <path d="M0 256L28.5 28c2-16 15.6-28 31.8-28H228.9c15 0 27.1 12.1 27.1 27.1c0 3.2-.6 6.5-1.7 9.5L208 160H347.3c20.2 0 36.7 16.4 36.7 36.7c0 7.4-2.2 14.6-6.4 20.7l-192.2 281c-5.9 8.6-15.6 13.7-25.9 13.7h-2.9c-15.7 0-28.5-12.8-28.5-28.5c0-2.3 .3-4.6 .9-6.9L176 288H32c-17.7 0-32-14.3-32-32z" />
-                                </svg>
-                                more...
-                            </span>
-                        </a>
-                    }
-                }
-            </a>
+
+    <!-- News Ticker -->
+    <div class="news-ticker-wrapper" aria-label="Newsfeed">
+        <div class="news-ticker-track" id="newsTicker">
+            @foreach (var newsfeed in Model.NewsFeed)
+            {
+                <a asp-area="Users" asp-controller="Home" asp-action="Newsfeed" class="news-item-link" aria-label="Open newsfeed">
+                    <span class="news-item">
+                        <svg class="news-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" role="img" aria-hidden="true">
+                            <path d="M0 256L28.5 28c2-16 15.6-28 31.8-28H228.9c15 0 27.1 12.1 27.1 27.1
+                                             c0 3.2-.6 6.5-1.7 9.5L208 160H347.3c20.2 0 36.7 16.4 36.7 36.7
+                                             c0 7.4-2.2 14.6-6.4 20.7l-192.2 281c-5.9 8.6-15.6 13.7-25.9 13.7h-2.9
+                                             c-15.7 0-28.5-12.8-28.5-28.5c0-2.3 .3-4.6 .9-6.9L176 288H32
+                                             c-17.7 0-32-14.3-32-32z" />
+                        </svg>
+                        <span class="news-text">@newsfeed.Description</span>
+                    </span>
+                </a>
+            }
+
+            @if (Model.NewsFeed.Count > 0)
+            {
+                <a asp-area="Users" asp-controller="Home" asp-action="Newsfeed" class="news-item-link" aria-label="Open full newsfeed">
+                    <span class="news-item">
+                        <svg class="news-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" role="img" aria-hidden="true">
+                            <path d="M0 256L28.5 28c2-16 15.6-28 31.8-28H228.9c15 0 27.1 12.1 27.1 27.1
+                                             c0 3.2-.6 6.5-1.7 9.5L208 160H347.3c20.2 0 36.7 16.4 36.7 36.7
+                                             c0 7.4-2.2 14.6-6.4 20.7l-192.2 281c-5.9 8.6-15.6 13.7-25.9 13.7h-2.9
+                                             c-15.7 0-28.5-12.8-28.5-28.5c0-2.3 .3-4.6 .9-6.9L176 288H32
+                                             c-17.7 0-32-14.3-32-32z" />
+                        </svg>
+                        <span class="news-text">More…</span>
+                    </span>
+                </a>
+            }
         </div>
     </div>
+
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
             <li class="breadcrumb-item active"><a href="javascript:void(0);">@Localizer["Dashboard"]</a></li>
@@ -284,12 +202,9 @@
                                 {
                                     foreach (var sca in Model.CategoryAssets)
                                     {
-                                        <tr>
-                                            <td class="text-muted fs-15 fw-semibold">
-                                                <a asp-action="AssetList" asp-controller="Assets" asp-route-id="@sca.Id" class="text-muted hover-effect">
-                                                    @sca.CategoryName
-                                                </a>
-                                            </td>
+                                        <tr class="clickable-row"
+                                            data-href="@Url.Action("AssetList", "Assets", new { id = sca.Id })">
+                                            <td class="text-muted fs-15 fw-semibold">@sca.CategoryName</td>
                                             <td class="text-muted fs-15 fw-semibold">@sca.TotalAssets</td>
                                             <td class="text-muted fs-15 fw-semibold text-end">@sca.TotalCost.ToString("N2")</td>
                                         </tr>
@@ -304,7 +219,7 @@
                     </div>
                 </div>
 
-                <!-- ✅ Tour: Chart -->
+                <!-- ✅ Tour: Chart (original location) -->
                 <div class="col-md-6 mt-5 container" data-tour="dashboard.chart">
                     <div id="chart"></div>
                 </div>
@@ -361,7 +276,7 @@
                             </div>
                             <div class="col-4">
                                 <div class="hpx-50 wpx-50 bg-info br-5 d-flex align-items-center justify-content-center ms-auto">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="text-white w-icn" enable-background="new 0 0 24 24" viewBox="0 0 24 24"><path d="M17,4h-1.1846313C15.4013672,2.8383179,14.3035889,2.0014648,13,2h-2C9.6964111,2.0014648,8.5986328,2.8383179,8.1846313,4H7C5.3438721,4.0018311,4.0018311,5.3438721,4,7v12c0.0018311,1.6561279,1.3438721,2.9981689,3,3h10c1.6561279-0.0018311,2.9981689-1.3438721,3-3V7C19.9981689,5.3438721,18.6561279,4.0018311,17,4z M9,5c0.0014038-1.1040039,0.8959961-1.9985962,2-2h2c1.1040039,0.0014038,1.9985962,0.8959961,2,2v2H9V5z M19,19c-0.0014038,1.1040039-0.8959961,1.9985962-2,2H7c-1.1040039-0.0014038-1.9985962-0.8959961-2-2V7c0.0014038-1.1040039,0.8959961-1.9985962,2-2h1v2.5006104C8.0001831,7.7765503,8.223999,8.0001831,8.5,8h7.0006104C15.7765503,7.9998169,16.0001831,7.776001,16,7.5V5h1c1.1040039,0.0014038,1.9985962,0.8959961,2,2V19z"></path></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="text-white w-icn" enable-background="new 0 0 24 24" viewBox="0 0 24 24"><path d="M17,4h-1.1846313C15.4013672,2.8383179,14.3035889,2.0014648,13,2h-2C9.6964111,2.0014648,8.5986328,2.8383179,8.1846313,4H7C5.3438721,4.0018311,4.0018311,5.3438721,4,7v12c0.0018311,1.6561279,1.3438721,2.9981689,3,3h10c1.6561279-0.0018311,2.9981689-1.3438721,3-3V7C19.9981689,5.3438721,18.6561279,4.0018311,17,4z M9,5c0.0014038-1.1040039,0.8959961-1.9985962,2-2h2c1.1040039,0.0014038,1.9985962,2,2v2H9V5z M19,19c-0.0014038,1.1040039-0.8959961,2-2,2H7c-1.1040039,0-2-0.8959961-2-2V7c0.0014038-1.1040039,0.8959961-2,2-2h1v2.5006104C8.0001831,7.7765503,8.223999,8,8.5,8h7.0006104C15.7765503,8,16,7.776001,16,7.5V5h1c1.1040039,0,2,0.8959961,2,2V19z"></path></svg>
                                 </div>
                             </div>
                         </div>
@@ -378,7 +293,7 @@
                             </div>
                             <div class="col-4">
                                 <div class="hpx-50 wpx-50 bg-warning br-5 d-flex align-items-center justify-content-center ms-auto">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="text-white w-icn" enable-background="new 0 0 24 24" viewBox="0 0 24 24"><path d="M17,4h-1.1846313C15.4013672,2.8383179,14.3035889,2.0014648,13,2h-2C9.6964111,2.0014648,8.5986328,2.8383179,8.1846313,4H7C5.3438721,4.0018311,4.0018311,5.3438721,4,7v12c0.0018311,1.6561279,1.3438721,2.9981689,3,3h10c1.6561279-0.0018311,2.9981689-1.3438721,3-3V7C19.9981689,5.3438721,18.6561279,4.0018311,17,4z M9,5c0.0014038-1.1040039,0.8959961-1.9985962,2-2h2c1.1040039,0.0014038,1.9985962,0.8959961,2,2v2H9V5z M19,19c-0.0014038,1.1040039-0.8959961,1.9985962-2,2H7c-1.1040039-0.0014038-1.9985962-0.8959961-2-2V7c0.0014038-1.1040039,0.8959961-1.9985962,2-2h1v2.5006104C8.0001831,7.7765503,8.223999,8.0001831,8.5,8h7.0006104C15.7765503,7.9998169,16.0001831,7.776001,16,7.5V5h1c1.1040039,0.0014038,1.9985962,0.8959961,2,2V19z"></path></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="text-white w-icn" enable-background="new 0 0 24 24" viewBox="0 0 24 24"><path d="M17,4h-1.1846313C15.4013672,2.8383179,14.3035889,2.0014648,13,2h-2C9.6964111,2.0014648,8.5986328,2.8383179,8.1846313,4H7C5.3438721,4.0018311,4.0018311,5.3438721,4,7v12c0.0018311,1.6561279,1.3438721,2.9981689,3,3h10c1.6561279-0.0018311,2.9981689-1.3438721,3-3V7C19.9981689,5.3438721,18.6561279,4.0018311,17,4z M9,5c0.0014038-1.1040039,0.8959961-1.9985962,2-2h2c1.1040039,0.0014038,1.9985962,0.8959961,2,2v2H9V5z M19,19c-0.0014038,1.1040039-0.8959961,2-2,2H7c-1.1040039,0-2-0.8959961-2-2V7c0.0014038-1.1040039,0.8959961-2,2-2h1v2.5006104C8.0001831,7.7765503,8.223999,8,8.5,8h7.0006104C15.7765503,8,16,7.776001,16,7.5V5h1c1.1040039,0,2,0.8959961,2,2V19z"></path></svg>
                                 </div>
                             </div>
                         </div>
@@ -388,72 +303,20 @@
         </div>
     </div>
 </div>
-
+<!-- C3 (needs D3 first). You can move this link to your layout if desired. -->
+<link rel="stylesheet" href="~/assets/plugins/c3-0.7.20/c3.min.css" />
 @section scripts {
-    <script src="~/assets/plugins/c3-0.7.20/c3.min.js"></script>
+    
     <script src="~/assets/plugins/c3-0.7.20/d3-5.8.2.min.js"></script>
+    <script src="~/assets/plugins/c3-0.7.20/c3.min.js"></script>
 
     <script>
-        $(document).ready(function () {
-            makeDataTable('#tblCategories', '1');
-            pieChart();
-
-            const marqueeContainer = document.getElementById("marquee-container");
-            const marquee = document.getElementById("marquee");
-            let isPaused = false;
-
-            marqueeContainer.addEventListener("mouseover", () => {
-                if (!isPaused) {
-                    marquee.style.animationPlayState = "paused";
-                    isPaused = true;
-                }
-            });
-            marqueeContainer.addEventListener("mouseout", () => {
-                if (isPaused) {
-                    marquee.style.animationPlayState = "running";
-                    isPaused = false;
-                }
-            });
-        });
-
-        const pieChart = () => {
-            var sData = '@Html.Raw(Json.Serialize(Model.CategoryAssets))';
-            var result = tryParseJson(sData, "Chart Data");
-            if (result.status === "error") {
-                showErrorMessageJs(result.message);
-                return;
-            }
-            var Data = result.data;
-            var data = {};
-            var labels = [];
-
-            Data.forEach(function (e) {
-                labels.push(e.categoryName);
-                data[e.categoryName] = e.totalAssets;
-            });
-
-            chart = c3.generate({
-                pie: { label: { show: true } },
-                data: { json: [data], keys: { value: labels }, type: 'pie' },
-                legend: { show: false },
-                color: {
-                    pattern: ['#1f77b4','#aec7e8','#ff7f0e','#ffbb78','#2ca02c','#98df8a','#d62728','#ff9896','#9467bd','#c5b0d5']
-                }
-            });
-
-            d3.select('.container').insert('div', '.chart')
-                .attr('class', 'legend w-100 text-center p-2')
-                .selectAll('span')
-                .data(labels)
-                .enter().append('span')
-                .attr('data-id', id => id)
-                .html(id => id)
-                .each(function (id) {
-                    d3.select(this).style('background-color', chart.color(id));
-                })
-                .on('mouseover', id => chart.focus(id))
-                .on('mouseout', id => chart.revert())
-                .on('click', id => chart.toggle(id));
-        }
+        window.dashData = {
+          categoryAssets: @Html.Raw(Json.Serialize(Model.CategoryAssets))
+        };
     </script>
+
+    <script src="~/js/home-index.js"></script>
 }
+
+

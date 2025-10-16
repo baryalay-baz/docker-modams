@@ -9,6 +9,27 @@
 
 @*<link href="~/assets/plugins/c3/c3.min.css" rel="stylesheet" />*@
 <link href="~/assets/plugins/c3-0.7.20/c3.min.css" rel="stylesheet" />
+@* <link href="~/css/home-index.css" rel="stylesheet" /> *@
+
+<style>
+    .clickable-row {
+        cursor: pointer;
+        transition: background-color 0.2s ease, transform 0.1s ease;
+    }
+
+        .clickable-row:hover {
+            background: linear-gradient(90deg, rgba(13,110,253,0.08), rgba(0,212,255,0.08));
+            transform: scale(1.01);
+        }
+
+        .clickable-row:active {
+            background-color: #e2ecff;
+        }
+
+        .clickable-row td {
+            cursor: pointer;
+        }
+</style>
 
 <style>
     .legend span {
@@ -211,80 +232,85 @@
                                 @Localizer["NewAsset"]
                             </a>
                         </div>
-                        <div class="table-responsive" data-tour="sd.summary">
-                            <table id="tblCategories" class="table text-nowrap mb-0 table-bordered border-top border-bottom divShadow">
-                                <thead class="bg-primary-gradient ms-auto divShadow">
-                                    <tr>
-                                        <th class="text-white">@Localizer["Category"]</th>
-                                        <th class="text-white">@Localizer["SubCategory"]</th>
-                                        <th class="text-white">@Localizer["Count"]</th>
-                                        <th class="text-white">@Localizer["Cost"]</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @{
-                                        var isSomali = System.Globalization.CultureInfo.CurrentUICulture.Name == "so";
+                        <table id="tblCategories" class="table text-nowrap mb-0 table-bordered border-top border-bottom divShadow">
+                            <thead class="bg-primary-gradient ms-auto divShadow">
+                                <tr>
+                                    <th class="text-white">@Localizer["Category"]</th>
+                                    <th class="text-white">@Localizer["SubCategory"]</th>
+                                    <th class="text-white">@Localizer["Count"]</th>
+                                    <th class="text-white">@Localizer["Cost"]</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    var isSomali = System.Globalization.CultureInfo.CurrentUICulture.Name == "so";
 
-                                        if (Model.StoreCategoryAssets.Count > 0)
+                                    if (Model.StoreCategoryAssets.Count > 0)
+                                    {
+                                        int nTotalAssets = 0;
+                                        decimal nTotalAssetCost = 0;
+                                        int nCategoryCount = 0;
+                                        int nCount = 0;
+                                        bool CategoryCheck = true;
+                                        string sbgClass = "";
+
+                                        foreach (var sca in Model.StoreCategoryAssets)
                                         {
-                                            int nTotalAssets = 0;
-                                            decimal nTotalAssetCost = 0;
-                                            int nCategoryCount = 0;
-                                            int nCount = 0;
-                                            bool CategoryCheck = true;
-                                            string sbgClass = "";
-                                            foreach (var sca in Model.StoreCategoryAssets)
+                                            nTotalAssets += sca.TotalAssets;
+                                            nTotalAssetCost += sca.TotalCost;
+
+                                            if (CategoryCheck)
                                             {
-                                                nTotalAssets += sca.TotalAssets;
-                                                nTotalAssetCost += sca.TotalCost;
-                                                if (CategoryCheck)
+                                                nCategoryCount = Model.StoreCategoryAssets
+                                                .Where(m => m.CategoryId == sca.CategoryId)
+                                                .Count();
+                                            }
+
+                                            // alternate background color per category group
+                                            sbgClass = (sbgClass == "") ? "bg-light-transparent" : "";
+
+                                            <tr class="clickable-row @sbgClass"
+                                                data-href="@Url.Action("Index", "Assets", new { id = sca.StoreId, subCategoryId = sca.SubCategoryId })">
+
+                                                @* Category cell (with rowspan, not clickable) *@
+                                                @if (CategoryCheck)
                                                 {
-                                                    nCategoryCount = Model.StoreCategoryAssets.Where(m => m.CategoryId == sca.CategoryId).Count();
-                                                }
-                                                <tr>
-                                                    @{
-                                                        sbgClass = (sbgClass == "") ? "bg-light-transparent" : "";
-                                                        if (CategoryCheck)
-                                                        {
-                                                            <td rowspan="@nCategoryCount" class="text-muted fs-15 fw-semibold">
-                                                                @(isSomali? sca.CategoryNameSo: sca.CategoryName)
-                                                            </td>
-                                                            CategoryCheck = false;
-                                                        }
-                                                    }
-                                                    <td class="text-muted fs-15 fw-semibold @sbgClass">
-                                                        <a asp-action="Index" asp-controller="Assets"
-                                                           asp-route-id="@sca.StoreId"
-                                                           asp-route-subCategoryId="@sca.SubCategoryId"
-                                                           class="text-muted hover-effect">
-                                                            @(isSomali? sca.SubCategoryNameSo: sca.SubCategoryName)
-                                                        </a>
+                                                    <td rowspan="@nCategoryCount" class="text-muted fs-15 fw-semibold align-middle bg-white">
+                                                        @(isSomali? sca.CategoryNameSo: sca.CategoryName)
                                                     </td>
-                                                    <td class="text-muted fs-15 fw-semibold @sbgClass" style="text-align: right;">
-                                                        @sca.TotalAssets
-                                                    </td>
-                                                    <td class="text-muted fs-15 fw-semibold @sbgClass" style="text-align: right;">
-                                                        @sca.TotalCost.ToString("N2")
-                                                    </td>
-                                                </tr>
-                                                nCount++;
-                                                if (nCount == nCategoryCount)
-                                                {
-                                                    CategoryCheck = true;
-                                                    nCount = 0;
+                                                    CategoryCheck = false;
                                                 }
 
-                                            }
-                                            <tr>
-                                                <td colspan="2" style="text-align:right; font-weight:bold;">@Localizer["Total"]:</td>
-                                                <td style="text-align:right; font-weight:bold;">@nTotalAssets</td>
-                                                <td style="text-align:right; font-weight:bold;">@nTotalAssetCost.ToString("N2")</td>
+                                                @* Clickable section *@
+                                                <td class="text-muted fs-15 fw-semibold align-middle">
+                                                    @(isSomali? sca.SubCategoryNameSo: sca.SubCategoryName)
+                                                </td>
+                                                <td class="text-muted fs-15 fw-semibold align-middle text-end">
+                                                    @sca.TotalAssets
+                                                </td>
+                                                <td class="text-muted fs-15 fw-semibold align-middle text-end">
+                                                    @sca.TotalCost.ToString("N2")
+                                                </td>
                                             </tr>
+
+                                            nCount++;
+                                            if (nCount == nCategoryCount)
+                                            {
+                                                CategoryCheck = true;
+                                                nCount = 0;
+                                            }
                                         }
+
+                                        <tr>
+                                            <td colspan="2" class="text-end fw-bold">@Localizer["Total"]:</td>
+                                            <td class="text-end fw-bold">@nTotalAssets</td>
+                                            <td class="text-end fw-bold">@nTotalAssetCost.ToString("N2")</td>
+                                        </tr>
                                     }
-                                </tbody>
-                            </table>
-                        </div>
+                                }
+                            </tbody>
+                        </table>
+
                     </div>
                     <div class="col-md-5 container">
                         <div id="chart" class="mt-5" data-tour="sd.chart"></div>
@@ -318,6 +344,16 @@
 
     <script src="~/assets/plugins/c3-0.7.20/c3.min.js"></script>
     <script src="~/assets/plugins/c3-0.7.20/d3-5.8.2.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll(".clickable-row").forEach(row => {
+                row.addEventListener("click", () => {
+                    window.location = row.dataset.href;
+                });
+            });
+        });
+    </script>
 
     <script>
         $(document).ready(function () {
