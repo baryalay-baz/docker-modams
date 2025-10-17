@@ -7,5 +7,7 @@
         public AssetPicturesDTO dtoAssetPictures { get; set; }
         public List<AssetHistory> AssetHistory { get; set; }
         public List<Transfer> Transfers { get; set; }
+
+        public bool IsAuthorized { get; set; } = false;
     }
 }

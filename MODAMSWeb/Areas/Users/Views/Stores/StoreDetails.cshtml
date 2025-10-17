@@ -14,7 +14,7 @@
     <div>
         <h1 class="page-title">@Localizer["StoreDetails"]</h1>
     </div>
-    <div class="ms-auto pageheader-btn">
+    <div class="ms-auto pageheader-btn" >
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">@Localizer["Dashboard"]</a></li>
             <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Stores" asp-action="Index">@Localizer["Stores"]</a></li>
@@ -189,7 +189,7 @@
                                 @Localizer["NewAsset"]
                             </a>
                         </div>
-                        <table id="tblCategories" class="table text-nowrap mb-0 table-bordered border-top border-bottom divShadow">
+                        <table id="tblCategories" class="table text-nowrap mb-0 table-bordered border-top border-bottom divShadow" data-tour="sd.summary">
                             <thead class="bg-primary-gradient ms-auto divShadow">
                                 <tr>
                                     <th class="text-white">@Localizer["Category"]</th>

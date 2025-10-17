@@ -5,27 +5,40 @@
 @inject IViewLocalizer Localizer
 @inject MODAMS.Utility.IAMSFunc _func
 
+@{
+    ViewData["TourPageKey"] = "Assets/AssetInfo";
+}
 
 <link href="~/css/assetinfo.css" rel="stylesheet" />
+
 <div class="page-header">
     <div>
         <h1 class="page-title">@Localizer["AssetInformation"]</h1>
     </div>
     <div class="ms-auto pageheader-btn">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">@Localizer["Dashboard"]</a></li>
+        <ol class="breadcrumb" data-tour="ai.breadcrumb">
+            <li class="breadcrumb-item">
+                <a asp-area="Users" asp-controller="Home" asp-action="Index">@Localizer["Dashboard"]</a>
+            </li>
             @{
                 int categoryId = Convert.ToInt32(TempData["categoryId"]);
-
                 if (categoryId > 0)
                 {
-                    <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Assets" asp-action="AssetList" asp-route-id="@categoryId">@Localizer["AssetList"]</a></li>
+                    <li class="breadcrumb-item">
+                        <a asp-area="Users" asp-controller="Assets" asp-action="AssetList" asp-route-id="@categoryId">@Localizer["AssetList"]</a>
+                    </li>
                 }
                 else
                 {
-                    <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Stores" asp-action="Index">@Localizer["Stores"]</a></li>
-                    <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Stores" asp-action="StoreDetails" asp-route-id="@TempData["storeId"]">@TempData["storeName"]</a></li>
-                    <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Assets" asp-action="Index" asp-route-id="@TempData["storeId"]">@Localizer["Assets"]</a></li>
+                    <li class="breadcrumb-item">
+                        <a asp-area="Users" asp-controller="Stores" asp-action="Index">@Localizer["Stores"]</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a asp-area="Users" asp-controller="Stores" asp-action="StoreDetails" asp-route-id="@TempData["storeId"]">@TempData["storeName"]</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a asp-area="Users" asp-controller="Assets" asp-action="Index" asp-route-id="@TempData["storeId"]">@Localizer["Assets"]</a>
+                    </li>
                 }
             }
             <li class="breadcrumb-item active" aria-current="page">@Localizer["AssetInformation"]</li>
@@ -35,19 +48,18 @@
 
 <div class="row">
     <div class="col-md-12">
-
         <div class="card overflow-hidden">
             <div class="card-footer p-0">
                 <!-- Tabs -->
                 <div class="tabs-menu4 py-5 project-menu">
                     <nav class="nav border-bottom px-4 d-block d-lg-flex flex-2">
-                        <a id="a_tab_1" class="nav-link border py-1 mb-2 mb-lg-0 br-lg-5 mx-1 mx-md-1 active" data-bs-toggle="tab" href="#tab_1">
+                        <a data-tour="ai.overview" id="a_tab_1" class="nav-link border py-1 mb-2 mb-lg-0 br-lg-5 mx-1 mx-md-1 active" data-bs-toggle="tab" href="#tab_1">
                             @Localizer["Overview"]
                         </a>
-                        <a id="a_tab_2" class="nav-link border py-1 mb-2 mb-lg-0 br-lg-5 mx-1 mx-md-1" data-bs-toggle="tab" href="#tab_2">
+                        <a data-tour="ai.documents" id="a_tab_2" class="nav-link border py-1 mb-2 mb-lg-0 br-lg-5 mx-1 mx-md-1" data-bs-toggle="tab" href="#tab_2">
                             @Localizer["Documents"]
                         </a>
-                        <a id="a_tab_3" class="nav-link border py-1 mb-2 mb-lg-0 br-lg-5 mx-1 mx-md-1" data-bs-toggle="tab" href="#tab_3">
+                        <a data-tour="ai.pictures" id="a_tab_3" class="nav-link border py-1 mb-2 mb-lg-0 br-lg-5 mx-1 mx-md-1" data-bs-toggle="tab" href="#tab_3">
                             @Localizer["Pictures"]
                         </a>
                     </nav>
@@ -56,12 +68,13 @@
             </div>
         </div>
     </div>
+
     <div class="col-md-12">
         <div class="tab-content">
-            <div class="tab-pane active" id="tab_1">
-                <!-- ROW -->
+            <!-- ===================== TAB 1 ===================== -->
+            <div class="tab-pane active" id="tab_1" data-tour="ai.tab1">
                 @{
-                    bool isSomali = CultureInfo.CurrentCulture.Name == "so" ? true : false;
+                    bool isSomali = CultureInfo.CurrentCulture.Name == "so";
                     var sCategoryName = isSomali ? Model.Asset.SubCategory.SubCategoryNameSo : Model.Asset.SubCategory.SubCategoryName;
                 }
                 <div class="row">
@@ -70,132 +83,121 @@
                             <div class="card">
                                 <div class="card-header border-bottom d-block divShadow bg-info-gradient text-white">
                                     <h3 class="card-title text-bold">
-                                        @(sCategoryName)
+                                        <span data-tour="ai.assetname">@(Model.Asset.Name)</span>
                                         @{
-                                            var employeeId = await _func.GetEmployeeIdAsync();
-
-                                            employeeId = (User.IsInRole("User")) ? await _func.GetSupervisorIdAsync(employeeId) : employeeId;
-                                            if (employeeId == await _func.GetStoreOwnerIdAsync(await _func.GetStoreIdByAssetIdAsync(Model.Asset.Id)))
+                                            if (Model.IsAuthorized)
                                             {
-                                                <a asp-action="EditAsset" asp-controller="Assets" asp-route-id="@Model.Asset.Id" class="ms-1" id="checkElement"><i class="fe fe-edit"></i></a>
+                                                <a data-tour="ai.editasset" asp-action="EditAsset" asp-controller="Assets" asp-route-id="@Model.Asset.Id" class="ms-1" id="checkElement">
+                                                    <i class="fe fe-edit"></i>
+                                                </a>
                                             }
-                                            <span class="float-end">@TempData["StoreName"]</span>
+                                            <span data-tour="ai.department" class="float-end">@TempData["StoreName"]</span>
                                         }
                                     </h3>
                                 </div>
+
                                 @{
                                     string sBackground = "";
-
                                     switch (Model.Asset.AssetStatusId)
                                     {
-                                        case SD.Asset_Available:
-                                            sBackground = "primary";
-                                            break;
-                                        case SD.Asset_Disposed:
-                                            sBackground = "secondary";
-                                            break;
-                                        case SD.Asset_HandedOver:
-                                            sBackground = "info";
-                                            break;
+                                        case SD.Asset_Available: sBackground = "primary"; break;
+                                        case SD.Asset_Disposed: sBackground = "secondary"; break;
+                                        case SD.Asset_HandedOver: sBackground = "info"; break;
                                     }
                                 }
+
                                 <div class="card-body p-0">
                                     <div class="border-top"></div>
-                                    <div class="grid-container">
-                                        <div class="grid-item"><strong>@Localizer["Make"] :</strong> @Model.Asset.Make</div>
-                                        <div class="grid-item"><strong>@Localizer["Model"] :</strong> @Model.Asset.Model</div>
-                                        <div class="grid-item"><strong>@Localizer["Year"] :</strong> @Model.Asset.Year</div>
 
-                                        <div class="grid-item"><strong>@Localizer["Category"] :</strong> @sCategoryName</div>
-                                        <div class="grid-item"><strong>@Localizer["AssetName"] :</strong> @Model.Asset.Name</div>
-                                        <div class="grid-item"><strong>@Localizer["ManufacturingCountry"] :</strong> @Model.Asset.ManufacturingCountry</div>
+                                    <!-- Main grid (tour goes left->right per row) -->
+                                    <div class="grid-container" data-tour="ai.grid">
+                                        <div class="grid-item" data-tour="ai.make"><strong>@Localizer["Make"] :</strong> @Model.Asset.Make</div>
+                                        <div class="grid-item" data-tour="ai.model"><strong>@Localizer["Model"] :</strong> @Model.Asset.Model</div>
+                                        <div class="grid-item" data-tour="ai.year"><strong>@Localizer["Year"] :</strong> @Model.Asset.Year</div>
 
-                                        <div class="grid-item"><strong>@Localizer["SerialNumber"] :</strong> @Model.Asset.SerialNo</div>
-                                        <div class="grid-item"><strong>@Localizer["Barcode"] :</strong> @Model.Asset.Barcode</div>
-                                        <div class="grid-item"><strong>@Localizer["PONumber"] :</strong> @Model.Asset.PONumber</div>
+                                        <div class="grid-item" data-tour="ai.assetname.row"><strong>@Localizer["AssetName"] :</strong> @Model.Asset.Name</div>
+                                        <div class="grid-item" data-tour="ai.country"><strong>@Localizer["ManufacturingCountry"] :</strong> @Model.Asset.ManufacturingCountry</div>
+                                        <div class="grid-item" data-tour="ai.category"><strong>@Localizer["Category"] :</strong> @sCategoryName</div>
 
-                                        <div class="grid-item"><strong>@Localizer["PurchaseDate"] :</strong> @Model.Asset.PurchaseDate?.ToString("MMMM dd, yyyy")</div>
-                                        <div class="grid-item"><strong>@Localizer["ReceiptDate"] :</strong> @Model.Asset.RecieptDate?.ToString("MMMM dd, yyyy")</div>
-                                        <div class="grid-item"><strong>@Localizer["ProcuredBy"]: </strong> @Model.Asset.ProcuredBy</div>
+                                        <div class="grid-item" data-tour="ai.serialno"><strong>@Localizer["SerialNumber"] :</strong> @Model.Asset.SerialNo</div>
+                                        <div class="grid-item" data-tour="ai.barcode"><strong>@Localizer["Barcode"] :</strong> @Model.Asset.Barcode</div>
+                                        <div class="grid-item" data-tour="ai.po"><strong>@Localizer["PONumber"] :</strong> @Model.Asset.PONumber</div>
 
-                                        <div class="grid-item"><strong>@Localizer["Condition"] : </strong> @Model.Asset.Condition.ConditionName</div>
-                                        <div class="grid-item"><strong>@Localizer["Donor"] :</strong> @Model.Asset.Donor.Name</div>
-                                        <div class="grid-item">
+                                        <div class="grid-item" data-tour="ai.purchasedate"><strong>@Localizer["PurchaseDate"] :</strong> @Model.Asset.PurchaseDate?.ToString("MMMM dd, yyyy")</div>
+                                        <div class="grid-item" data-tour="ai.receiptdate"><strong>@Localizer["ReceiptDate"] :</strong> @Model.Asset.RecieptDate?.ToString("MMMM dd, yyyy")</div>
+                                        <div class="grid-item" data-tour="ai.procuredby"><strong>@Localizer["ProcuredBy"]: </strong> @Model.Asset.ProcuredBy</div>
+
+                                        <div class="grid-item" data-tour="ai.condition"><strong>@Localizer["Condition"] : </strong> @Model.Asset.Condition.ConditionName</div>
+                                        <div class="grid-item" data-tour="ai.donor"><strong>@Localizer["Donor"] :</strong> @Model.Asset.Donor.Name</div>
+                                        <div class="grid-item" data-tour="ai.status">
                                             <strong>@Localizer["Status"] : </strong>
                                             <span class="text-primary">
                                                 <span class="mb-0 mt-1 badge rounded-pill bg-@sBackground-transparent text-@sBackground">
-                                                    @(isSomali ? Model.Asset.AssetStatus.StatusNameSo : Model.Asset.AssetStatus.StatusName)
+                                                    @(isSomali? Model.Asset.AssetStatus.StatusNameSo : Model.Asset.AssetStatus.StatusName)
                                                 </span>
                                             </span>
                                         </div>
 
-                                        <div class="grid-item full-width"><strong>@Localizer["Specifications"] : </strong> @Model.Asset.Specifications</div>
+                                        <div class="grid-item full-width" data-tour="ai.specifications"><strong>@Localizer["Specifications"] : </strong> @Model.Asset.Specifications</div>
 
                                         @if (Model.Asset.SubCategory.Category.Id == 16)
                                         {
-                                            <div class="grid-item"><strong>@Localizer["EngineNumber"]: </strong> @Model.Asset.Engine</div>
-                                            <div class="grid-item"><strong>@Localizer["ChasisNumber"]:</strong> @Model.Asset.Chasis</div>
-                                            <div class="grid-item"><strong>@Localizer["PlateNumber"]:</strong> @Model.Asset.Plate</div>
+                                            <div class="grid-item" data-tour="ai.engine"><strong>@Localizer["EngineNumber"]: </strong> @Model.Asset.Engine</div>
+                                            <div class="grid-item" data-tour="ai.chasis"><strong>@Localizer["ChasisNumber"]:</strong> @Model.Asset.Chasis</div>
+                                            <div class="grid-item" data-tour="ai.plate"><strong>@Localizer["PlateNumber"]:</strong> @Model.Asset.Plate</div>
                                         }
-                                        <div class="grid-item full-width"><strong>@Localizer["Remarks"] :</strong> @Model.Asset.Remarks</div>
-                                        @{
-                                            if (User.IsInRole("Administrator"))
-                                            {
-                                                <div class="grid-item full-width">
-                                                    <button class="btn btn-outline-secondary" id="btnDeleteAsset" onclick="deleteAsset('@Model.Asset.Id')">
-                                                        <i class="fa fa-trash"></i>&nbsp;@Localizer["DeleteAsset"]
-                                                    </button>
-                                                </div>
-                                            }
+
+                                        <div class="grid-item full-width" data-tour="ai.remarks"><strong>@Localizer["Remarks"] :</strong> @Model.Asset.Remarks</div>
+
+                                        @if (User.IsInRole("Administrator"))
+                                        {
+                                            <div class="grid-item full-width" data-tour="ai.delete">
+                                                <button class="btn btn-outline-secondary" id="btnDeleteAsset" onclick="deleteAsset('@Model.Asset.Id')">
+                                                    <i class="fa fa-trash"></i>&nbsp;@Localizer["DeleteAsset"]
+                                                </button>
+                                            </div>
                                         }
                                     </div>
-
+                                    <!-- /grid -->
                                 </div>
-
                             </div>
-                            <div class="card">
+
+                            <div class="card" data-tour="ai.costvalue.card">
                                 <div class="card-body">
                                     <div class="row prjct-details">
-                                        <div class="col-xl-2 col-lg-12">
+                                        <div class="col-xl-2 col-lg-12" data-tour="ai.cost">
                                             <div class="text-center border py-5 br-5 details">
-                                                <div>
-                                                    <span class="m-0 text-muted">@Localizer["InitialCost"]:</span>
-                                                </div>
+                                                <div><span class="m-0 text-muted">@Localizer["InitialCost"]:</span></div>
                                                 <h5 class="mt-3 text-teritary">@Model.Asset.Cost.ToString("N2")</h5>
                                             </div>
                                         </div>
+
                                         @{
                                             var cost = Model.Asset.Cost;
                                             decimal depCost = 0;
                                             decimal difference = 0;
                                             string usePercentage = "0";
-
                                             if (cost > 0)
                                             {
                                                 depCost = await _func.GetDepreciatedCostAsync(Model.Asset.Id);
                                                 difference = cost - depCost;
-
                                                 usePercentage = ((difference * 100) / cost).ToString("N0");
                                             }
-
                                         }
+
                                         <div class="col-xl-8 col-lg-12">
-                                            <div class="text-center d-f-ai-c-jc-c border py-5 br-5">
+                                            <div data-tour="ai.usage" class="text-center d-f-ai-c-jc-c border py-5 br-5">
                                                 <div class="wp-80">
                                                     <div class="project-percentage medium-bar medium-lg">
                                                         <div class="percentage-title mb-4">
-                                                            <span class="text-muted">
-                                                                <i class="fe fe-clipboard"></i>
-                                                                @Localizer["AssetUsage"]
-                                                            </span>
+                                                            <span class="text-muted"><i class="fe fe-clipboard"></i> @Localizer["AssetUsage"]</span>
                                                             <span class="progress-main font-weight-semibold text-13 mb-1">@usePercentage% / 100%</span>
                                                         </div>
-
                                                         <div class="progress progress-md mb-3">
                                                             <div class="progress-bar progress-bar-striped progress-bar-animated bg-info"
                                                                  role="progressbar"
                                                                  style="width: @usePercentage%"
-                                                                 area-valuenow="@usePercentage"
+                                                                 aria-valuenow="@usePercentage"
                                                                  aria-valuemin="0"
                                                                  aria-valuemax="100">
                                                             </div>
@@ -204,21 +206,21 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-xl-2 col-lg-12">
+
+                                        <div class="col-xl-2 col-lg-12" data-tour="ai.currentvalue">
                                             <div class="text-center border py-5 br-5 details">
-                                                <div>
-                                                    <span class="m-0 text-muted">@Localizer["CurrentValue"]:</span>
-                                                </div>
+                                                <div><span class="m-0 text-muted">@Localizer["CurrentValue"]:</span></div>
                                                 <h5 class="mt-3 text-danger">@depCost.ToString("N2")</h5>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> <!-- /card (cost/usage/value) -->
                         </div>
                     </div>
+
                     <div class="col-md-3" id="div2">
-                        <div class="card">
+                        <div class="card" data-tour="ai.assethistory">
                             <div class="card-header border-bottom d-block divShadow bg-info-gradient text-white">
                                 <h3 class="card-title text-bold">@Localizer["AssetHistory"]</h3>
                             </div>
@@ -228,7 +230,6 @@
                                         int historyCount = Model.AssetHistory.Count;
                                         if (historyCount > 0)
                                         {
-
                                             int nHistoryCounter = 1;
                                             foreach (var history in Model.AssetHistory)
                                             {
@@ -245,7 +246,6 @@
                                                         <i class="task-icon bg-primary"></i>
                                                         <h6><a href="#" class="btn btn-link"> more...</a></h6>
                                                     </li>
-
                                                     break;
                                                 }
                                                 nHistoryCounter++;
@@ -259,28 +259,29 @@
                                 </ul>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-            <div class="tab-pane" id="tab_2">
+                    </div> <!-- /col-md-3 -->
+                </div> <!-- /row -->
+            </div> <!-- /tab_1 -->
+            <!-- ===================== TAB 2 ===================== -->
+            <div class="tab-pane" id="tab_2" data-tour="ai.tab2">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="card">
-                            <div class="card-header border-bottom d-block divShadow bg-info-gradient text-white">
-
+                        <div class="card" data-tour="ai.documents.card">
+                            <div class="card-header border-bottom d-block divShadow bg-info-gradient text-white" data-tour="ai.documents.header">
                                 <h3 class="card-title text-bold">
                                     @Localizer["AssetDocuments"]
-
                                     @{
-                                        if (employeeId == await _func.GetStoreOwnerIdAsync(await _func.GetStoreIdByAssetIdAsync(Model.Asset.Id)))
+                                        if (Model.IsAuthorized)
                                         {
-                                            <a asp-action="AssetDocuments" asp-controller="Assets" asp-route-id="@Model.Asset.Id" class="ms-1" id="checkElement"><i class="fa fa-edit"></i></a>
+                                            <a data-tour="ai.documents.edit" asp-action="AssetDocuments" asp-controller="Assets" asp-route-id="@Model.Asset.Id" class="ms-1" id="checkElement">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
                                         }
                                     }
                                 </h3>
                             </div>
                             <div class="card-body" style="width:800px;">
-                                <div class="table-responsive">
+                                <div class="table-responsive" data-tour="ai.documents.table">
                                     <table id="tblDocuments" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
                                         <thead>
                                             <tr>
@@ -295,20 +296,23 @@
                                                 string sCounter = "";
                                                 if (Model.Documents.Count > 0)
                                                 {
-
                                                     foreach (var doc in Model.Documents)
                                                     {
                                                         nCounter++;
                                                         sCounter = nCounter < 10 ? '0' + nCounter.ToString() : nCounter.ToString();
                                                         <tr>
                                                             <td class="text-muted text-center fs-15 fw-semibold">@sCounter.</td>
-                                                            <td class="text-muted fs-15 fw-semibold">@(isSomali ? doc.DocumentType.NameSo : doc.DocumentType.Name)</td>
+                                                            <td class="text-muted fs-15 fw-semibold" data-tour="ai.documents.rowname">
+                                                                @(isSomali? doc.DocumentType.NameSo : doc.DocumentType.Name)
+                                                            </td>
                                                             <td class="text-muted fs-15 fw-semibold">
                                                                 @{
                                                                     if (doc.Id > 0)
                                                                     {
-                                                                        <a href="@doc.DocumentUrl" class="btn btn-sm btn-outline-primary border me-2">
-                                                                            <i class="fe fe-download">&nbsp;@Localizer["Download"]</i>
+                                                                        <a data-tour="ai.documents.download"
+                                                                           href="@doc.DocumentUrl"
+                                                                           class="btn btn-sm btn-outline-primary border me-2">
+                                                                            <i class="fe fe-download"></i>&nbsp;@Localizer["Download"]
                                                                         </a>
                                                                     }
                                                                 }
@@ -320,38 +324,49 @@
                                         </tbody>
                                     </table>
                                 </div>
-                            </div>
 
+                                @* Show "no data" message OUTSIDE the table to avoid DataTables colspan issues *@
+                                @if (Model.Documents.Count == 0)
+                                {
+                                    <div id="docsEmpty" class="p-3 text-center text-muted">@Localizer["NoDataAvailable"]</div>
+                                }
+                            </div> <!-- /card-body -->
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="tab-pane" id="tab_3">
+            </div> <!-- /tab_2 -->
+            <!-- ===================== TAB 3 ===================== -->
+            <div class="tab-pane" id="tab_3" data-tour="ai.tab3">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="demo-gallery card">
-                            <div class="card-header border-bottom d-block divShadow bg-info-gradient text-white">
+                        <div class="demo-gallery card" data-tour="ai.gallery.card">
+                            <div class="card-header border-bottom d-block divShadow bg-info-gradient text-white" data-tour="ai.gallery.header">
                                 <h3 class="card-title text-bold">
                                     @Localizer["AssetPictureGallery"]
-
                                     @{
-                                        if (employeeId == await _func.GetStoreOwnerIdAsync(await _func.GetStoreIdByAssetIdAsync(Model.Asset.Id)))
+                                        if (Model.IsAuthorized)
                                         {
-                                            <a class="ms-1" asp-action="AssetPictures" asp-controller="Assets" asp-route-id="@Model.Asset.Id" id="checkElement"><i class="fa fa-edit"></i></a>
+                                            <a data-tour="ai.gallery.edit" class="ms-1" asp-action="AssetPictures" asp-controller="Assets" asp-route-id="@Model.Asset.Id" id="checkElement">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
                                         }
                                     }
                                 </h3>
                             </div>
-                            <div class="card-body">
-                                <ul id="lightgallery" class="list-unstyled row">
+                            <div class="card-body" data-tour="ai.gallery.body">
+                                <ul id="lightgallery" class="list-unstyled row" data-tour="ai.gallery.list">
                                     @{
                                         if (Model.dtoAssetPictures.PaginatedPictures().Count > 0)
                                         {
-                                            nCounter = 0;
+                                            var idx = 0;
                                             foreach (var pic in Model.dtoAssetPictures.PaginatedPictures())
                                             {
-                                                nCounter++;
-                                                <li class="col-xs-6 col-sm-4 col-md-4 col-xl-4 mb-5 border-bottom-0" data-responsive="~/assetpictures" data-src="@pic.ImageUrl" data-sub-html="">
+                                                idx++;
+                                                <li class="col-xs-6 col-sm-4 col-md-4 col-xl-4 mb-5 border-bottom-0"
+                                                    data-responsive="~/assetpictures"
+                                                    data-src="@pic.ImageUrl"
+                                                    data-sub-html=""
+                                                    data-tour="ai.gallery.item-@idx">
                                                     <a href="javascript:void(0)">
                                                         <img class="img-responsive br-5 wp-100" src="@pic.ImageUrl" alt="@pic.ImageUrl">
                                                     </a>
@@ -362,59 +377,53 @@
                                         {
                                             <li><p class="text-center">@Localizer["NoDataAvailable"]</p></li>
                                         }
-
                                     }
                                 </ul>
                             </div>
                         </div>
-                        <!-- GALLERY DEMO CLOSED -->
-                        <!-- PAGINATION OPEN -->
-                        <div class="row mb-5">
+
+                        <!-- PAGINATION -->
+                        <div class="row mb-5" data-tour="ai.gallery.pagination">
                             <div class="col-md-6">
                                 <div class="float-end">
                                     <ul class="pagination">
-                                        @*<li class="page-item page-prev disabled">
-                                        <a class="page-link" href="#" tabindex="-1">Prev</a>
-                                        </li>*@
                                         @for (int i = 1; i <= Model.dtoAssetPictures.PageCount(); i++)
                                         {
                                             <li class="@(i == Model.dtoAssetPictures.CurrentPage ? "page-item active" : "page-item")">
-                                                <a class="page-link" href="@Url.Action("AssetInfo", new { id=Model.Asset.Id, page = i, tab = 3 })">@i</a>
+                                                <a class="page-link" href="@Url.Action("AssetInfo", new { id = Model.Asset.Id, page = i, tab = 3 })">@i</a>
                                             </li>
                                         }
-                                        @*<li class="page-item page-next">
-                                        <a class="page-link" href="#">Next</a>
-                                        </li>*@
                                     </ul>
                                 </div>
                             </div>
-                            <!-- COL-END -->
                         </div>
-                        <!-- PAGINATION CLOSED -->
+                        <!-- /PAGINATION -->
                     </div>
                 </div>
+            </div> <!-- /tab_3 -->
+        </div> <!-- /tab-content -->
 
-
-            </div>
-        </div>
         <div class="card">
             <div class="card-footer">
                 @{
                     if (categoryId > 0)
                     {
-                        <a asp-action="AssetList" asp-controller="Assets" asp-route-id="@categoryId" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;@Localizer["Previous"]</a>
+                        <a asp-action="AssetList" asp-controller="Assets" asp-route-id="@categoryId" id="btnCancel" class="btn btn-outline-default">
+                            <i class="fe fe-corner-up-left"></i>&nbsp;@Localizer["Previous"]
+                        </a>
                     }
                     else
                     {
-                        <a asp-action="Index" asp-controller="Assets" asp-route-id="@Model.Asset.StoreId" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;@Localizer["Previous"]</a>
+                        <a asp-action="Index" asp-controller="Assets" asp-route-id="@Model.Asset.StoreId" id="btnCancel" class="btn btn-outline-default">
+                            <i class="fe fe-corner-up-left"></i>&nbsp;@Localizer["Previous"]
+                        </a>
                     }
                 }
-
             </div>
         </div>
-
     </div>
 </div>
+
 @await Html.PartialAsync("~/Views/Shared/_Confirmation.cshtml")
 
 @section scripts {
@@ -428,81 +437,219 @@
     <script src="~/assets/plugins/gallery/lg-zoom.js"></script>
     <script src="~/assets/plugins/gallery/lg-hash.js"></script>
     <script src="~/assets/plugins/gallery/lg-share.js"></script>
-
+    <script src="~/js/asset-info.js"></script>
     <script>
         $(document).ready(function () {
             hideMenu();
 
-            makeDataTable('#tblDocuments', 10);
-            adjustMainContainerHeight();
+            // Only init DataTables when we actually have rows — avoids _DT_CellIndex errors
+            if ($('#tblDocuments tbody tr').length > 0) {
+                makeDataTable('#tblDocuments', 10);
+            }
 
+            adjustMainContainerHeight();
             setTab();
         });
-        const deleteAsset = (id) =>{
+
+        const deleteAsset = (id) => {
             const options = {
-                    actionUrl: `/Users/Assets/DeleteAsset/${id}`,
-                    title: '@Localizer["DeleteAsset"]',
-                    message: '@Localizer["DeleteConfirmationMessage"]',
-                    btnConfirmText: '@Localizer["Confirm"]',
-                    btnCancelText: '@Localizer["Cancel"]'
-                };
-                //console.log(options);
-                openConfirmation(options);
+                actionUrl: `/Users/Assets/DeleteAsset/${id}`,
+                title: '@Localizer["DeleteAsset"]',
+                message: '@Localizer["DeleteConfirmationMessage"]',
+                btnConfirmText: '@Localizer["Confirm"]',
+                btnCancelText: '@Localizer["Cancel"]'
+            };
+            openConfirmation(options);
         }
+
         function adjustMainContainerHeight() {
             const mainContainer = document.getElementById('dvMainContainer');
-            mainContainer.style.height = 'auto'; // Reset height
-            mainContainer.style.height = `${mainContainer.scrollHeight}px`; // Set to content height
+            if (!mainContainer) return;
+            mainContainer.style.height = 'auto';
+            mainContainer.style.height = `${mainContainer.scrollHeight}px`;
             setCardBodyHeight();
         }
-
         function setCardBodyHeight() {
             const mainContainer = document.getElementById('dvMainContainer');
-
             const cardBody = document.getElementById('dvHistoryCard');
-
             if (mainContainer && cardBody) {
                 cardBody.style.height = `${mainContainer.scrollHeight - 80}px`;
             }
-
-            console.log(`${mainContainer.scrollHeight} - ${cardBody.scrollHeight}`);
-
         }
 
         const setTab = () => {
             var tab = '@TempData["tab"]';
-
             if (tab == "1" || tab == null) {
-                $("#tab_1").addClass("active");
-                $("#a_tab_1").addClass("active");
-
-                $("#tab_2").removeClass("active");
-                $("#a_tab_2").removeClass("active");
-
-                $("#tab_3").removeClass("active");
-                $("#a_tab_3").removeClass("active");
+                $("#tab_1, #a_tab_1").addClass("active");
+                $("#tab_2, #tab_3, #a_tab_2, #a_tab_3").removeClass("active");
             } else if (tab == "2") {
-                $("#tab_1").removeClass("active");
-                $("#a_tab_1").removeClass("active");
-
-                $("#tab_2").addClass("active");
-                $("#a_tab_2").addClass("active");
-
-                $("#tab_3").removeClass("active");
-                $("#a_tab_3").removeClass("active");
+                $("#tab_2, #a_tab_2").addClass("active");
+                $("#tab_1, #tab_3, #a_tab_1, #a_tab_3").removeClass("active");
             } else {
-                $("#tab_1").removeClass("active");
-                $("#a_tab_1").removeClass("active");
-
-                $("#tab_2").removeClass("active");
-                $("#a_tab_2").removeClass("active");
-
-                $("#tab_3").addClass("active");
-                $("#a_tab_3").addClass("active");
+                $("#tab_3, #a_tab_3").addClass("active");
+                $("#tab_1, #tab_2, #a_tab_1, #a_tab_2").removeClass("active");
             }
         }
 
+        // ------------------ SMART TOUR HELPERS ------------------
 
+        const TAB_META = {
+            "#tab_1": { nav: "#a_tab_1", idx: 1 },
+            "#tab_2": { nav: "#a_tab_2", idx: 2 },
+            "#tab_3": { nav: "#a_tab_3", idx: 3 }
+        };
 
+        function paneOf(el) {
+            const pane = el?.closest('.tab-pane');
+            return pane ? ('#' + pane.id) : null;
+        }
+
+        function ensureTabFor(el) {
+            const paneId = paneOf(el);
+            if (!paneId) return;
+            const meta = TAB_META[paneId];
+            if (!meta) return;
+            const pane = document.querySelector(paneId);
+            const navLink = document.querySelector(meta.nav);
+            if (pane && navLink && !pane.classList.contains('active')) {
+                navLink.click();
+            }
+        }
+
+        function pickSideFor(el, lastSide = 'bottom') {
+            const r = el.getBoundingClientRect();
+            const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+            const vh = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+
+            const nearTop = r.top < 96;
+            const nearBottom = (vh - r.bottom) < 96;
+            const nearLeft = r.left < 96;
+            const nearRight = (vw - r.right) < 96;
+
+            let side = 'bottom';
+            if (nearBottom && !nearTop) side = 'top';
+            else if (nearTop && !nearBottom) side = 'bottom';
+            else if (nearRight && !nearLeft) side = 'left';
+            else if (nearLeft && !nearRight) side = 'right';
+
+            if (!nearTop && !nearBottom && !nearLeft && !nearRight) {
+                const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+                const horiz = cx < vw/2 ? 'right' : 'left';
+                const vert  = cy < vh/2 ? 'bottom' : 'top';
+                side = (Math.abs(cy - vh/2) > Math.abs(cx - vw/2)) ? vert : horiz;
+            }
+            if (side === lastSide) {
+                const rotate = { bottom: 'right', right: 'top', top: 'left', left: 'bottom' };
+                side = rotate[side];
+            }
+            return side;
+        }
+
+        function queryStepElement(selector) {
+            return document.querySelector(selector);
+        }
+
+        function orderStepsByLayout(steps) {
+            const enriched = steps.map((s, i) => {
+                const el = queryStepElement(s.element);
+                const paneId = paneOf(el) || "#tab_1";
+                const meta = TAB_META[paneId] || { idx: 99 };
+                let rect = { top: Infinity, left: Infinity };
+
+                if (el && !el.offsetParent) {
+                    const navSel = TAB_META[paneId]?.nav;
+                    const currentActive = document.querySelector('.tab-pane.active');
+                    const currentPaneId = currentActive ? '#' + currentActive.id : null;
+                    if (navSel) document.querySelector(navSel)?.click();
+                    rect = el.getBoundingClientRect();
+                    if (currentPaneId && currentPaneId !== paneId) {
+                        document.querySelector(TAB_META[currentPaneId]?.nav)?.click();
+                    }
+                } else if (el) {
+                    rect = el.getBoundingClientRect();
+                }
+
+                return { s, i, paneIdx: meta.idx, top: Math.round(rect.top), left: Math.round(rect.left) };
+            });
+
+            enriched.sort((a, b) => {
+                if (a.paneIdx !== b.paneIdx) return a.paneIdx - b.paneIdx; // Tab1 -> Tab2 -> Tab3
+                if (a.top !== b.top) return a.top - b.top;                // Row order
+                if (a.left !== b.left) return a.left - b.left;            // Left -> Right
+                return a.i - b.i;
+            });
+
+            return enriched.map(e => e.s);
+        }
+
+        function buildSmartSteps(steps) {
+            const ordered = orderStepsByLayout(steps);
+            let lastSide = 'bottom';
+            return ordered.map(step => {
+                const el = queryStepElement(step.element);
+                if (el) {
+                    ensureTabFor(el);
+                    el.scrollIntoView({ behavior: 'instant', block: 'center' });
+                    const side = pickSideFor(el, lastSide);
+                    lastSide = side;
+                    return { ...step, popover: { ...(step.popover || {}), side } };
+                }
+                return step;
+            });
+        }
+
+        window.startTourFor = function (pageKey) {
+            const steps = window.PAMS_TOUR_REGISTRY?.[pageKey];
+            const factory = window?.driver?.js?.driver;
+            if (!steps || !factory) return;
+
+            const smartSteps = buildSmartSteps(steps);
+
+            const driver = factory({
+                showProgress: true,
+                overlayOpacity: 0.3,
+                nextBtnText: 'Next',
+                prevBtnText: 'Back',
+                doneBtnText: 'Done'
+            });
+
+            driver.setSteps(smartSteps);
+            driver.drive();
+
+            const navHandler = () => {
+                const el = document.querySelector('.driver-highlighted-element');
+                if (!el) return;
+                ensureTabFor(el);
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                const currentIdx = smartSteps.findIndex(s => {
+                    const e = queryStepElement(s.element);
+                    return e && e.classList.contains('driver-highlighted-element');
+                });
+
+                const nextStep = smartSteps[currentIdx + 1];
+                if (!nextStep) return;
+
+                const nextEl = queryStepElement(nextStep.element);
+                const nextPane = paneOf(nextEl);
+                const curPane = paneOf(el);
+                if (nextPane && curPane && nextPane !== curPane) {
+                    const meta = TAB_META[nextPane];
+                    if (meta) document.querySelector(meta.nav)?.click();
+                }
+            };
+
+            document.addEventListener('click', function onClick() {
+                if (!document.querySelector('.driver-popover')) {
+                    document.removeEventListener('click', onClick);
+                    return;
+                }
+                navHandler();
+            });
+
+            setTimeout(navHandler, 50);
+        };
+        // ------------------ /SMART TOUR HELPERS ------------------
     </script>
+
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -560,7 +561,9 @@ namespace MODAMS.ApplicationServices
                         _isSomali ? "Diiwaanka lama helin!" : "Record not found!"
                     );
                 }
-                
+
+                var canModify = await _func.CanModifyStoreAsync(asset.StoreId, _employeeId);
+
                 var documents = await _db.AssetDocuments
                     .AsNoTracking()
                     .Where(ad => ad.AssetId == id)
@@ -595,7 +598,8 @@ namespace MODAMS.ApplicationServices
                     Documents = documents,
                     dtoAssetPictures = new AssetPicturesDTO(pictures, 6),
                     AssetHistory = history,
-                    Transfers = transfers
+                    Transfers = transfers,
+                    IsAuthorized = canModify
                 };
 
                 return Result<AssetInfoDTO>.Success(dto);
