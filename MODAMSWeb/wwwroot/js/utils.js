@@ -96,6 +96,7 @@ const makeDataTable = (tableName, type = "1", recordsPerPage = 10) => {
     });
 
     applyRowStyles();
+    
 
     table.on('draw.dt', () => applyRowStyles());
 
@@ -104,7 +105,7 @@ const makeDataTable = (tableName, type = "1", recordsPerPage = 10) => {
     } else if (type === "3") {
         table.buttons().container().hide();
     }
-
+    //styleDataTableButtonsAndPagination(tableName);
     return table;
 };
 
@@ -117,7 +118,7 @@ const styleDataTableButtonsAndPagination = (tableName) => {
 
     $(`${tableName}_wrapper .paginate_button`)
         .removeClass('btn-primary')
-        .addClass('bg-info')
+        .addClass('btn-info')
         .css('color', 'white');
 };
 
