@@ -16,11 +16,11 @@
         const link = document.querySelector(linkSelector);
         if (!link) return;
 
-        // BS5
+        // Bootstrap 5
         if (window.bootstrap?.Tab) {
             try { bootstrap.Tab.getOrCreateInstance(link).show(); return; } catch (_) { }
         }
-        // BS4 (jQuery)
+        // Bootstrap 4 (jQuery)
         if (window.jQuery && jQuery.fn.tab) {
             try { jQuery(link).tab("show"); return; } catch (_) { }
         }
@@ -43,7 +43,14 @@
         if (linkSel) forceShowTab(linkSel);
     }
 
-    // expose
+    // Resume helpers
+    const RESUME = {
+        key: "PAMS_TOUR:Assets/AssetInfo:step",
+        save(i) { try { sessionStorage.setItem(this.key, String(i)); } catch (_) { } },
+        read() { try { const v = sessionStorage.getItem(this.key); return v ? parseInt(v, 10) : 0; } catch (_) { return 0; } },
+        clear() { try { sessionStorage.removeItem(this.key); } catch (_) { } }
+    };
+
     window.PAMS_PAGE = window.PAMS_PAGE || {};
-    window.PAMS_PAGE.AssetInfo = { TAB_META, paneOf, forceShowTab, activatePaneForElement };
+    window.PAMS_PAGE.AssetInfo = { TAB_META, paneOf, forceShowTab, activatePaneForElement, RESUME };
 })();

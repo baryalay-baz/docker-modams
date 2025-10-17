@@ -2,17 +2,23 @@
 (function () {
     const PAGE_KEY = "Assets/AssetInfo";
     const H = (window.PAMS_PAGE && window.PAMS_PAGE.AssetInfo) || {};
-    const forceShowTab = H.forceShowTab || (sel => document.querySelector(sel)?.click());
+    const { forceShowTab, activatePaneForElement, RESUME } = H;
 
     // i18n
     const lang = (window.getCurrentLanguage && window.getCurrentLanguage()) || "en";
     const t = (en, so) => (lang === "so" ? so : en);
 
-    // Helper to make a "switch tab" step that ACTIVATES the tab in both cases:
-    // - when the step is highlighted
-    // - when user clicks Next on that step
+    // ---- Tunables ----
+    const TAB_SWITCH_DELAY_MS = 150;     // small delay for smoother tab switches
+    const RESUME_ENABLED = true;    // set false to disable resume
+
+    // Utility: delayed tab switch
+    const delayedSwitch = (sel, ms = TAB_SWITCH_DELAY_MS) =>
+        setTimeout(() => forceShowTab && forceShowTab(sel), ms);
+
+    // Helper to create a tab-switcher step
     function switchTabStep(linkSelector, titleEn, titleSo, descEn, descSo) {
-        const activate = () => requestAnimationFrame(() => forceShowTab(linkSelector));
+        const activate = () => delayedSwitch(linkSelector);
         return {
             element: linkSelector,
             popover: {
@@ -20,11 +26,11 @@
                 description: t(descEn, descSo)
             },
             onHighlighted: activate,
-            onNextClick: (el, step, driver) => { activate(); setTimeout(() => driver?.moveNext?.(), 0); }
+            onNextClick: (el, step, driver) => { activate(); setTimeout(() => driver?.moveNext?.(), TAB_SWITCH_DELAY_MS); }
         };
     }
 
-    // ===== TAB 1 (exact order you required) =====
+    // ===== TAB 1 (exact order) =====
     const TAB1 = [
         { element: '[data-tour="ai.make"]', popover: { title: t('Make / Manufacturer', 'Soo-saaraha'), description: t('Brand or manufacturer of the asset.', 'Calaamadda ama shirkadda soo saartay hantidan.') } },
         { element: '[data-tour="ai.model"]', popover: { title: t('Model', 'Nooca / Qaabka'), description: t('Specific model or version of the asset.', 'Nooca ama lambarka qaabka ee hantidan.') } },
@@ -62,7 +68,7 @@
         { element: '[data-tour="ai.assethistory"]', popover: { title: t('Asset History', 'Taariikhda Hantida'), description: t('Event timeline since registration (transfers, handovers, etc.).', 'Jadwalka dhacdooyinka tan iyo diiwaangelinta (wareejinno, iwm).') } }
     ];
 
-    // >>> Hard switch to Documents (Tab 2) <<<
+    // Explicit switches (they’ll be auto-activated by callbacks)
     const SWITCH_TO_TAB2 = [
         switchTabStep(
             "#a_tab_2",
@@ -72,7 +78,6 @@
         )
     ];
 
-    // ===== TAB 2 content =====
     const TAB2 = [
         { element: '[data-tour="ai.tab2"]', popover: { title: t('Documents Area', 'Aagga Dukumentiyada'), description: t('This tab lists all associated documents for quick access.', 'Tabkani waxa uu soo bandhigaa dhammaan dukumentiyada la xidhiidha si degdeg ah loogu helo.') } },
         { element: '[data-tour="ai.documents.header"]', popover: { title: t('Documents Header', 'Cinwaanka Dukumentiyada'), description: t('Title and quick actions for managing the asset’s documents.', 'Cinwaan iyo falal degdeg ah oo lagu maamulo dukumentiyada hantidan.') } },
@@ -82,7 +87,6 @@
         { element: '[data-tour="ai.documents.download"]', popover: { title: t('Download File', 'Soo Dejiso Faylka'), description: t('Click to download the selected document.', 'Guji si aad u soo dejiso dukumentiga la doortay.') } }
     ];
 
-    // >>> Hard switch to Pictures (Tab 3) <<<
     const SWITCH_TO_TAB3 = [
         switchTabStep(
             "#a_tab_3",
@@ -92,7 +96,6 @@
         )
     ];
 
-    // ===== TAB 3 content =====
     const TAB3 = [
         { element: '[data-tour="ai.tab3"]', popover: { title: t('Gallery Area', 'Aagga Sawirrada'), description: t('All uploaded photos for the asset are displayed here.', 'Dhammaan sawirrada la soo geliyey ee hantidan halkan ayaa lagu soo bandhigayaa.') } },
         { element: '[data-tour="ai.gallery.header"]', popover: { title: t('Gallery Header', 'Cinwaanka Sawirrada'), description: t('Manage or update the photo gallery if you have permission.', 'Haddii aad haysato oggolaansho, halkan ka maamul ama cusboonaysii sawirrada.') } },
@@ -101,15 +104,56 @@
         { element: '[data-tour="ai.gallery.pagination"]', popover: { title: t('Pagination', 'Qaybinta Bogagga'), description: t('Use pagination to navigate between picture pages.', 'Isticmaal qaybinta bogagga si aad u dhex marto bogagga sawirrada.') } }
     ];
 
-    const ALL_STEPS = [
+    // Combine
+    let ALL_STEPS = [
         ...TAB1,
-        ...SWITCH_TO_TAB2,  // ⟵ hard switch using onHighlighted + onNextClick
+        ...SWITCH_TO_TAB2,
         ...TAB2,
-        ...SWITCH_TO_TAB3,  // ⟵ hard switch again
+        ...SWITCH_TO_TAB3,
         ...TAB3
     ];
 
-    // Register for your loader (no driver instance needed here)
+    // --- Auto-skip steps whose elements don't exist (e.g., vehicle-only) ---
+    ALL_STEPS = ALL_STEPS.filter(s => {
+        try { return !!document.querySelector(s.element); } catch { return false; }
+    });
+
+    // --- Inject index-aware callbacks for RESUME + pane activation ---
+    const FINAL_STEPS = ALL_STEPS.map((s, idx) => {
+        const wrap = (fn) => (el, step, driver) => {
+            // Save progress (resume)
+            if (RESUME_ENABLED) RESUME?.save?.(idx);
+
+            // Ensure its pane is visible (prevents popover at 0,0)
+            try { activatePaneForElement?.(el); } catch (_) { }
+
+            // Call original if provided
+            if (typeof fn === 'function') fn(el, step, driver);
+
+            // Resume jump logic only on FIRST step
+            if (RESUME_ENABLED && idx === 0) {
+                const target = Math.max(0, RESUME?.read?.() || 0);
+                if (target > 0) {
+                    // fast-forward by calling moveNext repeatedly
+                    let hops = target;
+                    const hop = () => {
+                        if (hops-- <= 0) return;
+                        driver?.moveNext?.();
+                        setTimeout(hop, 0);
+                    };
+                    setTimeout(hop, 0);
+                }
+            }
+        };
+
+        return {
+            ...s,
+            onHighlighted: wrap(s.onHighlighted),
+            onNextClick: s.onNextClick // keep any per-step next behavior (e.g., switchTabStep)
+        };
+    });
+
+    // Register for your loader
     window.PAMS_TOUR_REGISTRY = window.PAMS_TOUR_REGISTRY || {};
-    window.PAMS_TOUR_REGISTRY[PAGE_KEY] = { steps: ALL_STEPS, version: "v1" };
+    window.PAMS_TOUR_REGISTRY[PAGE_KEY] = { steps: FINAL_STEPS, version: "v1-polished" };
 })();

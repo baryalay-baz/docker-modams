@@ -1,0 +1,52 @@
+﻿.card.divBackground {
+    position: relative;
+    overflow: hidden; /* Ensure the pseudo-element doesn't cause overflow */
+}
+
+    .card.divBackground::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url('../assets/images/brand/FGS_Small4.png');
+        background-repeat: no-repeat;
+        background-position: center; /* Center the background image */
+        background-size: 15%; /* Increase the size by 10% */
+        opacity: 0.5; /* Adjust the opacity to your preference */
+        pointer-events: none; /* Allow interaction with content behind the pseudo-element */
+    }
+
+.tooltip-container {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    color: #333;
+    font-size: 16px;
+    padding: 10px;
+}
+
+.tooltip {
+    visibility: hidden;
+    width: 240px; /* Adjust the width as needed */
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    position: absolute;
+    z-index: 1;
+    top: 125%;
+    left: 50%;
+    margin-left: -120px; /* Half of the width */
+    opacity: 0;
+    transition: opacity 0.3s, visibility 0.3s;
+}
+
+.cardTooltip {
+    padding: 16px;
+}
+
+.tooltip-container:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+}

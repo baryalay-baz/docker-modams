@@ -14,7 +14,7 @@
     <div>
         <h1 class="page-title">@Localizer["StoreDetails"]</h1>
     </div>
-    <div class="ms-auto pageheader-btn" >
+    <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">@Localizer["Dashboard"]</a></li>
             <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Stores" asp-action="Index">@Localizer["Stores"]</a></li>
@@ -40,7 +40,7 @@
     <div class="col-xl col-md-12">
         <a asp-area="Users" asp-controller="Assets" asp-action="Index"
            asp-route-id="@Model.StoreId" asp-route-subCategoryId="0">
-            <div class="card divShadow" data-tour="sd.registered">
+            <div class="card divShadow--xs" data-tour="sd.registered">
                 <div class="card-body">
                     <div class="row">
                         <div class="col-7">
@@ -62,7 +62,7 @@
     </div>
     <div class="col-xl col-md-12">
         <a asp-area="Users" asp-controller="Transfers" asp-action="ReceivedAssets" asp-route-id="@Model.StoreId">
-            <div class="card divShadow" data-tour="sd.received">
+            <div class="card divShadow--xs" data-tour="sd.received">
                 <div class="card-body">
                     <div class="row">
                         <div class="col-7">
@@ -83,7 +83,7 @@
     </div>
     <div class="col-xl col-md-12">
         <a asp-area="Users" asp-controller="Transfers" asp-action="TransferredAssets" asp-route-id="@Model.StoreId">
-            <div class="card divShadow" data-tour="sd.transfered">
+            <div class="card divShadow--xs" data-tour="sd.transfered">
                 <div class="card-body">
                     <div class="row">
                         <div class="col-7">
@@ -104,7 +104,7 @@
     </div>
     <div class="col-xl col-md-12">
         <a asp-area="Users" asp-controller="Home" asp-action="UnderConstruction">
-            <div class="card divShadow" data-tour="sd.handover">
+            <div class="card divShadow--xs" data-tour="sd.handover">
                 <div class="card-body">
                     <div class="row">
                         <div class="col-7">
@@ -125,7 +125,7 @@
     </div>
     <div class="col-xl col-md-12">
         <a asp-area="Users" asp-controller="Disposals" asp-action="Index">
-            <div class="card divShadow" data-tour="sd.disposal">
+            <div class="card divShadow--xs" data-tour="sd.disposal">
                 <div class="card-body">
                     <div class="row">
                         <div class="col-7">
@@ -145,10 +145,10 @@
         </a>
     </div>
     <div class="col-xl col-md-12">
-        <div class="card divShadow" data-tour="sd.balance">
+        <div class="card divShadow--xs" data-tour="sd.balance">
             <div class="card-body">
                 <div class="row">
-                    <div class="col-7" >
+                    <div class="col-7">
                         <h6 class="text-bold text-muted">@Localizer["Balance"]</h6>
                         <span class="text-muted text-bold">@Model.GetBalance()</span>
                     </div>
@@ -181,16 +181,19 @@
                             }
 
                         }
-                        <div class="mb-4">
+
+                        <div class="toolbar d-flex align-items-center gap-2 flex-wrap mb-2">
                             <a asp-area="Users" asp-controller="Assets" asp-action="CreateAsset"
-                               asp-route-id="@Model.StoreId" data-tour="sd.register"
-                               class="btn btn-info-gradient trShadow @sDisabled">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-inner-icn text-white" enable-background="new 0 0 24 24" viewBox="0 0 24 24"><path d="M16,11.5h-3.5V8c0-0.276123-0.223877-0.5-0.5-0.5S11.5,7.723877,11.5,8v3.5H8c-0.276123,0-0.5,0.223877-0.5,0.5s0.223877,0.5,0.5,0.5h3.5v3.5005493C11.5001831,16.2765503,11.723999,16.5001831,12,16.5h0.0006104C12.2765503,16.4998169,12.5001831,16.276001,12.5,16v-3.5H16c0.276123,0,0.5-0.223877,0.5-0.5S16.276123,11.5,16,11.5z M12,2C6.4771729,2,2,6.4771729,2,12s4.4771729,10,10,10c5.5202026-0.0062866,9.9937134-4.4797974,10-10C22,6.4771729,17.5228271,2,12,2z M12,21c-4.9705811,0-9-4.0294189-9-9s4.0294189-9,9-9c4.9682617,0.0056152,8.9943848,4.0317383,9,9C21,16.9705811,16.9705811,21,12,21z" /></svg>
-                                @Localizer["NewAsset"]
+                               asp-route-id="@Model.StoreId"
+                               class="btn-app @sDisabled"
+                               data-tour="assets.create" title="@Localizer["Create new asset"]">
+                                <i class="fa-solid fa-circle-plus btn-icon" aria-hidden="true"></i>
+                                <span>@Localizer["NewAsset"]</span>
                             </a>
                         </div>
-                        <table id="tblCategories" class="table text-nowrap mb-0 table-bordered border-top border-bottom divShadow" data-tour="sd.summary">
-                            <thead class="bg-primary-gradient ms-auto divShadow">
+
+                        <table id="tblCategories" class="table text-nowrap mb-0 table-bordered border-top border-bottom divShadow--xs" data-tour="sd.summary">
+                            <thead class="bg-primary-gradient ms-auto divShadow--xs">
                                 <tr>
                                     <th class="text-white">@Localizer["Category"]</th>
                                     <th class="text-white">@Localizer["SubCategory"]</th>
@@ -296,7 +299,7 @@
 
 <section id="dvChartData" style="display:none;"></section>
 @section scripts {
-    
+
     <script src="~/assets/plugins/c3-0.7.20/d3-5.8.2.min.js"></script>
     <script src="~/assets/plugins/c3-0.7.20/c3.min.js"></script>
 
@@ -307,6 +310,6 @@
             subcategoryAssets: @Html.Raw(jsonData)
         };
     </script>
-   
+
     <script src="~/js/store-details.js"></script>
 }
