@@ -250,8 +250,8 @@
                 </div>
                 <div class="row p-5">
                     <div class="btn-list">
-                        <button id="btnSubmit" class="btn btn-info"><i class="fa fa-save"></i>&nbsp;@Localizer["SaveChanges"]</button>
-                        <a asp-action="Index" asp-controller="Assets" asp-route-id="@Model.StoreId" id="btnCancel" class="btn btn-gray"><i class="fa fa-close"></i>&nbsp;@Localizer["Cancel"]</a>
+                        <button id="btnSubmit" class="btn btn-info" data-tour="ea.submit"><i class="fa fa-save"></i>&nbsp;@Localizer["SaveChanges"]</button>
+                        <a data-tour="ea.cancel" asp-action="Index" asp-controller="Assets" asp-route-id="@Model.StoreId" id="btnCancel" class="btn btn-gray"><i class="fa fa-close"></i>&nbsp;@Localizer["Cancel"]</a>
                     </div>
                 </div>
             </div>
@@ -265,152 +265,18 @@
 @section scripts {
     <script src="~/assets/plugins/bootstrap-datepicker/js/datepicker.js"></script>
     <script src="~/js/tutor/tips/assets-editasset.js"></script>
+
     <script>
-        $(document).ready(() => {
-            hideMenu();
-            checkIfVehiclesSelected();
-
-            $('.select2').select2();
-
-            $("#btnSubmit").on("click", () => {
-                $("#frmAsset").submit();
-            });
-            loadCategories();
-
-            $("#CategoryId").on("change", () => {
-                checkIfVehiclesSelected();
-                populateCmbSubCategory();
-            });
-
-            $('.picker').datepicker({
-                autoclose: true,
-                format: 'dd-MM-yyyy',
-                todayHighlight: true
-            });
-
-        });
-
-        const checkIfVehiclesSelected = () => {
-            if ($("#CategoryId").val() == "16") {
-                $("#dvVehicleIdentification").show();
-                $("#Engine").val("@Model.Engine");
-                $("#Chasis").val("@Model.Chasis");
-                $("#Plate").val("@Model.Plate");
-            } else {
-                $("#Engine").val("-");
-                $("#Chasis").val("-");
-                $("#Plate").val("-");
-                $("#dvVehicleIdentification").hide();
-            }
-        }
-
         
-        const getCategoryId = () => {
-            var id = $("#SubCategoryId").val();
-            var sData = $("#dvSubCategoryData").html();
-            var nCategId = 0;
-
-            var result = tryParseJson(sData, "Sub Category Data")
-
-            if (result.status === "success") {
-                var data = result.data;
-                data.forEach((e) => {
-                    if (e.Id == id) {
-                        nCategId = e.CategoryId;
-                    }
-                });
-            }
-            
-            return nCategId;
-        }
-        const loadCategories = () => {
-            var postData = {};
-            $.ajax({
-                url: '/Users/Assets/GetCategories',
-                datatype: "json",
-                data: postData,
-                beforeSend: function () {
-
-                },
-                success: function (response) {
-                    if (response.success) {
-                        $("#dvCategoryData").html(response.data);
-                    } else {
-                        showErrorMessageJs(response.message);
-                    }
-                },
-                error: function (xhr, status, error) {
-                    showErrorMessageJs(`Error loading categories data: ${error}`);
-                },
-                complete: function () {
-                    loadSubCategories();
-                }
-            });
-        }
-        const loadSubCategories = (id) => {
-            var postData = {};
-            if (id != null)
-                postData = { id: id }
-
-            $.ajax({
-                url: '/Users/Assets/GetSubCategories',
-                datatype: "json",
-                data: postData,
-                beforeSend: function () {
-                },
-                success: function (response) {
-                    if (response.success) {
-                        $("#dvSubCategoryData").html(response.data);
-                    } else {
-                        showErrorMessageJs(response.message);
-                    }
-                },
-                complete: function () {
-                    //This is not required in EditAsset View
-                    //populateCmbSubCategory();
-                }
-            });
-        }
-        const populateCmbCategory = () => {
-            var sData = $("#dvCategoryData").html();
-            var result = tryParseJson(sData, "Categories");
-
-            var isSomali = getCurrentLanguage() === "so" ? true : false;
-
-            if (result.status === "success") {
-                const data = result.data;
-
-                var sHtml = `<option selected disabled>-${isSomali ? 'Dooro Qayb' : 'Select Category'}-</option>`;
-
-                data.forEach((e) => {
-                    sHtml += `<option value="${e.Id}">${isSomali ? e.CategoryNameSo : e.CategoryName}</option>`;
-                })
-
-                $("#CategoryId").html("").html(sHtml);
-            } else {
-                showErrorMessageJs(result.message);
-            }
-        }
-        const populateCmbSubCategory = () => {
-            var id = $("#CategoryId").val();
-            var sData = $("#dvSubCategoryData").html();
-            var isSomali = getCurrentLanguage() === "so" ? true : false;
-
-            var result = tryParseJson(sData, "Sub Categories");
-
-            var sHtml = `<option disabled>-${isSomali ? 'Dooro Qayb-hoosaad' : 'Select Sub-Category'}-</option>`;
-
-            if (result.status === "success") {
-                const data = result.data;
-                data.forEach((e) => {
-                    if (e.CategoryId == id)
-                        sHtml+= `<option value="${e.Id}">${isSomali ? e.SubCategoryNameSo : e.SubCategoryName}</option>`;
-                });
-                $("#SubCategoryId").html("").html(sHtml);
-            } else {
-                showErrorMessageJs(result.message);
-            }
-        }
-
+        window.PAMS_EDIT_ASSET = {
+            engine: "@Model.Engine",
+            chasis: "@Model.Chasis",
+            plate: "@Model.Plate",
+            categoryId: "@Model.CategoryId",
+            subCategoryId: "@Model.SubCategoryId"
+        };
     </script>
+
+    <!-- Your new page script -->
+    <script src="~/js/assets-editasset.js"></script>
 }

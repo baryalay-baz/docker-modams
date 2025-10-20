@@ -252,4 +252,10 @@
   <data name="EditAsset" xml:space="preserve">
     <value>Tafatir Hanti</value>
   </data>
+  <data name="AssetDocuments" xml:space="preserve">
+    <value>Dukumiintiyada Hantida</value>
+  </data>
+  <data name="AssetPictures" xml:space="preserve">
+    <value>Sawirrada Hantida</value>
+  </data>
 </root>

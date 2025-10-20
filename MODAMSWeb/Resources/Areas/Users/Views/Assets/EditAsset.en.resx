@@ -252,4 +252,10 @@
   <data name="EditAsset" xml:space="preserve">
     <value>Edit Asset</value>
   </data>
+  <data name="AssetDocuments" xml:space="preserve">
+    <value>Asset Documents</value>
+  </data>
+  <data name="AssetPictures" xml:space="preserve">
+    <value>Asset Pictures</value>
+  </data>
 </root>

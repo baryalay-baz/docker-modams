@@ -233,6 +233,17 @@
                     ),
                     side: 'top'
                 }
+            },
+            {
+                element: '[data-tour="ea.cancel"]',
+                popover: {
+                    title: t('Cancel Changes', 'Jooji Isbedelada'),
+                    description: t(
+                        'Cancel all the changes made.',
+                        'Jooji dhammaan isbeddelladii la sameeyay.'
+                    ),
+                    side: 'top'
+                }
             }
         ]
     };

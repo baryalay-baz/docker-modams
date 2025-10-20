@@ -1,9 +1,40 @@
-﻿@* @using Microsoft.AspNetCore.Mvc.Localization
-@inject IViewLocalizer Localizer *@
+﻿@using System.Globalization
+@using System.Text.Json
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    
+    @{
+        var tokens = Antiforgery.GetAndStoreTokens(ViewContext.HttpContext);
+        var bridge = new
+        {
+            culture = CultureInfo.CurrentUICulture.Name, // e.g., "so-SO" or "en-US"
+            cultureTwoLetter = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName, // "so" | "en"
+            user = new
+            {
+                name = User?.Identity?.Name ?? "",
+                isAuthenticated = User?.Identity?.IsAuthenticated ?? false
+            },
+            basePath = Url.Content("~/"),
+            antiForgery = new
+            {
+                headerName = tokens.HeaderName,
+                requestToken = tokens.RequestToken
+            },
+            nowUtc = DateTime.UtcNow
+        };
+    }
+    
+    <script>
+        window.PAMS = window.PAMS || {};
+        // One canonical bridge object, JSON-serialized server-side (prevents XSS string concat bugs)
+        window.PAMS.bridge = @Html.Raw(JsonSerializer.Serialize(bridge));
+        
+    </script>
+
+    <meta name="request-verification-token" content="@tokens.RequestToken" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -135,24 +166,34 @@
     <script src="~/assets/plugins/p-scroll/perfect-scrollbar.js"></script>
     <script src="~/assets/js/form-validation.js"></script>
     <script src="~/assets/js/sticky.js"></script>
-    <partial name="_ValidationScriptsPartial" />
-    <partial name="_Notification" />
-    @await RenderSectionAsync("Scripts", required: false)
     <script src="~/assets/js/themeColors.js"></script>
     <script src="~/assets/js/custom.js"></script>
     <script src="~/js/kendo-ui-license.js"></script>
     <script src="~/assets/plugins/moment/moment.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/umd/popper.min.js"></script>
-    
     <script src="https://unpkg.com/feather-icons"></script>
 
     <!-- Driver.js + Registry -->
     <script src="https://cdn.jsdelivr.net/npm/driver.js@latest/dist/driver.js.iife.js"></script>
+    
     <!-- PAMS Tours -->
-    <script src="~/js/tours-loader.js"></script>
+    <script src="~/js/tours-loader.js" asp-append-version="true"></script>
     @* <script src="~/js/tours/pams-tutor.js"></script> *@
-    <script src="~/js/tutor/pams-tutor-core.js"></script>
-    <script src="~/js/custom_script_layout.js"></script>
+    <script src="~/js/tutor/pams-tutor-core.js" asp-append-version="true"></script>
+    <script src="~/js/layout.js" asp-append-version="true"></script>
+
+    <partial name="_ValidationScriptsPartial" />
+    <partial name="_Notification" />
+
+    @if (IsSectionDefined("scripts"))
+    {
+        @await RenderSectionAsync("scripts", required: false)
+    }
+    else if (IsSectionDefined("Scripts"))
+    {
+        @await RenderSectionAsync("Scripts", required: false)
+    }
+    
     
 
 </body>
