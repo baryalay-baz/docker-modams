@@ -6,6 +6,10 @@
 @using System.Globalization
 
 @{
+    ViewData["TourPageKey"] = "Transfers/PreviewTransfer";
+}
+
+@{
     bool _isSomali = CultureInfo.CurrentCulture.Name == "so" ? true : false;
 }
 <style>

@@ -2,6 +2,10 @@
 @inject IViewLocalizer Localizer
 @model List<MODAMS.Models.ViewModels.Dto.NotificationDTO>
 
+@{
+    ViewData["TourPageKey"] = "Home/AllNotifications";
+}
+
 <style>
     /* CSS styles can also be placed in an external stylesheet */
     .colored-row {
@@ -43,7 +47,7 @@
 
                                     //bgClass = item.IsViewed ? "" : "text-bold";
                                     <a href="/Users/Home/NotificationDirector/@item.Id">
-                                        <div class="row @bgClass mb-3 p-3 table-bordered">
+                                        <div class="row @bgClass mb-3 p-3 table-bordered divShadow--xs">
                                             <div class="col-md-1 text-center">
 
                                                 <div class="avatar-container avatar-lg me-4">

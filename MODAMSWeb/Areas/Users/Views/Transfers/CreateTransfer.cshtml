@@ -1,7 +1,11 @@
 ﻿@using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer Localizer
-
 @model MODAMS.Models.ViewModels.Dto.TransferCreateDTO
+
+@{
+    ViewData["TourPageKey"] = "Transfers/CreateTransfer";
+}
+
 <style>
     input[type="date"]::-webkit-calendar-picker-indicator {
         display: none;

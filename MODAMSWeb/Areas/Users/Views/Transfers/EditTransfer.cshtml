@@ -2,6 +2,11 @@
 @inject IViewLocalizer Localizer
 
 @model MODAMS.Models.ViewModels.Dto.TransferEditDTO
+
+@{
+    ViewData["TourPageKey"] = "Transfers/EditTransfer";
+}
+
 <style>
     input[type="date"]::-webkit-calendar-picker-indicator {
         display: none;

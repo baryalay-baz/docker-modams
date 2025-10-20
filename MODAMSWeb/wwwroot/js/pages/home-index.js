@@ -2,13 +2,16 @@
 (function ($, window, document) {
     "use strict";
 
+    // Use your utils namespace (alias)
+    const U = window.PAMS?.util || {};
+
     // -------------------------
     // News Ticker (duplicate for seamless scroll)
     // -------------------------
     function initNewsTicker() {
-        var $track = $("#newsTicker");
+        const $track = $("#newsTicker");
         if ($track.length === 0) return;
-        if ($track.data("cloned")) return;      // prevent double-clone on partial reloads
+        if ($track.data("cloned")) return; // prevent double-clone on partial reloads
         $track.html($track.html() + $track.html());
         $track.data("cloned", true);
     }
@@ -18,43 +21,48 @@
     // -------------------------
     function initClickableRows() {
         $(document).on("click", ".clickable-row", function () {
-            var href = $(this).data("href");
+            const href = $(this).data("href");
             if (href) window.location = href;
         });
     }
 
     // -------------------------
-    // Your DataTable helper (unchanged)
+    // DataTable helper (prefer utils, fallback to legacy global)
     // -------------------------
     function initDataTable() {
-        if (typeof makeDataTable === "function") {
-            makeDataTable("#tblCategories", "1");
+        const make = U.makeDataTable || window.makeDataTable;
+        if (typeof make === "function") {
+            make("#tblCategories", "1");
+        } else {
+            U.log?.("DataTable init skipped: makeDataTable not found");
         }
     }
 
     // -------------------------
-    // C3 Pie (exactly like your initial one)
+    // C3 Pie (same output, with guards)
     // -------------------------
-    var chart = null;
+    let chart = null;
 
     function renderPie() {
-        var rows = (window.dashData && window.dashData.categoryAssets) || [];
+        U.assert?.(!!window.c3, "c3 missing for home-index pie");
+
+        const rows = (window.dashData && window.dashData.categoryAssets) || [];
         if (!Array.isArray(rows) || rows.length === 0) return;
 
-        // Build the same data shape you had
-        var dataObj = {};
-        var labels = [];
-        rows.forEach(function (e) {
+        // Build data object & labels
+        const dataObj = {};
+        const labels = [];
+        rows.forEach(e => {
             labels.push(e.categoryName);
             dataObj[e.categoryName] = e.totalAssets;
         });
 
-        // Destroy previous chart if any (safe)
+        // Destroy previous chart if any
         if (chart && chart.destroy) {
-            try { chart.destroy(); } catch (e) { }
+            try { chart.destroy(); } catch (_) { /* ignore */ }
         }
 
-        // Generate chart — legend hidden (we’ll build our own like your original)
+        // Generate chart
         chart = c3.generate({
             bindto: "#chart",
             data: {
@@ -62,9 +70,7 @@
                 keys: { value: labels },
                 type: "pie"
             },
-            pie: {
-                label: { show: true }
-            },
+            pie: { label: { show: true } },
             legend: { show: false },
             color: {
                 pattern: [
@@ -73,70 +79,71 @@
                     "#9467bd", "#c5b0d5"
                 ]
             },
-            size: { height: 380 },            // keep the size you liked
+            size: { height: 380 },
             transition: { duration: 300 },
             tooltip: {
                 grouped: false,
                 format: {
                     value: function (value, ratio/*, id*/) {
-                        var pct = (ratio * 100).toFixed(1);
+                        const pct = (ratio * 100).toFixed(1);
                         return value + " (" + pct + "%)";
                     }
                 }
             }
         });
 
-        // Build a simple custom legend like your original code
         buildLegend(labels);
     }
 
     function buildLegend(labels) {
-        var host = document.getElementById("chart");
-        if (!host) return;
+        const host = document.getElementById("chart");
+        if (!host || !chart) return;
 
-        // Create (or reuse) a sibling legend div immediately after #chart
-        var legendId = "categoryLegend";
-        var legend = document.getElementById(legendId);
+        const legendId = "categoryLegend";
+        let legend = document.getElementById(legendId);
         if (!legend) {
             legend = document.createElement("div");
             legend.id = legendId;
-            legend.className = "legend w-100 text-center p-2"; // same classes you used
+            legend.className = "legend w-100 text-center p-2";
             host.insertAdjacentElement("afterend", legend);
         } else {
-            legend.innerHTML = ""; // reset
+            legend.innerHTML = "";
         }
 
-        // Build items
-        labels.forEach(function (id) {
-            var span = document.createElement("span");
+        labels.forEach(id => {
+            const span = document.createElement("span");
             span.setAttribute("data-id", id);
             span.textContent = id;
 
-            // basic styling like your original (background per series color)
+            // style to match your original
             span.style.display = "inline-block";
             span.style.padding = "3px 6px";
             span.style.margin = "0 4px 4px 0";
             span.style.color = "#fff";
             span.style.borderRadius = "6px";
-            span.style.backgroundColor = chart.color(id); // <- c3 series color
+            span.style.backgroundColor = chart.color(id);
 
-            // c3 interactions (focus/revert/toggle)
-            span.addEventListener("mouseover", function () { chart.focus(id); });
-            span.addEventListener("mouseout", function () { chart.revert(); });
-            span.addEventListener("click", function () { chart.toggle(id); });
+            span.addEventListener("mouseover", () => chart.focus(id));
+            span.addEventListener("mouseout", () => chart.revert());
+            span.addEventListener("click", () => chart.toggle(id));
 
             legend.appendChild(span);
         });
     }
 
     // -------------------------
-    // Init (document ready)
+    // Init (use utils-ready, not jQuery ready)
     // -------------------------
-    $(function () {
+    function init(/* ctx */) {
+        if (!U) return console.error("[PAMS] utils not loaded.");
+        // sanity checks (optional but nice during dev)
+        U.assert?.(!!$, "jQuery missing on home-index");
         initNewsTicker();
         initClickableRows();
         initDataTable();
         renderPie();
-    });
+    };
+
+    window.PAMS?.pages?.register && window.PAMS.pages.register("Home/Index", init);
 
 })(jQuery, window, document);

@@ -2,6 +2,11 @@
 @using System.Globalization
 @inject IViewLocalizer Localizer
 @model MODAMS.Models.ViewModels.Dto.DepartmentHeadsDTO
+
+@{
+    ViewData["TourPageKey"] = "Departments/DepartmentHeads";
+}
+
 <style>
     .custom-row {
         margin-right: -20px;

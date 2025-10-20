@@ -19,6 +19,15 @@
         }
     };
 
+    U.pageKey = function () {
+        // try primary key, then your fallback attr
+        return (
+            document.body.getAttribute("data-page") ||
+            document.body.getAttribute("data-page-fallback") ||
+            ""
+        );
+    };
+
     // ----- Bridge access (safe alias) -----
     U.bridge = function () {
         return (window.PAMS && window.PAMS.bridge) || {};
@@ -27,11 +36,19 @@
     // (Optional) One-liner for CSRF headers (if you like calling per-request)
     U.csrfHeader = function () {
         const b = U.bridge();
-        const token = b.antiForgery?.requestToken
-            || document.querySelector('meta[name="request-verification-token"]')?.content
-            || "";
-        const name = b.antiForgery?.headerName || "RequestVerificationToken";
+        const token =
+            b.antiForgery?.token ||
+            document.querySelector('meta[name="request-verification-token"]')?.content ||
+            "";
+        const name = b.antiForgery?.header || "RequestVerificationToken";
         return token ? { [name]: token } : {};
+    };
+    U.debounce = function (fn, wait = 150) {
+        let t = null;
+        return function (...args) {
+            clearTimeout(t);
+            t = setTimeout(() => fn.apply(this, args), wait);
+        };
     };
 
     // Logger (centralized)
@@ -248,6 +265,26 @@
         $(".js-notification").html(sHtml);
     };
 
+    // ---------- Numbers ----------
+    U.formatNumber = function (x, opts) {
+        const n = Number(x);
+        if (!isFinite(n)) return "0";
+        // defaults to 2 decimals; caller can override
+        const o = Object.assign({ minimumFractionDigits: 2, maximumFractionDigits: 2 }, opts);
+        return n.toLocaleString(undefined, o);
+    };
+
+    U.formatInt = function (x) {
+        const n = Number(x);
+        if (!isFinite(n)) return "0";
+        return n.toLocaleString();
+    };
+
+    // ---------- Strings ----------
+    U.escapeRegex = function (s) {
+        return String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    };
+
     // ---------- Backward compatibility (old globals) ----------
     w.tryParseJson = U.tryParseJson;
     w.formatTables = U.formatTables;
@@ -264,5 +301,8 @@
     w.showSuccessMessageJs = U.showSuccessMessageJs;
     w.log = U.log;
     w.lang = U.lang;
+    w.formatNumber = U.formatNumber;
+    w.formatInt = U.formatInt;
+    w.escapeRegex = U.escapeRegex;
 
 })(window, window.jQuery);

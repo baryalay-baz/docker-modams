@@ -3,6 +3,11 @@
 @inject IViewLocalizer Localizer
 
 @model List<MODAMS.Models.ViewModels.Dto.TransfersIncomingAssetDTO>
+
+@{
+    ViewData["TourPageKey"] = "Transfers/ReceivedAssets";
+}
+
 <div class="page-header">
     <div>
         <h1 class="page-title">@Localizer["ReceivedAssets"]</h1>
