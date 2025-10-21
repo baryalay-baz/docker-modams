@@ -199,12 +199,8 @@
 
     // ---------- Sidebar Toggle ----------
     U.hideMenu = function () {
-        const c = document.body.classList;
-        if (c.contains("sidenav-toggled")) {
-            c.remove("sidenav-toggled"); // close
-        } else {
-            c.add("sidenav-toggled"); // open
-        }
+        const root = document.querySelector('.app') || document.body; // fallback just in case
+        root.classList.toggle('sidenav-toggled');
     };
 
     // ---------- Notifications ----------
@@ -295,7 +291,7 @@
     w.styleDataTableButtonsAndPagination = U.styleDataTableButtonsAndPagination;
     w.applyRowStyles = U.applyRowStyles;
     w.formattedDate = U.formattedDate;
-    w.hideMenu = U.hideMenu; // <- important for legacy calls
+    w.hideMenu = U.hideMenu;
     w.Notify = U.Notify;
     w.showErrorMessageJs = U.showErrorMessageJs;
     w.showSuccessMessageJs = U.showSuccessMessageJs;
@@ -304,5 +300,6 @@
     w.formatNumber = U.formatNumber;
     w.formatInt = U.formatInt;
     w.escapeRegex = U.escapeRegex;
+    w.U = U;
 
 })(window, window.jQuery);
