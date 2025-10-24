@@ -3,7 +3,7 @@
     "use strict";
 
     // Use your utils namespace (alias)
-    const U = window.PAMS?.util || {};
+    const U = window.AMS?.util || {};
 
     // -------------------------
     // News Ticker (duplicate for seamless scroll)
@@ -94,7 +94,6 @@
 
         buildLegend(labels);
     }
-
     function buildLegend(labels) {
         const host = document.getElementById("chart");
         if (!host || !chart) return;
@@ -135,15 +134,14 @@
     // Init (use utils-ready, not jQuery ready)
     // -------------------------
     function init(/* ctx */) {
-        if (!U) return console.error("[PAMS] utils not loaded.");
-        // sanity checks (optional but nice during dev)
-        U.assert?.(!!$, "jQuery missing on home-index");
+        if (!U) return console.error("[AMS] utils not loaded.");
+       
         initNewsTicker();
         initClickableRows();
         initDataTable();
         renderPie();
     };
 
-    window.PAMS?.pages?.register && window.PAMS.pages.register("Home/Index", init);
+    window.AMS?.pages?.register && window.AMS.pages.register("Home/Index", init);
 
 })(jQuery, window, document);

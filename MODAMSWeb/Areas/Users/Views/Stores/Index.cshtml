@@ -167,8 +167,16 @@
 <partial name="_AssetReport.cshtml" model="Model.dtoReporting" />
 
 <div id="dvStoreList" style="display:none;"></div>
-<section id="dvStoresData" style="display:none;">@Json.Serialize(Model.vwStores)</section>
-<section id="dvStoreEmployeesData" style="display:none;">@Json.Serialize(Model.storeEmployees)</section>
+@* <section id="dvStoresData" style="display:none;">@Json.Serialize(Model.vwStores)</section>
+<section id="dvStoreEmployeesData" style="display:none;">@Json.Serialize(Model.storeEmployees)</section> *@
 @section scripts {
+
+    <script>
+        window.data = {
+            storesData: '@Html.Raw(Json.Serialize(Model.vwStores))',
+            storeEmployeesData: '@Html.Raw(Json.Serialize(Model.storeEmployees))'
+        };
+    </script>
+
     <script src="~/js/pages/stores-index.js"></script>
 }

@@ -1,125 +1,92 @@
 ﻿// /wwwroot/js/pages/store-details.js
 (function ($, window, document) {
     "use strict";
+    const AMS = window.AMS || (window.AMS = {});
+    const U = AMS.util || (AMS.util = {});
 
-    // Run after DOM is ready
-    $(function () {
-        // --- clickable rows (idempotent) ---
+    function init(/*ctx*/) {
+        U.hideMenu();
+        wireClickableRows();
+        renderPie();
+    }
+
+    function wireClickableRows() {
         $(document)
-            .off("click.pamsRow")
-            .on("click.pamsRow", ".clickable-row", function () {
-                var href = $(this).data("href");
+            .off("click.subCategoryRow")
+            .on("click.subCategoryRow", ".clickable-row", function () {
+                const href = $(this).data("href");
                 if (href) window.location = href;
             });
+    }
 
-        // --- optionally hide/toggle menu on load (keep if you actually want this) ---
-        var hideMenuFn =
-            (window.PAMS && window.PAMS.util && window.PAMS.util.hideMenu) ||
-            (window.U && window.U.hideMenu) ||
-            window.hideMenu;
-        if (typeof hideMenuFn === "function") {
-            // uncomment if you want to auto-toggle on page load:
-            // hideMenuFn();
-        }
+    function renderPie() {
+        const dataRoot = window.storeDetailsData || {};
+        const rows = dataRoot.subcategoryAssets || [];
+        if (!Array.isArray(rows) || rows.length === 0) return;
+        if (!window.c3 || !document.getElementById("chart")) return;
 
-        // --- chart ---
-        var chart = null;
+        const get = (o, k1, k2) => (o && o[k1] != null ? o[k1] : o?.[k2]);
+        const dataObj = {};
+        const labels = [];
 
-        function renderPie() {
-            var dataRoot = window.storeDetailsData || {};
-            var rows = dataRoot.subcategoryAssets || [];
-            if (!Array.isArray(rows) || rows.length === 0) return;
-            if (!window.c3 || !document.getElementById("chart")) return;
+        rows.forEach(e => {
+            const label = get(e, "subCategoryName", "SubCategoryName");
+            const value = +get(e, "totalAssets", "TotalAssets");
+            if (!label) return;
+            labels.push(label);
+            dataObj[label] = value;
+        });
 
-            // camelCase/PascalCase helper
-            function get(o, k1, k2) {
-                return o && o[k1] != null ? o[k1] : (o ? o[k2] : undefined);
+        // create chart...
+        const chart = c3.generate({
+            bindto: "#chart",
+            data: { json: [dataObj], keys: { value: labels }, type: "pie" },
+            pie: { label: { show: true } },
+            legend: { show: false },
+            size: { height: 380 },
+            transition: { duration: 300 },
+            tooltip: {
+                grouped: false,
+                format: { value: (v, r) => `${v} (${(r * 100).toFixed(1)}%)` }
             }
+        });
 
-            var dataObj = {};
-            var labels = [];
-
-            rows.forEach(function (e) {
-                var label = get(e, "subCategoryName", "SubCategoryName");
-                var value = +get(e, "totalAssets", "TotalAssets");
-                if (!label) return;
-                labels.push(label);
-                dataObj[label] = value;
-            });
-
-            // Destroy previous chart if any
-            if (chart && typeof chart.destroy === "function") {
-                try { chart.destroy(); } catch (e) { /* ignore */ }
-            }
-
-            chart = c3.generate({
-                bindto: "#chart",
-                data: { json: [dataObj], keys: { value: labels }, type: "pie" },
-                pie: { label: { show: true } },
-                legend: { show: false }, // custom legend below
-                color: {
-                    pattern: [
-                        "#1f77b4", "#aec7e8", "#ff7f0e", "#ffbb78",
-                        "#2ca02c", "#98df8a", "#d62728", "#ff9896",
-                        "#9467bd", "#c5b0d5", "#8c564b", "#c49c94",
-                        "#e377c2", "#f7b6d2", "#7f7f7f", "#c7c7c7",
-                        "#bcbd22", "#dbdb8d", "#17becf", "#9edae5"
-                    ]
-                },
-                size: { height: 380 },
-                transition: { duration: 300 },
-                tooltip: {
-                    grouped: false,
-                    format: {
-                        value: function (v, ratio) { return v + " (" + (ratio * 100).toFixed(1) + "%)"; }
-                    }
-                }
-            });
-
-            buildLegend(labels);
+        buildLegend(chart, labels);
+    }
+    function buildLegend(chart, labels) {
+        const host = document.getElementById("chart");
+        if (!host || !chart) return;
+        let legend = document.getElementById("storeLegend");
+        if (!legend) {
+            legend = document.createElement("div");
+            legend.id = "storeLegend";
+            legend.className = "legend w-100 text-center p-2";
+            host.insertAdjacentElement("afterend", legend);
+        } else {
+            legend.innerHTML = "";
         }
-
-        function buildLegend(labels) {
-            var host = document.getElementById("chart");
-            if (!host || !chart) return;
-
-            var legendId = "storeLegend";
-            var legend = document.getElementById(legendId);
-            if (!legend) {
-                legend = document.createElement("div");
-                legend.id = legendId;
-                legend.className = "legend w-100 text-center p-2";
-                host.insertAdjacentElement("afterend", legend);
-            } else {
-                legend.innerHTML = "";
-            }
-
-            labels.forEach(function (id) {
-                var span = document.createElement("span");
-                span.setAttribute("data-id", id);
-                span.textContent = id;
-
-                // pill styles
-                span.style.display = "inline-block";
-                span.style.padding = "3px 6px";
-                span.style.margin = "0 2px 2px 0";
-                span.style.color = "#fff";
-                span.style.borderRadius = "6px";
-                span.style.backgroundColor = chart.color(id);
-                span.style.cursor = "pointer";
-                span.style.userSelect = "none";
-
-                // interactions
-                span.addEventListener("mouseover", function () { chart.focus(id); });
-                span.addEventListener("mouseout", function () { chart.revert(); });
-                span.addEventListener("click", function () { chart.toggle(id); });
-
-                legend.appendChild(span);
+        labels.forEach(id => {
+            const pill = document.createElement("span");
+            pill.dataset.id = id;
+            pill.textContent = id;
+            Object.assign(pill.style, {
+                display: "inline-block",
+                padding: "3px 6px",
+                margin: "0 2px 2px 0",
+                color: "#fff",
+                borderRadius: "6px",
+                backgroundColor: chart.color(id),
+                cursor: "pointer",
+                userSelect: "none"
             });
-        }
+            pill.addEventListener("mouseover", () => chart.focus(id));
+            pill.addEventListener("mouseout", () => chart.revert());
+            pill.addEventListener("click", () => chart.toggle(id));
+            legend.appendChild(pill);
+        });
+    }
 
-        // kickoff
-        renderPie();
-    });
+    // Register with your page system
+    AMS.pages?.register && AMS.pages.register("Stores/StoreDetails", init);
 
 })(jQuery, window, document);

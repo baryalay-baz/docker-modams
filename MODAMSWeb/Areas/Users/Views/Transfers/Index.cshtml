@@ -1,7 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Mvc.Localization
 @using System.Globalization
 @inject IViewLocalizer Localizer
-
 @model MODAMS.Models.ViewModels.Dto.TransferDTO
 
 @{
@@ -294,6 +293,8 @@
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/c3@0.7.20/c3.min.css">
 @section scripts {
+    <partial name="_ChartAssets" />
+    <partial name="_DatatablesAssets" />
 
     <script>
         const isSomali = getCurrentLanguage() === 'so';

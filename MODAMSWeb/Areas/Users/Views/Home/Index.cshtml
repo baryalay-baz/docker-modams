@@ -293,12 +293,11 @@
 <link rel="stylesheet" href="~/assets/plugins/c3-0.7.20/c3.min.css" />
 @section scripts {
     
-    <script src="~/assets/plugins/c3-0.7.20/d3-5.8.2.min.js"></script>
-    <script src="~/assets/plugins/c3-0.7.20/c3.min.js"></script>
-
+    <partial name="_ChartAssets" />
+    <partial name="_DatatablesAssets" />
     <script>
         window.dashData = {
-          categoryAssets: @Html.Raw(Json.Serialize(Model.CategoryAssets))
+          categoryAssets: JSON.parse('@Html.Raw(Json.Serialize(Model.CategoryAssets))')
         };
     </script>
 

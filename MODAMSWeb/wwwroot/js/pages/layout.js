@@ -4,12 +4,12 @@
     "use strict";
 
     // --- Dependencies / aliases
-    const U = (w.PAMS && w.PAMS.util) || {};
-    const B = (w.PAMS && w.PAMS.bridge) || {};
+    const U = (w.AMS && w.AMS.util) || {};
+    const B = (w.AMS && w.AMS.bridge) || {};
 
    
     U.assert && U.assert(!!$, "jQuery missing for layout");
-    U.assert && U.assert(!!U.formatTables, "PAMS.util not loaded before layout");
+    U.assert && U.assert(!!U.formatTables, "AMS.util not loaded before layout");
 
     const SEL = {
         globalSearchInput: "#txtGlobalSearch",
@@ -172,8 +172,8 @@
     }
 
     // --- Minimal public API (for debugging / reuse)
-    w.PAMS = w.PAMS || {};
-    w.PAMS.layout = {
+    w.AMS = w.AMS || {};
+    w.AMS.layout = {
         refreshProfile: loadProfileData,
         reloadNotifications: loadNotificationsData,
         clearNotifications: clearNotifications,

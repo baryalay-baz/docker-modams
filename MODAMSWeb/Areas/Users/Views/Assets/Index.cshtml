@@ -61,7 +61,7 @@
                         </select>
                     </div>
                 </div>
-                
+
                 <div class="table-responsive export-table">
                     <table id="tblAssets" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
                         <thead class="bg-primary-gradient ms-auto divShadow">
@@ -151,7 +151,7 @@
                                     </tr>
                                 }
 
-                                if(!isLabeled)
+                                if (!isLabeled)
                                     isLabeled = true;
                             }
                         </tbody>
@@ -183,22 +183,12 @@
 
     <!-- PROJECT-LIST JS-->
     @*<script src="~/assets/js/project-list.js"></script>*@
+    <partial name="_DatatablesAssets" />
     <script>
-        $(document).ready(function () {
-            hideMenu();
-            var selectHtml = $("#divDropDown").html();
-            makeDataTable("#tblAssets", "2");
-            //$('#tblAssets_filter').append(selectHtml);
-
-
-            $('.select2').select2();
-            var sStoreId = '@Model.StoreId';
-            $('#SubCategoryId').on("change", () => {
-                window.location.href = '/Users/Assets/Index/' + sStoreId + '?subCategoryId=' + $("#SubCategoryId").val();
-            });
-
-        });
+        window.data = {
+          storeId: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.StoreId))
+        };
     </script>
-
+    <script src="~/js/pages/assets-index.js"></script>
 
 }

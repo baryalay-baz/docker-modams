@@ -2,10 +2,8 @@
 (function (window, document, $) {
     "use strict";
 
-    const U = window.PAMS?.util || {};
+    const U = window.AMS?.util || {};
     const SEL = {
-        storesJson: "#dvStoresData",
-        employeesJson: "#dvStoreEmployeesData",
         listHost: "#dvMainRow",
         search: "#txtSearchStore",
         select2: ".select2",
@@ -27,39 +25,33 @@
         stores: [],
         employees: []
     };
+
     // ---------- Init ----------
-    //U.ready(() => {
-    //    U.assert?.(!!$, "jQuery missing on stores-index");
-    //    U.assert?.(document.querySelector(SEL.storesJson) !== null, "#dvStoresData not found");
-
-    //    hydrateState();
-    //    bindEvents();
-    //    initSelect2();
-
-    //    renderCards(STATE.stores);
-    //});
     function init(/* ctx */) {
-        U.assert?.(!!$, "jQuery missing on stores-index");
-        U.assert?.(document.querySelector("#dvStoresData") !== null, "#dvStoresData not found");
+        if (!U) return console.error("[AMS] utils not loaded.");
 
         hydrateState();
         bindEvents();
-        initSelect2();
+        //initSelect2();
         renderCards(STATE.stores);
     }
 
-
     // ---------- State hydration ----------
     function hydrateState() {
-        const storesRaw = $(SEL.storesJson).html() || "";
-        if (storesRaw && !/No\s*Records\s*Found/i.test(storesRaw)) {
-            try { STATE.stores = JSON.parse(storesRaw); } catch { STATE.stores = []; }
-        }
-        const empRaw = $(SEL.employeesJson).html() || "";
-        if (empRaw.trim()) {
-            try { STATE.employees = JSON.parse(empRaw); } catch { STATE.employees = []; }
-        }
+        const d = window.data || {};
+
+        STATE.stores = normalizeArray(d.storesData);
+        STATE.employees = normalizeArray(d.storeEmployeesData);
     }
+    function normalizeArray(data) {
+        if (Array.isArray(data)) return data;
+        if (typeof data === "string") {
+            try { const v = JSON.parse(data); return Array.isArray(v) ? v : []; }
+            catch { return []; }
+        }
+        return [];
+    }
+
     // ---------- Events ----------
     function bindEvents() {
         const onSearch = U.debounce ? U.debounce(handleSearch, 150) : handleSearch;
@@ -106,6 +98,7 @@
             $(SEL.select2).select2({ dropdownParent: $(SEL.reportModal) });
         }
     }
+
     // (Re)initialize Bootstrap 5 popovers for any avatar anchors
     function initPopovers() {
         // Dispose old ones first to avoid duplicates when re-rendering
@@ -257,5 +250,5 @@
             .replace(/'/g, "&#39;");
     }
 
-    window.PAMS?.pages?.register && window.PAMS.pages.register("Stores/Index", init);
+    window.AMS?.pages?.register && window.AMS.pages.register("Stores/Index", init);
 })(window, document, jQuery);

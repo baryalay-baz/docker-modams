@@ -8,8 +8,8 @@
     const hasJQ = !!$;
 
     // Namespace
-    const P = w.PAMS = w.PAMS || {};
-    const U = P.util = P.util || {};
+    const AMS = w.AMS = w.AMS || {};
+    const U = AMS.util = AMS.util || {};
 
     U.ready = function (fn) {
         if (document.readyState === "loading") {
@@ -18,7 +18,6 @@
             fn();
         }
     };
-
     U.pageKey = function () {
         // try primary key, then your fallback attr
         return (
@@ -28,19 +27,38 @@
         );
     };
 
+    // assert
+    U.assert = function (condition, message) {
+        const env = (w.AMS && w.AMS.env) || "prod";
+        if (condition) return true;
+
+        if (env === "dev" || env === "development") {
+            console.error("[ASSERT FAIL]", message);
+            throw new Error(message || "Assertion failed");
+        } else {
+            // prod: warn once, don't crash the app
+            U._assertWarned ||= new Set();
+            if (!U._assertWarned.has(message)) {
+                console.warn("[ASSERT]", message);
+                U._assertWarned.add(message);
+            }
+            return false;
+        }
+    };
+
     // ----- Bridge access (safe alias) -----
     U.bridge = function () {
-        return (window.PAMS && window.PAMS.bridge) || {};
+        return (window.AMS && window.AMS.bridge) || {};
     };
        
     // (Optional) One-liner for CSRF headers (if you like calling per-request)
     U.csrfHeader = function () {
         const b = U.bridge();
+        const name =
+            b.antiForgery?.headerName || b.antiForgery?.header || "RequestVerificationToken";
         const token =
-            b.antiForgery?.token ||
-            document.querySelector('meta[name="request-verification-token"]')?.content ||
-            "";
-        const name = b.antiForgery?.header || "RequestVerificationToken";
+            b.antiForgery?.requestToken || b.antiForgery?.token ||
+            document.querySelector('meta[name="request-verification-token"]')?.content || "";
         return token ? { [name]: token } : {};
     };
     U.debounce = function (fn, wait = 150) {
@@ -50,7 +68,6 @@
             t = setTimeout(() => fn.apply(this, args), wait);
         };
     };
-
     // Logger (centralized)
     U.log = function (...args) { console.log("[PAMS]", ...args); };
 
@@ -66,7 +83,7 @@
     // ---------- Tables ----------
     U.formatTables = function () {
         if (!hasJQ) return;
-        $("thead").addClass("bg-info-gradient ms-auto divShadow");
+        $("thead").addClass("bg-info-gradient ms-auto divShadow--xs");
         $("th").addClass("text-white");
     };
 
@@ -88,7 +105,6 @@
         // Keep only one key that matters
         localStorage.setItem("displayMode", isDark ? "dark-mode" : "light-mode");
     };
-
     U._getCurrentLanguageCookie = function () {
         const cookieName = ".AspNetCore.Culture=";
         const part = document.cookie.split("; ").find(row => row.startsWith(cookieName));
@@ -106,7 +122,6 @@
         
     // ---------- Language ----------
     U.getCurrentLanguage = U.lang;
-
 
     // ---------- DataTables Language ----------
     U.getDataTableLanguageOptions = function (languageCode) {
@@ -141,35 +156,104 @@
             searchPlaceholder: "Search..."
         };
     };
-
     // ---------- DataTables Init ----------
-    U.makeDataTable = function (tableName, type = "1", recordsPerPage = 10) {
-        if (!hasJQ || !$.fn.DataTable) return null;
+    U.makeDataTable = function (tableRef, type = "1", recordsPerPage = 10) {
+        if (!window.jQuery || !$.fn || !$.fn.DataTable) {
+            console.error("[AMS] DataTables not loaded.");
+            return null;
+        }
 
-        const currentLanguage = U.getCurrentLanguage();
-        const languageOptions = U.getDataTableLanguageOptions(currentLanguage);
+        // Normalize reference → selector string (required for _wrapper targeting)
+        let sel = null;
 
-        const table = $(tableName).DataTable({
+        // jQuery object?
+        if (tableRef && tableRef.jquery) {
+            sel = tableRef.selector || (() => {
+                // Try id from first element; if missing, assign a temporary id
+                const el = tableRef[0];
+                if (!el) return null;
+                if (!el.id) el.id = "tbl_" + Math.random().toString(36).slice(2, 8);
+                return "#" + el.id;
+            })();
+        }
+        // DOM element?
+        else if (tableRef instanceof Element) {
+            if (!tableRef.id) tableRef.id = "tbl_" + Math.random().toString(36).slice(2, 8);
+            sel = "#" + tableRef.id;
+        }
+        // string selector?
+        else if (typeof tableRef === "string") {
+            sel = tableRef;
+        }
+
+        if (!sel) {
+            console.error("[AMS] makeDataTable: invalid tableRef", tableRef);
+            return null;
+        }
+
+        const $tbl = $(sel);
+        if (!$tbl.length) {
+            console.warn("[AMS] makeDataTable: table not found:", sel);
+            return null;
+        }
+
+        const t = String(type); // be forgiving: accept numbers too
+
+        // If already initialized, rescue + re-place buttons + adjust
+        if ($.fn.DataTable.isDataTable($tbl)) {
+            const api = $tbl.DataTable();
+            try {
+                if (t === "2") {
+                    api.buttons?.().container()
+                        ?.appendTo?.(`${sel}_wrapper .col-md-6:eq(0)`);
+                } else if (t === "3") {
+                    api.buttons?.().container()?.hide?.();
+                } else {
+                    api.buttons?.().container()?.show?.();
+                }
+                api.columns?.adjust?.().draw(false);
+            } catch { /* ignore */ }
+            return api;
+        }
+
+        // Fresh init
+        const currentLanguage = U.getCurrentLanguage?.() ?? "en";
+        const languageOptions = U.getDataTableLanguageOptions?.(currentLanguage) ?? {};
+
+        const api = $tbl.DataTable({
             buttons: ["copy", "excel", "pdf", "colvis"],
             responsive: false,
             pageLength: recordsPerPage,
             language: languageOptions,
+            autoWidth: false,
             initComplete: function () {
-                U.styleDataTableButtonsAndPagination(tableName);
+                try { U.styleDataTableButtonsAndPagination?.(sel); } catch { }
             }
         });
 
-        U.applyRowStyles();
-        table.on("draw.dt", U.applyRowStyles);
+        // Row striping/hover styles
+        try {
+            U.applyRowStyles?.();
+            api.on("draw.dt", U.applyRowStyles);
+        } catch { /* optional */ }
 
-        if (type === "2") {
-            table.buttons().container().appendTo(`${tableName}_wrapper .col-md-6:eq(0)`);
-        } else if (type === "3") {
-            table.buttons().container().hide();
-        }
+        // Button placement modes
+        try {
+            if (t === "2") {
+                api.buttons().container().appendTo(`${sel}_wrapper .col-md-6:eq(0)`);
+            } else if (t === "3") {
+                api.buttons().container().hide();
+            }
+        } catch { /* optional */ }
 
-        return table;
+        // If the table starts hidden (tabs/collapses), adjust on first show
+        $(document).one("shown.bs.tab shown.bs.collapse", function () {
+            try { api.columns.adjust().draw(false); } catch { }
+        });
+
+        return api;
     };
+
 
     U.styleDataTableButtonsAndPagination = function (tableName) {
         if (!hasJQ) return;
@@ -184,7 +268,6 @@
             .addClass("btn-info")
             .css("color", "white");
     };
-
     U.applyRowStyles = function () {
         if (!hasJQ) return;
         $(".even").addClass("bg-light-transparent");
@@ -222,7 +305,6 @@
             autohide: true
         });
     };
-
     U.showErrorMessageJs = function (errorMessage) {
         if (!hasJQ) return;
         const isSomali = U.getCurrentLanguage() === "so";
@@ -241,7 +323,6 @@
       </div>`;
         $(".js-notification").html(sHtml);
     };
-
     U.showSuccessMessageJs = function (successMessage) {
         if (!hasJQ) return;
         const isSomali = U.getCurrentLanguage() === "so";
@@ -269,7 +350,6 @@
         const o = Object.assign({ minimumFractionDigits: 2, maximumFractionDigits: 2 }, opts);
         return n.toLocaleString(undefined, o);
     };
-
     U.formatInt = function (x) {
         const n = Number(x);
         if (!isFinite(n)) return "0";
@@ -300,6 +380,7 @@
     w.formatNumber = U.formatNumber;
     w.formatInt = U.formatInt;
     w.escapeRegex = U.escapeRegex;
+    w.assert = U.assert;
     w.U = U;
 
 })(window, window.jQuery);
