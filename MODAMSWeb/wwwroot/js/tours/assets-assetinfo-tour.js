@@ -1,7 +1,7 @@
 ﻿// wwwroot/js/tours/assets-assetinfo-tour.js
 (function () {
     const PAGE_KEY = "Assets/AssetInfo";
-    const H = (window.PAMS_PAGE && window.PAMS_PAGE.AssetInfo) || {};
+    const H = (window.AMS_PAGE && window.AMS_PAGE.AssetInfo) || {};
     const { forceShowTab, activatePaneForElement, RESUME } = H;
 
     // i18n
@@ -154,6 +154,6 @@
     });
 
     // Register for your loader
-    window.PAMS_TOUR_REGISTRY = window.PAMS_TOUR_REGISTRY || {};
-    window.PAMS_TOUR_REGISTRY[PAGE_KEY] = { steps: FINAL_STEPS, version: "v1-polished" };
+    window.AMS_TOUR_REGISTRY = window.AMS_TOUR_REGISTRY || {};
+    window.AMS_TOUR_REGISTRY[PAGE_KEY] = { steps: FINAL_STEPS, version: "v1-polished" };
 })();

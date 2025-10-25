@@ -1,5 +1,5 @@
 ﻿window.addEventListener("load", () => {
-    console.log("PAMS Tutor initialized ✅");
+    console.log("AMS Tutor initialized ✅");
 
     // 🌍 Bilingual tip dictionary
     const tips = {
@@ -99,7 +99,7 @@
 
     // 🧩 Tooltip container
     const tipBox = document.createElement("div");
-    tipBox.id = "pams-tutor-tip";
+    tipBox.id = "AMS-tutor-tip";
     Object.assign(tipBox.style, {
         position: "absolute",
         background: "#ffffff",

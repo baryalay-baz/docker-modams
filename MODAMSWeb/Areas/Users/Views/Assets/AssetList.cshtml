@@ -25,13 +25,18 @@
         <div class="card divShadow--xs">
             <div class="card-body p-4">
                 <div class="d-flex align-items-center justify-content-between">
-                    <h4 class="m-0">@Model.CategoryName (@Localizer["Count"]: @Model.TotalAssets())</h4>
-                    <select asp-for="@Model.CategoryId" asp-items="@Model.CategorySelectList"
-                            class="form-control select2 form-select">
+                    <h4 class="m-0">
+                        @Model.CategoryName (@Localizer["Count"]: @Model.TotalAssets())
+                    </h4>
+                    <select id="ddlCategoryFilter"
+                            asp-for="@Model.CategoryId"
+                            asp-items="@Model.CategorySelectList"
+                            class="form-control form-select">
                         <option value="0">@Localizer["AllAssets"]</option>
                     </select>
                 </div>
             </div>
+
         </div>
     </div>
     <div class="col-md-12 mb-3">
@@ -61,12 +66,13 @@
                                 string sCounter = "0";
                                 string sBackground = "primary";
                                 string sIdentification = "";
-
+                                string sDataTourString = "data-tour=al.assetinfo";
                                 foreach (var asset in Model.AssetList)
                                 {
                                     nCounter++;
                                     sCounter = (nCounter < 10) ? "0" + nCounter.ToString() : nCounter.ToString();
                                     sIdentification = asset.SubCategory.Category.CategoryName == "Vehicles" ? "Plate: " + asset.Plate : "SN: " + asset.SerialNo;
+                                    sDataTourString = nCounter == 1 ? "data-tour=al.assetinfo" : "";
 
                                     switch (asset.AssetStatusId)
                                     {
@@ -82,7 +88,7 @@
                                     }
                                     <tr>
                                         <td class="text-muted text-center fs-15 fw-semibold">@sCounter.</td>
-                                        <td class="text-muted fs-15 fw-semibold">@(isSomali ? asset.SubCategory.SubCategoryNameSo : asset.SubCategory.SubCategoryName)</td>
+                                        <td class="text-muted fs-15 fw-semibold">@(isSomali? asset.SubCategory.SubCategoryNameSo : asset.SubCategory.SubCategoryName)</td>
                                         <td class="text-muted fs-15 fw-semibold">@asset.Make</td>
                                         <td class="text-muted fs-15 fw-semibold">@asset.Model</td>
                                         <td class="text-muted fs-15 fw-semibold">@asset.Name</td>
@@ -91,15 +97,15 @@
                                         <td class="text-muted fs-15 fw-semibold">
                                             <span class="text-primary">
                                                 <span class="mb-0 mt-1 badge rounded-pill bg-@sBackground-transparent text-@sBackground">
-                                                    @(isSomali ? asset.AssetStatus.StatusNameSo : asset.AssetStatus.StatusName)
+                                                    @(isSomali? asset.AssetStatus.StatusNameSo : asset.AssetStatus.StatusName)
                                                 </span>
                                             </span>
                                         </td>
                                         <td class="text-muted fs-15 fw-semibold">
                                             <div class="d-flex align-items-stretch">
-                                                <a asp-controller="Assets" asp-action="AssetInfo" asp-route-id="@asset.Id"
+                                                <a asp-controller="Assets" asp-action="AssetInfo" asp-route-id="@asset.Id" 
                                                    class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="tooltip" data-bs-original-title="@Localizer["AssetInformation"]">
-                                                    <i class="fe fe-info"></i>
+                                                    <i class="fe fe-info" @Html.Raw(sDataTourString)></i>
                                                 </a>
                                             </div>
                                         </td>
@@ -124,21 +130,6 @@
 </div>
 
 @section scripts {
-
-    <!-- PROJECT-LIST JS-->
-@*<script src="~/assets/js/project-list.js"></script>*@
-    <script>
-        $(document).ready(function () {
-            hideMenu();
-            makeDataTable("#tblAssets","2");
-
-            $('.select2').select2();
-            $('#CategoryId').on("change", ()=>{
-                window.location.href = '/Users/Assets/AssetList/' + $("#CategoryId").val();
-            });
-
-        });
-    </script>
-
-
+    <partial name="_DatatablesAssets" />
+    <script src="~/js/pages/assets-assetlist.js"></script>
 }

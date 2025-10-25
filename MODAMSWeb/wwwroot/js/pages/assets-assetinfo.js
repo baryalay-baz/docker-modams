@@ -72,7 +72,7 @@
 
     // Resume helpers for the tour (session storage)
     const RESUME = {
-        key: "PAMS_TOUR:Assets/AssetInfo:step",
+        key: "AMS_TOUR:Assets/AssetInfo:step",
         save(i) {
             try { sessionStorage.setItem(this.key, String(i)); } catch (_) { }
         },
@@ -191,10 +191,10 @@
         setInitialTab();
 
         // Expose helpers for the tour system (assets-assetinfo-tour.js uses these)
-        // NOTE: your tour loader looks for window.PAMS_PAGE.AssetInfo
+        // NOTE: your tour loader looks for window.AMS_PAGE.AssetInfo
         // so we publish under that name.
-        window.PAMS_PAGE = window.PAMS_PAGE || {};
-        window.PAMS_PAGE.AssetInfo = {
+        window.AMS_PAGE = window.AMS_PAGE || {};
+        window.AMS_PAGE.AssetInfo = {
             forceShowTab,
             activatePaneForElement,
             RESUME

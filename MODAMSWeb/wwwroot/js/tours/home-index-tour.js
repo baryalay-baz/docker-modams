@@ -11,10 +11,10 @@
     const t = (enText, soText) => (lang === 'so' ? soText : enText);
 
     // Make sure the registry exists globally
-    window.PAMS_TOUR_REGISTRY = window.PAMS_TOUR_REGISTRY || {};
+    window.AMS_TOUR_REGISTRY = window.AMS_TOUR_REGISTRY || {};
 
     // Register the Home/Index tour
-    window.PAMS_TOUR_REGISTRY["Home/Index"] = {
+    window.AMS_TOUR_REGISTRY["Home/Index"] = {
         version: "v1",
         steps: [
             // === HEADER SECTION ===

@@ -9,9 +9,9 @@
 
     const t = (enText, soText) => (lang === 'so' ? soText : enText);
 
-    window.PAMS_TOUR_REGISTRY = window.PAMS_TOUR_REGISTRY || {};
+    window.AMS_TOUR_REGISTRY = window.AMS_TOUR_REGISTRY || {};
 
-    window.PAMS_TOUR_REGISTRY["Stores/Index"] = {
+    window.AMS_TOUR_REGISTRY["Stores/Index"] = {
         version: "v1",
         steps: [
             {
@@ -65,20 +65,20 @@
     const driverObj = driverFactory({
         animate: true,
         showProgress: true,
-        steps: window.PAMS_TOUR_REGISTRY["Stores/Index"].steps,
+        steps: window.AMS_TOUR_REGISTRY["Stores/Index"].steps,
 
         // 🔊 Audio playback hook for each step
         onHighlightStarted: (element, step) => {
             const text = step?.popover?.description;
-            if (text && window.PAMS_TOUR_AUDIO) {
-                window.PAMS_TOUR_AUDIO.play(text, lang);
+            if (text && window.AMS_TOUR_AUDIO) {
+                window.AMS_TOUR_AUDIO.play(text, lang);
             }
         },
         onDeselected: () => {
-            if (window.PAMS_TOUR_AUDIO) window.PAMS_TOUR_AUDIO.stop();
+            if (window.AMS_TOUR_AUDIO) window.AMS_TOUR_AUDIO.stop();
         },
         onDestroyed: () => {
-            if (window.PAMS_TOUR_AUDIO) window.PAMS_TOUR_AUDIO.stop();
+            if (window.AMS_TOUR_AUDIO) window.AMS_TOUR_AUDIO.stop();
         }
     });
 

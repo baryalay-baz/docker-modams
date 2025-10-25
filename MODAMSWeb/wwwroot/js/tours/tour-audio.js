@@ -1,5 +1,5 @@
 ﻿(function () {
-    window.PAMS_TOUR_AUDIO = {
+    window.AMS_TOUR_AUDIO = {
         play: function (text, lang) {
             if (!('speechSynthesis' in window)) return;
 

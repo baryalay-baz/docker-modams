@@ -12,10 +12,10 @@
     const t = (enText, soText) => (lang === 'so' ? soText : enText);
 
     // Make sure the registry exists globally
-    window.PAMS_TOUR_REGISTRY = window.PAMS_TOUR_REGISTRY || {};
+    window.AMS_TOUR_REGISTRY = window.AMS_TOUR_REGISTRY || {};
 
     // Register the Stores/StoreDetails tour
-    window.PAMS_TOUR_REGISTRY["Stores/StoreDetails"] = {
+    window.AMS_TOUR_REGISTRY["Stores/StoreDetails"] = {
         version: "v1",
         steps: [
             {

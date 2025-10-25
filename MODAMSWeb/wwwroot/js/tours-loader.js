@@ -17,7 +17,7 @@
     }
 
     function startTourFor(pageKey) {
-        const cfg = window.PAMS_TOUR_REGISTRY[pageKey];
+        const cfg = window.AMS_TOUR_REGISTRY[pageKey];
         if (!cfg) return;
 
         const steps = filterExistingSteps(cfg.steps).map(s => ({
@@ -45,13 +45,14 @@
         if (!pageKey || !fab) return;
 
         const scriptUrl = `/js/tours/${pageKey.replace(/\//g, '-').toLowerCase()}-tour.js`;
+
         const script = document.createElement("script");
         script.src = scriptUrl;
 
         script.onload = () => {
             console.log(`Tour script loaded: ${scriptUrl}`);
 
-            if (window.PAMS_TOUR_REGISTRY?.[pageKey]) {
+            if (window.AMS_TOUR_REGISTRY?.[pageKey]) {
                 fab.style.display = "inline-block";
                 fab.onclick = () => startTourFor(pageKey);
             } else {
