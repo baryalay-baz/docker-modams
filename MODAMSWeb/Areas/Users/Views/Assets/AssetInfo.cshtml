@@ -437,219 +437,23 @@
     <script src="~/assets/plugins/gallery/lg-zoom.js"></script>
     <script src="~/assets/plugins/gallery/lg-hash.js"></script>
     <script src="~/assets/plugins/gallery/lg-share.js"></script>
-    <script src="~/js/pages/asset-info.js"></script>
+
+    <partial name="_DatatablesAssets" />
+
+    <!-- Per-page bridge payload (tab + localized strings) -->
     <script>
-        $(document).ready(function () {
-            hideMenu();
-
-            // Only init DataTables when we actually have rows — avoids _DT_CellIndex errors
-            if ($('#tblDocuments tbody tr').length > 0) {
-                makeDataTable('#tblDocuments', 10);
-            }
-
-            adjustMainContainerHeight();
-            setTab();
-        });
-
-        const deleteAsset = (id) => {
-            const options = {
-                actionUrl: `/Users/Assets/DeleteAsset/${id}`,
+        window.AMS = window.AMS || {};
+        window.AMS.bridge = window.AMS.bridge || {};
+        window.AMS.bridge.assetInfo = {
+            tab: '@(TempData["tab"] ?? "")',
+            deleteText: {
                 title: '@Localizer["DeleteAsset"]',
                 message: '@Localizer["DeleteConfirmationMessage"]',
-                btnConfirmText: '@Localizer["Confirm"]',
-                btnCancelText: '@Localizer["Cancel"]'
-            };
-            openConfirmation(options);
-        }
-
-        function adjustMainContainerHeight() {
-            const mainContainer = document.getElementById('dvMainContainer');
-            if (!mainContainer) return;
-            mainContainer.style.height = 'auto';
-            mainContainer.style.height = `${mainContainer.scrollHeight}px`;
-            setCardBodyHeight();
-        }
-        function setCardBodyHeight() {
-            const mainContainer = document.getElementById('dvMainContainer');
-            const cardBody = document.getElementById('dvHistoryCard');
-            if (mainContainer && cardBody) {
-                cardBody.style.height = `${mainContainer.scrollHeight - 80}px`;
+                confirm: '@Localizer["Confirm"]',
+                cancel: '@Localizer["Cancel"]'
             }
-        }
-
-        const setTab = () => {
-            var tab = '@TempData["tab"]';
-            if (tab == "1" || tab == null) {
-                $("#tab_1, #a_tab_1").addClass("active");
-                $("#tab_2, #tab_3, #a_tab_2, #a_tab_3").removeClass("active");
-            } else if (tab == "2") {
-                $("#tab_2, #a_tab_2").addClass("active");
-                $("#tab_1, #tab_3, #a_tab_1, #a_tab_3").removeClass("active");
-            } else {
-                $("#tab_3, #a_tab_3").addClass("active");
-                $("#tab_1, #tab_2, #a_tab_1, #a_tab_2").removeClass("active");
-            }
-        }
-
-        // ------------------ SMART TOUR HELPERS ------------------
-
-        const TAB_META = {
-            "#tab_1": { nav: "#a_tab_1", idx: 1 },
-            "#tab_2": { nav: "#a_tab_2", idx: 2 },
-            "#tab_3": { nav: "#a_tab_3", idx: 3 }
         };
-
-        function paneOf(el) {
-            const pane = el?.closest('.tab-pane');
-            return pane ? ('#' + pane.id) : null;
-        }
-
-        function ensureTabFor(el) {
-            const paneId = paneOf(el);
-            if (!paneId) return;
-            const meta = TAB_META[paneId];
-            if (!meta) return;
-            const pane = document.querySelector(paneId);
-            const navLink = document.querySelector(meta.nav);
-            if (pane && navLink && !pane.classList.contains('active')) {
-                navLink.click();
-            }
-        }
-
-        function pickSideFor(el, lastSide = 'bottom') {
-            const r = el.getBoundingClientRect();
-            const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-            const vh = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-
-            const nearTop = r.top < 96;
-            const nearBottom = (vh - r.bottom) < 96;
-            const nearLeft = r.left < 96;
-            const nearRight = (vw - r.right) < 96;
-
-            let side = 'bottom';
-            if (nearBottom && !nearTop) side = 'top';
-            else if (nearTop && !nearBottom) side = 'bottom';
-            else if (nearRight && !nearLeft) side = 'left';
-            else if (nearLeft && !nearRight) side = 'right';
-
-            if (!nearTop && !nearBottom && !nearLeft && !nearRight) {
-                const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
-                const horiz = cx < vw/2 ? 'right' : 'left';
-                const vert  = cy < vh/2 ? 'bottom' : 'top';
-                side = (Math.abs(cy - vh/2) > Math.abs(cx - vw/2)) ? vert : horiz;
-            }
-            if (side === lastSide) {
-                const rotate = { bottom: 'right', right: 'top', top: 'left', left: 'bottom' };
-                side = rotate[side];
-            }
-            return side;
-        }
-
-        function queryStepElement(selector) {
-            return document.querySelector(selector);
-        }
-
-        function orderStepsByLayout(steps) {
-            const enriched = steps.map((s, i) => {
-                const el = queryStepElement(s.element);
-                const paneId = paneOf(el) || "#tab_1";
-                const meta = TAB_META[paneId] || { idx: 99 };
-                let rect = { top: Infinity, left: Infinity };
-
-                if (el && !el.offsetParent) {
-                    const navSel = TAB_META[paneId]?.nav;
-                    const currentActive = document.querySelector('.tab-pane.active');
-                    const currentPaneId = currentActive ? '#' + currentActive.id : null;
-                    if (navSel) document.querySelector(navSel)?.click();
-                    rect = el.getBoundingClientRect();
-                    if (currentPaneId && currentPaneId !== paneId) {
-                        document.querySelector(TAB_META[currentPaneId]?.nav)?.click();
-                    }
-                } else if (el) {
-                    rect = el.getBoundingClientRect();
-                }
-
-                return { s, i, paneIdx: meta.idx, top: Math.round(rect.top), left: Math.round(rect.left) };
-            });
-
-            enriched.sort((a, b) => {
-                if (a.paneIdx !== b.paneIdx) return a.paneIdx - b.paneIdx; // Tab1 -> Tab2 -> Tab3
-                if (a.top !== b.top) return a.top - b.top;                // Row order
-                if (a.left !== b.left) return a.left - b.left;            // Left -> Right
-                return a.i - b.i;
-            });
-
-            return enriched.map(e => e.s);
-        }
-
-        function buildSmartSteps(steps) {
-            const ordered = orderStepsByLayout(steps);
-            let lastSide = 'bottom';
-            return ordered.map(step => {
-                const el = queryStepElement(step.element);
-                if (el) {
-                    ensureTabFor(el);
-                    el.scrollIntoView({ behavior: 'instant', block: 'center' });
-                    const side = pickSideFor(el, lastSide);
-                    lastSide = side;
-                    return { ...step, popover: { ...(step.popover || {}), side } };
-                }
-                return step;
-            });
-        }
-
-        window.startTourFor = function (pageKey) {
-            const steps = window.PAMS_TOUR_REGISTRY?.[pageKey];
-            const factory = window?.driver?.js?.driver;
-            if (!steps || !factory) return;
-
-            const smartSteps = buildSmartSteps(steps);
-
-            const driver = factory({
-                showProgress: true,
-                overlayOpacity: 0.3,
-                nextBtnText: 'Next',
-                prevBtnText: 'Back',
-                doneBtnText: 'Done'
-            });
-
-            driver.setSteps(smartSteps);
-            driver.drive();
-
-            const navHandler = () => {
-                const el = document.querySelector('.driver-highlighted-element');
-                if (!el) return;
-                ensureTabFor(el);
-                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-                const currentIdx = smartSteps.findIndex(s => {
-                    const e = queryStepElement(s.element);
-                    return e && e.classList.contains('driver-highlighted-element');
-                });
-
-                const nextStep = smartSteps[currentIdx + 1];
-                if (!nextStep) return;
-
-                const nextEl = queryStepElement(nextStep.element);
-                const nextPane = paneOf(nextEl);
-                const curPane = paneOf(el);
-                if (nextPane && curPane && nextPane !== curPane) {
-                    const meta = TAB_META[nextPane];
-                    if (meta) document.querySelector(meta.nav)?.click();
-                }
-            };
-
-            document.addEventListener('click', function onClick() {
-                if (!document.querySelector('.driver-popover')) {
-                    document.removeEventListener('click', onClick);
-                    return;
-                }
-                navHandler();
-            });
-
-            setTimeout(navHandler, 50);
-        };
-        // ------------------ /SMART TOUR HELPERS ------------------
     </script>
-
+    <script src="~/js/pages/assets-assetinfo.js"></script>
 }
+
