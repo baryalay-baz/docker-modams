@@ -27,8 +27,10 @@
     }
     <script>
         window.AMS = window.AMS || {};
-        window.AMS.bridge = @Html.Raw(JsonSerializer.Serialize(bridge))
+        window.AMS.bridge = @Html.Raw(JsonSerializer.Serialize(bridge));
     </script>
+    <!-- Driver.js + Tutor (keep if most pages need it; otherwise lazy-load on click) -->
+    <script src="https://cdn.jsdelivr.net/npm/driver.js@latest/dist/driver.js.iife.js"></script>
 
     <meta name="request-verification-token" content="@tokens.RequestToken" />
     <meta charset="utf-8" />
@@ -111,6 +113,11 @@
     <!-- Keep your core app scripts -->
     <script src="~/js/utils.js"></script>
     <script src="~/js/core/page-registry.js"></script>
+
+
+    <script src="~/js/tours-loader.js" asp-append-version="true"></script>
+    <script src="~/js/tutor/pams-tutor-core.js" asp-append-version="true"></script>
+    
     <script src="~/assets/plugins/sidemenu/sidemenu.js"></script>
 
     <!-- Optional libs (KEEP ONLY IF used on most pages; otherwise move them to per-page partials) -->
@@ -135,10 +142,8 @@
     <script src="~/assets/plugins/moment/moment.js"></script>
     <script src="https://unpkg.com/feather-icons"></script>
 
-    <!-- Driver.js + Tutor (keep if most pages need it; otherwise lazy-load on click) -->
-    <script src="https://cdn.jsdelivr.net/npm/driver.js@latest/dist/driver.js.iife.js"></script>
-    <script src="~/js/tours-loader.js" asp-append-version="true"></script>
-    <script src="~/js/tutor/pams-tutor-core.js" asp-append-version="true"></script>
+    
+    
 
     <!-- Page layout glue -->
     <script src="~/js/pages/layout.js" asp-append-version="true"></script>

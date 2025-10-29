@@ -27,6 +27,40 @@
         );
     };
 
+    // ---------- API Calls ----------
+    U.fetchJson = async function (url, options = {}) {
+        // merge defaults
+        const finalOptions = Object.assign(
+            {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json",
+                    // automatically include anti-forgery token if available
+                    ...U.csrfHeader?.()
+                }
+            },
+            options
+        );
+
+        let res;
+        try {
+            res = await fetch(url, finalOptions);
+        } catch (networkErr) {
+            throw new Error("Network error contacting " + url + ": " + networkErr);
+        }
+
+        if (!res.ok) {
+            throw new Error("Request to " + url + " failed with status " + res.status);
+        }
+
+        try {
+            return await res.json();
+        } catch (parseErr) {
+            throw new Error("Invalid JSON from " + url + ": " + parseErr);
+        }
+    };
+
+
     // ---------- Assert (warn-once in prod) ----------
     U._assertWarned = U._assertWarned || new Set();
     U.assert = function (condition, message) {
@@ -691,6 +725,9 @@
     };
 
     // ---------- Backward compatibility (old globals) ----------
+    w.bridge = U.bridge;
+    w.csrfHeader = U.csrfHeader;
+    w.fetchJson = U.fetchJson;
     w.tryParseJson = U.tryParseJson;
     w.formatTables = U.formatTables;
     w.setMode = U.setMode;

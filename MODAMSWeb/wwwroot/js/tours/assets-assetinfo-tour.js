@@ -4,19 +4,15 @@
     const H = (window.AMS_PAGE && window.AMS_PAGE.AssetInfo) || {};
     const { forceShowTab, activatePaneForElement, RESUME } = H;
 
-    // i18n
     const lang = (window.getCurrentLanguage && window.getCurrentLanguage()) || "en";
     const t = (en, so) => (lang === "so" ? so : en);
 
-    // ---- Tunables ----
     const TAB_SWITCH_DELAY_MS = 150;     // small delay for smoother tab switches
     const RESUME_ENABLED = true;    // set false to disable resume
 
-    // Utility: delayed tab switch
     const delayedSwitch = (sel, ms = TAB_SWITCH_DELAY_MS) =>
         setTimeout(() => forceShowTab && forceShowTab(sel), ms);
 
-    // Helper to create a tab-switcher step
     function switchTabStep(linkSelector, titleEn, titleSo, descEn, descSo) {
         const activate = () => delayedSwitch(linkSelector);
         return {
@@ -30,7 +26,6 @@
         };
     }
 
-    // ===== TAB 1 (exact order) =====
     const TAB1 = [
         { element: '[data-tour="ai.make"]', popover: { title: t('Make / Manufacturer', 'Soo-saaraha'), description: t('Brand or manufacturer of the asset.', 'Calaamadda ama shirkadda soo saartay hantidan.') } },
         { element: '[data-tour="ai.model"]', popover: { title: t('Model', 'Nooca / Qaabka'), description: t('Specific model or version of the asset.', 'Nooca ama lambarka qaabka ee hantidan.') } },
@@ -68,7 +63,6 @@
         { element: '[data-tour="ai.assethistory"]', popover: { title: t('Asset History', 'Taariikhda Hantida'), description: t('Event timeline since registration (transfers, handovers, etc.).', 'Jadwalka dhacdooyinka tan iyo diiwaangelinta (wareejinno, iwm).') } }
     ];
 
-    // Explicit switches (they’ll be auto-activated by callbacks)
     const SWITCH_TO_TAB2 = [
         switchTabStep(
             "#a_tab_2",
@@ -104,7 +98,6 @@
         { element: '[data-tour="ai.gallery.pagination"]', popover: { title: t('Pagination', 'Qaybinta Bogagga'), description: t('Use pagination to navigate between picture pages.', 'Isticmaal qaybinta bogagga si aad u dhex marto bogagga sawirrada.') } }
     ];
 
-    // Combine
     let ALL_STEPS = [
         ...TAB1,
         ...SWITCH_TO_TAB2,
@@ -113,28 +106,22 @@
         ...TAB3
     ];
 
-    // --- Auto-skip steps whose elements don't exist (e.g., vehicle-only) ---
     ALL_STEPS = ALL_STEPS.filter(s => {
         try { return !!document.querySelector(s.element); } catch { return false; }
     });
 
-    // --- Inject index-aware callbacks for RESUME + pane activation ---
     const FINAL_STEPS = ALL_STEPS.map((s, idx) => {
         const wrap = (fn) => (el, step, driver) => {
-            // Save progress (resume)
             if (RESUME_ENABLED) RESUME?.save?.(idx);
 
-            // Ensure its pane is visible (prevents popover at 0,0)
             try { activatePaneForElement?.(el); } catch (_) { }
 
-            // Call original if provided
             if (typeof fn === 'function') fn(el, step, driver);
 
-            // Resume jump logic only on FIRST step
             if (RESUME_ENABLED && idx === 0) {
                 const target = Math.max(0, RESUME?.read?.() || 0);
                 if (target > 0) {
-                    // fast-forward by calling moveNext repeatedly
+
                     let hops = target;
                     const hop = () => {
                         if (hops-- <= 0) return;

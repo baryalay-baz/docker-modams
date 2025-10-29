@@ -1,16 +1,10 @@
 ﻿// wwwroot/js/pages/assets-editasset.js
-// PAMS • Assets/EditAsset page logic (jQuery)
-// Expects window.PAMS_EDIT_ASSET to be defined in the view (values from Razor)
-
 (function (window, $) {
     "use strict";
 
-    const CFG = window.PAMS_EDIT_ASSET || {};
-    // expected: { engine, chasis, plate, categoryId, subCategoryId }
+    const CFG = window.AMS_EDIT_ASSET || {};
+    const U = window.AMS?.util || {};
 
-    const Utils = window.PAMS?.util || {};
-
-    // ---- Selectors
     const SEL = {
         frm: "#frmAsset",
         btnSubmit: "#btnSubmit",
@@ -24,21 +18,28 @@
         datePickers: ".picker"
     };
 
-    // ---- Constants
-    const VEHICLE_CATEGORY_ID = "16"; // if CategoryId == 16 => show vehicle identification
+    const VEHICLE_CATEGORY_ID = "16";
 
-    // ---- In-memory state
+    // pull preloaded lists from Razor (same pattern as CreateAsset)
     const STATE = {
-        categories: [],      // [{ Id, CategoryCode, CategoryName, CategoryNameSo }]
-        subCategories: []    // [{ Id, CategoryId, SubCategoryName, SubCategoryNameSo }]
+        categories: window.AMS?.pageData?.categories || [],
+        subCategories: window.AMS?.pageData?.subCategories || []
     };
 
-    // ---- Init
-    Utils.ready(function () {
-        Utils.hideMenu?.();
+    // ---------- init ----------
+    function init(/*ctx*/) {
+        U.hideMenu?.();
 
-        // Init global plugins (do NOT init #SubCategoryId here; we re-init it when we rebuild options)
-        if ($.fn.select2) $(SEL.select2).not(SEL.subCategory).select2();
+        //// init Select2 for everything EXCEPT subCategory (we'll init that after we inject its options)
+        //if ($.fn.select2) {
+        //    $(SEL.select2).not(SEL.subCategory).each(function () {
+        //        const $el = $(this);
+        //        if ($el.data("select2")) $el.select2("destroy");
+        //        $el.select2({ width: "resolve" });
+        //    });
+        //}
+
+        // init datepickers
         if ($.fn.datepicker) {
             $(SEL.datePickers).datepicker({
                 autoclose: true,
@@ -47,164 +48,147 @@
             });
         }
 
-        // Events
+        // wire events
         $(SEL.btnSubmit).on("click", () => $(SEL.frm).submit());
+
         $(SEL.category).on("change", () => {
-            checkIfVehiclesSelected();
-            populateCmbSubCategory(); // rebuild subs for the newly picked category
+            applyVehicleVisibility();
+            populateSubCategoryDropdown(); // rebuild subs for new category
         });
 
-        // Load pipeline
-        loadCategories();
+        // build dropdowns from STATE
+        populateCategoryDropdown();
+        populateSubCategoryDropdown();
 
-        // Initial vehicle section visibility
-        checkIfVehiclesSelected();
-    });
-
-    // ---- Vehicle toggling
-    function checkIfVehiclesSelected() {
-        const isVehicle = String($(SEL.category).val() || "") === VEHICLE_CATEGORY_ID;
-
-        if (isVehicle) {
-            $(SEL.vehicleBlock).show();
-            if (!$(SEL.engine).val()) $(SEL.engine).val(CFG.engine || "");
-            if (!$(SEL.chasis).val()) $(SEL.chasis).val(CFG.chasis || "");
-            if (!$(SEL.plate).val()) $(SEL.plate).val(CFG.plate || "");
-        } else {
-            $(SEL.engine).val("-");
-            $(SEL.chasis).val("-");
-            $(SEL.plate).val("-");
-            $(SEL.vehicleBlock).hide();
-        }
+        // set vehicle section state
+        applyVehicleVisibility();
     }
 
-    // ---- Helpers: normalize arrays from responses
-    function toArrayFromResponse(response, label) {
-        // Accept raw array
-        if (Array.isArray(response)) return response;
-
-        // Accept { success, data: ... }
-        if (response && "data" in response) {
-            const d = response.data;
-
-            if (Array.isArray(d)) return d;
-
-            if (typeof d === "string") {
-                const parsed = Utils.tryParseJson?.(d, label) || { status: "error" };
-                if (parsed.status === "success" && Array.isArray(parsed.data)) return parsed.data;
-            }
-        }
-
-        return []; // fallback
-    }
-
-    // ---- AJAX: Categories
-    function loadCategories() {
-        $.ajax({
-            url: "/Users/Assets/GetCategories",
-            dataType: "json",
-            success: function (response) {
-                const arr = toArrayFromResponse(response, "Categories");
-                if (arr.length) {
-                    STATE.categories = arr;
-                    populateCmbCategory();
-                    loadSubCategories();
-                } else {
-                    Utils.showErrorMessageJs?.(response?.message || "Failed to load categories.");
-                    Utils.log?.("GetCategories unexpected shape:", response);
-                }
-            },
-            error: function (_xhr, _status, error) {
-                Utils.showErrorMessageJs?.(`Error loading categories data: ${error}`);
-            }
-        });
-    }
-
-    // ---- AJAX: SubCategories
-    function loadSubCategories(id) {
-        const data = id ? { id } : {};
-        $.ajax({
-            url: "/Users/Assets/GetSubCategories",
-            dataType: "json",
-            data,
-            success: function (response) {
-                const arr = toArrayFromResponse(response, "SubCategories");
-                if (arr.length) {
-                    STATE.subCategories = arr;
-                    populateCmbSubCategory();
-                } else {
-                    Utils.showErrorMessageJs?.(response?.message || "Failed to load sub-categories.");
-                    Utils.log?.("GetSubCategories unexpected shape:", response);
-                }
-            },
-            error: function (_xhr, _status, error) {
-                Utils.showErrorMessageJs?.(`Error loading sub-categories data: ${error}`);
-            }
-        });
-    }
-
-    // ---- Build Category <select> from STATE.categories
-    function populateCmbCategory() {
-        const isSomali = (Utils.lang?.() || Utils.getCurrentLanguage?.() || "en") === "so";
-
-        let html = `<option selected disabled>-${isSomali ? "Dooro Qayb" : "Select Category"}-</option>`;
-        for (const e of STATE.categories) {
-            const text = isSomali ? (e.CategoryNameSo ?? e.CategoryName) : e.CategoryName;
-            html += `<option value="${e.Id}">${text}</option>`;
-        }
-
+    // ---------- category dropdown ----------
+    function populateCategoryDropdown() {
         const $cat = $(SEL.category);
+        const isSomali = (U.lang?.() || U.getCurrentLanguage?.() || "en") === "so";
+
+        let html = `<option disabled selected>-${isSomali ? "Dooro Qayb" : "Select Category"
+            }-</option>`;
+
+        STATE.categories.forEach(c => {
+            // expecting { Id, CategoryName, CategoryNameSo }
+            const text = isSomali
+                ? (c.CategoryNameSo ?? c.CategoryName)
+                : c.CategoryName;
+
+            html += `<option value="${c.Id}">${text}</option>`;
+        });
+
         $cat.html(html);
 
-        // Restore chosen category if provided (after options exist)
+        // restore saved category if editing
         if (CFG.categoryId != null) {
             $cat.val(String(CFG.categoryId));
         }
 
-        // Reflect vehicle section visibility
-        checkIfVehiclesSelected();
+        // re-init Select2 for Category after replacing options
+        if ($.fn.select2) {
+            if ($cat.data("select2")) $cat.select2("destroy");
+            $cat.select2({ width: "resolve" });
+        }
     }
 
-    // ---- Build SubCategory <select> filtered by current category
-    function populateCmbSubCategory() {
-        const isSomali = (Utils.lang?.() || Utils.getCurrentLanguage?.() || "en") === "so";
+    // ---------- subCategory dropdown ----------
+    function populateSubCategoryDropdown() {
+        const $sub = $(SEL.subCategory);
+        const isSomali = (U.lang?.() || U.getCurrentLanguage?.() || "en") === "so";
+
         const selectedCatId = String($(SEL.category).val() || "");
 
-        // Filter rows for the selected category
-        const filtered = STATE.subCategories.filter(r => String(r.CategoryId) === selectedCatId);
+        const placeholderText = isSomali
+            ? "Dooro Qayb-hoosaad"
+            : "Select Sub-Category";
 
-        const placeholderText = isSomali ? "Dooro Qayb-hoosaad" : "Select Sub-Category";
+        // always start with placeholder
         let html = `<option value="" disabled selected>-${placeholderText}-</option>`;
-        for (const e of filtered) {
-            const text = isSomali ? (e.SubCategoryNameSo ?? e.SubCategoryName) : e.SubCategoryName;
-            html += `<option value="${e.Id}">${text}</option>`;
-        }
 
-        const $sub = $(SEL.subCategory);
+        // filter subs by category
+        STATE.subCategories
+            .filter(sc => String(sc.CategoryId) === selectedCatId)
+            .forEach(sc => {
+                // expecting { Id, CategoryId, SubCategoryName, SubCategoryNameSo }
+                const text = isSomali
+                    ? (sc.SubCategoryNameSo ?? sc.SubCategoryName)
+                    : sc.SubCategoryName;
 
-        // Replace options
+                html += `<option value="${sc.Id}">${text}</option>`;
+            });
+
         $sub.html(html);
 
-        // Re-init Select2 for THIS element only
-        if ($.fn.select2) {
-            if ($sub.data("select2")) $sub.select2("destroy");
-            $sub.select2({ placeholder: placeholderText, allowClear: true });
+        // restore saved subcategory (only if it belongs to current category)
+        if (CFG.subCategoryId != null) {
+            $sub.val(String(CFG.subCategoryId));
+        } else {
+            $sub.val("");
         }
 
-        // Reset or reapply known value (edit mode)
-        if (CFG.subCategoryId != null) {
-            $sub.val(String(CFG.subCategoryId)).trigger("change");
-        } else {
-            $sub.val("").trigger("change");
+        // init/re-init Select2 just for subcategory
+        if ($.fn.select2) {
+            if ($sub.data("select2")) $sub.select2("destroy");
+            $sub.select2({
+                width: "resolve",
+                placeholder: placeholderText,
+                allowClear: true
+            });
         }
     }
 
-    // ---- Optional: expose some functions for debugging
-    window.PAMS_EditAsset = {
-        reloadCategories: loadCategories,
-        populateCmbCategory,
-        populateCmbSubCategory,
-        checkIfVehiclesSelected
+    // ---------- vehicle block visibility ----------
+    function applyVehicleVisibility() {
+        const isVehicle = String($(SEL.category).val() || "") === VEHICLE_CATEGORY_ID;
+
+        const $block = $(SEL.vehicleBlock);
+        const $engine = $(SEL.engine);
+        const $chasis = $(SEL.chasis);
+        const $plate = $(SEL.plate);
+
+        if (isVehicle) {
+            // Vehicle selected
+            $block
+                .removeClass("vblock-disabled")   // normal look
+                .show();                          // make sure it's visible
+
+            // Enable editing
+            $engine.prop("readonly", false);
+            $chasis.prop("readonly", false);
+            $plate.prop("readonly", false);
+
+            // If fields are empty, load values from CFG (edit mode)
+            if (!$engine.val()) $engine.val(CFG.engine || "");
+            if (!$chasis.val()) $chasis.val(CFG.chasis || "");
+            if (!$plate.val()) $plate.val(CFG.plate || "");
+
+        } else {
+            // Not a vehicle
+            $block
+                .addClass("vblock-disabled")  // greyed out
+                .show();                      // KEEP IT VISIBLE
+
+            // Put "-" in the fields
+            $engine.val("-").prop("readonly", true);
+            $chasis.val("-").prop("readonly", true);
+            $plate.val("-").prop("readonly", true);
+        }
+    }
+
+
+    // expose for debugging if you want in console
+    window.AMS_EditAssetDebug = {
+        populateCategoryDropdown,
+        populateSubCategoryDropdown,
+        applyVehicleVisibility
     };
+
+    // hook into page-registry just like CreateAsset:
+    // ViewData["TourPageKey"] for EditAsset view must be "Assets/EditAsset"
+    window.AMS?.pages?.register?.("Assets/EditAsset", init);
 
 })(window, window.jQuery);

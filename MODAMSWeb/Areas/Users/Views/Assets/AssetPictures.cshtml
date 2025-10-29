@@ -21,9 +21,10 @@
         display: block; /* removes any inline-img whitespace artifacts */
     }
 </style>
+
 <div class="page-header">
     <div>
-        <h1 class="page-title">@Localizer["AssetPictures"]</h1>
+        <h1 class="page-title" data-tour="ap.pagetitle">@Localizer["AssetPictures"]</h1>
     </div>
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
@@ -35,11 +36,12 @@
         </ol>
     </div>
 </div>
+
 <div class="row">
     <div class="col-sm-12 col-md-12 col-xl-12">
         <div class="card">
             <div class="card-header border-bottom bg-info-gradient divShadow d-flex justify-content-between align-items-center">
-                <h4 class="m-0 text-muted text-white">@Model.AssetInfo</h4>
+                <h4 class="m-0 text-muted text-white" data-tour="ap.assetinfo">@Model.AssetInfo</h4>
                 <div class="btn-group">
                     <a asp-action="EditAsset" asp-controller="Assets" asp-route-id="@Model.AssetId" class="btn btn-outline-info" data-bs-toggle="tooltip" data-bs-original-title="Edit Asset">
                         <i class="fa fa-edit"></i>
@@ -52,7 +54,7 @@
                     </a>
                 </div>
             </div>
-            <div class="card-body">
+            <div class="card-body" data-tour="ap.uploadsection">
                 <form method="post" asp-action="UploadPicture" enctype="multipart/form-data">
                     <input type="hidden" id="AssetId" name="AssetId" value="@Model.AssetId" />
                     <div class="row">
@@ -61,7 +63,10 @@
                                 <label class="form-label">@Localizer["ChoosePicture"]</label>
                                 <div class="input-group">
                                     <input class="form-control file-input" type="file" id="file" name="file" required accept="image/*">
-                                    <button class="btn btn-primary btn-sm"><i class="fa fa-solid fa-upload"></i> @Localizer["Upload"]</button>
+                                    <button class="btn btn-primary btn-sm">
+                                        <i class="fa fa-solid fa-upload"></i>
+                                        @Localizer["Upload"]
+                                    </button>
                                 </div>
                                 <div class="invalid-feedback">
                                     @Localizer["ChoosePicture"]
@@ -70,12 +75,12 @@
                         </div>
                     </div>
                 </form>
-            </div>
-        </div>
+            </div> <!-- /card-body -->
+        </div> <!-- /card -->
     </div>
 </div>
 
-<div class="card">
+<div class="card" data-tour="ap.gallery">
     <div class="card-header">
         <h4>@Localizer["AssetPictures"]</h4>
     </div>
@@ -93,7 +98,8 @@
 
                             <button type="button"
                                     onclick="deletePicture(@pic.Id, @pic.AssetId)"
-                                    class="btn btn-secondary">
+                                    class="btn btn-secondary"
+                                    data-tour="ap.deletebtn">
                                 <i class="fa fa-trash"></i>
                                 @Localizer["Delete"]
                             </button>
@@ -108,26 +114,20 @@
         </div>
     </div>
 </div>
+
 @await Html.PartialAsync("~/Views/Shared/_Confirmation.cshtml")
 
 @section Scripts
 {
     <script>
-        $(document).ready(function () {
-            
-        });
-
-        const deletePicture = (id, assetId) =>{
-            const options = {
-                    actionUrl: `/Users/Assets/DeletePicture/${id}`,
-                    title: '@Localizer["DeletePicture"]',
-                    message: '@Localizer["DeleteConfirmationMessage"]',
-                    btnConfirmText: '@Localizer["Confirm"]',
-                    btnCancelText: '@Localizer["Cancel"]',
-                    data: `<input type="hidden" name="assetId" value="${assetId}" />`
-                };
-                //console.log(options);
-                openConfirmation(options);
-        }
+        // Localized strings for delete confirmation popup (passed into JS)
+        window.AMS_ASSET_PICS = {
+            deleteTitle: '@Localizer["DeletePicture"]',
+            deleteMessage: '@Localizer["DeleteConfirmationMessage"]',
+            btnConfirmText: '@Localizer["Confirm"]',
+            btnCancelText: '@Localizer["Cancel"]'
+        };
     </script>
+
+    <script src="~/js/pages/assets-assetpictures.js"></script>
 }

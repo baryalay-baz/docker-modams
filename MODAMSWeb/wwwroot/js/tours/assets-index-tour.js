@@ -10,7 +10,6 @@
     const t = (enText, soText) => (lang === 'so' ? soText : enText);
 
     window.AMS_TOUR_REGISTRY = window.AMS_TOUR_REGISTRY || {};
-
     window.AMS_TOUR_REGISTRY["Assets/Index"] = {
         version: "v1",
         steps: [

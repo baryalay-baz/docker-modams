@@ -14,6 +14,12 @@
     input[type="date"]::-webkit-calendar-picker-indicator {
         display: none;
     }
+
+    .vblock-disabled {
+        opacity: 0.5; /* fade it out */
+        pointer-events: none; /* block clicks, tab, etc. */
+    }
+
 </style>
 
 <!-- PAGE-HEADER -->
@@ -272,162 +278,17 @@
 <section id="dvCategoryData" style="display:none;">No Records Found</section>
 <section id="dvSubCategoryData" style="display:none;">No Records Found</section>
 
-<!--ROW CLOSED-->
 @section scripts {
-    <script src="~/js/tutor/tips/assets-createasset.js"></script>
+
     <script>
-        $(document).ready(() => {
-            hideMenu();
-            $('.select2').select2();
-
-            $("#btnSubmit").on("click", () => {
-                $("#frmAsset").submit();
-            });
-
-            loadCategories();
-
-            $("#CategoryId").on("change", () => {
-                checkIfVehiclesSelected();
-                populateCmbSubCategory();
-            });
-
-            $("#CategoryId, #SubCategoryId").on("change", async () => {
-                await generateBarcode();
-            });
-
-            $('.picker').datepicker({
-                autoclose: true,
-                format: 'dd-MM-yyyy',
-                todayHighlight: true
-            });
-        });
-
-        const generateBarcode = async () => {
-            const categoryId = $("#CategoryId").val().toString().padStart(3, '0');
-            const subCategoryId = $("#SubCategoryId").val().toString().padStart(3, '0');
-
-            if (categoryId && subCategoryId) {
-                const lastAssetId = await getLastAssetId();
-                const newAssetId = lastAssetId + 1; // Increment the last asset ID
-                const barcode = `MOD-${categoryId}-${subCategoryId}-${newAssetId}`;
-
-                $("#Barcode").val(barcode);
-            }
-            checkIfVehiclesSelected();
-        }
-        const getLastAssetId = async () => {
-            try {
-                const response = await fetch('/Users/Assets/GetLastAssetId');
-                const lastAssetId = await response.json();
-                return lastAssetId;
-            } catch (error) {
-                console.error("Error fetching last asset ID:", error);
-                return 0;
-            }
-        }
-
-        const checkIfVehiclesSelected = () => {
-            if ($("#CategoryId").val() == "16") {
-                $("#dvVehicleIdentification").show();
-                $("#Engine").val("@Model.Engine");
-                $("#Chasis").val("@Model.Chasis");
-                $("#Plate").val("@Model.Plate");
-            } else {
-                $("#Engine").val("-");
-                $("#Chasis").val("-");
-                $("#Plate").val("-");
-                $("#dvVehicleIdentification").hide();
-            }
-        }
-
-        const loadCategories = () => {
-            var postData = {};
-            $.ajax({
-                url: '/Users/Assets/GetCategories',
-                datatype: "json",
-                data: postData,
-                beforeSend: function () {
-
-                },
-                success: function (response) {
-                    if (response.success) {
-                        $("#dvCategoryData").html(response.data);
-                    } else {
-                        showErrorMessageJs(response.message);
-                    }
-                },
-                error: function (xhr, status, error) {
-                    showErrorMessageJs(`Error loading categories data: ${error}`);
-                },
-                complete: function () {
-                    loadSubCategories();
-                }
-            });
-        }
-        const loadSubCategories = (id) => {
-            var postData = {};
-            if (id != null)
-                postData = { id: id }
-
-            $.ajax({
-                url: '/Users/Assets/GetSubCategories',
-                datatype: "json",
-                data: postData,
-                beforeSend: function () {
-                },
-                success: function (response) {
-                    if (response.success) {
-                        $("#dvSubCategoryData").html(response.data);
-                    } else {
-                        showErrorMessageJs(response.message);
-                    }
-                },
-                complete: function () {
-                    populateCmbCategory();
-                }
-            });
-        }
-        const populateCmbCategory = () => {
-            var sData = $("#dvCategoryData").html();
-            var result = tryParseJson(sData, "Categories");
-
-            var isSomali = getCurrentLanguage() === "so" ? true : false;
-
-            if (result.status === "success") {
-                const data = result.data;
-
-                var sHtml = `<option selected disabled>-${isSomali ? 'Dooro Qayb' : 'Select Category'}-</option>`;
-
-                data.forEach((e) => {
-                    sHtml += `<option value="${e.Id}">${isSomali ? e.CategoryNameSo : e.CategoryName}</option>`;
-                })
-
-                $("#CategoryId").html("").html(sHtml);
-                //console.log(sHtml);
-            } else {
-                showErrorMessageJs(result.message);
-            }
-        }
-        const populateCmbSubCategory = () => {
-            var id = $("#CategoryId").val();
-            var sData = $("#dvSubCategoryData").html();
-
-            var result = tryParseJson(sData, "Sub Categories");
-            
-            var isSomali = getCurrentLanguage() === "so" ? true : false;
-
-            var sHtml = `<option disabled>-${isSomali ? 'Dooro Qayb-hoosaad' : 'Select Sub-Category'}-</option>`;
-
-            if (result.status === "success") {
-                const data = result.data;
-                data.forEach((e) => {
-                    if (e.CategoryId == id)
-                        sHtml+= `<option value="${e.Id}">${isSomali ? e.SubCategoryNameSo : e.SubCategoryName}</option>`;
-                });
-                $("#SubCategoryId").html("").html(sHtml);
-            }else{
-                showErrorMessageJs(result.message);
-            }
-        }
+        window.AMS = window.AMS || {};
+        window.AMS.pageData = {
+            categories: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.CategoriesList)),
+            subCategories: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.SubCategoriesList))
+        };
     </script>
+
+    <script src="~/assets/plugins/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+    <script src="~/js/tutor/tips/assets-createasset-tips.js"></script>
+    <script src="~/js/pages/assets-createasset.js"></script>
 }

@@ -178,6 +178,8 @@ namespace MODAMS.ApplicationServices
                 {
                     StoreId = storeId,
                     StoreName = storeName,
+                    CategoriesList = await _db.Categories.ToListAsync(),
+                    SubCategoriesList = await _db.SubCategories.ToListAsync(),
                     IsAuthorized = canModify
                 };
                 await PopulateDtoListsAsync(createDto);
@@ -336,6 +338,8 @@ namespace MODAMS.ApplicationServices
                 dto.Remarks = assetInDb.Remarks;
                 dto.AssetStatusId = assetInDb.AssetStatusId;
                 dto.StoreId = assetInDb.StoreId;
+                dto.CategoryList = await _db.Categories.ToListAsync();
+                dto.SubCategoryList = await _db.SubCategories.ToListAsync();
 
                 // Get store name and assign it to the DTO
                 dto.StoreName = await _func.GetStoreNameByStoreIdAsync(assetInDb.StoreId);

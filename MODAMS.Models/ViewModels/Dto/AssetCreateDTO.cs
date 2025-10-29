@@ -176,6 +176,11 @@ namespace MODAMS.Models.ViewModels.Dto
 
         [ValidateNever]
         public bool IsAuthorized { get; set; } = false;
-       
+
+        [ValidateNever]
+        public List<Category> CategoriesList { get; set; } = new();
+        [ValidateNever]
+        public List<SubCategory> SubCategoriesList { get; set; } = new();
+
     }
 }
