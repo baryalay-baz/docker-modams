@@ -128,6 +128,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
 
             if (result.IsSuccess)
             {
+                dto.BarchartData = await _verificationService.GetBarchartDataAsync(id);
+                dto.ProgressChart = await _verificationService.GetProgressChartAsync(id);
                 return View(dto);
             }
             else
@@ -215,6 +217,52 @@ namespace MODAMSWeb.Areas.Users.Controllers
             {
                 TempData["error"] = result.ErrorMessage;
                 return RedirectToAction("PreviewSchedule", new { id = ScheduleId });
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetBarChartData(int id)
+        {
+            try
+            {
+                var rows = await _verificationService.GetBarchartDataAsync(id);
+
+                // Return as { success, data } with camelCase keys the JS already expects
+                return Ok(new
+                {
+                    success = true,
+                    data = rows.Select(r => new {
+                        result = r.Result,                         // e.g., "Verified (In Good Condition)"
+                        verificationRecordCount = r.VerificationRecordCount
+                    })
+                });
+            }
+            catch (Exception ex)
+            {
+                return Ok(new { success = false, message = ex.Message });
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetProgressData(int id)
+        {
+            try
+            {
+                var rows = await _verificationService.GetProgressChartAsync(id);
+
+                // Shape to what the front-end uses: formattedDate, planProgress, progress
+                var data = rows
+                    .OrderBy(r => r.Date)
+                    .Select(r => new {
+                        formattedDate = r.Date.ToString("yyyy-MM-dd"),
+                        planProgress = r.PlanProgress,            // decimal? OK (JS converts to numbers/null)
+                        progress = r.Progress                 // double? / decimal? nullable -> null OK
+                    })
+                    .ToList();
+
+                return Ok(new { success = true, data });
+            }
+            catch (Exception ex)
+            {
+                return Ok(new { success = false, message = ex.Message });
             }
         }
     }

@@ -400,21 +400,39 @@ namespace MODAMS.ApplicationServices
         {
             if (dto.VerificationRecord == null)
             {
-                return Result<bool>.Failure(_isSomali ? "Diiwaanka Hubinta wuu maqan yahay" : "Verification record is missing");
+                return Result<bool>.Failure(
+                    _isSomali
+                        ? "Diiwaanka Hubinta wuu maqan yahay"
+                        : "Verification record is missing"
+                );
             }
 
-            if (file == null || file.Length == 0)
+            // figure out if this result needs a photo
+            var resultText = dto.VerificationRecord.Result?.Trim() ?? string.Empty;
+            bool isMissing = resultText.Equals("Not Verified (Missing)", StringComparison.OrdinalIgnoreCase);
+            bool requiresPhoto = !isMissing;
+
+            // only enforce file if the asset is NOT marked missing
+            if (requiresPhoto && (file == null || file.Length == 0))
             {
-                return Result<bool>.Failure(_isSomali ? "Fayl lama soo gelin ama faylka wuu madhan yahay" : "No file uploaded or file is empty");
+                return Result<bool>.Failure(
+                    _isSomali
+                        ? "Fadlan soo geli sawir cusub (lama oggola haddii hantida maqan tahay)"
+                        : "Please upload a current picture (not required if the asset is Missing)"
+                );
             }
 
             var verificationRecordInDb = await _db.VerificationRecords
-                .Where(m => m.VerificationScheduleId == dto.VerificationRecord.VerificationScheduleId
-                && m.AssetId == dto.VerificationRecord.AssetId).FirstOrDefaultAsync();
+                .Where(m =>
+                    m.VerificationScheduleId == dto.VerificationRecord.VerificationScheduleId &&
+                    m.AssetId == dto.VerificationRecord.AssetId)
+                .FirstOrDefaultAsync();
 
             if (verificationRecordInDb != null)
             {
-                var failureMessage = _isSomali ? "Hantidan hore ayaa waxaa xaqiijiyay " : "This asset is already verified by ";
+                var failureMessage = _isSomali
+                    ? "Hantidan hore ayaa waxaa xaqiijiyay "
+                    : "This asset is already verified by ";
                 return Result<bool>.Failure($"{failureMessage} {verificationRecordInDb.VerifiedBy}");
             }
 
@@ -436,10 +454,19 @@ namespace MODAMS.ApplicationServices
                     await _db.VerificationRecords.AddAsync(verificationRecord);
                     await _db.SaveChangesAsync();
 
-                    var uploadResult = await UploadPictureAsync(dto.VerificationRecord.AssetId, file, verificationRecord.Id);
-                    if (uploadResult != "success")
+                    // only upload a picture if we actually got one
+                    if (file != null && file.Length > 0)
                     {
-                        throw new Exception(uploadResult);
+                        var uploadResult = await UploadPictureAsync(
+                            dto.VerificationRecord.AssetId,
+                            file,
+                            verificationRecord.Id
+                        );
+
+                        if (uploadResult != "success")
+                        {
+                            throw new Exception(uploadResult);
+                        }
                     }
 
                     var scheduleInDb = await _db.VerificationSchedules
@@ -452,12 +479,18 @@ namespace MODAMS.ApplicationServices
                             scheduleInDb.VerificationStatus = "Ongoing";
                             await _db.SaveChangesAsync();
                         }
+
                         var result = await UpdateScheduleStatus(scheduleInDb);
                         if (result.IsFailure)
                         {
-                            throw new Exception(_isSomali ? "Waa lagu guuldareystay cusbooneysiinta xaaladda jadwalka" : "Failed updating schedule status: " + result.ErrorMessage);
+                            throw new Exception(
+                                _isSomali
+                                    ? "Waa lagu guuldareystay cusbooneysiinta xaaladda jadwalka"
+                                    : "Failed updating schedule status: " + result.ErrorMessage
+                            );
                         }
                     }
+
                     await transaction.CommitAsync();
                     return Result<bool>.Success(true);
                 }
@@ -553,6 +586,142 @@ namespace MODAMS.ApplicationServices
                 _func.LogException(_logger, ex);
                 return Result.Failure($"An unexpected error occurred while deleting the Verification Record with Id {id}");
             }
+        }
+        public async Task<List<VerificationScheduleBarchartDTO>> GetBarchartDataAsync(int scheduleId)
+        {
+            var result = await _db.VerificationSchedules
+                .Where(s => s.Id == scheduleId)
+                .Join(_db.VerificationRecords,
+                      s => s.Id,
+                      r => r.VerificationScheduleId,
+                      (s, r) => new { s.StoreId, s.Id, r.Result })
+                .GroupBy(x => new { x.StoreId, x.Id, x.Result })
+                .Select(g => new VerificationScheduleBarchartDTO
+                {
+                    StoreId = g.Key.StoreId,
+                    ScheduleId = g.Key.Id,
+                    Result = g.Key.Result,
+                    VerificationRecordCount = g.Count()
+                })
+                .ToListAsync();
+
+            return result;
+        }
+        public async Task<List<ProgressChartItemDTO>> GetProgressChartAsync(int scheduleId)
+        {
+            // 1) Schedule
+            var s = await _db.VerificationSchedules
+                .AsNoTracking()
+                .Where(x => x.Id == scheduleId)
+                .Select(x => new { x.Id, x.StartDate, x.EndDate, x.NumberOfAssetsToVerify })
+                .FirstOrDefaultAsync();
+
+            if (s is null)
+                return new List<ProgressChartItemDTO>();
+
+            var start = s.StartDate.Date;
+            var end = s.EndDate.Date < start ? start : s.EndDate.Date;
+
+            var totalToVerify = Math.Max(0, s.NumberOfAssetsToVerify);
+            var plannedDays = (end - start).Days + 1;
+            var plannedPerDay = plannedDays > 0 ? (double)totalToVerify / plannedDays : 0d;
+
+            // 2) Last activity date (if any)
+            var lastActivity = await _db.VerificationRecords
+                .AsNoTracking()
+                .Where(vr => vr.VerificationScheduleId == scheduleId)
+                .Select(vr => vr.VerificationDate)
+                .OrderByDescending(d => d)
+                .FirstOrDefaultAsync();
+
+            DateTime chartStart = start;
+            DateTime chartEnd = end;
+
+            if (lastActivity != default && lastActivity.Date > chartEnd)
+                chartEnd = lastActivity.Date;
+
+            // Defensive: ensure non-empty range
+            if (chartEnd < chartStart)
+                chartEnd = chartStart;
+
+            // 3) Aggregate actual counts inside [chartStart, chartEnd]
+            var windowEndOpen = chartEnd.AddDays(1);
+
+            var perDay = await _db.VerificationRecords
+                .AsNoTracking()
+                .Where(vr =>
+                    vr.VerificationScheduleId == scheduleId &&
+                    vr.VerificationDate >= chartStart &&
+                    vr.VerificationDate < windowEndOpen)
+                .GroupBy(vr => new
+                {
+                    Y = vr.VerificationDate.Year,
+                    M = vr.VerificationDate.Month,
+                    D = vr.VerificationDate.Day
+                })
+                .Select(g => new { g.Key.Y, g.Key.M, g.Key.D, Cnt = g.Count() })
+                .ToListAsync();
+
+            // Map date -> count (use exact DateTime at midnight to avoid Kind/time issues)
+            var counts = new Dictionary<DateTime, int>();
+            foreach (var x in perDay)
+            {
+                var dt = new DateTime(x.Y, x.M, x.D); // midnight
+                counts[dt] = x.Cnt;
+            }
+
+            DateTime? lastActiveDay = (lastActivity == default) ? null : lastActivity.Date;
+
+            // 4) Build series
+            int totalChartDays = (chartEnd - chartStart).Days + 1;
+
+            double cumulativePlanned = 0d;
+            double? cumulativeActual = 0d;
+
+            var list = new List<ProgressChartItemDTO>(totalChartDays);
+
+            for (int i = 0; i < totalChartDays; i++)
+            {
+                var current = chartStart.AddDays(i);
+
+                // Planned: grows only between start..end, then caps
+                if (current < start)
+                {
+                    // before plan starts
+                }
+                else if (current <= end)
+                {
+                    cumulativePlanned += plannedPerDay;
+                    if (cumulativePlanned > totalToVerify) cumulativePlanned = totalToVerify;
+                }
+                else
+                {
+                    cumulativePlanned = totalToVerify;
+                }
+
+                // Actual: accumulate counts for the day
+                if (counts.TryGetValue(current, out var add))
+                {
+                    cumulativeActual = (cumulativeActual ?? 0d) + add;
+                }
+
+                // After the last actual activity day, stop the line
+                if (lastActiveDay.HasValue && current > lastActiveDay.Value)
+                {
+                    cumulativeActual = null;
+                }
+
+                list.Add(new ProgressChartItemDTO
+                {
+                    Day = i + 1,
+                    PlanProgress = Math.Round(cumulativePlanned, 2),
+                    Progress = cumulativeActual,
+                    ScheduleId = scheduleId,
+                    Date = current
+                });
+            }
+
+            return list;
         }
 
         //Private functions
@@ -691,93 +860,6 @@ namespace MODAMS.ApplicationServices
 
             return verificationAssetsDtoList;
         }
-        private async Task<List<VerificationScheduleBarchartDTO>> GetBarchartDataAsync(int scheduleId)
-        {
-            var result = await _db.VerificationSchedules
-            .Join(_db.VerificationRecords,
-                schedule => schedule.Id,
-                record => record.VerificationScheduleId,
-                (schedule, record) => new
-                {
-                    schedule.StoreId,
-                    schedule.Id,
-                    record.Result
-                })
-            .GroupBy(x => new { x.StoreId, x.Id, x.Result })
-            .Select(g => new VerificationScheduleBarchartDTO
-            {
-                StoreId = g.Key.StoreId,
-                ScheduleId = g.Key.Id,
-                Result = g.Key.Result,
-                VerificationRecordCount = g.Count()
-            }).ToListAsync();
-
-            result = result.Where(m => m.ScheduleId == scheduleId).ToList();
-
-            return result;
-        }
-        private async Task<List<ProgressChartItemDTO>> GetProgressChartAsync(int scheduleId)
-        {
-            var schedule = await _db.VerificationSchedules
-                .Include(m => m.Store).ThenInclude(m => m.Assets)
-                .Where(m => m.Id == scheduleId).FirstOrDefaultAsync();
-
-            if (schedule == null)
-                return new List<ProgressChartItemDTO>();
-
-            int assetCount = schedule.NumberOfAssetsToVerify;
-
-            TimeSpan dateDifference = schedule.EndDate - schedule.StartDate;
-
-
-            int numberOfDays = dateDifference.Days > 0 ? dateDifference.Days + 1 : 1;
-
-
-            double assetsPerDay = (double)assetCount / numberOfDays;
-            double cumulativePlannedAssets = 0;
-            double? cumulativeActualAssets = 0;
-
-            var result = new List<ProgressChartItemDTO>();
-
-            var lastVerificationDate = await _db.VerificationRecords
-                .Where(vr => vr.VerificationScheduleId == schedule.Id)
-                .OrderByDescending(vr => vr.VerificationDate)
-                .Select(vr => vr.VerificationDate)
-                .FirstOrDefaultAsync();
-
-            if (lastVerificationDate == DateTime.MinValue)
-                lastVerificationDate = schedule.StartDate;
-
-            for (int i = 1; i <= numberOfDays; i++)
-            {
-                cumulativePlannedAssets += assetsPerDay;
-
-                DateTime currentDay = schedule.StartDate.AddDays(i - 1);
-
-                if (currentDay <= lastVerificationDate)
-                {
-                    int verifiedAssetsToday = await GetVerifiedAssetsForDay(currentDay, schedule.Id);
-                    cumulativeActualAssets += verifiedAssetsToday;
-                }
-                else
-                {
-                    cumulativeActualAssets = null;
-                }
-
-                var chartItem = new ProgressChartItemDTO()
-                {
-                    Day = i,
-                    PlanProgress = Math.Round(cumulativePlannedAssets, 2),
-                    Progress = cumulativeActualAssets,
-                    ScheduleId = schedule.Id,
-                    Date = currentDay
-                };
-
-                result.Add(chartItem);
-            }
-
-            return result;
-        }
         private async Task<int> GetVerifiedAssetsForDay(DateTime date, int id)
         {
             var result = await _db.VerificationRecords
@@ -908,7 +990,6 @@ namespace MODAMS.ApplicationServices
                 return false;
             }
         }
-
         private class TeamMemberDto
         {
             public int EmployeeId { get; set; }

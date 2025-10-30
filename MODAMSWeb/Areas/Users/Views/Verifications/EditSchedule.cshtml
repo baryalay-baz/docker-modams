@@ -20,10 +20,7 @@
     }
 
     .bordered-div {
-        border-left: 1px solid lightgray;
-        border-top: 1px solid lightgray;
-        border-right: 1px solid lightgray;
-        border-bottom: 1px solid lightgray;
+        border: 1px solid lightgray;
     }
 
     .bordered-div-top {
@@ -45,13 +42,12 @@
     .text-xsmall {
         font-size: 10px;
     }
-
 </style>
 <style>
     .custom-spacing {
         display: flex;
         align-items: center;
-        gap: 0; /* No gap between columns */
+        gap: 0;
     }
 
         .custom-spacing .form-group {
@@ -61,12 +57,12 @@
         .custom-spacing .col-md-7,
         .custom-spacing .col-md-4,
         .custom-spacing .col-md-1 {
-            padding-left: 2px; /* Small padding */
-            padding-right: 2px; /* Small padding */
+            padding-left: 2px;
+            padding-right: 2px;
         }
 
     .btn-add-record {
-        height: 30px; /* Match height to the select elements */
+        height: 30px;
         padding: 5px 10px;
     }
 </style>
@@ -75,7 +71,7 @@
 }
 <div class="page-header">
     <div>
-        <h1 class="page-title">@Localizer["AssetVerificationSchedule"]</h1>
+        <h1 class="page-title" data-tour="ves.pagetitle">@Localizer["AssetVerificationSchedule"]</h1>
     </div>
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
@@ -91,7 +87,7 @@
             <div class="col-md-12 col-sm-12">
                 <div class="row">
                     <div class="card divShadow">
-                        <div class="card-body p-4">
+                        <div class="card-body p-4" data-tour="ves.headerCard">
                             <div class="d-flex align-items-center justify-content-between">
                                 <h4 class="m-0 text-black">@Localizer["EditSchedule"]</h4>
                             </div>
@@ -109,7 +105,7 @@
                                             <input type="hidden" id="teamMembersData" name="teamMembersData" />
                                             <div class="row">
                                                 <div class="col-md-6">
-                                                    <div class="mb-3 form-group">
+                                                    <div class="mb-3 form-group" data-tour="ves.department">
                                                         <label asp-for="StoreId" class="text-black">@Localizer["Department"]</label>
                                                         <select asp-for="StoreId" class="select2 form-select" id="storeDropdown">
                                                             <option disabled selected>-@Localizer["SelectDepartment"]-</option>
@@ -124,7 +120,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
-                                                    <div class="mb-3 form-group">
+                                                    <div class="mb-3 form-group" data-tour="ves.type">
                                                         <label asp-for="VerificationType" class="text-black"></label>
                                                         <select asp-for="VerificationType" class="form-select select2" id="verificationTypeDropdown">
                                                             <option value="Full Verification">@Localizer["FullVerification"]</option>
@@ -138,11 +134,11 @@
                                                 <div class="col-md-6">
                                                     <div class="mb-3 form-group">
                                                         <label class="text-black">@Localizer["NumberOfAssetsInStore"]</label>
-                                                        <input id="NumberOfAssets" class="form-control" type="text" value="@Model.AssetCount(Model.StoreId)" disabled />
+                                                        <input id="NumberOfAssets" class="form-control" type="text" value="@Model.AssetCount(Model.StoreId)" disabled data-tour="ves.numInStore" />
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
-                                                    <div class="mb-3 form-group">
+                                                    <div class="mb-3 form-group" data-tour="ves.numToVerify">
                                                         <label asp-for="NumberOfAssetsToVerify" class="text-black"></label>
                                                         <input asp-for="NumberOfAssetsToVerify" id="NumberOfAssetsToVerify" class="form-control" />
                                                         <span asp-validation-for="NumberOfAssetsToVerify" class="text-danger" id="spanNumberOfAssetsToVerify"></span>
@@ -151,25 +147,28 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-6">
-                                                    <div class="mb-3 form-group">
+                                                    <div class="mb-3 form-group" data-tour="ves.start">
                                                         <label asp-for="StartDate" class="text-black"></label>
-                                                        <input asp-for="StartDate" asp-format="{0:dd-MMM-yyyy}" class="form-control picker" aria-required="true" type="text" autocomplete="off" />
+                                                        <input asp-for="StartDate" asp-format="{0:dd-MMM-yyyy}" 
+                                                        class="form-control picker" aria-required="true" type="text" autocomplete="off" />
                                                         <span asp-validation-for="StartDate" class="text-danger"></span>
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-6">
-                                                    <div class="mb-3 form-group">
+                                                    <div class="mb-3 form-group" data-tour="ves.end">
                                                         <label asp-for="EndDate" class="text-black"></label>
-                                                        <input asp-for="EndDate" asp-format="{0:dd-MMM-yyyy}" class="form-control picker" aria-required="true" type="text" autocomplete="off" />
+                                                        <input asp-for="EndDate" asp-format="{0:dd-MMM-yyyy}" class="form-control picker"
+                                                        aria-required="true" type="text" autocomplete="off" />
                                                         <span asp-validation-for="EndDate" class="text-danger"></span>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-12">
-                                                    <div class="mb-3 form-group mt-2">
+                                                    <div class="mb-3 form-group mt-2" data-tour="ves.notes">
                                                         <label asp-for="Notes" class="text-black"></label>
-                                                        <textarea asp-for="Notes" class="form-control mb-4" placeholder="Verification Notes" rows="3"></textarea>
+                                                        <textarea asp-for="Notes" class="form-control mb-4" 
+                                                        placeholder="Verification Notes" rows="3"></textarea>
                                                         <span asp-validation-for="Notes" class="text-danger"></span>
                                                     </div>
                                                 </div>
@@ -183,13 +182,13 @@
                                 </div>
                             </div>
                             <div class="col-md-5">
-                                <div class="card">
+                                <div class="card" data-tour="ves.team.card">
                                     <div class="card-status bg-secondary br-tr-7 br-tl-7"></div>
                                     <div class="card-body">
                                         <h5 class="text-black">@Localizer["AddTeamMembers"]</h5>
                                         <hr class="text-bold" />
                                         <div class="row">
-                                            <div class="col-md-12">
+                                            <div class="col-md-12" data-tour="ves.team.table">
                                                 <div class="table-responsive export-table">
                                                     <table id="tblMembers" class="table text-nowrap mb-0 key-buttons border-bottom project-list-main">
                                                         <tbody id="table-body">
@@ -201,14 +200,14 @@
                                         <div class="row custom-spacing">
                                             <hr class="customHR" />
                                             <div class="col-md-7">
-                                                <div class="form-group">
+                                                <div class="form-group" data-tour="ves.team.employee">
                                                     <select class="form-select select2" id="dd-employees" asp-items="@Model.EmployeesList">
                                                         <option value="0" disabled selected>-@Localizer["SelectEmployee"]-</option>
                                                     </select>
                                                 </div>
                                             </div>
                                             <div class="col-md-4">
-                                                <div class="form-group">
+                                                <div class="form-group" data-tour="ves.team.role">
                                                     <select class="form-select select2" id="dd-role">
                                                         <option value="Team Leader">@Localizer["TeamLeader"]</option>
                                                         <option value="Team Member">@Localizer["TeamMember"]</option>
@@ -216,7 +215,7 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-1">
-                                                <button type="button" class="btn btn-info-gradient btn-add-record btn-sm">
+                                                <button type="button" class="btn btn-info-gradient btn-add-record btn-sm" data-tour="ves.team.add">
                                                     <i class="fa fa-plus"></i>
                                                 </button>
                                             </div>
@@ -228,14 +227,14 @@
                     </div>
                     <div class="card-footer">
                         <div class="flex">
-                            <button type="button" class="btn btn-info" id="btn-submit">
+                            <button type="button" class="btn btn-info" id="btn-submit" data-tour="ves.submit">
                                 <i class="fa fa-check-circle"></i><span class="loading">&nbsp;@Localizer["SaveSchedule"]</span>
                             </button>
-                            <a asp-action="PreviewSchedule" asp-controller="Verifications" asp-route-id="@Model.Id" class="btn btn-primary-gradient"><i class="fa fa-eye"></i>&nbsp;@Localizer["PreviewSchedule"]</a>
-                            <button class="btn btn-secondary btn-secondary" id="btnDeleteSchedule">
+                            <a asp-action="PreviewSchedule" asp-controller="Verifications" asp-route-id="@Model.Id" class="btn btn-primary-gradient" data-tour="ves.preview"><i class="fa fa-eye"></i>&nbsp;@Localizer["PreviewSchedule"]</a>
+                            <button class="btn btn-secondary btn-secondary" id="btnDeleteSchedule" data-tour="ves.delete">
                                 <i class="fa fa-trash"></i> @Localizer["DeleteSchedule"]<i class="icon ion-ios-arrow-down text-12"></i>
                             </button>
-                            <a asp-action="Index" asp-controller="Verifications" id="btnCancel" class="btn btn-gray"><i class="fa fa-close"></i>&nbsp;@Localizer["Cancel"]</a>
+                            <a asp-action="Index" asp-controller="Verifications" id="btnCancel" class="btn btn-gray" data-tour="ves.cancel"><i class="fa fa-close"></i>&nbsp;@Localizer["Cancel"]</a>
                         </div>
                     </div>
                 </div>
@@ -245,7 +244,6 @@
     </div>
     <div class="card-footer">
         <div class="row">
-
             <div class="col-sm-12">
                 <a asp-action="Index" asp-controller="Verifications" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;@Localizer["Previous"]</a>
             </div>
@@ -258,240 +256,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/jquery.validate.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"></script>
     <script>
-        let sData = '';
-        let currentTeamData = '';
-
-        let selectedTeamMembers = [];
-        let memberCounter = 0;
-        const isSomali = getCurrentLanguage() === "so";
-
-        const localizedMember = {
-            "Team Leader": "@Localizer["TeamLeader"]",
-            "Team Member": "@Localizer["TeamMember"]",
-        };
-
-        $(document).ready(function () {
-            hideMenu();
-
-            sData = JSON.parse('@Html.Raw(Json.Serialize(Model.Employees))');
-            currentTeamData = JSON.parse('@Html.Raw(Json.Serialize(Model.EditTeam))');
-
-            loadExistingTeamMembers();
-            changestoreDropdown();
-
-            $('.select2').select2();
-            $('.picker').datepicker({
-                autoclose: true,
-                format: 'dd-MM-yyyy',
-                todayHighlight: true
-            });
-
-            $(".btn-add-record").on("click", () => {
-                // Get the selected employee name and role
-                let selectedEmployeeId = $("#dd-employees").val();
-                let selectedEmployeeName = $("#dd-employees option:selected").text();
-                let selectedRole = $("#dd-role").val();
-
-                // Ensure both an employee and role are selected
-                if (selectedEmployeeId && selectedEmployeeId !== "0" && selectedRole) {
-                    // Increment the counter
-                    memberCounter++;
-
-                    // Add the selected values to the array
-                    selectedTeamMembers.push({
-                        id: memberCounter,
-                        employeeId: selectedEmployeeId,
-                        employeeName: selectedEmployeeName,
-                        role: selectedRole
-                    });
-
-                    // Generate the table row HTML
-                    let rowHtml = `<tr id="member-${memberCounter}">
-                                            <td class="text-black bg-transparent border-bottom-0 w-2">${memberCounter}</td>
-                                            <td class="text-black bg-transparent border-bottom-0 w-20">${getName(selectedEmployeeId)}</td>
-                                            <td class="text-black bg-transparent border-bottom-0 w-10">${localizedMember[selectedRole]}</td>
-                                            <td class="text-black bg-transparent border-bottom-0 w-5 no-btn">
-                                                <a style="cursor:pointer;" onclick="removeMember(${memberCounter});">
-                                                    <i class="fa fa-times text-danger"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    `;
-
-                    // Append the row to the table body (replace #table-body with your table body selector)
-                    $("#table-body").append(rowHtml);
-
-                    $(`#dd-employees option[value='${selectedEmployeeId}']`).remove();
-
-                    if (selectedRole == "Team Leader") {
-                        $("#dd-role option[value='Team Leader']").remove();
-                    }
-                }
-
-            });
-            $('#storeDropdown').change(function () {
-                changestoreDropdown();
-            });
-            $('#verificationTypeDropdown').change(function () {
-                changeVerificationTypeDropdown();
-            });
-            $("#btn-submit").on("click", () => {
-                var blnCheck = true;
-
-                // Get the value of assets to verify and convert to number
-                var assetsToVerify = parseInt($('#NumberOfAssetsToVerify').val(), 10);
-                var assetCount = $(storeDropdown).find('option:selected').data('asset-count');
-
-                // Validate that the number is greater than or equal to 1
-                if (isNaN(assetsToVerify) || assetsToVerify < 1 || assetsToVerify > assetCount) {
-                    const message = isSomali
-                    ? `Qiimaha waa inuu u dhexeeyaa 1 iyo ${assetCount}`
-                    : `Value should be between 1 and ${assetCount}`;
-
-                    $("#spanNumberOfAssetsToVerify").text(message);
-
-                    blnCheck = false;
-                } else {
-                    $("#spanNumberOfAssetsToVerify").text(""); // Clear the error message if valid
-                }
-
-                // Check if validation passed and team members are selected
-                if (blnCheck && selectedTeamMembers.length > 0) {
-                    $("#teamMembersData").val(JSON.stringify(selectedTeamMembers));
-                    $("#frmEditSchedule").submit();
-                } else if (selectedTeamMembers.length === 0) {
-                    notif({
-                        type: "error",
-                        msg: isSomali?"<b>Khalad: </b>Xubno Kooxeed lama xulin!":"<b>Error: </b>No Team members selected!",
-                        position: "center",
-                        width: 500,
-                        height: 60,
-                        autohide: true
-                    });
-                }
-            });
-            $("#btnDeleteSchedule").on("click", (e) => {
-                e.preventDefault();
-                const options = {
-                    actionUrl: '@Url.Action("DeleteSchedule", "Verifications", new { area = "Users", id = @Model.Id })',
-                    title: '@Localizer["DeleteSchedule"]',
-                    message: '@Localizer["DeleteConfirmationMessage"]',
-                    btnConfirmText: '@Localizer["Confirm"]',
-                    btnCancelText: '@Localizer["Cancel"]'
-                };
-                openConfirmation(options);
-            });
-        });
-
-
-        const changeVerificationTypeDropdown = () => {
-            // Get asset count from the selected project store
-            var assetCount = $('#storeDropdown').find('option:selected').data('asset-count');
-
-            // Get the selected value of the verification type dropdown
-            var selectedValue = $('#verificationTypeDropdown').val();
-
-            // Handle verification type selection
-            if (selectedValue === "Custom Verification") {
-                $("#NumberOfAssetsToVerify").prop("readonly", false); // Enable the textbox for custom verification
-            } else {
-                $("#NumberOfAssetsToVerify").val(assetCount).prop("readonly", true); // Disable and set to asset count for full verification
-            }
-
-            // Revalidate the form after dynamically updating values
-            //$("form").validate().element("#NumberOfAssetsToVerify");
-        }
-        const changestoreDropdown = () =>{
-            // Get asset count from the selected project store
-            var assetCount = $('#storeDropdown').find('option:selected').data('asset-count');
-
-            // Update NumberOfAssets textbox with the asset count
-            $('#NumberOfAssets').val(assetCount);
-
-            // Get the selected value of the verification type dropdown
-            var selectedValue = $('#verificationTypeDropdown').val();
-
-            // Handle verification type selection
-            if (selectedValue === "Custom Verification") {
-                $("#NumberOfAssetsToVerify").prop("readonly", false);
-            } else {
-                $("#NumberOfAssetsToVerify").val(assetCount).prop("readonly", true);
-            }
-        }
-        const loadExistingTeamMembers = () => {
-
-            //let existingTeamMembers = JSON.parse(currentTeamData);
-            currentTeamData.forEach(member => {
-                memberCounter++;
-
-                // Add the existing member to the array
-                selectedTeamMembers.push({
-                    id: memberCounter,
-                    employeeId: member.employeeId,
-                    employeeName: getName(member.employeeId),
-                    role: member.role
-                });
-
-                // Generate the table row HTML
-                let rowHtml = `<tr id="member-${memberCounter}">
-                                <td class="text-black bg-transparent border-bottom-0 w-2">${memberCounter}</td>
-                                <td class="text-black bg-transparent border-bottom-0 w-20">${getName(member.employeeId)}</td>
-                                <td class="text-black bg-transparent border-bottom-0 w-10">${localizedMember[member.role]}</td>
-                                <td class="text-black bg-transparent border-bottom-0 w-5 no-btn">
-                                    <a style="cursor:pointer;" onclick="removeMember(${memberCounter});">
-                                        <i class="fa fa-times text-danger"></i>
-                                    </a>
-                                </td>
-                            </tr>`;
-
-                // Append the row to the table body
-                $("#table-body").append(rowHtml);
-
-                $(`#dd-employees option[value='${member.employeeId}']`).remove();
-
-                if (member.role == "Team Leader") {
-                    $("#dd-role option[value='Team Leader']").remove();
-                }
-            });
-        }
-        const removeMember = id => {
-            $(`#member-${id}`).remove();
-
-            let removedMember = selectedTeamMembers.find(member => member.id === id);
-
-            if (removedMember.role === "Team Leader") {
-                $("#dd-role").append(`<option value="Team Leader">${localizedMember["Team Leader"]}</option>`);
-            }
-
-            if (removedMember) {
-                $("#dd-employees").append(`<option value="${removedMember.employeeId}">${removedMember.employeeName}</option>`);
-            }
-
-            selectedTeamMembers = selectedTeamMembers.filter(member => member.id !== id);
-            memberCounter--;
-        }
-        const getName = (employeeId) => {
-            let label = '';
-            const employees = sData;//JSON.parse(sData);
-
-            if (!employeeId) {
-                console.error('Invalid ID');
-                return label;
-            }
-
-            const employee = employees.find(e => e.id == employeeId);
-
-            if (employee) {
-                label = `<span class="avatar avatar-sm rounded-circle cover-image">
-                                                                <img src="${employee.imageUrl}" alt="${employee.fullName}" class="avatar avatar-sm rounded-circle">
-                                                            </span>
-                                                            <span class="employee-name">${employee.fullName}</span>
-                                                        `;
-            } else {
-                console.warn('Employee not found for ID:', employeeId);
-            }
-
-            return label;
+        // Optional: provide structured config; script also supports your old globals
+        window.VES_EDIT_CONFIG = {
+          employees: @Html.Raw(Json.Serialize(Model.Employees)),
+          editTeam:  @Html.Raw(Json.Serialize(Model.EditTeam)),
+          scheduleId: @Model.Id
         };
     </script>
+    <script src="~/assets/plugins/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+    <script src="~/js/pages/verifications-editschedule.js"></script>
 }

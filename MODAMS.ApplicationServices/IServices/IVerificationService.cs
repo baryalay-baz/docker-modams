@@ -20,5 +20,8 @@ namespace MODAMS.ApplicationServices.IServices
         Task<Result<bool>> VerifyAssetAsync(VerificationSchedulePreviewDTO dto, IFormFile file);
         Task<Result> DeleteVerificationRecordAsync(int id);
         Task<Result<bool>> CompleteVerificationSchedule(int scheduleId);
+        Task<List<VerificationScheduleBarchartDTO>> GetBarchartDataAsync(int scheduleId);
+        Task<List<ProgressChartItemDTO>> GetProgressChartAsync(int scheduleId);
+
     }
 }

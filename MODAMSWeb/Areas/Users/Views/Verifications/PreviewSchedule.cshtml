@@ -43,7 +43,7 @@
 
 <div class="page-header">
     <div>
-        <h1 class="page-title">@Localizer["AssetVerificationSchedule"]</h1>
+        <h1 class="page-title" data-tour="vps.pagetitle">@Localizer["AssetVerificationSchedule"]</h1>
     </div>
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
@@ -60,45 +60,46 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="row">
+                            <!-- LEFT: Schedule summary -->
                             <div class="col-md-6">
                                 <div class="card">
                                     <div class="card-status bg-primary br-tr-7 br-tl-7"></div>
-                                    <div class="card-body">
+                                    <div class="card-body" data-tour="vps.scheduleCard">
                                         <div class="row">
                                             <input asp-for="Id" hidden />
                                             <div class="col-md-6">
-                                                <div class="form-group">
+                                                <div class="form-group" data-tour="vps.department">
                                                     <label class="form-label">@Localizer["Department"]</label>
                                                     <input type="text" class="form-control" value="@Model.StoreName" disabled />
                                                 </div>
                                             </div>
-                                            <div class="col-md-6">
+                                            <div class="col-md-6" data-tour="vps.type">
                                                 <label class="form-label">@Localizer["VerificationType"]</label>
                                                 <input type="text" class="form-control" value="@(Localizer[Model.VerificationType])" disabled />
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6">
-                                                <div class="form-group">
+                                                <div class="form-group" data-tour="vps.start">
                                                     <label class="form-label">@Localizer["StartDate"]</label>
                                                     <input type="text" class="form-control" value="@Model.StartDate.ToString("dd-MMM-yy")" disabled />
                                                 </div>
                                             </div>
-                                            <div class="col-md-6">
+                                            <div class="col-md-6" data-tour="vps.end">
                                                 <label class="form-label">@Localizer["EndDate"]</label>
                                                 <input type="text" class="form-control" value="@Model.EndDate.ToString("dd-MMM-yy")" disabled />
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6">
-                                                <div class="mb-3 form-group mt-2">
+                                                <div class="mb-3 form-group mt-2" data-tour="vps.notes">
                                                     <label class="form-label text-black">@Localizer["Notes"]</label>
                                                     <textarea class="form-control mb-4" rows="3" disabled>@Model.Notes</textarea>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label text-black">@Localizer["VerificationTeam"]</label>
-                                                <div class="avatar-list avatar-list-stacked form-control">
+                                                <div class="avatar-list avatar-list-stacked form-control" data-tour="vps.team">
                                                     @{
                                                         if (Model.VerificationTeam != null)
                                                         {
@@ -128,7 +129,7 @@
                                         @{
                                             string sVerificationEnabled = (Model.IsAuthorized && Model.VerificationStatus != "Completed") ? "" : "disabled";
                                         }
-                                        <div class="row">
+                                        <div class="row" data-tour="vps.counts">
                                             <div class="col-md-6">
                                                 <label class="form-label">@Localizer["NumberOfAssetsToVerify"]</label>
                                                 <input type="text" id="txtNumberOfAssetsToVerify" class="form-control" value="@Model.NumberOfAssetsToVerify" readonly />
@@ -139,7 +140,7 @@
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-md-6">
+                                            <div class="col-md-6" data-tour="vps.verifyBtn">
                                                 <div class="form-group mb-3 mt-2">
                                                     <label class="form-label text-black">@Localizer["Action"]</label>
                                                     <div class="flex form-control p-2">
@@ -153,7 +154,7 @@
                                                 var sCompletionEnabled = (Model.VerificationStatus == "Ongoing") && (Model.NumberOfAssetsToVerify == Model.VerifiedAssets)
                                                 ? "" : "disabled";
                                             }
-                                            <div class="col-md-6">
+                                            <div class="col-md-6" data-tour="vps.completeBtn">
                                                 <div class="form-group mb-3 mt-2">
                                                     <label class="form-label text-black">@Localizer["CompleteVerification"]</label>
                                                     <div class="flex form-control p-2">
@@ -161,9 +162,9 @@
                                                             <i class="fa fa-check-square"></i> @Localizer["CompleteVerification"]
                                                         </button>
                                                         <div class="dropdown-menu" style="">
-                                                            <div class="p-5">
+                                                            <div class="p-5" data-tour="vps.completeConfirm">
                                                                 <h4 class="dropdown-title bolder text-danger">@Localizer["CompleteSchedule"]?</h4>
-                                                                <p class="text-muted">@Localizer["CSMessage"]</p> @* You will not be able to undo this action, are you sure? *@
+                                                                <p class="text-muted">@Localizer["CSMessage"]</p>
                                                                 <form asp-action="CompleteVerificationSchedule" id="frmComplete" method="post">
                                                                     <input type="hidden" id="ScheduleId" name="ScheduleId" value="@Model.Id" />
                                                                     <button type="submit" id="btnComplete" class="btn btn-outline-info btn-sm">
@@ -175,84 +176,91 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> <!-- /row -->
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- RIGHT: Charts -->
                             <div class="col-md-6">
                                 <div class="card">
                                     <div class="card-status bg-danger br-tr-7 br-tl-7"></div>
                                     <div class="card-body">
                                         <div class="row">
-                                            <div id="verificationChart" class="" style="width: 100%; height: 400px;"></div>
+                                            <div id="verificationChart" class="" style="width: 100%; height: 400px;" data-tour="vps.chart.status"></div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> <!-- /row -->
+
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="card">
                                     <div class="card-status bg-secondary br-tr-7 br-tl-7"></div>
                                     <div class="card-body">
-                                        <div id="progressChart" style="width: 100%; height: 400px;"></div>
+                                        <div id="progressChart" style="width: 100%; height: 400px;" data-tour="vps.chart.progress"></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
 
+                    </div> <!-- /card-body -->
+                </div> <!-- /card -->
             </div>
         </div>
     </div>
     <div class="card-footer">
         <div class="row">
-
             <div class="col-sm-12">
-                <a asp-action="Index" asp-controller="Verifications" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;@Localizer["Previous"]</a>
+                <a asp-action="Index" asp-controller="Verifications" id="btnCancel" class="btn btn-outline-default" data-tour="vps.back">
+                    <i class="fe fe-corner-up-left"></i>&nbsp;@Localizer["Previous"]
+                </a>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Verify Assets Modal -->
 <div class="modal fade" id="mdlVerifyAssets" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
         <div class="modal-content modal-content-demo">
             <div class="modal-header bg-gray-300">
                 <h5 class="modal-title">@Localizer["VerifyAssets"]</h5>
-                <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" onclick="return refreshPage();">
+                <button aria-label="Close" class="btn-close" data-bs-dismiss="modal">
                     <span aria-hidden="true">&times;</span>
                 </button>
                 <div class="modal-notification"></div>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" data-tour="vps.modal">
                 <div id="verificationOverlay" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0, 0, 0, 0.5); z-index:1000; text-align:center;">
                     <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);">
                         <i class="fa fa-spinner fa-spin" style="font-size:3rem; color:white;"></i>
                     </div>
                 </div>
                 <div class="row">
+                    <!-- Modal Left: Form -->
                     <div class="col-md-4">
                         <div class="card">
-                            <div class="card-body">
+                            <div class="card-body" data-tour="vps.modal.form">
                                 <form asp-action="VerifyAsset" id="frmVerify" method="post" enctype="multipart/form-data">
                                     <input asp-for="VerificationRecord.Id" type="hidden" />
                                     <input asp-for="VerificationRecord.AssetId" type="hidden" />
                                     <input asp-for="VerificationRecord.VerificationScheduleId" value="@Model.Id" type="hidden" />
 
-                                    <div class="form-group">
+                                    <div class="form-group" data-tour="vps.modal.asset">
                                         <label asp-for="VerificationRecord.AssetId" class="form-label">@Localizer["SelectedAsset"]</label>
                                         <input type="text" id="AssetName" class="form-control" value="-select an asset-" disabled />
                                         <span id="spnAssetId" class="text-danger validation"></span>
                                     </div>
 
-                                    <div class="form-group">
+                                    <div class="form-group" data-tour="vps.modal.date">
                                         <label asp-for="VerificationRecord.VerificationDate" class="form-label">@Localizer["VerificationDate"]</label>
                                         <input asp-for="VerificationRecord.VerificationDate" type="text" class="form-control" value="@DateTime.Now.ToString("dd-MMM-yy")" disabled />
                                         <span id="spnVerificationDate" class="text-danger validation"></span>
                                     </div>
 
-                                    <div class="form-group">
+                                    <div class="form-group" data-tour="vps.modal.result">
                                         <label asp-for="VerificationRecord.Result" class="form-label">@Localizer["VerificationResult"]</label>
                                         <select asp-for="VerificationRecord.Result" class="form-control form-select" required>
                                             <option value="-1" disabled selected>-@Localizer["SelectResultOption"]-</option>
@@ -265,19 +273,19 @@
                                         <span id="spnResult" class="text-danger validation"></span>
                                     </div>
 
-                                    <div class="form-group">
+                                    <div class="form-group" data-tour="vps.modal.comments">
                                         <label asp-for="VerificationRecord.Comments" class="form-label">@Localizer["Comments"]</label>
                                         <textarea asp-for="VerificationRecord.Comments" rows="3" class="form-control" required></textarea>
                                         <span id="spnComments" class="text-danger validation"></span>
                                     </div>
 
-                                    <div class="form-group">
+                                    <div class="form-group" id="rowPhoto" data-tour="vps.modal.photo">
                                         <label asp-for="file" class="form-label">@Localizer["UploadCurrentPicture"]</label>
-                                        <input asp-for="file" type="file" class="form-control dropify" required />
+                                        <input asp-for="file" type="file" class="form-control dropify" />
                                         <span id="spnFile" class="text-danger validation"></span>
                                     </div>
 
-                                    <div class="form-group">
+                                    <div class="form-group" data-tour="vps.modal.verifySubmit">
                                         <button id="btnVerifyAsset" type="button" class="btn btn-primary form-control @sVerificationEnabled">
                                             <i class="fa fa-check-square"></i> @Localizer["VerifyAsset"]
                                         </button>
@@ -286,7 +294,9 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-8">
+
+                    <!-- Modal Right: Assets table -->
+                    <div class="col-md-8" data-tour="vps.modal.assetsTable">
                         <div class="card">
                             <div class="card-body">
                                 <label class="form-label">@Localizer["SelectAssetToVerify"]</label>
@@ -308,16 +318,19 @@
                             </div>
                         </div>
                     </div>
-                </div>
+
+                </div> <!-- /row -->
             </div>
             <div class="modal-footer">
-                <button class="btn btn-light" data-bs-dismiss="modal" onclick="refreshPage();">Close</button>
+                <button class="btn btn-light" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
 </div>
+
 <section id="dvAssetsData" style="display:none;">@Html.Raw(Json.Serialize(Model.Assets))</section>
 
+<!-- Verified Assets Modal -->
 <div class="modal fade" id="mdlVerified" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
         <div class="modal-content modal-content-demo">
@@ -327,7 +340,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" data-tour="vps.modalVerified">
                 <div id="verificationOverlay" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0, 0, 0, 0.5); z-index:1000; text-align:center;">
                     <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);">
                         <i class="fa fa-spinner fa-spin" style="font-size:3rem; color:white;"></i>
@@ -337,7 +350,7 @@
                 <div class="card">
                     <div class="card-body">
                         <label class="h3" id="lblTitle">@Localizer["ListOfVerifiedAssets"]</label>
-                        <div class="table-responsive export-table">
+                        <div class="table-responsive export-table" data-tour="vps.modalVerified.table">
                             <table id="tblVerifiedAssets" class="table text-nowrap mb-0 table-bordered key-buttons border-top border-bottom project-list-main">
                                 <thead class="bg-primary-gradient ms-auto divShadow">
                                     <tr>
@@ -365,45 +378,16 @@
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.0/dist/echarts.min.js"></script>
-    <script>
-        const isSomali = getCurrentLanguage()==="so";
-        $(document).ready(function () {
-            hideMenu();
-            
-            let result = tryParseJson('@Html.Raw(Json.Serialize(Model.BarchartData))','Barchart Data');
-            if(result.status === "success"){
-                loadBarchart(result.data);
-            }else{
-                showErrorMessageJs(result.message);
-                return;
-            }
-            result = tryParseJson('@Html.Raw(Json.Serialize(Model.ProgressChart))','Progress Chart Data');
-            if(result.status === "success"){
-                loadProgressChart(result.data);
-            }else{
-                showErrorMessageJs(result.message);
-                return;
-            }
-            $("#btnVerify").on("click", () => {
-                loadAssetsData();
-                showModal();
-            });
-            $("#btnVerifyAsset").on("click", function (e) {
-                e.preventDefault();
-                if (isFormValid()) {
-                    submitVerificationForm();
-                } else {
-                    showErrorMessage(isSomali ? "Fadlan sax khaladaadka xaqiijinta hantida!" : "Please correct the validation errors!");
-                }
-            });
-            $("#btnComplete").on("click", function (e) {
-                e.preventDefault();
-                $("#frmComplete").submit();
-            });
-            var textareaHeight = $('textarea.form-control').outerHeight(); // Includes padding and border
-            $('.avatar-list').outerHeight(textareaHeight); // Sets height including padding and border
+    <partial name="_ChartAssets" />
+    <partial name="_DatatablesAssets" />
 
-        });
+    <script>
+        window.VERIF_PREVIEW_CONFIG = {
+          scheduleId: @Model.Id,
+          barChart: @Html.Raw(Json.Serialize(Model.BarchartData)),
+          progressChart: @Html.Raw(Json.Serialize(Model.ProgressChart))
+        };
     </script>
-    <script src="@Url.Content("~/js/user_verifications_previewschedule.js")" defer></script>
+
+    <script src="~/js/pages/verifications-previewschedule.js"></script>
 }

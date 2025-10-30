@@ -60,7 +60,6 @@
         }
     };
 
-
     // ---------- Assert (warn-once in prod) ----------
     U._assertWarned = U._assertWarned || new Set();
     U.assert = function (condition, message) {
@@ -262,7 +261,6 @@
             return null;
         }
 
-        // --- normalize tableRef -> selector string ---
         let sel = null;
 
         if (tableRef && tableRef.jquery) {
@@ -310,7 +308,6 @@
             "<'col-12 col-md-6 d-flex justify-content-md-end justify-content-start mt-2 mt-md-0' p> " +
             ">";
 
-        // delegated search binder (survives DOM rebuild)
         function wireSearchDelegated(dtApi) {
             const $wrapper = $(`${sel}_wrapper`);
             if (!$wrapper.length) {
@@ -318,16 +315,13 @@
                 return;
             }
 
-            // stash api reference on wrapper
             $wrapper.data("dtApi", dtApi);
 
-            // remove old delegated handler (namespaced)
             $wrapper.off(
                 "input.amsDelegatedSearch keyup.amsDelegatedSearch",
                 ".dataTables_filter input[type='search']"
             );
 
-            // delegate events from wrapper to the search input
             $wrapper.on(
                 "input.amsDelegatedSearch keyup.amsDelegatedSearch",
                 ".dataTables_filter input[type='search']",
@@ -339,26 +333,47 @@
                 }
             );
         }
+        function wireLengthDelegated(dtApi) {
+            const $wrapper = $(`${sel}_wrapper`);
+            if (!$wrapper.length) {
+                console.warn("[AMS] wireLengthDelegated: wrapper not found for", sel);
+                return;
+            }
+
+            $wrapper.data("dtApi", dtApi);
+
+            $wrapper.off(
+                "change.amsDelegatedLength",
+                ".dataTables_length select"
+            );
+            $wrapper.on(
+                "change.amsDelegatedLength",
+                ".dataTables_length select",
+                function () {
+                    const apiFromWrapper = $wrapper.data("dtApi");
+                    if (!apiFromWrapper) return;
+
+                    const newLen = parseInt($(this).val(), 10);
+                    if (!isNaN(newLen)) {
+                        apiFromWrapper.page.len(newLen).draw(false);
+                    }
+                }
+            );
+        }
 
         // CASE 1: table already initialized
         if ($.fn.DataTable.isDataTable($tbl)) {
             const api = $tbl.DataTable();
             try {
-                // ✅ BUTTON VISIBILITY LOGIC (final rules)
-                // type "1" => hide
-                // type "2" => show
-                // type "3" => show
                 if (tMode === "1") {
                     $(api.buttons?.().container?.()).hide();
                 } else {
                     $(api.buttons?.().container?.()).show();
                 }
-
-                // rebuild header with your styling
                 U.styleDataTableButtonsAndPagination?.(sel, tMode);
 
-                // reattach delegated search
                 wireSearchDelegated(api);
+                wireLengthDelegated(api);
 
                 // adjust columns after DOM changes
                 api.columns?.adjust?.().draw(false);
@@ -378,37 +393,29 @@
             autoWidth: false,
             initComplete: function () {
                 try {
-                    // this === DataTable context
                     const dtApi = this.api();
 
-                    // ✅ BUTTON VISIBILITY LOGIC (final rules)
-                    // type "1" => hide
-                    // type "2" => show
-                    // type "3" => show
                     if (tMode === "1") {
                         $(dtApi.buttons().container()).hide();
                     } else {
                         $(dtApi.buttons().container()).show();
                     }
 
-                    // apply your styling
                     U.styleDataTableButtonsAndPagination?.(sel, tMode);
 
-                    // hook delegated search
                     wireSearchDelegated(dtApi);
+                    wireLengthDelegated(dtApi);
                 } catch (err) {
                     console.error("[AMS] initComplete error:", err);
                 }
             }
         });
 
-        // zebra / redraw styling
         try {
             U.applyRowStyles?.();
             api.on("draw.dt", U.applyRowStyles);
         } catch { }
 
-        // fix columns if table starts hidden
         $(document).one(
             "shown.bs.tab shown.bs.collapse shown.bs.modal",
             function () {
@@ -420,6 +427,7 @@
 
         return api;
     };
+
     U.styleDataTableButtonsAndPagination = function (tableName, tMode) {
         if (!hasJQ) return;
 
