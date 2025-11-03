@@ -35,17 +35,34 @@ namespace MODAMS.ApplicationServices
             _employeeId = _func.GetEmployeeId();
             _isSomali = CultureInfo.CurrentUICulture.Name == "so";
         }
-        public async Task<Result<TransferDTO>> GetIndexAsync(int id = 0, int transferStatusId = 0)
+        public async Task<Result<TransferDTO>> GetIndexAsync(int id = 0, int transferStatusId = 0, CancellationToken ct = default)
         {
             try
             {
                 var dto = new TransferDTO();
-                var allStores = await _db.vwStores.ToListAsync();
-                var accessibleStores = await GetAccessibleStoresWithTransfersOnlyAsync(allStores);
 
-                _storeId = id > 0
-                    ? id
-                    : accessibleStores.FirstOrDefault()?.Id ?? 0;
+                // 1) Stores (DB-driven; includes role logic inside)
+                var accessibleStores = await GetAccessibleStoresWithTransfersOnlyAsync(ct);
+
+                _storeId = id > 0 ? id : (accessibleStores.FirstOrDefault()?.Id ?? 0);
+
+                // No accessible stores → return an empty but valid DTO
+                if (_storeId == 0)
+                {
+                    dto.StoreList = new List<SelectListItem>();
+                    dto.OutgoingTransfers = new List<vwTransfer>();
+                    dto.IncomingTransfers = new List<vwTransfer>();
+                    dto.TransferredAssets = new List<TransferAssetDTO>();
+                    dto.OutgoingChartData = new List<TransferChartDTO>();
+                    dto.IncomingChartData = new List<TransferChartDTO>();
+                    dto.TotalTransferValue = 0m;
+                    dto.TotalReceivedValue = 0m;
+                    dto.IsAuthorized = false;
+                    dto.StoreId = 0;
+                    dto.SelectedStoreName = string.Empty;
+                    dto.TransferStatus = transferStatusId;
+                    return Result<TransferDTO>.Success(dto);
+                }
 
                 dto.StoreList = accessibleStores.Select(s => new SelectListItem
                 {
@@ -56,23 +73,44 @@ namespace MODAMS.ApplicationServices
 
                 dto.IsAuthorized = await _func.CanModifyStoreAsync(_storeId, _employeeId);
                 dto.StoreId = _storeId;
+                dto.SelectedStoreName = accessibleStores.FirstOrDefault(s => s.Id == _storeId)?.Name ?? string.Empty;
                 dto.TransferStatus = transferStatusId;
 
-                var outgoingQuery = _db.vwTransfers.Where(m => m.StoreFromId == _storeId);
-                if (transferStatusId > 0)
-                    outgoingQuery = outgoingQuery.Where(m => m.TransferStatusId == transferStatusId);
+                // 2) Transfers (read-only)
+                var outgoingQuery = _db.vwTransfers
+                    .AsNoTracking()
+                    .Where(t => t.StoreFromId == _storeId);
 
-                dto.OutgoingTransfers = await outgoingQuery.OrderBy(m => m.TransferStatusId).ToListAsync();
+                if (transferStatusId > 0)
+                    outgoingQuery = outgoingQuery.Where(t => t.TransferStatusId == transferStatusId);
+
+                dto.OutgoingTransfers = await outgoingQuery
+                    .OrderBy(t => t.TransferStatusId)
+                    .ThenByDescending(t => t.Id)
+                    .ToListAsync(ct);
 
                 dto.IncomingTransfers = await _db.vwTransfers
-                    .Where(m => m.StoreId == _storeId && m.TransferStatusId != SD.Transfer_Pending)
-                    .OrderBy(m => m.TransferStatusId)
-                    .ToListAsync();
+                    .AsNoTracking()
+                    .Where(t => t.StoreId == _storeId && t.TransferStatusId != SD.Transfer_Pending)
+                    .OrderBy(t => t.TransferStatusId)
+                    .ThenByDescending(t => t.Id)
+                    .ToListAsync(ct);
 
+                // 3) Bulk assets for both directions
+                var allTransferIds = dto.OutgoingTransfers.Select(t => t.Id)
+                    .Concat(dto.IncomingTransfers.Select(t => t.Id))
+                    .Distinct()
+                    .ToList();
+
+                dto.TransferredAssets = await GetTransferredAssetsAsync(allTransferIds);
+
+                // 4) Charts (direction handled inside GetChartDataAsync)
                 dto.OutgoingChartData = await GetChartDataAsync(1);
                 dto.IncomingChartData = await GetChartDataAsync(2);
-                dto.TotalTransferValue = await GetTotalTransferValueAsync(_storeId);
-                dto.TotalReceivedValue = await GetTotalReceivedValueAsync(_storeId);
+
+                // 5) Totals (use DISTINCT assetIds + bulk depreciation inside)
+                dto.TotalTransferValue = await GetTotalTransferValueAsync(_storeId, ct);
+                dto.TotalReceivedValue = await GetTotalReceivedValueAsync(_storeId, ct);
 
                 return Result<TransferDTO>.Success(dto);
             }
@@ -166,7 +204,7 @@ namespace MODAMS.ApplicationServices
                 var prevStoreId = await GetCurrentStoreIdAsync();
 
                 using var tx = await _db.Database.BeginTransactionAsync();
-                
+
                 var transfer = new Transfer
                 {
                     TransferDate = transferDTO.Transfer.TransferDate,
@@ -195,7 +233,7 @@ namespace MODAMS.ApplicationServices
                         .Where(a => assetIds.Contains(a.Id))
                         .Select(a => a.Name)
                         .ToListAsync();
-                    
+
                     var details = assetIds.Select(id => new TransferDetail
                     {
                         AssetId = id,
@@ -396,7 +434,7 @@ namespace MODAMS.ApplicationServices
                                          : td.Asset.Condition.ConditionName,
                         IsSelected = true
                     })
-                    .OrderByDescending(a => a.Category == (_isSomali ? "Gaadiid" : "Vehicles")) 
+                    .OrderByDescending(a => a.Category == (_isSomali ? "Gaadiid" : "Vehicles"))
                     .ToListAsync();
 
                 var senderId = await _func.GetStoreOwnerIdAsync(transfer.StoreFromId);
@@ -762,56 +800,61 @@ namespace MODAMS.ApplicationServices
         {
             try
             {
-                var transferDetails = _db.TransferDetails
-                .Include(td => td.Transfer)
-                .Where(td => td.Transfer.StoreId == storeId && td.Transfer.TransferStatusId == 3)
-                .ToList();
+                var transferDetails = await _db.TransferDetails
+                    .AsNoTracking()
+                    .Include(td => td.Transfer)
+                    .Where(td => td.Transfer.StoreId == storeId && td.Transfer.TransferStatusId == SD.Transfer_Completed)
+                    .ToListAsync();
 
-                var assetIds = transferDetails.Select(td => td.AssetId).ToList();
+                var assetIds = transferDetails.Select(td => td.AssetId).Distinct().ToList();
 
-                var assets = _db.Assets
-                    .Include(asset => asset.SubCategory.Category)
-                    .Where(asset => assetIds.Contains(asset.Id))
-                    .ToList();
+                var assets = await _db.Assets
+                    .AsNoTracking()
+                    .Include(a => a.SubCategory).ThenInclude(sc => sc.Category)
+                    .Include(a => a.Condition)
+                    .Where(a => assetIds.Contains(a.Id))
+                    .ToListAsync();
+
+                var storeFromName = await _func.GetStoreNameByStoreIdAsync(
+                    transferDetails.FirstOrDefault()?.Transfer.StoreFromId ?? storeId);
+                var storeToName = await _func.GetStoreNameByStoreIdAsync(storeId);
+
+                var costCache = new Dictionary<int, decimal>();
+                async Task<decimal> CostAsync(int id)
+                {
+                    if (!costCache.TryGetValue(id, out var val))
+                    {
+                        val = await _func.GetDepreciatedCostAsync(id);
+                        costCache[id] = val;
+                    }
+                    return val;
+                }
 
                 var dto = new List<TransfersIncomingAssetDTO>();
-
                 foreach (var td in transferDetails)
                 {
-                    var transferAsset = assets.FirstOrDefault(a => a.Id == td.AssetId);
+                    var a = assets.FirstOrDefault(x => x.Id == td.AssetId);
+                    if (a == null) continue;
 
-                    if (transferAsset != null)
+                    var cat = a.SubCategory?.Category;
+                    var item = new TransfersIncomingAssetDTO
                     {
-                        var subCategory = transferAsset.SubCategory;
-                        var category = subCategory?.Category;
-                        var condition = transferAsset.Condition;
-
-                        var incomingAssets = new TransfersIncomingAssetDTO
-                        {
-                            TransferDate = td.Transfer.TransferDate,
-                            StoreFrom = await _func.GetStoreNameByStoreIdAsync(td.Transfer.StoreFromId),
-                            StoreTo = await _func.GetStoreNameByStoreIdAsync(td.Transfer.StoreId),
-                            AssetId = td.AssetId,
-                            Category = _isSomali
-                                ? category?.CategoryNameSo ?? ""
-                                : category?.CategoryName ?? "",
-                            SubCategory = _isSomali
-                                ? subCategory?.SubCategoryNameSo ?? ""
-                                : subCategory?.SubCategoryName ?? "",
-                            Make = transferAsset.Make,
-                            Model = transferAsset.Model,
-                            AssetName = transferAsset.Name,
-                            Barcode = transferAsset.Barcode ?? "",
-                            Condition = _isSomali
-                                ? condition?.ConditionNameSo ?? ""
-                                : condition?.ConditionName ?? "",
-                            SerialNumber = transferAsset.SerialNo,
-                            Cost = transferAsset.Cost,
-                            CurrentValue = await _func.GetDepreciatedCostAsync(td.AssetId)
-                        };
-
-                        dto.Add(incomingAssets);
-                    }
+                        TransferDate = td.Transfer.TransferDate,
+                        StoreFrom = storeFromName,
+                        StoreTo = storeToName,
+                        AssetId = a.Id,
+                        Category = _isSomali ? (cat?.CategoryNameSo ?? "") : (cat?.CategoryName ?? ""),
+                        SubCategory = _isSomali ? (a.SubCategory?.SubCategoryNameSo ?? "") : (a.SubCategory?.SubCategoryName ?? ""),
+                        Make = a.Make,
+                        Model = a.Model,
+                        AssetName = a.Name,
+                        Barcode = a.Barcode ?? "",
+                        Condition = _isSomali ? (a.Condition?.ConditionNameSo ?? "") : (a.Condition?.ConditionName ?? ""),
+                        SerialNumber = a.SerialNo,
+                        Cost = a.Cost,
+                        CurrentValue = await CostAsync(a.Id)
+                    };
+                    dto.Add(item);
                 }
 
                 return Result<List<TransfersIncomingAssetDTO>>.Success(dto);
@@ -869,7 +912,6 @@ namespace MODAMS.ApplicationServices
             return dtoTransferCharts;
         }
 
-
         //Private Functions
         private bool IsInRole(string role) => _httpContextAccessor.HttpContext?.User?.IsInRole(role) ?? false;
         private bool IsAssetSelected(int assetId, List<TransferDetail> transferDetails)
@@ -926,47 +968,35 @@ namespace MODAMS.ApplicationServices
             int departmentId = await _func.GetDepartmentIdByEmployeeIdAsync(_employeeId);
             return await _func.GetStoreIdByDepartmentIdAsync(departmentId);
         }
-        private async Task<decimal> GetTotalTransferValueAsync(int storeId)
+        private async Task<decimal> GetTotalTransferValueAsync(int storeId, CancellationToken ct = default)
         {
-            var transferIds = await _db.Transfers
-                .Where(transfer => transfer.TransferStatusId == 3 && transfer.StoreFromId == storeId)
-                .Select(transfer => transfer.Id)
-                .ToListAsync();
+            var assetIds = await _db.TransferDetails
+                .AsNoTracking()
+                .Where(td => td.Transfer.TransferStatusId == SD.Transfer_Completed
+                          && td.Transfer.StoreFromId == storeId)
+                .Select(td => td.AssetId)
+                .Distinct()
+                .ToListAsync(ct);
 
-            var transferDetails = await _db.TransferDetails.ToListAsync();
-            decimal totalValue = 0;
+            if (assetIds.Count == 0) return 0m;
 
-            foreach (var transferId in transferIds)
-            {
-                var transferDetailValue = transferDetails
-                    .Where(detail => detail.TransferId == transferId)
-                    .Sum(detail => _func.GetDepreciatedCost(detail.AssetId));
-
-                totalValue += transferDetailValue;
-            }
-
-            return totalValue;
+            var costs = await _func.GetDepreciatedCostBulkAsync(assetIds, ct);
+            return costs.Values.Sum();
         }
-        private async Task<decimal> GetTotalReceivedValueAsync(int storeId)
+        private async Task<decimal> GetTotalReceivedValueAsync(int storeId, CancellationToken ct = default)
         {
-            var transferIds = await _db.Transfers
-                .Where(transfer => transfer.TransferStatusId == 3 && transfer.StoreId == storeId)
-                .Select(transfer => transfer.Id)
-                .ToListAsync();
+            var assetIds = await _db.TransferDetails
+                .AsNoTracking()
+                .Where(td => td.Transfer.TransferStatusId == SD.Transfer_Completed
+                          && td.Transfer.StoreId == storeId)
+                .Select(td => td.AssetId)
+                .Distinct()
+                .ToListAsync(ct);
 
-            var transferDetails = await _db.TransferDetails.ToListAsync();
-            decimal totalValue = 0;
+            if (assetIds.Count == 0) return 0m;
 
-            foreach (var transferId in transferIds)
-            {
-                var transferDetailValue = transferDetails
-                    .Where(detail => detail.TransferId == transferId)
-                    .Sum(detail => _func.GetDepreciatedCost(detail.AssetId));
-
-                totalValue += transferDetailValue;
-            }
-
-            return totalValue;
+            var costs = await _func.GetDepreciatedCostBulkAsync(assetIds, ct);
+            return costs.Values.Sum();
         }
         private async Task<string> GetAssetImageAsync(int assetId)
         {
@@ -978,42 +1008,87 @@ namespace MODAMS.ApplicationServices
 
             return imageUrl ?? "/assets/images/placeholders/pictureplaceholder.jpg";
         }
-        private async Task<List<vwStore>> GetAccessibleStoresWithTransfersOnlyAsync(List<vwStore> allStores)
+        private async Task<List<vwStore>> GetAccessibleStoresWithTransfersOnlyAsync(CancellationToken ct = default)
         {
-            List<vwStore> stores = new();
-
             if (IsInRole("User"))
             {
                 int storeId = await _func.GetStoreIdByEmployeeIdAsync(_employeeId);
-                stores = allStores.Where(s => s.Id == storeId).ToList();
-            }
-            else if (IsInRole("StoreOwner"))
-            {
-                var ownedStores = allStores.Where(s => s.EmployeeId == _employeeId).ToList();
-                if (ownedStores.Any())
-                {
-                    var mainDeptId = ownedStores.First().DepartmentId;
-                    var storeFinder = new StoreFinder(mainDeptId, allStores);
-                    stores = storeFinder.GetStores();
-                }
-            }
-            else
-            {
-                stores = allStores;
+                return await _db.vwStores
+                    .AsNoTracking()
+                    .Where(s => s.Id == storeId)
+                    .ToListAsync(ct);
             }
 
-            // Filter to stores that have at least one transfer record
-            if(!(IsInRole("User") || IsInRole("StoreOwner")))
+            if (IsInRole("StoreOwner"))
             {
-                var storeIdsWithTransfers = await _db.vwTransfers
-                   .Select(t => t.StoreFromId)
-                   .Distinct()
-                   .ToListAsync();
+                var owned = await _db.vwStores
+                    .AsNoTracking()
+                    .Where(s => s.EmployeeId == _employeeId)
+                    .ToListAsync(ct);
 
-                return stores.Where(s => storeIdsWithTransfers.Contains(s.Id)).ToList();
+                if (!owned.Any()) return new();
+
+                var mainDeptId = owned.First().DepartmentId;
+
+                var allStores = await _db.vwStores
+                    .AsNoTracking()
+                    .ToListAsync(ct);
+
+                var storeFinder = new StoreFinder(mainDeptId, allStores);
+                return storeFinder.GetStores();
             }
-            return stores;
+
+            IQueryable<int> fromIds;
+            IQueryable<int> toIds;
+
+            fromIds = _db.vwTransfers.AsNoTracking().Select(t => t.StoreFromId);
+            toIds = _db.vwTransfers.AsNoTracking().Select(t => t.StoreId);
+
+            var involvedStoreIds = await fromIds
+                .Union(toIds)
+                .Distinct()
+                .ToListAsync(ct);
+
+            if (involvedStoreIds.Count == 0) return new();
+
+            return await _db.vwStores
+                .AsNoTracking()
+                .Where(s => involvedStoreIds.Contains(s.Id))
+                .ToListAsync(ct);
         }
+        private async Task<List<TransferAssetDTO>> GetTransferredAssetsAsync(IEnumerable<int> transferIds)
+        {
+            var ids = transferIds.Distinct().ToList();
+            if (ids.Count == 0) return new();
 
+            var q = _db.TransferDetails
+                .AsNoTracking()
+                .Where(td => ids.Contains(td.TransferId))
+                .Select(td => new TransferAssetDTO
+                {
+                    AssetId = td.Asset.Id,
+                    AssetName = td.Asset.Name,
+                    Category = _isSomali
+                        ? td.Asset.SubCategory.Category.CategoryNameSo
+                        : td.Asset.SubCategory.Category.CategoryName,
+                    SubCategory = _isSomali
+                        ? td.Asset.SubCategory.SubCategoryNameSo
+                        : td.Asset.SubCategory.SubCategoryName,
+                    Make = td.Asset.Make,
+                    Model = td.Asset.Model,
+                    Barcode = td.Asset.Barcode ?? "-",
+                    SerialNumber = td.Asset.SubCategory.CategoryId == 16
+                        ? (_isSomali ? "Taariko: " : "Plate No: ") + (td.Asset.Plate ?? "-")
+                        : (_isSomali ? "L.T: " : "S.N: ") + (td.Asset.SerialNo ?? "-"),
+                    Condition = _isSomali ? td.Asset.Condition.ConditionNameSo : td.Asset.Condition.ConditionName,
+                    IsSelected = true,
+                    TransferId = td.TransferId
+                });
+
+            return await q
+                .OrderByDescending(a => a.SubCategory == (_isSomali ? "Gaadiid" : "Vehicles"))
+                .ThenBy(a => a.AssetName)
+                .ToListAsync();
+        }
     }
 }

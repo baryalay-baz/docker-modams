@@ -56,7 +56,7 @@
                                 <th class="text-white bg-transparent border-bottom-0 w-10">@Localizer["Identification"]</th>
                                 <th class="text-white bg-transparent border-bottom-0 w-10">@Localizer["Store"]</th>
                                 <th class="text-white bg-transparent border-bottom-0 w-10">@Localizer["Status"]</th>
-                                <th class="text-white bg-transparent border-bottom-0 w-10 no-btn">@Localizer["Action"]</th>
+                                @* Removed Action column *@
                             </tr>
                         </thead>
                         <tbody class="table-body">
@@ -86,7 +86,7 @@
                                             sBackground = "info";
                                             break;
                                     }
-                                    <tr>
+                                    <tr data-id="@asset.Id">
                                         <td class="text-muted text-center fs-15 fw-semibold">@sCounter.</td>
                                         <td class="text-muted fs-15 fw-semibold">@(isSomali? asset.SubCategory.SubCategoryNameSo : asset.SubCategory.SubCategoryName)</td>
                                         <td class="text-muted fs-15 fw-semibold">@asset.Make</td>
@@ -101,14 +101,7 @@
                                                 </span>
                                             </span>
                                         </td>
-                                        <td class="text-muted fs-15 fw-semibold">
-                                            <div class="d-flex align-items-stretch">
-                                                <a asp-controller="Assets" asp-action="AssetInfo" asp-route-id="@asset.Id" 
-                                                   class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="tooltip" data-bs-original-title="@Localizer["AssetInformation"]">
-                                                    <i class="fe fe-info" @Html.Raw(sDataTourString)></i>
-                                                </a>
-                                            </div>
-                                        </td>
+                                        @* Removed old inline action cell *@
                                     </tr>
                                 }
                             }
@@ -118,7 +111,6 @@
             </div>
             <div class="card-footer">
                 <div class="row">
-                    @*<hr class="customHR" />*@
                     <div class="col-sm-12">
                         <a asp-action="Index" asp-controller="Home" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;@Localizer["Previous"]</a>
                     </div>

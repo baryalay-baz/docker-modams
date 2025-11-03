@@ -4,7 +4,7 @@ namespace MODAMS.ApplicationServices.IServices
 {
     public interface ITransferService
     {
-        Task<Result<TransferDTO>> GetIndexAsync(int id = 0, int transferStatusId = 0);
+        Task<Result<TransferDTO>> GetIndexAsync(int id = 0, int transferStatusId = 0, CancellationToken ct = default);
         Task<Result<TransferCreateDTO>> GetCreateTransferAsync();
         Task<Result<TransferCreateDTO>> CreateTransferAsync(TransferCreateDTO transferDTO, string selectedAssets);
         Task<Result<TransferEditDTO>> GetEditTransferAsync(int transferId);

@@ -223,97 +223,15 @@
     </div>
 </div>
 
+
+
 @section Scripts{
-
+    <partial name="_DatatablesAssets" />
     <script>
-        let sData = '';
-        let Data = null;
-        let selection = [];
-        let selectionIds = []
-        $(document).ready(function () {
-            hideMenu();
-            sData = '@Html.Raw(Json.Serialize(Model.Assets))';
-            var result = tryParseJson(sData,"Assets");
-
-            if (result.status === "error") {
-                Notify("error", result.message);
-                return;
-            }
-            Data = result.data;
-            
-            $('.select2').select2();
-
-            $('.picker').datepicker({
-                autoclose: true,
-                format: 'dd-MM-yyyy',
-                todayHighlight: true
-            });
-            makeDataTable("#tblTransfers", "1");
-
-
-            $("#btnSubmit").on("click", (e) => {
-                e.preventDefault();
-                if (checkSelection()) {
-                    console.log(selectionIds);
-                    $("#selectedAssets").val(selectionIds.join(','));
-                    $("#frmTransfer").submit();
-                } else {
-                    notif({
-                        type: "warning",
-                        msg: "<b>Warning: </b>No assets selected",
-                        position: "center",
-                        width: 500,
-                        height: 60,
-                        autohide: false
-                    });
-                }
-            });
-        });
-        const selectAsset = (id, obj) => {
-            // Fetch the checkbox element and its checked status
-            const isChecked = $("#" + obj.id).prop("checked");
-
-            // Find the asset by ID
-            const asset = Data.find(e => e.assetId === id);
-
-            if (asset) {
-                if (isChecked) {
-                    // Add the asset to selection and render its row
-                    selectionIds.push(asset.assetId);
-                    asset.isSelected = true;
-
-                    let sHtml = $("#tbodySelection").html();
-                    sHtml += `
-                        <tr data-id="${asset.assetId}">
-                            <td style="width: 90px; text-align: center;">
-                                <img src="${asset.imageUrl}" alt="" style="width: 80px; height: auto;">
-                            </td>
-                            <td style="width: auto;">
-                                <p style="margin: 2px 0;">@Localizer["Category"]:</span><span style="font-weight: bold;"> ${asset.subCategory}</p>
-                                <span style="margin: 2px 0;">@Localizer["AssetName"]:</span><span style="font-weight: bold;"> ${asset.assetName}</span>
-                                <p style="margin: 2px 0;">@Localizer["SerialNo"]:</span><span style="font-weight: bold;"> ${asset.serialNumber}</p>
-                            </td>
-                        </tr>`;
-
-                    $("#tbodySelection").html(sHtml);
-                    $("#spnSelection").html("(" + selectionIds.length + " @Localizer["selected"])");
-                } else {
-                    // Remove the asset from selection and delete its row
-                    selectionIds = selectionIds.filter(id => id !== asset.assetId);
-                    $(`#tbodySelection tr[data-id="${asset.assetId}"]`).remove();
-                    $("#spnSelection").html("(" + selectionIds.length + " @Localizer["selected"])");
-                }
-            }
-        };
-
-        const checkSelection = () => {
-            var blnResult = false;
-
-            Data.forEach(function (e) {
-                if (e.isSelected)
-                    blnResult = true;
-            });
-            return blnResult;
-        }
+        window.AMS = window.AMS || {};
+        window.AMS.pageData = { assets: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Assets)) };
     </script>
+
+    <script src="~/assets/plugins/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+    <script src="~/js/pages/transfers-createtransfer.js"></script>
 }

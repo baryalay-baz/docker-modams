@@ -1,4 +1,5 @@
-﻿(function () {
+﻿// /js/tours-loader.js
+(function () {
     const driverFactory = window?.driver?.js?.driver;
     if (!driverFactory) {
         console.error("Driver.js not loaded.");

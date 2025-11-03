@@ -120,8 +120,14 @@
   <data name="Action" xml:space="preserve">
     <value>Action</value>
   </data>
+  <data name="AllStores" xml:space="preserve">
+    <value>All Stores</value>
+  </data>
   <data name="AllTransfers" xml:space="preserve">
     <value>All Transfers</value>
+  </data>
+  <data name="AssetCount" xml:space="preserve">
+    <value>Asset Count</value>
   </data>
   <data name="Assets" xml:space="preserve">
     <value>Assets</value>
@@ -165,6 +171,12 @@
   <data name="EditTransfer" xml:space="preserve">
     <value>Edit Transfer</value>
   </data>
+  <data name="HintTypeOrScanBarcode" xml:space="preserve">
+    <value>Hint: Type or Scan Barcode</value>
+  </data>
+  <data name="IncomingToStore" xml:space="preserve">
+    <value>Incoming to Store</value>
+  </data>
   <data name="IncomingTransfers" xml:space="preserve">
     <value>Incoming Transfers</value>
   </data>
@@ -173,6 +185,9 @@
   </data>
   <data name="NewTransfer" xml:space="preserve">
     <value>New Transfer</value>
+  </data>
+  <data name="OutgoingFromStore" xml:space="preserve">
+    <value>Outgoing from Store</value>
   </data>
   <data name="OutgoingTransfers" xml:space="preserve">
     <value>Outgoing Transfers</value>
@@ -192,6 +207,15 @@
   <data name="Rejected" xml:space="preserve">
     <value>Rejected</value>
   </data>
+  <data name="ScanOrTypeBarcode" xml:space="preserve">
+    <value>Scan or type Barcode</value>
+  </data>
+  <data name="SearchTransferByAsset" xml:space="preserve">
+    <value>Search Transfer By Asset</value>
+  </data>
+  <data name="SelectAStore" xml:space="preserve">
+    <value>Select a store</value>
+  </data>
   <data name="Status" xml:space="preserve">
     <value>Status</value>
   </data>
@@ -200,6 +224,12 @@
   </data>
   <data name="StoreTo" xml:space="preserve">
     <value>Store To</value>
+  </data>
+  <data name="TotalValue" xml:space="preserve">
+    <value>Total Value</value>
+  </data>
+  <data name="TransferNo" xml:space="preserve">
+    <value>Transfer Number</value>
   </data>
   <data name="Transfers" xml:space="preserve">
     <value>Transfers</value>

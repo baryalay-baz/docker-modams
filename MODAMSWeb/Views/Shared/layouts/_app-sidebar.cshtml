@@ -140,9 +140,21 @@
                         <span class="side-menu__label">Reports</span>
                     </a>
                 </li>
+
+                @if (User.IsInRole("Administrator"))
+                {
+                    <li>
+                        <h3>@Localizer["AdministrativeSettings"]</h3>
+                    </li>
+                    <li class="slide">
+                        <a class="side-menu__item" data-bs-toggle="slide" href="/Admin/Settings">
+                            <i class="fe fe-settings side-menu__icon"></i>
+                            <span class="side-menu__label">@Localizer["Settings"]</span>
+                        </a>
+                    </li>
+                    
+                }
             </ul>
-
-
             <div class="slide-right" id="slide-right">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="#7b8191"
                      width="24" height="24" viewBox="0 0 24 24">
@@ -154,10 +166,3 @@
     </div>
 </div>
 <!--/APP-SIDEBAR-->
-
-<script>
-    function logOut() {
-        $("#frmLogout").submit();
-    }
-
-</script>

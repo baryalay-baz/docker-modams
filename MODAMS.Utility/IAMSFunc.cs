@@ -36,9 +36,10 @@ namespace MODAMS.Utility
         public Task<int> GetStoreIdByEmployeeIdAsync(int employeeId);
         public Task<int> GetStoreIdByDepartmentIdAsync(int departmentId);
         public Task<string> GetStoreNameByStoreIdAsync(int storeId);
-        public decimal GetDepreciatedCost(int nAssetId);
-        public Task<decimal> GetDepreciatedCostAsync(int nAssetId);
-        public Task<decimal> GetDepreciatedCostByStoreIdAsync(int storeId);
+        public decimal GetDepreciatedCost(int assetId);
+        public Task<decimal> GetDepreciatedCostAsync(int assetId, CancellationToken ct = default);
+        public Task<Dictionary<int, decimal>> GetDepreciatedCostBulkAsync(IEnumerable<int> assetIds, CancellationToken ct = default);
+        public Task<decimal> GetDepreciatedCostByStoreIdAsync(int storeId, CancellationToken ct = default);
         public Task<string> GetProfileImageAsync(int employeeId);
         public Task<int> GetStoreOwnerIdAsync(int storeId);
         public Task<List<vwStore>> GetStoresByEmployeeIdAsync(int employeeId);

@@ -1,5 +1,4 @@
 ﻿// wwwroot/js/layout.js
-
 (function (w, $) {
     "use strict";
 

@@ -1,0 +1,180 @@
+﻿/* =========================================================
+   Transfers/Index — Page-specific CSS (full)
+   ========================================================= */
+
+/* === KPI cards === */
+.card-kpi {
+    border: 1px solid rgba(0,0,0,.06);
+    box-shadow: 0 6px 18px rgba(0,0,0,.05);
+    min-height: 110px;
+    transition: transform .06s ease;
+}
+
+    .card-kpi:hover {
+        transform: translateY(-1px);
+    }
+
+.card-kpi--out {
+    background: linear-gradient(180deg, rgba(0,153,255,.05), rgba(0,153,255,0));
+}
+
+.card-kpi--in {
+    background: linear-gradient(180deg, rgba(0,200,83,.05), rgba(0,200,83,0));
+}
+
+.card-kpi--search {
+    background: linear-gradient(180deg, rgba(108,117,125,.06), rgba(108,117,125,0));
+}
+
+.metric {
+    font-weight: 700;
+    font-size: 1.05rem;
+}
+
+.value {
+    font-weight: 700;
+}
+
+/* === Neutral segmented filters (radio pills) === */
+.ams-seg .btn {
+    min-width: 9rem;
+    border-color: #ced4da;
+    color: #495057;
+    background: #fff;
+}
+
+    .ams-seg .btn:hover {
+        background: #f8f9fa;
+        border-color: #bfc6cc;
+        color: #343a40;
+    }
+
+.ams-seg .btn-check:checked + .btn {
+    color: #212529;
+    background: #eef2f5;
+    border-color: #bfc6cc;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.05);
+}
+
+/* === Tables (Transfers only) === */
+.table.project-list-main thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.table.project-list-main td,
+.table.project-list-main th {
+    vertical-align: middle;
+}
+
+.table.project-list-main tr > td:last-child {
+    white-space: nowrap;
+}
+
+/* Force taller rows so hover chips fit cleanly */
+#tblTransfers.dataTable tbody > tr > td,
+#tblTransfers.dataTable tbody > tr > th,
+#tblTransfersIncoming.dataTable tbody > tr > td,
+#tblTransfersIncoming.dataTable tbody > tr > th {
+    padding-top: 0.85rem !important;
+    padding-bottom: 0.85rem !important;
+    line-height: 1.25 !important;
+    vertical-align: middle !important;
+}
+/* Floor on TR height in case something else squeezes */
+#tblTransfers.dataTable tbody > tr,
+#tblTransfersIncoming.dataTable tbody > tr {
+    min-height: 48px;
+}
+
+/* Ensure hover-action pills aren’t clipped by responsive wrappers */
+#dvTable-Responsive,
+#dvTable-Responsive-Incoming {
+    overflow: visible !important;
+    position: relative; /* stable stacking context */
+}
+
+/* Keep the chip size tuned for Transfers (works with your global DT CSS) */
+#tblTransfers .row-actions .btn,
+#tblTransfersIncoming .row-actions .btn {
+    padding: .35rem .55rem;
+}
+
+#tblTransfers .row-actions,
+#tblTransfersIncoming .row-actions {
+    z-index: 20; /* above cell content for this page */
+}
+
+/* DataTables top controls (local tweaks; utils styles the rest) */
+.dataTables_length select,
+.dataTables_filter input {
+    height: 34px;
+    line-height: 34px;
+}
+
+/* === Charts: keep pies perfectly circular === */
+.chart-square {
+    width: 100%;
+    max-width: 420px; /* adjust if you want larger pies */
+    aspect-ratio: 1 / 1; /* square box; keeps circle round */
+    margin: 0 auto;
+}
+
+    .chart-square > canvas {
+        width: 100% !important;
+        height: 100% !important;
+    }
+
+/* === Store Select2 width fix === */
+#StoreId.select2-hidden-accessible + .select2-container {
+    width: 100% !important;
+}
+
+@media (min-width: 1200px) {
+    #StoreId.select2-hidden-accessible + .select2-container {
+        min-width: 640px;
+    }
+}
+
+
+/* Professional "more" badge */
+.badge-more {
+    --_bg: var(--bs-secondary-bg); /* adapts to light/dark */
+    --_border: var(--bs-border-color);
+    --_hover-bg: var(--bs-primary-bg-subtle);
+    --_hover-text: var(--bs-primary-text-emphasis);
+    padding: .35rem .6rem;
+    border: 1px solid var(--_border);
+    background-color: var(--_bg);
+    color: var(--bs-body-color);
+    border-radius: 999px;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: .15px;
+    box-shadow: 0 1px 0 rgba(0,0,0,.03);
+    cursor: pointer; /* it’s clickable */
+    transition: transform .12s ease, box-shadow .12s ease, background-color .12s ease, color .12s ease, border-color .12s ease;
+}
+
+    .badge-more:hover,
+    .badge-more:focus-visible {
+        background-color: var(--_hover-bg);
+        color: var(--_hover-text);
+        border-color: color-mix(in srgb, var(--bs-primary), white 70%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 14px rgba(0,0,0,.08);
+        text-decoration: none; /* in case it's an <a> */
+    }
+
+    .badge-more:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    }
+
+/* Respect users who prefer less motion */
+@media (prefers-reduced-motion: reduce) {
+    .badge-more {
+        transition: none;
+    }
+}

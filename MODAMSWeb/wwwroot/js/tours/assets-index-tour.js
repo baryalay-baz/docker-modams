@@ -1,4 +1,5 @@
-﻿(function () {
+﻿//js/tours/assets-index-tour.js
+(function () {
     const driverFactory = window?.driver?.js?.driver;
     const lang = getCurrentLanguage(); // returns "en" or "so"
 

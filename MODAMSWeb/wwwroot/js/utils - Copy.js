@@ -1,4 +1,6 @@
-﻿// /js/utils.js
+﻿
+// /js/utils.js
+
 (function (w, $) {
     "use strict";
 
@@ -27,11 +29,13 @@
 
     // ---------- API Calls ----------
     U.fetchJson = async function (url, options = {}) {
+        // merge defaults
         const finalOptions = Object.assign(
             {
                 method: "GET",
                 headers: {
                     "Accept": "application/json",
+                    // automatically include anti-forgery token if available
                     ...U.csrfHeader?.()
                 }
             },
@@ -96,9 +100,15 @@
     };
 
     // ---------- Logger ----------
-    U.log = function (...args) { console.log("[AMS]", ...args); };
-    U.logWarn = function (...args) { console.warn("[AMS]", ...args); };
-    U.logError = function (...args) { console.error("[AMS]", ...args); };
+    U.log = function (...args) {
+        console.log("[AMS]", ...args);
+    };
+    U.logWarn = function (...args) {
+        console.warn("[AMS]", ...args);
+    };
+    U.logError = function (...args) {
+        console.error("[AMS]", ...args);
+    };
 
     // ---------- Small utils ----------
     U.debounce = function (fn, wait = 150) {
@@ -157,6 +167,7 @@
 
     // ---------- Theme Mode ----------
     U.setMode = function (mode) {
+        // mode: "dark-mode" | "light-mode" | undefined (read from LS)
         const saved = localStorage.getItem("displayMode");
         const target = mode || saved || "light-mode";
         const isDark = target === "dark-mode";
@@ -224,6 +235,7 @@
                 },
             };
         }
+        // Default English — consistent modern keys
         return {
             processing: "Processing...",
             lengthMenu: "_MENU_",
@@ -243,14 +255,7 @@
             },
         };
     };
-
-    // === Hover Actions helper: tiny template "/assets/edit/{id}"
-    U._interpolateHref = function (tpl, row) {
-        if (!tpl) return null;
-        return tpl.replace(/\{([^}]+)\}/g, (_, k) => String(row?.[k] ?? ""));
-    };
-
-    U.makeDataTable = function (tableRef, type = "1", recordsPerPage = 10, actionsConfig) {
+    U.makeDataTable = function (tableRef, type = "1", recordsPerPage = 10) {
         if (!w.jQuery || !$.fn || !$.fn.DataTable) {
             console.error("[AMS] DataTables not loaded.");
             return null;
@@ -287,7 +292,7 @@
             return null;
         }
 
-        const tMode = String(type);
+        const tMode = String(type); // "1","2","3"
         const currentLanguage = U.getCurrentLanguage?.() ?? "en";
         const languageOptions = U.getDataTableLanguageOptions?.(currentLanguage) ?? {};
 
@@ -337,7 +342,10 @@
 
             $wrapper.data("dtApi", dtApi);
 
-            $wrapper.off("change.amsDelegatedLength", ".dataTables_length select");
+            $wrapper.off(
+                "change.amsDelegatedLength",
+                ".dataTables_length select"
+            );
             $wrapper.on(
                 "change.amsDelegatedLength",
                 ".dataTables_length select",
@@ -353,129 +361,6 @@
             );
         }
 
-        // === Hover Actions: helpers (scoped to this call) ======================
-        const wantsActions =
-            actionsConfig &&
-            actionsConfig.enable !== false &&
-            Array.isArray(actionsConfig.buttons) &&
-            actionsConfig.buttons.length > 0;
-
-        function ensurePaddingOverrideIfAny() {
-            if (!wantsActions) return;
-            if (!Number.isFinite(actionsConfig.paddingPx)) return;
-            const px = Math.max(100, actionsConfig.paddingPx | 0);
-            const id = "pad-" + Math.random().toString(36).slice(2);
-            const style = document.createElement("style");
-            style.textContent =
-                `.table--hover-actions[data-pad="${id}"] td.with-actions-pad{padding-inline-end:${px}px}`;
-            document.head.appendChild(style);
-            $tbl.attr("data-pad", id);
-        }
-
-        function buildRowActionsHtml(buttons) {
-            const isSo = (U.getCurrentLanguage?.() === "so");
-            return `
-                <div class="row-actions">
-                  ${buttons.map((b) => {
-                        // Choose the right title per language, with safe fallbacks
-                        const rawTitle = isSo
-                            ? (b.titleSo || b.titleEn || b.title || "")
-                            : (b.titleEn || b.titleSo || b.title || "");
-                        const title = U.escapeHtml(rawTitle);
-                        const icon = b.iconHtml || "";
-                        const extra = b.className ? " " + U.escapeHtml(b.className) : "";
-
-                        return `<button type="button"
-                                    class="btn btn-sm act-${U.escapeHtml(b.key)}${extra}"
-                                    data-bs-toggle="tooltip"
-                                    data-bs-placement="top"
-                                    data-bs-trigger="hover focus"
-                                    title="${title}"
-                                    data-action="${U.escapeHtml(b.key)}">
-                                    ${icon || title}
-                                </button>`;
-                    }).join("")}
-                </div>`;
-        }
-
-
-        function applyHoverActions(dtApi) {
-            if (!wantsActions) return;
-
-            $tbl.addClass("table--hover-actions");
-
-            const rows = dtApi.rows({ page: "current" }).nodes().to$();
-
-            rows.each(function () {
-                const $tr = $(this);
-                // Add actions only once per row
-                if (!$tr.children(".row-actions").length) {
-                    $tr.append(buildRowActionsHtml(actionsConfig.buttons));
-
-                    // Initialize Bootstrap tooltips for new buttons (if Bootstrap is present)
-                    if (window.bootstrap?.Tooltip) {
-                        $tr.find('.row-actions [data-bs-toggle="tooltip"]').each(function () {
-                            if (!this._amsTip) {
-                                this._amsTip = new bootstrap.Tooltip(this, { container: 'body', trigger: 'hover' });
-                            }
-                        });
-                    }
-                }
-            });
-
-            // Delegated click handling
-            // Delegated click handling (read id from <tr data-id>)
-            $tbl.off(".amsRowActions").on("click.amsRowActions", "tbody .row-actions [data-action]", function (e) {
-                e.stopPropagation();
-
-                const $btn = $(this);
-                const $tr = $btn.closest("tr");
-                const api = $tbl.DataTable();
-                const row = api.row($tr).data();          // still handy if you need other values
-                const id = $tr.data("id");               // <-- primary source
-
-                const key = $btn.data("action");
-                const cfg = actionsConfig.buttons.find(b => b.key === key);
-                if (!cfg) return;
-
-                // Safety: if no data-id on the row, try to fallback (hidden ID column/object rows)
-                let ctxId = id;
-                if (ctxId == null) {
-                    if (Number.isInteger(actionsConfig.idColumnIndex) && Array.isArray(row)) {
-                        const raw = row[actionsConfig.idColumnIndex];
-                        ctxId = (raw && raw.nodeType === 1) ? $(raw).text().trim() : raw;
-                    } else if (row && typeof row === "object" && !Array.isArray(row)) {
-                        ctxId = row.Id ?? row.id ?? null;
-                    }
-                }
-
-                if (typeof cfg.onClick === "function") {
-                    return cfg.onClick({ id: ctxId, row, event: e, api });
-                }
-
-                if (cfg.href) {
-                    const url = (ctxId != null && String(cfg.href).includes("{id}"))
-                        ? cfg.href.replace("{id}", encodeURIComponent(ctxId))
-                        : cfg.href;
-                    if (url) window.location = url;
-                }
-            });
-
-
-            // Touch: tap row to show pills briefly
-            $tbl.on("click.amsRowActions", "tbody tr", function (e) {
-                if ($(e.target).closest(".row-actions").length) return;
-                const $tr = $(this);
-                $tr.toggleClass("show-actions");
-                if ($tr.hasClass("show-actions")) {
-                    setTimeout(() => $tr.removeClass("show-actions"), 3000);
-                }
-            });
-        }
-
-
-        // ======================================================================
-
         // CASE 1: table already initialized
         if ($.fn.DataTable.isDataTable($tbl)) {
             const api = $tbl.DataTable();
@@ -490,11 +375,7 @@
                 wireSearchDelegated(api);
                 wireLengthDelegated(api);
 
-                api.off("draw._amsHover").on("draw._amsHover", function () {
-                    applyHoverActions(api);
-                });
-                applyHoverActions(api);
-
+                // adjust columns after DOM changes
                 api.columns?.adjust?.().draw(false);
             } catch (err) {
                 console.error("[AMS] reuse DataTable error:", err);
@@ -521,13 +402,9 @@
                     }
 
                     U.styleDataTableButtonsAndPagination?.(sel, tMode);
+
                     wireSearchDelegated(dtApi);
                     wireLengthDelegated(dtApi);
-
-                    dtApi.off("draw._amsHover").on("draw._amsHover", function () {
-                        applyHoverActions(dtApi);
-                    });
-                    applyHoverActions(dtApi);
                 } catch (err) {
                     console.error("[AMS] initComplete error:", err);
                 }
@@ -556,12 +433,15 @@
 
         const $wrapper = $(`${tableName}_wrapper`);
 
-        let $topRow = $wrapper.find('> .row').first();
-        let $lenWrap = $topRow.find('.dataTables_length');
-        let $filterWrap = $topRow.find('.dataTables_filter');
-        let $buttonsWrap = $wrapper.find('.dt-buttons');
+        // --- grab original DT chunks ---
+        let $topRow = $wrapper.find('> .row').first();         // header row DT created
+        let $lenWrap = $topRow.find('.dataTables_length');     // dropdown
+        let $filterWrap = $topRow.find('.dataTables_filter');  // search
+        let $buttonsWrap = $wrapper.find('.dt-buttons');       // export buttons
 
+        // Bail if we've already rebuilt this exact table header once
         if ($topRow.hasClass('ams-styled')) {
+            // still enforce hide/show in case tMode changed
             if (tMode === "3") {
                 $topRow.find('.ams-export-col').hide();
             } else {
@@ -570,7 +450,7 @@
             return;
         }
 
-        // 1) length
+        // ========== 1. STYLE: Page length dropdown ==========
         if ($lenWrap.length) {
             const $label = $lenWrap.find('label');
             const $select = $label.find('select');
@@ -586,7 +466,10 @@
                     height: '32px'
                 });
 
-            $label.empty().append($select)
+            // remove "Show ... entries"
+            $label
+                .empty()
+                .append($select)
                 .addClass('mb-0 d-flex align-items-center')
                 .css({ marginBottom: 0 });
 
@@ -595,7 +478,8 @@
                 .css({ marginBottom: 0 });
         }
 
-        // 2) export buttons
+        // ========== 2. STYLE: Export buttons (Copy / Excel / PDF / etc.) ==========
+        // Only build if NOT mode "3"
         let $btnGroup = null;
         if (tMode !== "3") {
             $btnGroup = $('<div class="btn-group" role="group" aria-label="Export buttons"></div>');
@@ -603,6 +487,8 @@
             if ($buttonsWrap.length) {
                 $buttonsWrap.children('button, a').each(function () {
                     const $btn = $(this);
+
+                    // strip DT stock classes
                     $btn.removeClass(function (_i, cls) {
                         return (cls || "")
                             .split(" ")
@@ -622,6 +508,7 @@
                             .join(" ");
                     });
 
+                    // apply theme button look
                     $btn
                         .addClass('btn btn-outline-light btn-sm')
                         .css({
@@ -637,13 +524,20 @@
             }
         }
 
-        // 3) search
+        // ========== 3. STYLE: Search box ==========
         if ($filterWrap.length) {
             const $label = $filterWrap.find('label');
             const $searchInput = $label.find('input[type="search"]');
 
-            $label.contents().filter(function () { return this.nodeType === 3; }).remove();
+            // kill literal "Search:" (or "Raadi:") label text node
+            $label
+                .contents()
+                .filter(function () {
+                    return this.nodeType === 3; // text node
+                })
+                .remove();
 
+            // figure out placeholder based on current language
             const langCode = U.getCurrentLanguage ? U.getCurrentLanguage() : "en";
             const dtLang = U.getDataTableLanguageOptions
                 ? U.getDataTableLanguageOptions(langCode)
@@ -671,26 +565,37 @@
                 .css({ marginBottom: 0 });
         }
 
-        // 4) rebuild top row
+        // ========== 4. REBUILD TOP ROW into columns ==========
+        // We’re gonna control the columns ourselves.
+
         const $lenFinal = $lenWrap || $('<div class="dataTables_length"></div>');
         const $filterFinal = $filterWrap || $('<div class="dataTables_filter"></div>');
 
+        // wipe DT's first row so we can rebuild
         $topRow.empty();
 
+        // left col: page length
         const $colLeft = $('<div class="col-sm-12 col-md-auto d-flex align-items-center mb-2 mb-md-0"></div>');
         $colLeft.append($lenFinal);
 
+        // middle col: export buttons (only if tMode !== "3" and we actually have buttons)
         let $colMid = null;
         if ($btnGroup && $btnGroup.children().length) {
             $colMid = $('<div class="col-sm-12 col-md-auto d-flex align-items-center mb-2 mb-md-0 ams-export-col"></div>');
             $colMid.append($btnGroup);
         }
 
+        // right col: search
         const $colRight = $('<div class="col-sm-12 col-md d-flex justify-content-md-end align-items-center mb-2 mb-md-0"></div>');
         $colRight.append($filterFinal);
 
+        // stitch columns back in
         $topRow.append($colLeft);
-        if ($colMid) $topRow.append($colMid);
+
+        if ($colMid) {
+            $topRow.append($colMid);
+        }
+
         $topRow
             .append($colRight)
             .addClass('ams-styled align-items-start')
@@ -700,13 +605,15 @@
                 marginBottom: '.5rem'
             });
 
+        // if mode "3", make sure that export col is hidden (paranoia)
         if (tMode === "3") {
             $topRow.find('.ams-export-col').hide();
         }
 
+        // we moved children, we don't need the old wrapper node anymore
         $buttonsWrap.remove();
 
-        // 5) bottom
+        // ========== 5. BOTTOM (info + pagination) cleanup ==========
         const $bottomRow = $wrapper.find('> .row').eq(1);
         const $infoWrap = $bottomRow.find('.dataTables_info');
         const $pageWrap = $bottomRow.find('.dataTables_paginate');
@@ -719,9 +626,10 @@
             .addClass('mb-0 d-flex align-items-center justify-content-md-end ms-auto')
             .css({ marginBottom: 0 });
 
-        $pageWrap.find('.paginate_button').css({ background: 'transparent' });
+        $pageWrap.find('.paginate_button').css({
+            background: 'transparent'
+        });
     };
-
     U.applyRowStyles = function () {
         if (!hasJQ) return;
         $(".even").addClass("bg-light-transparent");

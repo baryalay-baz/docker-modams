@@ -1,0 +1,214 @@
+﻿/* =========================================================
+   AMS DataTables — Gmail-style hover actions (row overlay)
+   (GLOBAL STYLES)
+   ========================================================= */
+
+/* Row is the positioning context for the floating pills */
+.table--hover-actions tbody tr {
+    position: relative;
+    box-shadow: none;
+    overflow: visible; /* don't clip tooltips/popovers */
+}
+
+    /* Hover-only soft shade (top & bottom bands) */
+    .table--hover-actions tbody tr:hover,
+    .table--hover-actions tbody tr:focus-within,
+    .table--hover-actions tbody tr.show-actions {
+        box-shadow: inset 0 18px 16px -18px rgba(0,0,0,.16), inset 0 -20px 18px -20px rgba(0,0,0,.18);
+        transition: box-shadow .12s ease;
+    }
+
+/* Keep cell content above overlay effects */
+.table--hover-actions tbody td {
+    position: relative;
+    z-index: 2;
+    overflow: visible;
+}
+
+/* ---------- Floating action pills (attached to <tr>) ---------- */
+.table--hover-actions .row-actions {
+    position: absolute;
+    right: 12px;
+    left: auto;
+    top: 50%;
+    transform: translateY(-50%);
+    display: none; /* show on hover/focus/touch */
+    gap: .5rem;
+    padding: .375rem .5rem;
+    border-radius: 999px;
+    background: rgba(248, 249, 250, .96); /* faint gray to avoid white-on-white */
+    backdrop-filter: blur(6px);
+    box-shadow: 0 4px 12px rgba(0,0,0,.12);
+    z-index: 20; /* above row text, below tooltips */
+    white-space: nowrap;
+    pointer-events: auto;
+}
+
+/* Reveal pills */
+.table--hover-actions tbody tr:hover .row-actions,
+.table--hover-actions tbody tr:focus-within .row-actions,
+.table--hover-actions tbody tr.show-actions .row-actions {
+    display: inline-flex;
+}
+
+/* ---------- Outline style pills (with explicit color vars) ---------- */
+.table--hover-actions .row-actions .btn {
+    /* Each button defines --btn-color and --btn-tint below */
+    background-color: var(--btn-tint, rgba(0,0,0,.05)) !important;
+    border: 1.5px solid var(--btn-color, #0d6efd) !important;
+    color: var(--btn-color, #0d6efd) !important;
+    border-radius: 999px;
+    padding: .35rem .55rem;
+    line-height: 1;
+    box-shadow: none;
+    transition: transform .08s ease, box-shadow .12s ease, background-color .12s ease, color .12s ease, border-color .12s ease;
+    font-weight: 400 !important; /* not bold */
+}
+
+    /* Icons inherit text color and flip on hover */
+    .table--hover-actions .row-actions .btn i,
+    .table--hover-actions .row-actions .btn svg {
+        font-weight: 400 !important;
+        font-size: 1rem;
+        line-height: 1;
+        color: inherit !important;
+    }
+
+    /* Per-action colors (define the variables once) */
+    .table--hover-actions .row-actions .btn.act-info {
+        --btn-color: #0d6efd;
+        --btn-tint: rgba(13,110,253,.10);
+    }
+
+    .table--hover-actions .row-actions .btn.act-edit {
+        --btn-color: #0aa2c0;
+        --btn-tint: rgba(10,162,192,.12);
+    }
+
+    .table--hover-actions .row-actions .btn.act-docs {
+        --btn-color: #6f42c1;
+        --btn-tint: rgba(111,66,193,.12);
+    }
+
+    .table--hover-actions .row-actions .btn.act-pics {
+        --btn-color: #fd7e14;
+        --btn-tint: rgba(253,126,20,.12);
+    }
+
+    .table--hover-actions .row-actions .btn.act-delete {
+        --btn-color: #dc3545;
+        --btn-tint: rgba(220,53,69,.10);
+    }
+
+    /* Hover = solid fill using the explicit variable (never white) */
+    .table--hover-actions .row-actions .btn:hover {
+        background-color: var(--btn-color) !important;
+        color: #fff !important;
+        border-color: var(--btn-color) !important;
+        transform: translateY(-1px);
+    }
+
+        .table--hover-actions .row-actions .btn:hover i,
+        .table--hover-actions .row-actions .btn:hover svg {
+            color: #fff !important;
+        }
+
+    /* Active: slightly reduced elevation */
+    .table--hover-actions .row-actions .btn:active {
+        transform: translateY(0);
+        opacity: .95;
+    }
+
+    /* Focus ring picks the action color */
+    .table--hover-actions .row-actions .btn:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--btn-color) !important;
+    }
+
+/* Dark mode chip container */
+.dark-mode .table--hover-actions .row-actions {
+    background: rgba(22,22,22,.92);
+}
+
+    .dark-mode .table--hover-actions .row-actions .btn {
+        box-shadow: none;
+    }
+
+/* Delete pill = danger red (no extra filters) */
+.table--hover-actions .row-actions .btn.act-delete:hover {
+    filter: none;
+}
+
+/* ---------- DataTables chrome polish ---------- */
+.ams-dt-header {
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: .5rem;
+    margin-bottom: .5rem;
+}
+
+    .ams-dt-header .form-select.form-select-sm {
+        width: auto;
+        min-width: 3.5rem;
+        height: 32px;
+        line-height: 1.4;
+    }
+
+    .ams-dt-header .dataTables_filter input[type="search"] {
+        min-width: 12rem;
+        height: 32px;
+        line-height: 32px;
+    }
+
+.dataTables_paginate .paginate_button {
+    background: transparent;
+}
+
+/* Neutralize DT sorted-column tint so text isn't washed */
+table.dataTable tbody td.sorting_1,
+table.dataTable tbody td.sorting_2,
+table.dataTable tbody td.sorting_3 {
+    background: transparent !important;
+    color: inherit !important;
+}
+
+/* ---------- Responsive tweaks ---------- */
+@media (max-width: 576px) {
+    .table--hover-actions .row-actions {
+        right: 8px;
+        gap: .4rem;
+    }
+
+        .table--hover-actions .row-actions .btn {
+            padding: .3rem .45rem;
+        }
+
+            .table--hover-actions .row-actions .btn i {
+                font-size: .95rem;
+            }
+}
+
+/* ---------- Tooltip/Popover visibility fixes ---------- */
+.dataTables_wrapper,
+.table--hover-actions,
+.table--hover-actions table,
+.table--hover-actions tbody {
+    overflow: visible !important; /* avoid clipping */
+}
+
+.tooltip {
+    z-index: 1085;
+}
+
+.popover {
+    z-index: 1085;
+}
+
+/* Dark-mode tooltip tweak (optional) */
+.dark-mode .tooltip .tooltip-inner {
+    background-color: #222;
+    color: #fff;
+}
+
+.dark-mode .tooltip .tooltip-arrow::before {
+    border-top-color: #222 !important;
+}

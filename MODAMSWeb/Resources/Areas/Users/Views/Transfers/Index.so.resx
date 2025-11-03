@@ -120,8 +120,14 @@
   <data name="Action" xml:space="preserve">
     <value>Tallaabo-qaad</value>
   </data>
+  <data name="AllStores" xml:space="preserve">
+    <value>Dhamaan Bakhaarada</value>
+  </data>
   <data name="AllTransfers" xml:space="preserve">
     <value>Dhammaan wareejinta</value>
+  </data>
+  <data name="AssetCount" xml:space="preserve">
+    <value>Tirada Hantida</value>
   </data>
   <data name="Assets" xml:space="preserve">
     <value>Hantida</value>
@@ -165,6 +171,12 @@
   <data name="EditTransfer" xml:space="preserve">
     <value>Tafatir Wareejinta</value>
   </data>
+  <data name="HintTypeOrScanBarcode" xml:space="preserve">
+    <value>Talo: Geli ama iskaani koodhka baaritaanka</value>
+  </data>
+  <data name="IncomingToStore" xml:space="preserve">
+    <value>Soo-gal Bakhaar</value>
+  </data>
   <data name="IncomingTransfers" xml:space="preserve">
     <value>Soo wareejin</value>
   </data>
@@ -173,6 +185,9 @@
   </data>
   <data name="NewTransfer" xml:space="preserve">
     <value>Wareejin Cusub</value>
+  </data>
+  <data name="OutgoingFromStore" xml:space="preserve">
+    <value>Ka-bixid Bakhaar</value>
   </data>
   <data name="OutgoingTransfers" xml:space="preserve">
     <value>Sii wareejin</value>
@@ -192,6 +207,15 @@
   <data name="Rejected" xml:space="preserve">
     <value>La-diidey</value>
   </data>
+  <data name="ScanOrTypeBarcode" xml:space="preserve">
+    <value>Iskaan ama geli koodhka baaritaanka</value>
+  </data>
+  <data name="SearchTransferByAsset" xml:space="preserve">
+    <value>Raadi Wareejin Hantida</value>
+  </data>
+  <data name="SelectAStore" xml:space="preserve">
+    <value>Dooro bakhaar</value>
+  </data>
   <data name="Status" xml:space="preserve">
     <value>Heerka</value>
   </data>
@@ -200,6 +224,12 @@
   </data>
   <data name="StoreTo" xml:space="preserve">
     <value>Bakhaarka ay u socoto</value>
+  </data>
+  <data name="TotalValue" xml:space="preserve">
+    <value>Qiimaha Guud</value>
+  </data>
+  <data name="TransferNo" xml:space="preserve">
+    <value>Lambarka Wareejinta</value>
   </data>
   <data name="Transfers" xml:space="preserve">
     <value>Wareejin</value>

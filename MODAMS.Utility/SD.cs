@@ -28,7 +28,7 @@ namespace MODAMS.Utility
         public const int Transaction_Delete = 6;
         public const int Transaction_Recover = 7;
 
-        public const string WebAddress = "https://hantida.app";
+        public const string WebAddress = "https://hantida.xds.gov.so";
         public const string WebAddressLocal = "https://localhost:44398";
 
         public const int NS_NewRegistration = 1;

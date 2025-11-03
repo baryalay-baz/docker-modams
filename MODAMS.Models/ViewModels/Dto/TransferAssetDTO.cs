@@ -17,5 +17,6 @@ namespace MODAMS.Models.ViewModels.Dto
         public decimal Cost { get; set; } = decimal.Zero;
         public decimal CurrentValue { get; set; } = decimal.Zero;
         public bool IsSelected { get; set; } = false;
+        public int TransferId { get; set; } = 0;
     }
 }

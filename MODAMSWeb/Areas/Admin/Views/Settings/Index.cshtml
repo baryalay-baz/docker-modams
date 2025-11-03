@@ -5,35 +5,127 @@
 }
 
 <style>
-    .trShadow {
-        border: 1px solid lightblue;
-        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2), 0px 6px 20px 0px rgba(0,0,0,0.19);
+    /* ===== Normalize header box & click target (keep equal height) ===== */
+    .card-header.js-acc-header {
+        padding: 0 !important;
+        border: 0;
+        border-radius: .5rem;
+        overflow: hidden;
     }
+
+        .card-header.js-acc-header > a.accor-style2.js-acc-toggle {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            width: 100%;
+            text-decoration: none !important;
+            color: inherit !important;
+            padding: 14px 18px !important;
+            min-height: 56px !important;
+            line-height: 1.2 !important;
+            font-size: 0.95rem;
+        }
+
+            .card-header.js-acc-header > a.accor-style2.js-acc-toggle::before,
+            .card-header.js-acc-header > a.accor-style2.js-acc-toggle::after {
+                content: none !important;
+            }
+
+    .js-acc-icon {
+        font-size: 1.05rem;
+        color: currentColor;
+    }
+
+    /* ===== Light palette as DEFAULT (applies even if body has no .light-mode) ===== */
+    .card-header.js-acc-header.acc-blue,
+    .card-header.js-acc-header.acc-blue > a.accor-style2.js-acc-toggle {
+        background: #F6F8FB; /* soft UNOPS-ish blue */
+        color: #1F3B74;
+        border: 1px solid #D7E3FF;
+    }
+
+    .card-header.js-acc-header.acc-slate,
+    .card-header.js-acc-header.acc-slate > a.accor-style2.js-acc-toggle {
+        background: #F6F8FB; /* neutral light slate */
+        color: #334155;
+        border: 1px solid #E2E8F0;
+    }
+
+    .card-header.js-acc-header.acc-green,
+    .card-header.js-acc-header.acc-green > a.accor-style2.js-acc-toggle {
+        background: #F6F8FB; /* calm green */
+        color: #0F5132;
+        border: 1px solid #CBE9DD;
+    }
+
+    /* Subtle hover cues */
+    .card-header.js-acc-header.acc-blue > a.accor-style2.js-acc-toggle:hover {
+        background: #E8F1FF;
+    }
+
+    .card-header.js-acc-header.acc-slate > a.accor-style2.js-acc-toggle:hover {
+        background: #EEF2F7;
+    }
+
+    .card-header.js-acc-header.acc-green > a.accor-style2.js-acc-toggle:hover {
+        background: #E4F2EC;
+    }
+
+    /* ===== Dark mode overrides only if you use .dark-mode on ===== */
+    .dark-mode .card-header.js-acc-header.acc-blue,
+    .dark-mode .card-header.js-acc-header.acc-blue > a.accor-style2.js-acc-toggle {
+        background: #2F4574;
+        color: #fff;
+        border: 1px solid rgba(255,255,255,.06);
+    }
+
+    .dark-mode .card-header.js-acc-header.acc-slate,
+    .dark-mode .card-header.js-acc-header.acc-slate > a.accor-style2.js-acc-toggle {
+        background: #364352;
+        color: #fff;
+        border: 1px solid rgba(255,255,255,.06);
+    }
+
+    .dark-mode .card-header.js-acc-header.acc-green,
+    .dark-mode .card-header.js-acc-header.acc-green > a.accor-style2.js-acc-toggle {
+        background: #285E4C;
+        color: #fff;
+        border: 1px solid rgba(255,255,255,.06);
+    }
+
+    /* spacing between cards */
+    .accordion-dark .card, .accordion-gray .card {
+        margin-bottom: .75rem !important;
+    }
+
 </style>
 
-<div class="page-header">
+<div class="page-header" data-tour="s.header.block">
     <div>
-        <h1 class="page-title">Administrative Settings</h1>
+        <h1 class="page-title" data-tour="s.header.title">Administrative Settings</h1>
     </div>
-    <div class="ms-auto pageheader-btn">
+    <div class="ms-auto pageheader-btn" data-tour="s.header.breadcrumbs">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item">
+                <a asp-area="Users" asp-controller="Home" asp-action="Index">Dashboard</a>
+            </li>
             <li class="breadcrumb-item active" aria-current="page">Settings</li>
         </ol>
     </div>
 </div>
 
-<div class="row">
+<!-- Filters -->
+<div class="row" data-tour="s.filters.block">
     <div class="col-md-12">
-        <div class="card ">
+        <div class="card">
             <div class="card-body p-4">
-                <div class="d-flex align-items-center justify-content-between w-25">
+                <!-- one line on md+; wraps on small screens -->
+                <div class="d-flex align-items-center gap-2 flex-wrap flex-md-nowrap">
+                    <select asp-for="@Model.SelectedMonth" asp-items="@Model.Months"
+                            class="form-select form-select-sm w-auto" style="min-width: 200px;" data-tour="s.filters.month"></select>
 
-                    <select asp-for="@Model.SelectedMonth" asp-items="@Model.Months" class="form-select">
-                    </select>
-                    <select asp-for="@Model.SelectedYear" asp-items="@Model.Years" class="form-select">
-                    </select>
-
+                    <select asp-for="@Model.SelectedYear" asp-items="@Model.Years"
+                            class="form-select form-select-sm w-auto" style="min-width: 140px;" data-tour="s.filters.year"></select>
                 </div>
             </div>
         </div>
@@ -41,15 +133,22 @@
 </div>
 
 <div class="row">
+
+    <!-- Login History -->
     <div class="col-md-12">
         <div aria-multiselectable="true" class="accordion-dark mb-2" id="accordion2" role="tablist">
             <div class="card mb-0 mt-2">
-                <div class="card-header border-bottom-0" id="heading2" role="tab">
-                    <a class="accor-style2 collapsed" aria-controls="collapse2" aria-expanded="false" data-bs-toggle="collapse" href="#collapse2"><i class="fe fe-plus-circle me-2"></i>Login History</a>
+                <div class="card-header js-acc-header acc-blue" id="heading2" role="tab" data-tour="s.acc.login">
+                    <a class="accor-style2 collapsed js-acc-toggle"
+                       data-bs-toggle="collapse" href="#collapse2"
+                       aria-controls="collapse2" aria-expanded="false">
+                        <i class="fe fe-plus-circle me-2 js-acc-icon"></i>
+                        <span>Login History</span>
+                    </a>
                 </div>
-                <div aria-labelledby="heading2" class="collapse" data-bs-parent="#accordion2" id="collapse2" role="tabpanel" style="">
+                <div id="collapse2" class="collapse" role="tabpanel" aria-labelledby="heading2" data-bs-parent="#accordion2">
                     <div class="card-body">
-                        <div class="table-responsive">
+                        <div class="table-responsive" data-tour="s.login.table">
                             <table id="tblLoginHistory" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
                                 <thead>
                                     <tr>
@@ -62,12 +161,10 @@
                                     @{
                                         var nCounter = 0;
                                         var sCounter = "";
-
                                         foreach (var loginHistory in Model.loginHistory)
                                         {
                                             nCounter++;
                                             sCounter = (nCounter < 10) ? "0" + nCounter : nCounter.ToString();
-
                                             <tr>
                                                 <td class="text-muted fs-15 fw-semibold text-center">@sCounter.</td>
                                                 <td class="text-muted fs-15 fw-semibold">@loginHistory.Employee.FullName</td>
@@ -79,20 +176,26 @@
                             </table>
                         </div>
                     </div>
-                </div>
-                <!-- collapse -->
+                </div> <!-- /collapse -->
             </div>
         </div>
     </div>
+
+    <!-- Audit Log -->
     <div class="col-md-12">
         <div aria-multiselectable="true" class="accordion-dark mb-2" id="accordion3" role="tablist">
             <div class="card mb-0 mt-2">
-                <div class="card-header border-bottom-0" id="heading3" role="tab">
-                    <a class="accor-style2 collapsed" aria-controls="collapse3" aria-expanded="false" data-bs-toggle="collapse" href="#collapse3"><i class="fe fe-plus-circle me-2"></i>Audit Log</a>
+                <div class="card-header js-acc-header acc-slate" id="heading3" role="tab" data-tour="s.acc.audit">
+                    <a class="accor-style2 collapsed js-acc-toggle"
+                       data-bs-toggle="collapse" href="#collapse3"
+                       aria-controls="collapse3" aria-expanded="false">
+                        <i class="fe fe-plus-circle me-2 js-acc-icon"></i>
+                        <span>Audit Log</span>
+                    </a>
                 </div>
-                <div aria-labelledby="heading3" class="collapse" data-bs-parent="#accordion3" id="collapse3" role="tabpanel" style="">
+                <div id="collapse3" class="collapse" role="tabpanel" aria-labelledby="heading3" data-bs-parent="#accordion3">
                     <div class="card-body">
-                        <div class="table-responsive">
+                        <div class="table-responsive" data-tour="s.audit.table">
                             <table id="tblAuditLog" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
                                 <thead class="table-head">
                                     <tr>
@@ -111,12 +214,10 @@
                                     @{
                                         nCounter = 0;
                                         sCounter = "";
-
                                         foreach (var log in Model.auditLog)
                                         {
                                             nCounter++;
                                             sCounter = (nCounter < 10) ? "0" + nCounter : nCounter.ToString();
-                                            //sFullName = (log.Employee.FullName == null) ? "-" : log.Employee.FullName;
                                             <tr>
                                                 <td class="text-muted fs-15 fw-semibold text-center">@sCounter.</td>
                                                 <td class="text-muted fs-15 fw-semibold">@log.Action</td>
@@ -134,20 +235,26 @@
                             </table>
                         </div>
                     </div>
-                </div>
-                <!-- collapse -->
+                </div> <!-- /collapse -->
             </div>
         </div>
     </div>
+
+    <!-- Deleted Assets -->
     <div class="col-md-12">
         <div aria-multiselectable="true" class="accordion-dark mb-2" id="accordion4" role="tablist">
             <div class="card mb-0 mt-2">
-                <div class="card-header border-bottom-0" id="heading4" role="tab">
-                    <a class="accor-style2 collapsed" aria-controls="collapse4" aria-expanded="false" data-bs-toggle="collapse" href="#collapse4"><i class="fe fe-plus-circle me-2"></i>Deleted Assets</a>
+                <div class="card-header js-acc-header acc-green" id="heading4" role="tab" data-tour="s.acc.deleted">
+                    <a class="accor-style2 collapsed js-acc-toggle"
+                       data-bs-toggle="collapse" href="#collapse4"
+                       aria-controls="collapse4" aria-expanded="false">
+                        <i class="fe fe-plus-circle me-2 js-acc-icon"></i>
+                        <span>Deleted Assets</span>
+                    </a>
                 </div>
-                <div aria-labelledby="heading4" class="collapse" data-bs-parent="#accordion4" id="collapse4" role="tabpanel" style="">
+                <div id="collapse4" class="collapse" role="tabpanel" aria-labelledby="heading4" data-bs-parent="#accordion4">
                     <div class="card-body">
-                        <div class="table-responsive">
+                        <div class="table-responsive" data-tour="s.deleted.table">
                             <table id="tblDeletedAssets" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
                                 <thead class="table-head">
                                     <tr>
@@ -171,7 +278,9 @@
                                         {
                                             nCounter++;
                                             sCounter = (nCounter < 10) ? "0" + nCounter : nCounter.ToString();
-                                            sIdentification = asset.SubCategory.Category.CategoryName == "Vehicles" ? "Plate: " + asset.Plate : "SN: " + asset.SerialNo;
+                                            sIdentification = asset.SubCategory.Category.CategoryName == "Vehicles"
+                                            ? "Plate: " + asset.Plate
+                                            : "SN: " + asset.SerialNo;
 
                                             <tr>
                                                 <td class="text-muted fs-15 fw-semibold text-center">@sCounter.</td>
@@ -184,7 +293,7 @@
                                                 <td class="text-muted fs-15 fw-semibold">@asset.Store.Department.Name</td>
                                                 <td class="text-muted fs-15 fw-semibold">
                                                     <a asp-area="Users" asp-action="RecoverAsset" asp-controller="Assets"
-                                                       asp-route-id="@asset.Id" class="btn btn-info-gradient">
+                                                       asp-route-id="@asset.Id" class="btn btn-info-gradient" data-tour="s.deleted.recover">
                                                         Recover
                                                     </a>
                                                 </td>
@@ -195,73 +304,38 @@
                             </table>
                         </div>
                     </div>
+                </div> <!-- /collapse -->
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- System Info -->
+<div class="row" data-tour="s.sys.block">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h3 data-tour="s.sys.title">System Information</h3>
+                <hr />
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Application Name:</strong> <span data-tour="s.sys.appname">@Model.ApplicationName</span></p>
+                        <p><strong>Version:</strong> <span data-tour="s.sys.version">@Model.Version</span></p>
+                        <p><strong>Database Version:</strong> <span data-tour="s.sys.dbversion">@Model.DatabaseVersion</span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Operating System:</strong> <span data-tour="s.sys.os">@Model.OperatingSystem</span></p>
+                        <p><strong>Server Time:</strong> <span data-tour="s.sys.servertime">@Model.ServerTime.ToString("F")</span></p>
+                    </div>
                 </div>
-                <!-- collapse -->
             </div>
         </div>
     </div>
 </div>
-<div class="row">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-body">
-                <h3>System Information</h3>
-                <hr />
-                <div class="row">
-                    <div class="col-md-6">
-                        <p><strong>Application Name:</strong> @Model.ApplicationName</p>
-                        <p><strong>Version:</strong> @Model.Version</p>
-                        <p><strong>Database Version:</strong> @Model.DatabaseVersion</p>
-                    </div>
-                    <div class="col-md-6">
-                        <p><strong>Operating System:</strong> @Model.OperatingSystem</p>
-                        <p><strong>Server Time:</strong> @Model.ServerTime.ToString("F")</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-@* <div class="row">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-body">
-                <h3>Administrative Actions</h3>
-                <hr />
-                <div class="row">
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <a asp-area="Admin" asp-action="SetStoreEmployees" asp-controller="Settings" class="btn btn-primary mb-2 form-control">Generate Store Employees</a>
-                        </div>
-                        
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div> *@
 
 @section scripts {
-    <script>
-        $(document).ready(() => {
-            hideMenu();
-            makeDataTable('#tblLoginHistory','1');
-            makeDataTable('#tblAuditLog','1');
-            makeDataTable('#tblDeletedAssets','1');
-
-            $("#SelectedMonth").on("change", () => {
-                let sVal = $("#SelectedMonth").val();
-                let sYear = $("#SelectedYear").val();
-                window.location.href = "/Admin/Settings/Index?nMonth=" + sVal + "&nYear=" + sYear;
-            });
-
-            $("#SelectedYear").on("change", () => {
-                let sVal = $("#SelectedMonth").val();
-                let sYear = $("#SelectedYear").val();
-                window.location.href = "/Admin/Settings/Index?nMonth=" + sVal + "&nYear=" + sYear;
-            });
-
-            //$('.select2').select2();
-        })
-    </script>
+    <partial name="_DatatablesAssets" />
+    <script src="~/js/pages/settings-index.js"></script>
 }
+

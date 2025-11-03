@@ -1,86 +1,105 @@
-﻿<style>
-    .notification-container {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 1050;
-        width: 500px; /* Adjust the width as needed */
-    }
-
-    .notification-message {
-        margin-bottom: 10px;
-        border-radius: 5px;
-        box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .alert-danger {
-        background-color: #f8d7da;
-        color: #721c24;
-        border: 1px solid #f5c6cb;
-    }
-
-    .alert-success {
-        background-color: #d4edda;
-        color: #155724;
-        border: 1px solid #c3e6cb;
-    }
-
-    .notification-message .bi {
-        font-size: 1.2em;
-    }
-
-</style>
-
+﻿@* Views/Shared/_Notification.cshtml *@
 @{
     var errorMessage = TempData["error"] as string;
     var successMessage = TempData["success"] as string;
-
     var isSomali = System.Globalization.CultureInfo.CurrentCulture.Name == "so";
+
+    var hasAny = !string.IsNullOrEmpty(errorMessage) || !string.IsNullOrEmpty(successMessage);
 }
 
-@if (!string.IsNullOrEmpty(errorMessage))
+@if (hasAny)
 {
-    <div class="notification-container">
-        <div class="alert alert-danger alert-dismissible fade show p-0 mb-0" role="alert">
-            <p class="py-3 px-5 mb-0 border-bottom border-bottom-danger-light">
-                <span class="alert-inner--icon me-2"><i class="fe fe-slash"></i></span>
-                @(isSomali ? "Fariinta Khaladka" : "Error Message")
-            </p>
-            <p class="py-3 px-5">@errorMessage</p>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">×</span>
-            </button>
-        </div>
-    </div>
-}
+    <style>
+        .notification-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1050; /* above modals? If not, bump to 2000+ */
+            width: 500px;
+            max-width: 92vw; /* responsive */
+            pointer-events: none; /* don't block clicks on page */
+        }
 
-@if (!string.IsNullOrEmpty(successMessage))
-{
+        .notification-message {
+            margin-bottom: 10px;
+            border-radius: 6px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+            pointer-events: auto; /* allow close button clicks */
+            overflow: hidden;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .notification-message .bi,
+        .notification-message .fe {
+            font-size: 1.1em;
+        }
+
+        /* Optional subtle top separators for headers */
+        .border-bottom-success-light {
+            border-bottom: 1px solid rgba(40, 167, 69, 0.25) !important;
+        }
+
+        .border-bottom-danger-light {
+            border-bottom: 1px solid rgba(220, 53, 69, 0.25) !important;
+        }
+    </style>
+
     <div class="notification-container">
-        <div class="alert alert-success alert-dismissible fade show p-0 mb-4 notification-message" role="alert">
-            <p class="py-3 px-5 mb-0 border-bottom border-bottom-success-light">
-                <span class="alert-inner--icon me-2"><i class="fe fe-thumbs-up"></i></span>
-                <strong>@(isSomali ? "Fariinta Guusha" : "Success Message")</strong>
-            </p>
-            <p class="py-3 px-5">@successMessage</p>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">×</span>
-            </button>
-        </div>
+        @* Error *@
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert alert-danger alert-dismissible fade show p-0 mb-2 notification-message" role="alert">
+                <p class="py-3 px-5 mb-0 border-bottom border-bottom-danger-light">
+                    <span class="alert-inner--icon me-2"><i class="fe fe-slash"></i></span>
+                    @(isSomali ? "Fariinta Khaladka" : "Error Message")
+                </p>
+                <p class="py-3 px-5 mb-0">@errorMessage</p>
+                <button type="button" class="btn-close position-absolute end-0 me-2 mt-2" data-bs-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+        }
+
+        @* Success *@
+        @if (!string.IsNullOrEmpty(successMessage))
+        {
+            <div class="alert alert-success alert-dismissible fade show p-0 mb-0 notification-message" role="alert">
+                <p class="py-3 px-5 mb-0 border-bottom border-bottom-success-light">
+                    <span class="alert-inner--icon me-2"><i class="fe fe-thumbs-up"></i></span>
+                    <strong>@(isSomali ? "Fariinta Guusha" : "Success Message")</strong>
+                </p>
+                <p class="py-3 px-5 mb-0">@successMessage</p>
+                <button type="button" class="btn-close position-absolute end-0 me-2 mt-2" data-bs-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+        }
     </div>
-}
-<script>
-    $(function(){
-      setTimeout(function(){
-        $('.alert-dismissible').each(function(){
-          // fade opacity to 0 over 500ms, then slide up over 500ms…
-          $(this)
-            .fadeTo(500, 0)
-            .slideUp(500, function(){
-              // …and once that’s done, let Bootstrap fully remove it
-              $(this).alert('close');
-            });
+
+    <script>
+        $(function () {
+            // Auto-dismiss after 5s with smooth fade + slide
+            setTimeout(function () {
+                $('.notification-container .alert-dismissible').each(function () {
+                    $(this)
+                        .fadeTo(500, 0)
+                        .slideUp(500, function () {
+                            $(this).alert('close');
+                        });
+                });
+            }, 5000);
         });
-      }, 5000);
-    });
-</script>
+    </script>
+}

@@ -237,8 +237,3 @@ hr.customHR {
     .pams-help-fab:hover {
         filter: brightness(0.95);
     }
-
-.dataTables_wrapper .ams-dt-buttons {
-    margin-left: 0.75rem; /* 12px */
-    margin-bottom: 0.5rem; /* for wrap-on-mobile */
-}

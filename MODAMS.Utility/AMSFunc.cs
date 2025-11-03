@@ -359,81 +359,90 @@ namespace MODAMS.Utility
             }
             return storeName;
         }
-        public decimal GetDepreciatedCost(int nAssetId)
+        public decimal GetDepreciatedCost(int assetId)
         {
-            //(Cost / LifeSpan_months) * (LifeSpan_months - Age)
-            decimal depreciatedCost = 0;
+            if (assetId <= 0) return 0m;
 
-            if (nAssetId > 0)
-            {
-                var asset = _db.Assets.Where(m => m.Id == nAssetId).Include(m => m.SubCategory).FirstOrDefault();
-                if (asset != null)
+            var row = _db.Assets
+                .AsNoTracking()
+                .Where(a => a.Id == assetId)
+                .Select(a => new
                 {
-                    int nLifeSpan = asset.SubCategory.LifeSpan;
-                    decimal cost = asset.Cost;
+                    a.Cost,
+                    a.RecieptDate,                 // your field name
+                    LifeSpan = a.SubCategory.LifeSpan
+                })
+                .FirstOrDefault();                // sync query
 
-                    if (asset.RecieptDate != null)
-                    {
-                        DateTimeOffset date1 = (DateTimeOffset)asset.RecieptDate;
-                        DateTimeOffset date2 = DateTime.Now;
+            if (row == null) return 0m;
 
-                        //find difference between two dates in months
-                        int age = (date2.Year - date1.Year) * 12 + date2.Month - date1.Month;
-
-                        depreciatedCost = (cost / nLifeSpan) * (nLifeSpan - age);
-                    }
-                }
-            }
-
-            if (depreciatedCost < 0)
-                depreciatedCost = 0;
-
-            return depreciatedCost;
+            return CalculateDepreciatedCost(row.Cost, row.LifeSpan, row.RecieptDate);
         }
-        public async Task<decimal> GetDepreciatedCostAsync(int nAssetId)
+        public async Task<decimal> GetDepreciatedCostAsync(int assetId, CancellationToken ct = default)
         {
-            //(Cost / LifeSpan_months) * (LifeSpan_months - Age)
-            decimal depreciatedCost = 0;
+            if (assetId <= 0) return 0m;
 
-            if (nAssetId > 0)
-            {
-                var asset = await _db.Assets.Where(m => m.Id == nAssetId).Include(m => m.SubCategory).FirstOrDefaultAsync();
-                if (asset != null)
+            var row = await _db.Assets
+                .AsNoTracking()
+                .Where(a => a.Id == assetId)
+                .Select(a => new
                 {
-                    int nLifeSpan = asset.SubCategory.LifeSpan;
-                    decimal cost = asset.Cost;
+                    a.Cost,
+                    a.RecieptDate,
+                    LifeSpan = a.SubCategory.LifeSpan
+                })
+                .FirstOrDefaultAsync(ct);
 
-                    if (asset.RecieptDate != null)
-                    {
-                        DateTimeOffset date1 = (DateTimeOffset)asset.RecieptDate;
-                        DateTimeOffset date2 = DateTime.Now;
+            if (row == null) return 0m;
 
-                        //find difference between two dates in months
-                        int age = (date2.Year - date1.Year) * 12 + date2.Month - date1.Month;
-
-                        depreciatedCost = (cost / nLifeSpan) * (nLifeSpan - age);
-                    }
-                }
-            }
-
-            if (depreciatedCost < 0)
-                depreciatedCost = 0;
-
-            return depreciatedCost;
+            return CalculateDepreciatedCost(row.Cost, row.LifeSpan, row.RecieptDate);
         }
-        public async Task<decimal> GetDepreciatedCostByStoreIdAsync(int storeId)
+        public async Task<Dictionary<int, decimal>> GetDepreciatedCostBulkAsync(IEnumerable<int> assetIds, CancellationToken ct = default)
         {
-            var assetList = await _db.Assets.Where(m => m.StoreId == storeId)
-                .Select(m => new { m.Id }).ToListAsync();
+            var ids = assetIds?.Distinct().ToList() ?? new();
+            if (ids.Count == 0) return new();
 
-            decimal totalCost = 0;
+            var rows = await _db.Assets
+                .AsNoTracking()
+                .Where(a => ids.Contains(a.Id))
+                .Select(a => new
+                {
+                    a.Id,
+                    a.Cost,
+                    a.RecieptDate,
+                    LifeSpan = a.SubCategory.LifeSpan
+                })
+                .ToListAsync(ct);
 
-            foreach (var asset in assetList)
-            {
-                totalCost += GetDepreciatedCost(asset.Id);
-            }
-            return Math.Round(totalCost, 0);
+            var dict = new Dictionary<int, decimal>(rows.Count);
+            foreach (var r in rows)
+                dict[r.Id] = CalculateDepreciatedCost(r.Cost, r.LifeSpan, r.RecieptDate);
+
+            return dict;
         }
+        public async Task<decimal> GetDepreciatedCostByStoreIdAsync(int storeId, CancellationToken ct = default)
+        {
+            var rows = await _db.Assets
+                .AsNoTracking()
+                .Where(a => a.StoreId == storeId)
+                .Select(a => new
+                {
+                    a.Cost,
+                    a.RecieptDate,
+                    LifeSpan = a.SubCategory.LifeSpan
+                })
+                .ToListAsync(ct);
+
+            decimal total = 0m;
+            foreach (var r in rows)
+                total += CalculateDepreciatedCost(r.Cost, r.LifeSpan, r.RecieptDate);
+
+            // Round only if your UI requires it
+            return Math.Round(total, 0);
+        }
+
+
+
         public async Task<string> GetProfileImageAsync(int employeeId)
         {
             var employee = await _db.Employees.FirstOrDefaultAsync(m => m.Id == employeeId);
@@ -908,9 +917,6 @@ namespace MODAMS.Utility
 
             return results;
         }
-
-
-
         public async Task<List<vwCategoryAsset>> GetvwCategoryAssetsAsync()
         {
             var result = await _db.Assets
@@ -973,6 +979,10 @@ namespace MODAMS.Utility
         }
 
         //Private methods
+               
+        
+
+
         private async Task NotifyAsync(int[] arrEmpIds, Notification notification)
         {
             foreach (int id in arrEmpIds)
@@ -1051,33 +1061,48 @@ namespace MODAMS.Utility
 
 
         //Depreciation Calculation
-        private decimal CalculateDepreciatedCost(assetDto asset)
+        private static int FullMonthsBetweenUtc(DateTime fromUtc, DateTime toUtc)
         {
-            //(Cost / LifeSpan_months) * (LifeSpan_months - Age)
-            decimal depreciatedCost = 0;
-
-            if (asset != null)
-            {
-                int nLifeSpan = asset.LifeSpan;
-                decimal cost = asset.Cost;
-
-                if (asset.RecieptDate != null)
-                {
-                    DateTimeOffset date1 = (DateTimeOffset)asset.RecieptDate;
-                    DateTimeOffset date2 = DateTime.Now;
-
-                    // Find the difference between two dates in months
-                    int age = (date2.Year - date1.Year) * 12 + date2.Month - date1.Month;
-
-                    depreciatedCost = (cost / nLifeSpan) * (nLifeSpan - age);
-                }
-            }
-
-            if (depreciatedCost < 0)
-                depreciatedCost = 0;
-
-            return depreciatedCost;
+            // Count only FULL months between dates (no mid-month over-depreciation)
+            int months = (toUtc.Year - fromUtc.Year) * 12 + (toUtc.Month - fromUtc.Month);
+            if (toUtc.Day < fromUtc.Day) months--;
+            return months < 0 ? 0 : months;
         }
+
+        private static DateTime ToUtc(DateTime dt)
+        {
+            if (dt.Kind == DateTimeKind.Utc) return dt;
+            if (dt.Kind == DateTimeKind.Local) return dt.ToUniversalTime();
+            // If your DB stores local times, convert appropriately; if it stores UTC, mark as UTC:
+            return DateTime.SpecifyKind(dt, DateTimeKind.Utc);
+        }
+
+        /// <summary>
+        /// Core depreciation formula:
+        /// value = (Cost / LifespanMonths) * max(0, LifespanMonths - AgeFullMonths)
+        /// Clamped to [0..Cost], guards lifespan<=0 and null/future dates.
+        /// </summary>
+        private static decimal CalculateDepreciatedCost(decimal cost, int lifespanMonths, DateTime? receiptDateUtcNowAware)
+        {
+            if (lifespanMonths <= 0 || cost <= 0m || receiptDateUtcNowAware == null) return 0m;
+
+            var receiptUtc = ToUtc(receiptDateUtcNowAware.Value);
+            var nowUtc = DateTime.UtcNow;
+
+            int age = FullMonthsBetweenUtc(receiptUtc, nowUtc);
+            if (age > lifespanMonths) age = lifespanMonths;
+
+            var monthly = cost / lifespanMonths;
+            var remaining = lifespanMonths - age;
+            var value = monthly * remaining;
+
+            if (value < 0m) return 0m;
+            if (value > cost) return cost; // just in case of weird inputs
+            return value;
+        }
+
+
+
         private class assetDto
         {
             public int Id { get; set; }
