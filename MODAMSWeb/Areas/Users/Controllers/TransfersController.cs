@@ -16,7 +16,6 @@ namespace MODAMSWeb.Areas.Users.Controllers
         private readonly ApplicationDbContext _db;
         private readonly IAMSFunc _func;
         private readonly ITransferService _transferService;
-
         private readonly bool _isSomali;
 
         public TransfersController(ApplicationDbContext db, IAMSFunc func, ITransferService transferService)

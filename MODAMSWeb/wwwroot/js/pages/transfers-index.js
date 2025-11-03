@@ -10,7 +10,7 @@
         store: "#ddStores",
         dtFrom: "#dtFrom",
         dtTo: "#dtTo",
-        btnApply: "#btnApplyFilters",        // <-- toggle lives here now
+        btnApply: "#btnApplyFilters",
         txtSearch: "#txtSearchTransferByAsset",
         btnSearch: "#btnSearchTransferByAsset",
 
@@ -44,7 +44,6 @@
         renderOutgoingPie();
         renderIncomingPie();
 
-        // If dates are prefilled, auto-apply and flip the Apply button
         if (hasAnyDate()) {
             applyDateFilter();
             setFilterToggle(true);
@@ -57,28 +56,21 @@
     function bindEvents() {
         const $doc = $(document);
 
-        // Store change -> navigate
         $doc.off("change" + NS, SEL.store).on("change" + NS, SEL.store, function () {
             const id = $(this).val();
             if (!id) return;
             window.location.href = `/Users/Transfers/Index/${encodeURIComponent(id)}`;
         });
 
-        // APPLY button is now the toggle:
-        // - If filterActive -> clear without validating dates (your requirement)
-        // - Else if any date present -> apply & toggle on
-        // - Else -> optional warning
         $doc.off("click" + NS, SEL.btnApply).on("click" + NS, SEL.btnApply, function (e) {
             e.preventDefault();
 
             if (STATE.filterActive) {
-                // Removing filter: do NOT validate dates
                 clearDateFilter();
                 setFilterToggle(false);
                 return;
             }
 
-            // Activating filter: require at least one date
             if (!hasAnyDate()) {
                 U.Notify?.("warning", "Please enter From and/or To date first.");
                 return;
@@ -87,7 +79,6 @@
             setFilterToggle(true);
         });
 
-        // Search button goes back to being just the asset search
         $doc.off("click" + NS, SEL.btnSearch).on("click" + NS, SEL.btnSearch, function (e) {
             e.preventDefault();
             runGlobalSearch();
@@ -115,7 +106,6 @@
             $sel.select2({ width: "style" });
         }
     }
-
     function initPickers() {
         if ($.fn.datepicker) {
             $(SEL.dtFrom + "," + SEL.dtTo).datepicker({
@@ -134,7 +124,6 @@
         const t = ($(SEL.dtTo).val() || "").trim();
         return !!(f || t);
     }
-
     function setFilterToggle(active) {
         STATE.filterActive = !!active;
         const $btn = $(SEL.btnApply);
@@ -229,7 +218,6 @@
 
         enforceOutgoingActionVisibility(outApi, isAuthorized);
     }
-
     function enforceOutgoingActionVisibility(api, isAuthorized) {
         if (!api || typeof api.rows !== "function") return;
 
@@ -280,7 +268,6 @@
         try { outApi?.search(q).draw(); } catch { }
         try { inApi?.search(q).draw(); } catch { }
     }
-
     function parseDmyFlexible(s) {
         if (!s) return null;
         const t = Date.parse(s);
@@ -301,7 +288,6 @@
         if (Number.isNaN(month)) return null;
         return new Date(y, month, d);
     }
-
     function applyDateFilter() {
         const fromStr = ($(SEL.dtFrom).val() || "").trim();
         const toStr = ($(SEL.dtTo).val() || "").trim();
@@ -332,7 +318,6 @@
         try { outApi?.draw(); } catch { }
         try { inApi?.draw(); } catch { }
     }
-
     function clearDateFilter() {
         // Remove our tagged filter
         $.fn.dataTable.ext.search = ($.fn.dataTable.ext.search || []).filter(f => f._amsTag !== "trDate");
@@ -345,7 +330,6 @@
         try { outApi?.draw(); } catch { }
         try { inApi?.draw(); } catch { }
     }
-
     function stripHash(sel) { return sel && sel[0] === "#" ? sel.slice(1) : sel; }
 
     /* ---------------- Charts (optional placeholders) ---------------- */

@@ -35,20 +35,7 @@ namespace MODAMS.Utility
             _emailSender = emailSender;
             _isSomali = CultureInfo.CurrentUICulture.Name == "so";
         }
-        //public int GetEmployeeId()
-        //{
-        //    int EmployeeId = 0;
-        //    // Get the current claims principal
-        //    var user = _contextAccessor.HttpContext.User;
-
-        //    // Find the user's ID claim
-        //    var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier);
-        //    if (userIdClaim != null)
-        //        EmployeeId = _db.ApplicationUsers.Where(m => m.Id == userIdClaim.Value).Select(m => m.EmployeeId).FirstOrDefault();
-
-        //    return EmployeeId;
-        //}
-
+        
         public int GetEmployeeId()
         {
             // Get the current user
@@ -440,9 +427,6 @@ namespace MODAMS.Utility
             // Round only if your UI requires it
             return Math.Round(total, 0);
         }
-
-
-
         public async Task<string> GetProfileImageAsync(int employeeId)
         {
             var employee = await _db.Employees.FirstOrDefaultAsync(m => m.Id == employeeId);
@@ -585,7 +569,6 @@ namespace MODAMS.Utility
                 .ThenByDescending(s => s.TotalCount)
                 .ToList();
         }
-
         public async Task<string> GetEmployeeNameByIdAsync(int employeeId)
         {
             string EmployeeName = "Not found!";
@@ -978,11 +961,7 @@ namespace MODAMS.Utility
             return employees;
         }
 
-        //Private methods
-               
-        
-
-
+        //Private Functions
         private async Task NotifyAsync(int[] arrEmpIds, Notification notification)
         {
             foreach (int id in arrEmpIds)
@@ -1058,9 +1037,6 @@ namespace MODAMS.Utility
 
             return HtmlEncoder.Default.Encode(callbackUrl);
         }
-
-
-        //Depreciation Calculation
         private static int FullMonthsBetweenUtc(DateTime fromUtc, DateTime toUtc)
         {
             // Count only FULL months between dates (no mid-month over-depreciation)
@@ -1068,20 +1044,12 @@ namespace MODAMS.Utility
             if (toUtc.Day < fromUtc.Day) months--;
             return months < 0 ? 0 : months;
         }
-
         private static DateTime ToUtc(DateTime dt)
         {
             if (dt.Kind == DateTimeKind.Utc) return dt;
             if (dt.Kind == DateTimeKind.Local) return dt.ToUniversalTime();
-            // If your DB stores local times, convert appropriately; if it stores UTC, mark as UTC:
             return DateTime.SpecifyKind(dt, DateTimeKind.Utc);
         }
-
-        /// <summary>
-        /// Core depreciation formula:
-        /// value = (Cost / LifespanMonths) * max(0, LifespanMonths - AgeFullMonths)
-        /// Clamped to [0..Cost], guards lifespan<=0 and null/future dates.
-        /// </summary>
         private static decimal CalculateDepreciatedCost(decimal cost, int lifespanMonths, DateTime? receiptDateUtcNowAware)
         {
             if (lifespanMonths <= 0 || cost <= 0m || receiptDateUtcNowAware == null) return 0m;
@@ -1100,9 +1068,6 @@ namespace MODAMS.Utility
             if (value > cost) return cost; // just in case of weird inputs
             return value;
         }
-
-
-
         private class assetDto
         {
             public int Id { get; set; }

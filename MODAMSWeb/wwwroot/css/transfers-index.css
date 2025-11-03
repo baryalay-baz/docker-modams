@@ -137,23 +137,155 @@
     }
 }
 
+/* Keep the right group contained */
+.filters-group {
+    max-width: 100%;
+}
 
-/* Professional "more" badge */
-.badge-more {
-    --_bg: var(--bs-secondary-bg); /* adapts to light/dark */
+/* Date inputs: predictable width (not full row) */
+.filter-input {
+    width: 200px; /* tweak to taste: 180–240px */
+    max-width: 100%;
+}
+
+/* IMPORTANT: override any previous wide Select2 rules */
+.select2-container {
+    width: auto !important; /* let width be driven by element style or below */
+    min-width: 260px !important; /* keeps it usable on small screens */
+    max-width: 420px !important; /* prevents “stretched” look */
+}
+
+    /* Match Bootstrap control height for Select2 single */
+    .select2-container .select2-selection--single {
+        height: calc(2.25rem + 2px) !important;
+    }
+
+    .select2-container .select2-selection__rendered {
+        line-height: 2.25rem !important;
+    }
+
+    .select2-container .select2-selection__arrow {
+        height: 2.25rem !important;
+    }
+
+/* Optional: responsive bump for the store dropdown */
+@media (min-width: 992px) {
+    #ddStores[style] {
+        width: 420px !important;
+    }
+    /* lg+ screens */
+}
+
+/* =========================================================
+       Asset badges suite (anchors) + "+N more" pill
+       Works with Bootstrap 5 variables (light/dark aware)
+       ========================================================= */
+/* --- Shared metrics & helpers --- */
+:root {
+    --asset-badge-radius: 999px;
+    --asset-badge-pad-y: .34rem;
+    --asset-badge-pad-x: .6rem;
+    --asset-badge-gap: .25rem;
+}
+
+/* Make long serials behave (ellipsis) */
+.asset-badge,
+.badge.asset-badge,
+.badge[data-asset-badge],
+.badge[href^="/Users/Assets/AssetInfo/"] {
+    max-width: 220px; /* keep rows tidy */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* --- Base style for ALL asset badges (anchors) ---
+       Matches either:
+       - <a class="asset-badge ...">
+       - <a class="badge text-bg-light rounded-pill ...">
+       - <a class="badge ... data-asset-badge>
+       - Fallback: href starts with your asset route
+    */
+.asset-badge,
+.badge.asset-badge,
+.badge[data-asset-badge],
+.badge[href^="/Users/Assets/AssetInfo/"] {
+    --_bg: var(--bs-secondary-bg);
+    --_text: var(--bs-body-color);
     --_border: var(--bs-border-color);
-    --_hover-bg: var(--bs-primary-bg-subtle);
-    --_hover-text: var(--bs-primary-text-emphasis);
-    padding: .35rem .6rem;
+    --_hover-bg: var(--bs-tertiary-bg);
+    --_hover-text: var(--bs-body-color);
+    --_focus-ring: rgba(13,110,253,.35); /* bs-primary with alpha */
+
+    display: inline-flex;
+    align-items: center;
+    gap: var(--asset-badge-gap);
+    padding: var(--asset-badge-pad-y) var(--asset-badge-pad-x);
+    border-radius: var(--asset-badge-radius);
     border: 1px solid var(--_border);
     background-color: var(--_bg);
-    color: var(--bs-body-color);
-    border-radius: 999px;
+    color: var(--_text);
     font-weight: 600;
     line-height: 1;
     letter-spacing: .15px;
-    box-shadow: 0 1px 0 rgba(0,0,0,.03);
-    cursor: pointer; /* it’s clickable */
+    text-decoration: none; /* links should look like pills */
+    box-shadow: 0 1px 0 rgba(0,0,0,.04);
+    transition: transform .12s ease, box-shadow .12s ease, background-color .12s ease, color .12s ease, border-color .12s ease;
+}
+
+    .asset-badge:hover,
+    .badge.asset-badge:hover,
+    .badge[data-asset-badge]:hover,
+    .badge[href^="/Users/Assets/AssetInfo/"]:hover {
+        background-color: var(--_hover-bg);
+        color: var(--_hover-text);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(0,0,0,.08);
+        border-color: color-mix(in srgb, var(--bs-primary), white 75%);
+    }
+
+    .asset-badge:active,
+    .badge.asset-badge:active,
+    .badge[data-asset-badge]:active,
+    .badge[href^="/Users/Assets/AssetInfo/"]:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    }
+
+    .asset-badge:focus-visible,
+    .badge.asset-badge:focus-visible,
+    .badge[data-asset-badge]:focus-visible,
+    .badge[href^="/Users/Assets/AssetInfo/"]:focus-visible {
+        outline: 0;
+        box-shadow: 0 0 0 .2rem var(--_focus-ring), 0 1px 0 rgba(0,0,0,.04);
+    }
+
+    /* Optional subtle icon slot if you prepend an icon later */
+    .asset-badge .icon,
+    .badge.asset-badge .icon {
+        opacity: .8;
+        font-size: .9em;
+    }
+
+/* --- "+N more" pill (span) --- */
+.badge-more {
+    --_bg: var(--bs-secondary-bg);
+    --_text: var(--bs-body-color);
+    --_border: var(--bs-border-color);
+    --_hover-bg: var(--bs-primary-bg-subtle);
+    --_hover-text: var(--bs-primary-text-emphasis);
+    display: inline-flex;
+    align-items: center;
+    padding: calc(var(--asset-badge-pad-y) + 1px) calc(var(--asset-badge-pad-x) + 1px);
+    border: 1px solid var(--_border);
+    border-radius: var(--asset-badge-radius);
+    background-color: var(--_bg);
+    color: var(--_text);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: .18px;
+    cursor: pointer;
+    box-shadow: 0 1px 0 rgba(0,0,0,.04);
     transition: transform .12s ease, box-shadow .12s ease, background-color .12s ease, color .12s ease, border-color .12s ease;
 }
 
@@ -161,20 +293,48 @@
     .badge-more:focus-visible {
         background-color: var(--_hover-bg);
         color: var(--_hover-text);
-        border-color: color-mix(in srgb, var(--bs-primary), white 70%);
+        border-color: color-mix(in srgb, var(--bs-primary), white 65%);
         transform: translateY(-1px);
-        box-shadow: 0 4px 14px rgba(0,0,0,.08);
-        text-decoration: none; /* in case it's an <a> */
+        box-shadow: 0 6px 18px rgba(0,0,0,.10);
     }
 
-    .badge-more:active {
-        transform: translateY(0);
-        box-shadow: 0 2px 8px rgba(0,0,0,.06);
+/* Louder variant if you want it to stand out more */
+.badge-more--emphasis {
+    background-color: var(--bs-primary-bg-subtle);
+    color: var(--bs-primary-text-emphasis);
+    border-color: color-mix(in srgb, var(--bs-primary), white 55%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.28), 0 1px 0 rgba(0,0,0,.05);
+}
+
+    .badge-more--emphasis:hover,
+    .badge-more--emphasis:focus-visible {
+        border-color: color-mix(in srgb, var(--bs-primary), white 45%);
     }
 
-/* Respect users who prefer less motion */
+/* --- Tooltips for long overflow lists --- */
+.tooltip-lg .tooltip-inner {
+    max-width: 520px;
+    white-space: normal;
+}
+
+/* --- Density variants (optional) --- */
+.badge--compact {
+    padding: .25rem .5rem;
+    font-weight: 600;
+}
+
+.badge--relaxed {
+    padding: .45rem .75rem;
+}
+
+/* --- Motion respect --- */
 @media (prefers-reduced-motion: reduce) {
+    .asset-badge,
+    .badge.asset-badge,
+    .badge[data-asset-badge],
+    .badge[href^="/Users/Assets/AssetInfo/"],
     .badge-more {
         transition: none;
     }
 }
+
