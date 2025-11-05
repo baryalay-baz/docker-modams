@@ -7,67 +7,97 @@ namespace MODAMS.Models.ViewModels.Dto
 {
     public class TransferDTO
     {
-
         public int StoreId { get; set; }
         public bool IsAuthorized { get; set; }
 
         [ValidateNever]
         public int TransferStatus { get; set; }
 
-        public List<vwTransfer> OutgoingTransfers = new List<vwTransfer>();
-        public List<vwTransfer> IncomingTransfers = new List<vwTransfer>();
+        // ------------ Data sets populated by the service ------------
+        public List<vwTransfer> OutgoingTransfers { get; set; } = new();   // current store is StoreFromId
+        public List<vwTransfer> IncomingTransfers { get; set; } = new();   // current store is StoreId
+        public List<TransferChartDTO> IncomingChartData { get; set; } = new();
+        public List<TransferChartDTO> OutgoingChartData { get; set; } = new();
+        public List<TransferAssetDTO> TransferredAssets { get; set; } = new();
 
-        public List<TransferChartDTO> IncomingChartData = new List<TransferChartDTO>();
-        public List<TransferChartDTO> OutgoingChartData = new List<TransferChartDTO>();
-        public List<TransferAssetDTO> TransferredAssets = new List<TransferAssetDTO>();
+        [ValidateNever] public IEnumerable<SelectListItem> StoreList { get; set; } = Enumerable.Empty<SelectListItem>();
+        [ValidateNever] public string SelectedStoreName { get; set; } = string.Empty;
 
-        [ValidateNever]
-        public IEnumerable<SelectListItem> StoreList { get; set; }
-        [ValidateNever]
-        public string SelectedStoreName { get; set; } = string.Empty;
+        public decimal TotalTransferValue { get; set; }
+        public decimal TotalReceivedValue { get; set; }
 
-        public int TotalTransferCount(int storeId)
+        // ------------ Action Center metrics ------------
+        public int PendingAckOut { get; set; }
+        public int PendingAckIn { get; set; }
+        public int RejectedOut { get; set; }
+        public int RejectedIn { get; set; }
+        public int OverdueOut { get; set; }   // Awaiting Ack & older than N days
+        public int OverdueIn { get; set; }
+
+        public int TotalPendingAck => PendingAckOut + PendingAckIn;
+        public int TotalRejected => RejectedOut + RejectedIn;
+        public int TotalOverdue => OverdueOut + OverdueIn;
+
+        public int OverdueDaysThreshold { get; set; } = 7;
+
+        // ------------ KPIs by Store ------------
+        // Default statusId = 3 (Completed). Pass 0 to ignore status filter.
+        public int GetTransferCountOut(int storeId, int statusId = 3)
         {
-            var outgoingTransfers = OutgoingTransfers.Where(m => m.TransferStatusId == 3 && m.StoreFromId == storeId).ToList();
-            var totalAssets = outgoingTransfers.Sum(m => m.NumberOfAssets);
-
-            return totalAssets;
+            var q = OutgoingTransfers.Where(t => t.StoreFromId == storeId);
+            if (statusId > 0) q = q.Where(t => t.TransferStatusId == statusId);
+            return q.Count();
         }
-        public int TotalReceivedCount(int storeId)
+
+        public int GetTransferCountIn(int storeId, int statusId = 3)
         {
-            var incomingTransfers = IncomingTransfers.Where(m => m.TransferStatusId == 3 && m.StoreId == storeId).ToList();
-            var totalAssets = incomingTransfers.Sum(m => m.NumberOfAssets);
+            var q = IncomingTransfers.Where(t => t.StoreId == storeId);
+            if (statusId > 0) q = q.Where(t => t.TransferStatusId == statusId);
+            return q.Count();
+        }
 
-            return totalAssets;
+        public int GetAssetCountOut(int storeId, int statusId = 3)
+        {
+            var transferIds = OutgoingTransfers
+                .Where(t => t.StoreFromId == storeId && (statusId == 0 || t.TransferStatusId == statusId))
+                .Select(t => t.Id)
+                .ToHashSet();
+
+            if (transferIds.Count == 0) return 0;
+            return TransferredAssets.Count(a => transferIds.Contains(a.TransferId));
         }
-        public int GetAssetCount(int transferId) {
-            return TransferredAssets.Where(m => m.TransferId == transferId).Count();
+
+        public int GetAssetCountIn(int storeId, int statusId = 3)
+        {
+            var transferIds = IncomingTransfers
+                .Where(t => t.StoreId == storeId && (statusId == 0 || t.TransferStatusId == statusId))
+                .Select(t => t.Id)
+                .ToHashSet();
+
+            if (transferIds.Count == 0) return 0;
+            return TransferredAssets.Count(a => transferIds.Contains(a.TransferId));
         }
+
         public string GetAssetsBadges(int transferId, int maxToShow = 3)
         {
             var items = TransferredAssets
                 .Where(m => m.TransferId == transferId)
-                .Select(m => new { m.AssetId, m.SerialNumber })
+                .Select(m => new { m.AssetId, m.SerialNumber, m.AssetName })
                 .ToList();
 
             if (items.Count == 0) return string.Empty;
 
-            // Normalize maxToShow
             if (maxToShow < 0) maxToShow = 0;
             if (maxToShow > items.Count) maxToShow = items.Count;
 
             var sb = new StringBuilder(items.Count * 80);
 
-            // Render first N as clickable badges
             foreach (var it in items.Take(maxToShow))
             {
-                var label = string.IsNullOrWhiteSpace(it.SerialNumber)
-                    ? $"#{it.AssetId}"
-                    : it.SerialNumber;
-
+                var label = string.IsNullOrWhiteSpace(it.SerialNumber) ? $"#{it.AssetId}" : it.SerialNumber;
                 var safeLabel = WebUtility.HtmlEncode(label);
                 var href = $"/Users/Assets/AssetInfo/{it.AssetId}";
-                var titleText = WebUtility.HtmlEncode($"View asset {it.AssetId}");
+                var titleText = WebUtility.HtmlEncode($"View Details: {it.AssetName}");
 
                 sb.Append("<a href=\"")
                   .Append(href)
@@ -80,12 +110,11 @@ namespace MODAMS.Models.ViewModels.Dto
                   .Append("</a>");
             }
 
-            // If there are more, add a visible "+N more" badge with tooltip of the rest
             int remaining = items.Count - maxToShow;
             if (remaining > 0)
             {
                 var restLabels = items.Skip(maxToShow)
-                    .Select(it => string.IsNullOrWhiteSpace(it.SerialNumber) ? $"#{it.AssetId}" : it.SerialNumber)
+                    .Select(it => it.AssetName) //string.IsNullOrWhiteSpace(it.SerialNumber) ? $"#{it.AssetId}" : it.SerialNumber)
                     .ToList();
 
                 var tooltip = WebUtility.HtmlEncode(string.Join(", ", restLabels));
@@ -103,11 +132,5 @@ namespace MODAMS.Models.ViewModels.Dto
 
             return sb.ToString();
         }
-
-
-        public decimal TotalTransferValue { get; set; }
-        public decimal TotalReceivedValue { get; set; }
-
     }
-
 }

@@ -178,7 +178,7 @@
     <value>Rejected</value>
   </data>
   <data name="SubmitForAcknowledgement" xml:space="preserve">
-    <value>SubmitForAcknowledgement</value>
+    <value>Submit For Acknowledgement</value>
   </data>
   <data name="NoActionRequired" xml:space="preserve">
     <value>No action required!</value>
@@ -206,5 +206,29 @@
   </data>
   <data name="Status" xml:space="preserve">
     <value>Status</value>
+  </data>
+  <data name="AwaitingAcknowledgement" xml:space="preserve">
+    <value>Awaiting Acknowledgement</value>
+  </data>
+  <data name="TransferCreated" xml:space="preserve">
+    <value>Transfer Created</value>
+  </data>
+  <data name="ShowDetails" xml:space="preserve">
+    <value>Show Details</value>
+  </data>
+  <data name="Workflow" xml:space="preserve">
+    <value>Workflow</value>
+  </data>
+  <data name="Signatures" xml:space="preserve">
+    <value>Signatures</value>
+  </data>
+  <data name="Pending" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  <data name="Completed" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="SubmittedForAcknowledgement" xml:space="preserve">
+    <value>Submitted for Acknowledgement</value>
   </data>
 </root>

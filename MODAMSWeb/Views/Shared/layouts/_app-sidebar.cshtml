@@ -2,26 +2,7 @@
 @inject IViewLocalizer Localizer
 @inject MODAMS.Utility.IAMSFunc _func;
 
-<style>
-    .side-menu__item {
-        display: flex;
-        align-items: center;
-    }
-
-    .side-menu__icon {
-        font-size: 18px;
-        width: 20px;
-        min-width: 20px;
-        text-align: center;
-        margin-right: 8px;
-        color: #4c5372;
-    }
-
-    .side-menu__item:hover .side-menu__icon {
-        color: #0d6efd;
-    }
-</style>
-
+<link href="~/css/app-sidebar.css" rel="stylesheet" />
 
 <!--APP-SIDEBAR-->
 <div class="sticky">
@@ -29,34 +10,20 @@
     <div class="app-sidebar">
         <div class="side-header">
             <a class="header-brand1" asp-area="Users" asp-controller="Home" asp-action="Index" data-tour="sidebar.logo">
-                @*<img src="~/assets/images/brand/FGS_Small4.png" />*@
-
-                @*<img src="~/assets/images/brand/FGS.png" class="header-brand-img desktop-logo" alt="logo">
-                <img src="~/assets/images/brand/FGS_Small.png" class="header-brand-img toggle-logo" alt="logo">
-                <img src="~/assets/images/brand/FGS_Small.png" class="header-brand-img light-logo" alt="logo">
-                <img src="~/assets/images/brand/FGS.png" class="header-brand-img light-logo1" alt="logo">
-                *@
                 <img src="~/assets/images/brand/ams.png" class="header-brand-img desktop-logo" alt="logo">
                 <img src="~/assets/images/brand/ams_IconOnly.png" class="header-brand-img toggle-logo" alt="logo">
                 <img src="~/assets/images/brand/ams_IconOnly.png" class="header-brand-img light-logo" alt="logo">
                 <img src="~/assets/images/brand/ams.png" class="header-brand-img light-logo1" alt="logo">
-
-
             </a><!-- LOGO -->
         </div>
-        <div class="main-sidemenu">
 
+        <div class="main-sidemenu">
             <div class="slide-left disabled" id="slide-left">
-                <svg xmlns="http://www.w3.org/2000/svg"
-                     fill="#7b8191" width="24" height="24" viewBox="0 0 24 24">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="#7b8191" width="24" height="24" viewBox="0 0 24 24">
                     <path d="M13.293 6.293 7.586 12l5.707 5.707 1.414-1.414L10.414 12l4.293-4.293z" />
                 </svg>
             </div>
-            @*
-            <div class="text-center">
-            <img src="/assets/images/brand/FGS_Small2.png" />
-            </div>
-            *@
+
             <div class="text-muted text-center p-3 h6">
                 @{
                     string sRoleName = "";
@@ -65,14 +32,12 @@
                     {
                         int employeeId = await _func.GetEmployeeIdAsync();
                         int supervisorId = await _func.GetSupervisorIdAsync(employeeId);
-
                         sRoleName = "Store User";
                         departmentName = await _func.GetDepartmentNameAsync(employeeId);
                     }
                     else if (User.IsInRole("StoreOwner"))
                     {
                         int employeeId = await _func.GetEmployeeIdAsync();
-
                         sRoleName = "Store Owner";
                         departmentName = await _func.GetDepartmentNameAsync(employeeId);
                     }
@@ -88,81 +53,142 @@
                 <div class="pb-3 text-info" data-tour="sidebar.rolename">@sRoleName</div>
                 <div data-tour="sidebar.departmentname">@departmentName</div>
             </div>
+
             <ul class="side-menu">
-                <li><h3>Menu</h3></li>
+                <li><h3>@Localizer["Menu"]</h3></li>
+
+                <!-- Dashboard -->
                 <li>
-                    <a class="side-menu__item" asp-area="Users" asp-controller="Home" asp-action="Index" data-tour="sidebar.dashboard">
-                        <i class="fe fe-home side-menu__icon"></i>
-                        <span class="side-menu__label">Dashboard</span>
+                    <a class="side-menu__item"
+                       asp-area="Users" asp-controller="Home" asp-action="Index"
+                       data-tour="sidebar.dashboard"
+                       data-bs-toggle="popover" data-bs-placement="right" data-bs-trigger="hover focus"
+                       title='@Localizer["Dashboard"]'
+                       data-bs-content='@Localizer["Dashboard"]'>
+                        <i class="fe fe-home side-menu__icon" aria-label='@Localizer["Dashboard"]'></i>
+                        <span class="side-menu__label">@Localizer["Dashboard"]</span>
                     </a>
                 </li>
 
-                <li><h3>Main Menu</h3></li>
+                <li><h3>@Localizer["MainMenu"]</h3></li>
 
+                <!-- Stores -->
                 <li>
-                    <a class="side-menu__item" href="/Users/Stores" data-tour="sidebar.stores">
-                        <i class="fe fe-box side-menu__icon"></i>
-                        <span class="side-menu__label">Stores</span>
+                    <a class="side-menu__item"
+                       href="/Users/Stores"
+                       data-tour="sidebar.stores"
+                       data-bs-toggle="popover" data-bs-placement="right" data-bs-trigger="hover focus"
+                       title='@Localizer["Stores"]'
+                       data-bs-content='@Localizer["Stores"]'>
+                        <i class="fe fe-box side-menu__icon" aria-label='@Localizer["Stores"]'></i>
+                        <span class="side-menu__label">@Localizer["Stores"]</span>
                     </a>
                 </li>
 
+                <!-- Transfers -->
                 <li>
-                    <a class="side-menu__item" href="/Users/Transfers/" data-tour="sidebar.transfers">
-                        <i class="fe fe-repeat side-menu__icon"></i>
-                        <span class="side-menu__label">Transfers</span>
+                    <a class="side-menu__item"
+                       href="/Users/Transfers/"
+                       data-tour="sidebar.transfers"
+                       data-bs-toggle="popover" data-bs-placement="right" data-bs-trigger="hover focus"
+                       title='@Localizer["Transfers"]'
+                       data-bs-content='@Localizer["Transfers"]'>
+                        <i class="fe fe-repeat side-menu__icon" aria-label='@Localizer["Transfers"]'></i>
+                        <span class="side-menu__label">@Localizer["Transfers"]</span>
                     </a>
                 </li>
 
+                <!-- Disposals -->
                 <li>
-                    <a class="side-menu__item" href="/Users/Disposals/Index" data-tour="sidebar.disposals">
-                        <i class="fa-solid fa-recycle side-menu__icon"></i>
-                        <span class="side-menu__label">Disposals</span>
+                    <a class="side-menu__item"
+                       href="/Users/Disposals/Index"
+                       data-tour="sidebar.disposals"
+                       data-bs-toggle="popover" data-bs-placement="right" data-bs-trigger="hover focus"
+                       title='@Localizer["Disposals"]'
+                       data-bs-content='@Localizer["Disposals"]'>
+                        <i class="fa-solid fa-recycle side-menu__icon" aria-label='@Localizer["Disposals"]'></i>
+                        <span class="side-menu__label">@Localizer["Disposals"]</span>
                     </a>
                 </li>
 
+                <!-- Handovers -->
                 <li>
-                    <a class="side-menu__item" href="/Users/Home/UnderConstruction" data-tour="sidebar.handovers">
-                        <i class="fe fe-briefcase side-menu__icon"></i>
-                        <span class="side-menu__label">Handovers</span>
+                    <a class="side-menu__item"
+                       href="/Users/Home/UnderConstruction"
+                       data-tour="sidebar.handovers"
+                       data-bs-toggle="popover" data-bs-placement="right" data-bs-trigger="hover focus"
+                       title='@Localizer["Handovers"]'
+                       data-bs-content='@Localizer["Handovers"]'>
+                        <i class="fe fe-briefcase side-menu__icon" aria-label='@Localizer["Handovers"]'></i>
+                        <span class="side-menu__label">@Localizer["Handovers"]</span>
                     </a>
                 </li>
 
+                <!-- Verifications -->
                 <li>
-                    <a class="side-menu__item" href="/Users/Verifications/Index" data-tour="sidebar.verifications">
-                        <i class="fe fe-check-square side-menu__icon"></i>
-                        <span class="side-menu__label">Verifications</span>
+                    <a class="side-menu__item"
+                       href="/Users/Verifications/Index"
+                       data-tour="sidebar.verifications"
+                       data-bs-toggle="popover" data-bs-placement="right" data-bs-trigger="hover focus"
+                       title='@Localizer["Verifications"]'
+                       data-bs-content='@Localizer["Verifications"]'>
+                        <i class="fe fe-check-square side-menu__icon" aria-label='@Localizer["Verifications"]'></i>
+                        <span class="side-menu__label">@Localizer["Verifications"]</span>
                     </a>
                 </li>
 
+                <!-- Reports -->
                 <li>
-                    <a class="side-menu__item" href="/Users/Reporting/Index" data-tour="sidebar.reports">
-                        <i class="fe fe-printer side-menu__icon"></i>
-                        <span class="side-menu__label">Reports</span>
+                    <a class="side-menu__item"
+                       href="/Users/Reporting/Index"
+                       data-tour="sidebar.reports"
+                       data-bs-toggle="popover" data-bs-placement="right" data-bs-trigger="hover focus"
+                       title='@Localizer["Reports"]'
+                       data-bs-content='@Localizer["Reports"]'>
+                        <i class="fe fe-printer side-menu__icon" aria-label='@Localizer["Reports"]'></i>
+                        <span class="side-menu__label">@Localizer["Reports"]</span>
                     </a>
                 </li>
 
                 @if (User.IsInRole("Administrator"))
                 {
-                    <li>
-                        <h3>@Localizer["AdministrativeSettings"]</h3>
-                    </li>
+                    <li><h3>@Localizer["AdministrativeSettings"]</h3></li>
                     <li class="slide">
-                        <a class="side-menu__item" data-bs-toggle="slide" href="/Admin/Settings">
-                            <i class="fe fe-settings side-menu__icon"></i>
+                        <a class="side-menu__item"
+                           href="/Admin/Settings"
+                           data-bs-toggle="popover" data-bs-placement="right" data-bs-trigger="hover focus"
+                           title='@Localizer["Settings"]'
+                           data-bs-content='@Localizer["Settings"]'>
+                            <i class="fe fe-settings side-menu__icon" aria-label='@Localizer["Settings"]'></i>
                             <span class="side-menu__label">@Localizer["Settings"]</span>
                         </a>
                     </li>
-                    
                 }
             </ul>
+
             <div class="slide-right" id="slide-right">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="#7b8191"
-                     width="24" height="24" viewBox="0 0 24 24">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="#7b8191" width="24" height="24" viewBox="0 0 24 24">
                     <path d="M10.707 17.707 16.414 12l-5.707-5.707-1.414 1.414L13.586 12l-4.293 4.293z" />
                 </svg>
             </div>
-
         </div>
     </div>
 </div>
 <!--/APP-SIDEBAR-->
+
+@* <script>
+    (function () {
+      // Only popovers on the <a> tags — tooltips removed.
+      document.querySelectorAll('.side-menu__item[data-bs-toggle="popover"]').forEach(function (el) {
+        new bootstrap.Popover(el, {
+          container: 'body',
+          placement: 'right',
+          trigger: 'hover focus',
+          html: false,
+          delay: { show: 120, hide: 60 }
+          // customClass: 'menu-pop' // uncomment if you added the styled class
+        });
+      });
+    })();
+</script>
+ *@

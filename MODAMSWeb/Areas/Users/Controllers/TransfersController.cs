@@ -65,6 +65,8 @@ namespace MODAMSWeb.Areas.Users.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateTransfer(TransferCreateDTO transferDTO, string selectedAssets)
         {
+            transferDTO.Transfer.Notes = transferDTO.Transfer.Notes ?? "-";
+
             if (!ModelState.IsValid)
             {
                 TempData["error"] = _isSomali ? "Fadlan buuxi dhammaan meelaha khasabka ah." : "Please fill all the mandatory fields";

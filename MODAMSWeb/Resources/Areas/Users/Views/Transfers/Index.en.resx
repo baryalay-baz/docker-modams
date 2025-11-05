@@ -141,6 +141,9 @@
   <data name="AssetTransfers" xml:space="preserve">
     <value>Asset Transfers</value>
   </data>
+  <data name="AttentionRequired" xml:space="preserve">
+    <value>Attention Required</value>
+  </data>
   <data name="AwaitingAcknowledgement" xml:space="preserve">
     <value>Awaiting Acknowledgement</value>
   </data>
@@ -185,6 +188,9 @@
   </data>
   <data name="NewTransfer" xml:space="preserve">
     <value>New Transfer</value>
+  </data>
+  <data name="NumberOfAssets" xml:space="preserve">
+    <value>Number of Assets</value>
   </data>
   <data name="OutgoingFromStore" xml:space="preserve">
     <value>Outgoing from Store</value>

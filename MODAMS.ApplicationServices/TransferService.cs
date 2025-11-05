@@ -61,6 +61,16 @@ namespace MODAMS.ApplicationServices
                     dto.StoreId = 0;
                     dto.SelectedStoreName = string.Empty;
                     dto.TransferStatus = transferStatusId;
+
+                    // Action Center defaults
+                    dto.PendingAckOut = 0;
+                    dto.PendingAckIn = 0;
+                    dto.RejectedOut = 0;
+                    dto.RejectedIn = 0;
+                    dto.OverdueOut = 0;
+                    dto.OverdueIn = 0;
+                    dto.OverdueDaysThreshold = 7;
+
                     return Result<TransferDTO>.Success(dto);
                 }
 
@@ -111,6 +121,27 @@ namespace MODAMS.ApplicationServices
                 // 5) Totals (use DISTINCT assetIds + bulk depreciation inside)
                 dto.TotalTransferValue = await GetTotalTransferValueAsync(_storeId, ct);
                 dto.TotalReceivedValue = await GetTotalReceivedValueAsync(_storeId, ct);
+
+                // 6) Action Center metrics (no extra DB calls)
+                dto.OverdueDaysThreshold = 7;
+                DateTime today = DateTime.Today;
+
+                bool IsOverdue(vwTransfer t) =>
+                    t.TransferStatusId == 2 /* Awaiting Ack */
+                    && t.TransferDate.HasValue
+                    && (today - t.TransferDate.Value.Date).TotalDays > dto.OverdueDaysThreshold;
+
+                // Pending Ack
+                dto.PendingAckOut = dto.OutgoingTransfers.Count(t => t.TransferStatusId == 2);
+                dto.PendingAckIn = dto.IncomingTransfers.Count(t => t.TransferStatusId == 2);
+
+                // Rejected
+                dto.RejectedOut = dto.OutgoingTransfers.Count(t => t.TransferStatusId == 4);
+                dto.RejectedIn = dto.IncomingTransfers.Count(t => t.TransferStatusId == 4);
+
+                // Overdue (Awaiting Ack and older than threshold)
+                dto.OverdueOut = dto.OutgoingTransfers.Count(IsOverdue);
+                dto.OverdueIn = dto.IncomingTransfers.Count(IsOverdue);
 
                 return Result<TransferDTO>.Success(dto);
             }
@@ -213,8 +244,7 @@ namespace MODAMS.ApplicationServices
                     StoreId = transferDTO.Transfer.StoreId,
                     TransferNumber = transferDTO.Transfer.TransferNumber,
                     TransferStatusId = SD.Transfer_Pending,
-                    Notes = transferDTO.Transfer.Notes ?? "-",
-                    SubmissionForAcknowledgementDate = DateTime.UtcNow
+                    Notes = transferDTO.Transfer.Notes ?? "-"
                 };
 
                 await _db.Transfers.AddAsync(transfer);

@@ -1,0 +1,107 @@
+﻿/* ====== Layout & Utilities (prefer Bootstrap utilities when possible) ====== */
+.table-bordered tr {
+    height: 30px;
+}
+
+/* Border helpers (if you truly need them) */
+.bordered-div {
+    border: 1px solid lightgray;
+}
+
+.bordered-div-top {
+    border-top: 1px solid lightgray;
+}
+
+.bordered-div-right {
+    border-right: 1px solid lightgray;
+}
+
+.bordered-div-bottom {
+    border-bottom: 1px solid lightgray;
+}
+
+.bordered-div-left {
+    border-left: 1px solid lightgray;
+}
+
+.text-xsmall {
+    font-size: 10px;
+}
+
+/* ====== Barcode area ====== */
+.barcode {
+    width: 200px;
+    height: 50px;
+}
+
+.barcode-container {
+    text-align: center;
+}
+
+.barcode-text {
+    margin-bottom: .25rem;
+}
+
+/* ====== Date input: hide native picker icon (webkit) ====== */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    display: none;
+}
+
+/* ====== Floating Actions button ====== */
+.btn-floating {
+    position: fixed;
+    top: 150px;
+    right: 6px;
+    z-index: 1050;
+    padding: 4px 8px;
+    font-size: 14px;
+    border-radius: .375rem;
+    background-color: rgba(0, 123, 255, 0.3);
+    color: #fff;
+    border: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,.12);
+    transition: background-color .25s ease, transform .25s ease;
+}
+
+    .btn-floating:hover {
+        background-color: rgba(0, 86, 179, 0.5);
+        transform: translateY(-1px) scale(1.03);
+    }
+
+/* ====== Offcanvas: width via CSS var with responsive fallback ====== */
+#offcanvasActions {
+    --preview-offcanvas-width: 500px;
+    width: var(--preview-offcanvas-width);
+}
+
+@media (max-width: 767.98px) {
+    #offcanvasActions {
+        --preview-offcanvas-width: 100vw;
+    }
+}
+
+/* ====== Print styles ====== */
+@media print {
+    .btn-floating,
+    .offcanvas,
+    .page-header {
+        display: none !important;
+    }
+
+    /* Expand content to full width for print */
+    .card,
+    .card-body,
+    .container,
+    .container-fluid {
+        box-shadow: none !important;
+    }
+
+    /* Tighter table spacing for vouchers */
+    table {
+        page-break-inside: auto;
+    }
+
+    tr, td, th {
+        page-break-inside: avoid;
+    }
+}

@@ -141,6 +141,9 @@
   <data name="AssetTransfers" xml:space="preserve">
     <value>Hanti Wareejin</value>
   </data>
+  <data name="AttentionRequired" xml:space="preserve">
+    <value>Fiiro gaar ah</value>
+  </data>
   <data name="AwaitingAcknowledgement" xml:space="preserve">
     <value>Sugeysa aqbalaad</value>
   </data>
@@ -185,6 +188,9 @@
   </data>
   <data name="NewTransfer" xml:space="preserve">
     <value>Wareejin Cusub</value>
+  </data>
+  <data name="NumberOfAssets" xml:space="preserve">
+    <value>Tirada Hantida</value>
   </data>
   <data name="OutgoingFromStore" xml:space="preserve">
     <value>Ka-bixid Bakhaar</value>

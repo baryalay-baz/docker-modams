@@ -207,4 +207,28 @@
   <data name="Status" xml:space="preserve">
     <value>Heerka</value>
   </data>
+  <data name="AwaitingAcknowledgement" xml:space="preserve">
+    <value>Sugaya Aqoonsi</value>
+  </data>
+  <data name="TransferCreated" xml:space="preserve">
+    <value>Wareejin La Sameeyay</value>
+  </data>
+  <data name="ShowDetails" xml:space="preserve">
+    <value>Muuji Faahfaahinta</value>
+  </data>
+  <data name="Workflow" xml:space="preserve">
+    <value>Habraaca Shaqada</value>
+  </data>
+  <data name="Signatures" xml:space="preserve">
+    <value>Saxiixyada</value>
+  </data>
+  <data name="Pending" xml:space="preserve">
+    <value>Sugaya</value>
+  </data>
+  <data name="Completed" xml:space="preserve">
+    <value>Dhammaystiran</value>
+  </data>
+  <data name="SubmittedForAcknowledgement" xml:space="preserve">
+    <value>Loo Gudbiyay Aqoonsi</value>
+  </data>
 </root>

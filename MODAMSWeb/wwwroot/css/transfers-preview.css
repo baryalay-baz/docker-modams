@@ -1,0 +1,383 @@
+﻿/* ====== Layout & Utilities (prefer Bootstrap utilities when possible) ====== */
+.table-bordered tr {
+    height: 30px
+}
+
+/* Border helpers */
+.bordered-div {
+    border: 1px solid lightgray
+}
+
+.bordered-div-top {
+    border-top: 1px solid lightgray
+}
+
+.bordered-div-right {
+    border-right: 1px solid lightgray
+}
+
+.bordered-div-bottom {
+    border-bottom: 1px solid lightgray
+}
+
+.bordered-div-left {
+    border-left: 1px solid lightgray
+}
+
+.text-xsmall {
+    font-size: 10px
+}
+
+/* ====== Barcode area ====== */
+.barcode {
+    width: 200px;
+    height: 50px
+}
+
+.barcode-container {
+    text-align: center
+}
+
+.barcode-text {
+    margin-bottom: .25rem
+}
+
+/* ====== Date input: hide native picker icon (webkit) ====== */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    display: none
+}
+
+/* ====== Floating Actions button (kept, though off-canvas removed) ====== */
+.btn-floating {
+    position: fixed;
+    top: 150px;
+    right: 6px;
+    z-index: 1050;
+    padding: 4px 8px;
+    font-size: 14px;
+    border-radius: .375rem;
+    background-color: rgba(0,123,255,.3);
+    color: #fff;
+    border: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,.12);
+    transition: background-color .25s ease,transform .25s ease
+}
+
+    .btn-floating:hover {
+        background-color: rgba(0,86,179,.5);
+        transform: translateY(-1px) scale(1.03)
+    }
+
+/* ====== Offcanvas width (kept for any reuse) ====== */
+#offcanvasActions {
+    --preview-offcanvas-width: 500px;
+    width: var(--preview-offcanvas-width)
+}
+
+@media (max-width:767.98px) {
+    #offcanvasActions {
+        --preview-offcanvas-width: 100vw
+    }
+}
+
+/* ====== Print styles ====== */
+@media print {
+    .btn-floating, .offcanvas, .page-header {
+        display: none !important
+    }
+
+    .card, .card-body, .container, .container-fluid {
+        box-shadow: none !important
+    }
+
+    table {
+        page-break-inside: auto
+    }
+
+    tr, td, th {
+        page-break-inside: avoid
+    }
+}
+
+/* ====== Status badge ====== */
+.pv-status {
+    font-weight: 600;
+    border-radius: 999px;
+    padding: .55rem .9rem;
+    font-size: 1rem;
+    line-height: 1.1
+}
+
+@media (min-width:1200px) {
+    .pv-status {
+        font-size: 1.05rem;
+        padding: .6rem 1rem
+    }
+}
+
+.pv-status--ok {
+    background: rgba(25,135,84,.08);
+    color: #198754;
+    border: 1px solid rgba(25,135,84,.2)
+}
+
+.pv-status--rejected {
+    background: rgba(220,53,69,.08);
+    color: #dc3545;
+    border: 1px solid rgba(220,53,69,.2)
+}
+
+/* ====== KPIs ====== */
+.pv-kpi {
+    min-width: 120px;
+    padding: .35rem .7rem;
+    border: 1px solid rgba(0,0,0,.06);
+    border-radius: .5rem;
+    background: var(--bs-body-bg);
+    box-shadow: 0 2px 8px rgba(0,0,0,.04)
+}
+
+.pv-kpi__label {
+    font-size: .75rem;
+    color: var(--bs-secondary-color)
+}
+
+.pv-kpi__value {
+    font-weight: 700
+}
+
+/* (Legacy list timeline kept for safety; unused by new stepper) */
+.pv-timeline {
+    list-style: none;
+    padding-left: 0;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap
+}
+
+    .pv-timeline li {
+        position: relative;
+        padding-left: 1.2rem
+    }
+
+        .pv-timeline li::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: .45rem;
+            width: .55rem;
+            height: .55rem;
+            border-radius: 50%;
+            background: #adb5bd
+        }
+
+        .pv-timeline li.done::before {
+            background: #198754
+        }
+
+        .pv-timeline li.rejected::before {
+            background: #dc3545
+        }
+
+/* ====== Asset chips ====== */
+.pv-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem
+}
+
+.pv-chip {
+    display: inline-block;
+    padding: .25rem .5rem;
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 999px;
+    background: var(--bs-light);
+    text-decoration: none;
+    color: inherit
+}
+
+    .pv-chip:hover {
+        text-decoration: none;
+        filter: brightness(.98)
+    }
+
+.pv-chip--more {
+    background: transparent;
+    border-style: dashed;
+    color: var(--bs-secondary-color)
+}
+
+/* ====== Signatures ====== */
+.pv-sign__label {
+    font-size: .8rem;
+    color: var(--bs-secondary-color);
+    margin-bottom: .25rem
+}
+
+.pv-sign__script {
+    font-family: "Freestyle Script",cursive;
+    font-size: 24pt;
+    line-height: 1
+}
+
+/* ====== Helpers ====== */
+.truncate-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden
+}
+
+.pv-row {
+    cursor: pointer
+}
+
+.pv-action-btn {
+    padding: .6rem 1rem;
+    font-size: 1rem;
+    line-height: 1.25
+}
+/* match gradient buttons */
+
+/* =========================================================
+   WORKFLOW / STEPPER (fixed: per-step connectors, no overflow)
+   ========================================================= */
+.pv-flow {
+    width: 100%
+}
+
+.pv-flow__steps {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    list-style: none;
+    margin: 0;
+    padding: 0
+}
+
+.pv-flow__step {
+    position: relative;
+    flex: 1 1 0;
+    min-width: 0; /* allow wrapping */
+    display: flex;
+    align-items: flex-start;
+    gap: .75rem
+}
+    /* connector to NEXT step */
+    .pv-flow__step::after {
+        content: "";
+        position: absolute;
+        top: 1.25rem;
+        left: calc(2rem + .5rem); /* dot (2rem) + half gap */
+        right: -.5rem;
+        height: 4px;
+        background: rgba(0,0,0,.08);
+        z-index: 0
+    }
+
+    .pv-flow__step:last-child::after {
+        display: none
+    }
+
+/* the dot */
+.pv-flow__dot {
+    position: relative;
+    z-index: 1;
+    flex: 0 0 auto;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e9ecef;
+    color: #6c757d;
+    box-shadow: 0 0 0 3px #fff inset
+}
+
+/* label */
+.pv-flow__label {
+    line-height: 1.15;
+    min-width: 0
+}
+
+.pv-flow__title {
+    display: block;
+    font-weight: 600;
+    margin-bottom: .15rem;
+    word-break: break-word
+}
+
+/* states (dot) */
+.pv-flow__step.done .pv-flow__dot {
+    background: #198754;
+    color: #fff
+}
+/* success */
+.pv-flow__step.current .pv-flow__dot {
+    background: #0d6efd;
+    color: #fff
+}
+/* primary */
+.pv-flow__step.pending .pv-flow__dot {
+    background: #e9ecef;
+    color: #6c757d
+}
+/* muted */
+.pv-flow__step.rejected .pv-flow__dot {
+    background: #dc3545;
+    color: #fff
+}
+/* danger */
+
+/* states (connector to next) */
+.pv-flow__step.done::after {
+    background: #198754
+}
+
+.pv-flow__step.rejected::after {
+    background: #dc3545
+}
+
+/* Responsive: stack vertically */
+@media (max-width:576px) {
+    .pv-flow__steps {
+        flex-direction: column
+    }
+
+    .pv-flow__step::after {
+        display: none
+    }
+}
+/* --- Stepper polish --- */
+
+/* give more breathing room between steps */
+.pv-flow__steps {
+    gap: 1.25rem;
+}
+
+/* keep labels tidy and ensure dates clear the connector */
+.pv-flow__label {
+    margin-top: .05rem; /* tiny lift for optical alignment */
+    min-width: 0;
+}
+
+    .pv-flow__label small {
+        display: block;
+        margin-top: .8rem; /* pushes date below the connector line */
+    }
+
+/* round the connector ends and nudge it a bit lower for balance */
+.pv-flow__step::after {
+    top: 1.35rem; /* was 1.25rem; slight drop to sit under text better */
+    border-radius: 2px; /* softer line ends */
+}
+
+/* (optional) tiny visual lift for done/rejected connectors */
+.pv-flow__step.done::after {
+    box-shadow: 0 0 0 1px rgba(25,135,84,.06) inset;
+}
+
+.pv-flow__step.rejected::after {
+    box-shadow: 0 0 0 1px rgba(220,53,69,.06) inset;
+}

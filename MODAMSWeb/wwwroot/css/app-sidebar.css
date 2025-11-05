@@ -1,0 +1,85 @@
+﻿/* Sidebar menu popovers only */
+.popover.menu-pop {
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 12px;
+    box-shadow: 0 12px 30px rgba(0,0,0,.14), 0 2px 8px rgba(0,0,0,.06);
+    overflow: hidden; /* keep rounded corners on header */
+    max-width: 280px;
+}
+
+    .popover.menu-pop .popover-header {
+        background: linear-gradient(180deg, #ffffff, #f8fafc);
+        border-bottom: 1px solid rgba(0,0,0,.06);
+        font-weight: 600;
+        font-size: .95rem;
+        padding: .6rem .8rem;
+        color: #0f172a; /* slate-900 */
+    }
+
+    .popover.menu-pop .popover-body {
+        padding: .6rem .8rem;
+        font-size: .9rem;
+        line-height: 1.35;
+        color: #334155; /* slate-700 */
+    }
+
+    /* Arrow styling (right placement used in sidebar) */
+    .popover.menu-pop .popover-arrow::after {
+        border-right-color: #ffffff; /* inner */
+    }
+
+    .popover.menu-pop .popover-arrow::before {
+        border-right-color: rgba(0,0,0,.08); /* subtle outer border */
+    }
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .popover.menu-pop {
+        transition: none;
+    }
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+    .popover.menu-pop {
+        border-color: rgba(255,255,255,.08);
+        box-shadow: 0 12px 30px rgba(0,0,0,.5), 0 2px 8px rgba(0,0,0,.4);
+        background: #0b1220; /* deep slate */
+    }
+
+        .popover.menu-pop .popover-header {
+            background: linear-gradient(180deg, #0b1220, #0e1626);
+            border-bottom-color: rgba(255,255,255,.06);
+            color: #e5e7eb;
+        }
+
+        .popover.menu-pop .popover-body {
+            color: #cbd5e1;
+        }
+
+        .popover.menu-pop .popover-arrow::after {
+            border-right-color: #0b1220;
+        }
+
+        .popover.menu-pop .popover-arrow::before {
+            border-right-color: rgba(255,255,255,.08);
+        }
+}
+
+.side-menu__item {
+    display: flex;
+    align-items: center;
+}
+
+.side-menu__icon {
+    font-size: 18px;
+    width: 20px;
+    min-width: 20px;
+    text-align: center;
+    margin-right: 8px;
+    color: #4c5372;
+}
+
+.side-menu__item:hover .side-menu__icon {
+    color: #0d6efd;
+}

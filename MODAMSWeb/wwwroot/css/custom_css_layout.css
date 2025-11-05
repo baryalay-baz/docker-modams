@@ -33,17 +33,6 @@ hr.customHR {
         box-shadow: 0px 4px 8px 0 rgba(0,0,0,0.16), 0px 3px 10px 0 rgba(0,0,0,0.15);
     }
 
-
-.form-control {
-    border-color: #ced4da;
-}
-
-    .form-control:focus {
-        border-color: green;
-        border: 1px solid lightblue;
-        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2), 0px 6px 20px 0px rgba(0,0,0,0.19);
-    }
-
 .select2:focus {
     border-color: green;
     border: 1px solid lightblue;
@@ -237,3 +226,96 @@ hr.customHR {
     .pams-help-fab:hover {
         filter: brightness(0.95);
     }
+
+
+/* ===== Modern light input + Select2 styling ===== */
+
+/* Base for all input types */
+.form-control,
+textarea.form-control,
+.form-select {
+    border: 1px solid #e4e9f0; /* very light gray border */
+    border-radius: 6px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: none; /* remove heavy default shadow */
+}
+
+    /* On focus (subtle, clean glow) */
+    .form-control:focus,
+    textarea.form-control:focus,
+    .form-select:focus {
+        border-color: #b3d7ff; /* soft light blue */
+        box-shadow: 0 0 0 0.15rem rgba(173, 216, 255, 0.3);
+        outline: none;
+    }
+
+/* Select2 single select */
+.select2-container--default .select2-selection--single {
+    height: 38px;
+    border: 1px solid #e4e9f0;
+    border-radius: 6px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+}
+
+    /* Text inside Select2 */
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        color: #495057;
+        line-height: 36px;
+        padding-left: 10px;
+    }
+
+    /* Arrow alignment */
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 36px;
+        right: 8px;
+    }
+
+    /* Select2 focus state */
+    .select2-container--default.select2-container--focus .select2-selection--single,
+    .select2-container--default .select2-selection--single:focus {
+        border-color: #b3d7ff;
+        box-shadow: 0 0 0 0.15rem rgba(173, 216, 255, 0.3);
+        outline: none;
+    }
+
+/* Select2 multiple select */
+.select2-container--default .select2-selection--multiple {
+    border: 1px solid #e4e9f0;
+    border-radius: 6px;
+    min-height: 38px;
+    background-color: #fff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+    .select2-container--default .select2-selection--multiple .select2-selection__rendered {
+        padding: 4px 8px;
+    }
+
+.select2-container--default.select2-container--focus .select2-selection--multiple {
+    border-color: #b3d7ff;
+    box-shadow: 0 0 0 0.15rem rgba(173, 216, 255, 0.3);
+}
+
+/* Dropdown panel (Select2 results) */
+.select2-container .select2-dropdown {
+    border: 1px solid #e4e9f0;
+    border-radius: 6px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Highlighted option */
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: #eaf4ff;
+    color: #0c63e4;
+}
+
+/* Disabled consistency */
+.select2-container--default.select2-container--disabled .select2-selection--single,
+.select2-container--default.select2-container--disabled .select2-selection--multiple {
+    background-color: #f8f9fb;
+    border-color: #e4e9f0;
+    cursor: not-allowed;
+}
