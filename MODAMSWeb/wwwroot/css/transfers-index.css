@@ -357,3 +357,18 @@
         outline: 2px solid color-mix(in srgb, var(--bs-primary), white 30%);
         outline-offset: 2px;
     }
+
+.kpi-link {
+    cursor: pointer;
+    transition: transform .06s ease, box-shadow .12s ease;
+}
+
+    .kpi-link:hover, .kpi-link:focus {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(0,0,0,.08);
+        outline: 0;
+    }
+
+    .kpi-link:focus-visible {
+        box-shadow: 0 0 0 3px rgba(13,110,253,.25), 0 6px 18px rgba(0,0,0,.08);
+    }

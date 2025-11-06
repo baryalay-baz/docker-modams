@@ -546,6 +546,7 @@ namespace MODAMS.ApplicationServices
 
                 transfer.TransferStatusId = SD.Transfer_SubmittedForAcknowledgement;
                 transfer.SenderBarcode = await _func.GetEmployeeNameAsync(_employeeId);
+                transfer.SubmissionForAcknowledgementDate = DateTime.UtcNow;
 
                 await _db.SaveChangesAsync();
 

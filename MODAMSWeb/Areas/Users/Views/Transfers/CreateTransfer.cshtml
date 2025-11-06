@@ -43,32 +43,34 @@
     .text-xsmall {
         font-size: 10px;
     }
-
 </style>
+
 <div class="page-header">
     <div>
-        <h1 class="page-title">@Localizer["AssetTransfers"]</h1>
+        <h1 class="page-title" data-tour="ct.title">@Localizer["AssetTransfers"]</h1>
     </div>
     <div class="ms-auto pageheader-btn">
-        <ol class="breadcrumb">
+        <ol class="breadcrumb" data-tour="ct.breadcrumbs">
             <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">@Localizer["Dashboard"]</a></li>
             <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Transfers" asp-action="Index">@Localizer["Transfers"]</a></li>
             <li class="breadcrumb-item active" aria-current="page">@Localizer["CreateTransfer"]</li>
         </ol>
     </div>
 </div>
+
 <div class="row">
     <div class="col-md-12">
-        <div class="card divShadow">
+        <div class="card divShadow--xs">
             <div class="card-body p-4">
                 <div class="d-flex align-items-center justify-content-between">
-                    <h4 class="m-0">@Localizer["CreateNewTransfer"]</h4>
+                    <h4 class="m-0" data-tour="ct.header">@Localizer["CreateNewTransfer"]</h4>
                 </div>
             </div>
         </div>
+
         <div class="card">
             <div class="card-body">
-                <form method="post" asp-action="CreateTransfer" id="frmTransfer">
+                <form method="post" asp-action="CreateTransfer" id="frmTransfer" data-tour="ct.form">
                     <div class="row">
                         <div class="col-sm-8">
                             <div class="card">
@@ -77,32 +79,33 @@
                                     <div class="row">
                                         <div class="col-sm-6">
                                             <input type="hidden" id="selectedAssets" name="selectedAssets" />
-                                            <div class="mb-3 form-group">
-                                                <div class="mb-3 form-group">
-                                                    <label asp-for="Transfer.StoreFromId"></label>
-                                                    <input type="text" class="form-control" value="@Model.StoreFrom" readonly aria-required="true" autocomplete="off" />
-                                                    <span asp-validation-for="Transfer.StoreFromId" class="text-danger"></span>
-                                                </div>
+                                            <div class="mb-3 form-group" data-tour="ct.from">
+                                                <label asp-for="Transfer.StoreFromId"></label>
+                                                <input type="text" class="form-control" value="@Model.StoreFrom" readonly aria-required="true" autocomplete="off" />
+                                                <span asp-validation-for="Transfer.StoreFromId" class="text-danger"></span>
                                             </div>
                                         </div>
+
                                         <div class="col-sm-6">
-                                            <div class="mb-3 form-group">
+                                            <div class="mb-3 form-group" data-tour="ct.number">
                                                 <label asp-for="Transfer.TransferNumber"></label>
                                                 <input asp-for="Transfer.TransferNumber" class="form-control" readonly aria-required="true" type="text" autocomplete="off" />
                                                 <span asp-validation-for="Transfer.TransferNumber" class="text-danger"></span>
                                             </div>
                                         </div>
                                     </div>
+
                                     <div class="row">
                                         <div class="col-sm-6">
-                                            <div class="mb-3 form-group">
+                                            <div class="mb-3 form-group" data-tour="ct.date">
                                                 <label asp-for="Transfer.TransferDate"></label>
                                                 <input asp-for="Transfer.TransferDate" asp-format="{0:dd-MMM-yyyy}" class="form-control picker" aria-required="true" type="text" autocomplete="off" />
                                                 <span asp-validation-for="Transfer.TransferDate" class="text-danger"></span>
                                             </div>
                                         </div>
+
                                         <div class="col-sm-6">
-                                            <div class="mb-3 form-group">
+                                            <div class="mb-3 form-group" data-tour="ct.store">
                                                 <label asp-for="Transfer.StoreId"></label>
                                                 <select asp-for="Transfer.StoreId" asp-items="@Model.StoreList"
                                                         class="form-control select2 form-select">
@@ -112,20 +115,24 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row">
+
+                                    <div class="row" data-tour="ct.assets.section">
                                         <div class="col-sm-12">
                                             <div aria-multiselectable="true" class="accordion-dark" id="accordion8" role="tablist">
                                                 <div class="card mb-0">
                                                     <div class="card-header border-bottom-0" id="heading8" role="tab">
-                                                        <a class="accor-style2 collapsed" aria-controls="collapse8" aria-expanded="false" data-bs-toggle="collapse" href="#collapse8"><i class="fe fe-plus-circle me-2"></i>@Localizer["SelectAssets"] - <span id="spnSelection">(0 @Localizer["Selected"])</span></a>
+                                                        <a class="accor-style2 collapsed" aria-controls="collapse8" aria-expanded="false" data-bs-toggle="collapse" href="#collapse8" data-tour="ct.assets.toggle">
+                                                            <i class="fe fe-plus-circle me-2"></i>@Localizer["SelectAssets"]
+                                                            - <span id="spnSelection" data-tour="ct.assets.count">(0 @Localizer["Selected"])</span>
+                                                        </a>
                                                     </div>
                                                     <div aria-labelledby="heading8" class="collapse" data-bs-parent="#accordion8" id="collapse8" role="tabpanel">
                                                         <div class="card-body">
                                                             <div class="table-responsive">
-                                                                <table id="tblTransfers" class="table text-nowrap mb-0 table-bordered key-buttons border-top border-bottom project-list-main">
+                                                                <table id="tblTransfers" class="table text-nowrap mb-0 table-bordered key-buttons border-top border-bottom project-list-main" data-tour="ct.assets.table">
                                                                     <thead class="bg-primary-gradient ms-auto divShadow">
                                                                         <tr>
-                                                                            <th class="text-white bg-transparent border-bottom-0 w-2"></th>
+                                                                            <th class="text-white bg-transparent border-bottom-0 w-2" data-tour="ct.assets.checkbox"> </th>
                                                                             <th class="text-white bg-transparent border-bottom-0 w-10">@Localizer["Category"]</th>
                                                                             <th class="text-white bg-transparent border-bottom-0 w-20">@Localizer["Make"]</th>
                                                                             <th class="text-white bg-transparent border-bottom-0 w-20">@Localizer["Model"]</th>
@@ -141,13 +148,11 @@
                                                                                 for (var i = 0; i < Model.Assets.Count(); i++)
                                                                                 {
                                                                                     <tr>
-
                                                                                         <td>
                                                                                             <input asp-for="@Model.Assets[i].AssetId" hidden />
                                                                                             <div class="col-auto">
                                                                                                 <label class="ckbox" asp-for="@Model.Assets[i].IsSelected">
-                                                                                                    <input onclick="return selectAsset(@Model.Assets[i].AssetId,this);"
-                                                                                                            type="checkbox" asp-for="@Model.Assets[i].IsSelected">
+                                                                                                    <input onclick="return selectAsset(@Model.Assets[i].AssetId,this);" type="checkbox" asp-for="@Model.Assets[i].IsSelected">
                                                                                                     <span></span>
                                                                                                 </label>
                                                                                             </div>
@@ -162,7 +167,6 @@
                                                                                 }
                                                                             }
                                                                         }
-
                                                                     </tbody>
                                                                 </table>
                                                             </div>
@@ -172,38 +176,42 @@
                                             </div>
                                         </div>
                                     </div>
+
                                     <div class="row">
                                         <div class="col-sm-12">
-                                            <div class="mb-3 form-group mt-2">
+                                            <div class="mb-3 form-group mt-2" data-tour="ct.notes">
                                                 <label asp-for="Transfer.Notes"></label>
                                                 <textarea asp-for="Transfer.Notes" class="form-control mb-4" placeholder="Transfer Notes" rows="3"></textarea>
                                                 <span asp-validation-for="Transfer.Notes" class="text-danger"></span>
                                             </div>
                                         </div>
                                     </div>
+
                                     <div class="flex">
                                         @{
                                             var sDisabled = (Model.Assets == null) ? "disabled" : "";
-                                            <button type="button" class="btn btn-info @sDisabled" id="btnSubmit"><i class="fa fa-check-circle"></i>&nbsp;@Localizer["SaveTransfer"]</button>
-                                            <a asp-action="Index" asp-controller="Transfers" id="btnCancel" class="btn btn-gray"><i class="fa fa-close"></i>&nbsp;@Localizer["Cancel"]</a>
                                         }
-
+                                        <button type="button" class="btn btn-info @sDisabled" id="btnSubmit" data-tour="ct.save">
+                                            <i class="fa fa-check-circle"></i>&nbsp;@Localizer["SaveTransfer"]
+                                        </button>
+                                        <a asp-action="Index" asp-controller="Transfers" id="btnCancel" class="btn btn-gray" data-tour="ct.cancel">
+                                            <i class="fa fa-close"></i>&nbsp;@Localizer["Cancel"]
+                                        </a>
                                     </div>
-
                                 </div>
                             </div>
                         </div>
+
                         <div class="col-sm-4">
-                            <div class="card">
+                            <div class="card" data-tour="ct.selection.card">
                                 <div class="card-status bg-primary-gradient br-tr-7 br-tl-7"></div>
                                 <div class="card-header">
-                                    <div class="card-title">@Localizer["YourSelection"]</div>
+                                    <div class="card-title" data-tour="ct.selection.title">@Localizer["YourSelection"]</div>
                                     <hr />
                                 </div>
                                 <div class="card-body">
-                                    <table class="table table-bordered">
-                                        <tbody id="tbodySelection">
-                                        </tbody>
+                                    <table class="table table-bordered" data-tour="ct.selection.table">
+                                        <tbody id="tbodySelection"></tbody>
                                     </table>
                                 </div>
                             </div>
@@ -211,11 +219,13 @@
                     </div>
                 </form>
             </div>
+
             <div class="card-footer">
                 <div class="row">
-                    @*<hr class="customHR" />*@
                     <div class="col-sm-12">
-                        <a asp-action="Index" asp-controller="Transfers" id="btnCancel" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;@Localizer["Previous"]</a>
+                        <a asp-action="Index" asp-controller="Transfers" id="btnCancelFooter" class="btn btn-outline-default" data-tour="ct.back">
+                            <i class="fe fe-corner-up-left"></i>&nbsp;@Localizer["Previous"]
+                        </a>
                     </div>
                 </div>
             </div>
@@ -223,15 +233,12 @@
     </div>
 </div>
 
-
-
-@section Scripts{
+@section Scripts {
     <partial name="_DatatablesAssets" />
     <script>
         window.AMS = window.AMS || {};
         window.AMS.pageData = { assets: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Assets)) };
     </script>
-
     <script src="~/assets/plugins/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
     <script src="~/js/pages/transfers-createtransfer.js"></script>
 }

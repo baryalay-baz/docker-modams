@@ -80,11 +80,7 @@
     </div>
 </div>
 
-@section Scripts{
-    <script>
-        $(document).ready(() => {
-            hideMenu();
-            makeDataTable('#tblTransfers',"2");
-        });
-    </script>
+@section Scripts {
+    <partial name="_DatatablesAssets" />
+    <script src="~/js/pages/transfers-transferredassets.js"></script>
 }

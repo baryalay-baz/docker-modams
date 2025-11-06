@@ -189,8 +189,11 @@
   <data name="NewTransfer" xml:space="preserve">
     <value>New Transfer</value>
   </data>
-  <data name="NumberOfAssets" xml:space="preserve">
-    <value>Number of Assets</value>
+  <data name="NumberOfAssetsReceived" xml:space="preserve">
+    <value>Number of Assets Received</value>
+  </data>
+  <data name="NumberOfAssetsTransferred" xml:space="preserve">
+    <value>Number of Assets Transferred</value>
   </data>
   <data name="OutgoingFromStore" xml:space="preserve">
     <value>Outgoing from Store</value>

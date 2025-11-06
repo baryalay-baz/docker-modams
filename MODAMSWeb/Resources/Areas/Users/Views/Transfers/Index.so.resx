@@ -189,8 +189,11 @@
   <data name="NewTransfer" xml:space="preserve">
     <value>Wareejin Cusub</value>
   </data>
-  <data name="NumberOfAssets" xml:space="preserve">
-    <value>Tirada Hantida</value>
+  <data name="NumberOfAssetsReceived" xml:space="preserve">
+    <value>Tirada Hantida La Helay</value>
+  </data>
+  <data name="NumberOfAssetsTransferred" xml:space="preserve">
+    <value>Tirada Hantida La Wareejiyay</value>
   </data>
   <data name="OutgoingFromStore" xml:space="preserve">
     <value>Ka-bixid Bakhaar</value>

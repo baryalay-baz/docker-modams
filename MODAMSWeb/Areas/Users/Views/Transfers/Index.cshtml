@@ -70,21 +70,26 @@
     <!-- Outgoing Transfers -->
     <div class="col-md-4 d-flex">
         <!-- add d-flex -->
-        <div class="card overflow-hidden kpi-card w-100 h-75 divShadow--xs" data-tour="tr.kpi.out">
+        <div class="card overflow-hidden kpi-card w-100 h-75 divShadow--xs kpi-link"
+             role="link" tabindex="0"
+             aria-label="@Localizer["OutgoingTransfers"]"
+             data-href="/Users/Transfers/TransferredAssets/@selectedStoreId"
+             data-tour="tr.kpi.out">
+
             <div class="card-status bg-primary br-tr-7 br-tl-7"></div>
             <div class="card-body">
                 <div class="row">
                     <div class="col">
                         <h4 class="mb-2 fw-semibold">@Localizer["OutgoingTransfers"]</h4>
                         <h3 class="mb-2 fw-semibold">@kpiOutCount.ToString("N0")</h3>
-                        <p class="text-muted mb-0 mt-2 fs-12">
-                            <span class="fw-semibold">@Localizer["NumberOfAssets"]:</span>
+                        <p class="text-muted mb-0 mt-2 fs-6">
+                            <span class="fw-semibold">@Localizer["NumberOfAssetsTransferred"]:</span>
                             @kpiOutAssetsCount
                         </p>
                     </div>
                     <div class="col col-auto top-icn dash">
                         <div class="counter-icon bg-primary dash ms-auto box-shadow-primary">
-                            <i class="fa fa-arrow-right-from-bracket text-white"></i>
+                            <i class="fe fe-upload fs-3 text-white"></i>
                         </div>
                     </div>
                 </div>
@@ -94,21 +99,26 @@
 
     <!-- Incoming Transfers -->
     <div class="col-md-4 d-flex">
-        <div class="card overflow-hidden kpi-card w-100 h-75 divShadow--xs" data-tour="tr.kpi.in">
+        <div class="card overflow-hidden kpi-card w-100 h-75 divShadow--xs kpi-link"
+             role="link" tabindex="0"
+             aria-label="@Localizer["IncomingTransfers"]"
+             data-href="/Users/Transfers/ReceivedAssets/@selectedStoreId"
+             data-tour="tr.kpi.in">
+
             <div class="card-status bg-success br-tr-7 br-tl-7"></div>
             <div class="card-body">
                 <div class="row">
                     <div class="col">
                         <h4 class="mb-2 fw-semibold">@Localizer["IncomingTransfers"]</h4>
                         <h3 class="mb-2 fw-semibold">@kpiInCount.ToString("N0")</h3>
-                        <p class="text-muted mb-0 mt-2 fs-12">
-                            <span class="fw-semibold">@Localizer["NumberOfAssets"]:</span>
+                        <p class="text-muted mb-0 mt-2 fs-6">
+                            <span class="fw-semibold">@Localizer["NumberOfAssetsReceived"]:</span>
                             @kpiInAssetsCount
                         </p>
                     </div>
                     <div class="col col-auto top-icn dash">
                         <div class="counter-icon bg-success dash ms-auto box-shadow-success">
-                            <i class="fa fa-arrow-right-to-bracket text-white"></i>
+                            <i class="fe fe-download fs-3 text-white"></i>
                         </div>
                     </div>
                 </div>
@@ -125,7 +135,7 @@
                     <div class="col">
                         <h4 class="mb-2 fw-semibold">@Localizer["AttentionRequired"]</h4>
                         <h3 class="mb-2 fw-semibold">@Model?.TotalPendingAck</h3>
-                        <p class="text-muted mb-0 mt-2 fs-12">
+                        <p class="text-muted mb-0 mt-2 fs-6">
                             <span class="fw-semibold">@Localizer["AwaitingAcknowledgement"]</span>
                         </p>
                     </div>

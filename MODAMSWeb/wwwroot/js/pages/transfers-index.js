@@ -17,6 +17,9 @@
         outgoingTable: "#tblTransfersOut",
         incomingTable: "#tblTransfersIn",
 
+        // KPI cards (clickable)
+        kpiCard: ".kpi-link, .kpi-card[data-tour='tr.kpi.out'], .kpi-card[data-tour='tr.kpi.in']",
+
         spnNew: "#spnNew",
         pieOut: "#pieChartOutgoing",
         pieIn: "#pieChartIncoming",
@@ -41,8 +44,8 @@
         initOutgoingTable();
         initIncomingTable();
 
-        renderOutgoingPie();
-        renderIncomingPie();
+        //renderOutgoingPie();
+        //renderIncomingPie();
 
         if (hasAnyDate()) {
             applyDateFilter();
@@ -50,6 +53,9 @@
         } else {
             setFilterToggle(false);
         }
+
+        // Make KPI cards keyboard-focusable if author forgot to add tabindex
+        ensureKpiFocusability();
     }
 
     /* ---------------- Events ---------------- */
@@ -95,6 +101,61 @@
             const id = this.getAttribute("data-id");
             if (!id) return;
             openDeleteConfirm(id);
+        });
+
+        // KPI navigation (click + keyboard)
+        $doc.off("click" + NS, SEL.kpiCard).on("click" + NS, SEL.kpiCard, function (e) {
+            e.preventDefault();
+            navigateFromKpi(this);
+        });
+        $doc.off("keydown" + NS, SEL.kpiCard).on("keydown" + NS, SEL.kpiCard, function (e) {
+            if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                navigateFromKpi(this);
+            }
+        });
+    }
+
+    /* ---------------- KPI navigation ---------------- */
+    function getStoreId() {
+        // Prefer current select value; fallback to CFG.storeId if you expose it; fallback to data on body.
+        const v = $(SEL.store).val();
+        if (v && String(v).trim() !== "") return v;
+        if (CFG.storeId) return CFG.storeId;
+        const bodyStore = document.body.getAttribute("data-store-id");
+        return bodyStore || null;
+    }
+
+    function buildKpiUrl(el) {
+        // 1) If author provided data-href on the card, use it.
+        const explicit = el.getAttribute("data-href");
+        if (explicit) return explicit;
+
+        // 2) Else infer from which KPI it is + current store
+        const storeId = getStoreId();
+        if (!storeId) return null;
+
+        // Identify which card: outgoing vs incoming
+        const isOut = el.matches('[data-tour="tr.kpi.out"]') || el.querySelector('[data-tour="tr.kpi.out"]');
+        const isIn = el.matches('[data-tour="tr.kpi.in"]') || el.querySelector('[data-tour="tr.kpi.in"]');
+
+        if (isOut) return `/Users/Transfers/TransferredAssets/${encodeURIComponent(storeId)}`;
+        if (isIn) return `/Users/Transfers/ReceivedAssets/${encodeURIComponent(storeId)}`;
+
+        // If neither matched, don't guess.
+        return null;
+    }
+
+    function navigateFromKpi(el) {
+        const url = buildKpiUrl(el);
+        if (!url) return;
+        window.location.assign(url);
+    }
+
+    function ensureKpiFocusability() {
+        document.querySelectorAll(SEL.kpiCard).forEach(card => {
+            if (!card.hasAttribute("tabindex")) card.setAttribute("tabindex", "0");
+            if (!card.hasAttribute("role")) card.setAttribute("role", "link");
         });
     }
 
