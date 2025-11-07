@@ -457,7 +457,7 @@ namespace MODAMS.ApplicationServices
                         Model = td.Asset.Model,
                         Barcode = td.Asset.Barcode ?? "-",
                         SerialNumber = td.Asset.SubCategory.Category.CategoryName == "Vehicles"
-                            ? (_isSomali ? "Taariko: " : "Plate No: ") + td.Asset.Plate
+                            ? _func.BuildVehicleIdentification(td.Asset.Plate, td.Asset.Chasis, td.Asset.Engine)
                             : (_isSomali ? "L.T: " : "S.N: ") + td.Asset.SerialNo,
                         Condition = _isSomali
                                          ? td.Asset.Condition.ConditionNameSo
@@ -1109,7 +1109,7 @@ namespace MODAMS.ApplicationServices
                     Model = td.Asset.Model,
                     Barcode = td.Asset.Barcode ?? "-",
                     SerialNumber = td.Asset.SubCategory.CategoryId == 16
-                        ? (_isSomali ? "Taariko: " : "Plate No: ") + (td.Asset.Plate ?? "-")
+                        ? _func.BuildVehicleIdentification(td.Asset.Plate, td.Asset.Chasis, td.Asset.Engine)
                         : (_isSomali ? "L.T: " : "S.N: ") + (td.Asset.SerialNo ?? "-"),
                     Condition = _isSomali ? td.Asset.Condition.ConditionNameSo : td.Asset.Condition.ConditionName,
                     IsSelected = true,

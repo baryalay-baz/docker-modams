@@ -960,8 +960,21 @@ namespace MODAMS.Utility
                 .ToListAsync();
             return employees;
         }
+        public string BuildVehicleIdentification(string? plate, string? chassisNo, string? engineNo)
+        {
+            if (IsValid(plate)) return (_isSomali ? "Taarikada: " : "Plate No: ") + plate!.Trim();
+            if (IsValid(chassisNo)) return (_isSomali ? "Shassis: " : "Chassis No: ") + chassisNo!.Trim();
+            if (IsValid(engineNo)) return (_isSomali ? "Matoor: " : "Engine No: ") + engineNo!.Trim();
+            return _isSomali ? "" : ""; // nothing valid → empty (adjust if you want a placeholder)
+        }
 
         //Private Functions
+        private static bool IsValid(string? s)
+        {
+            if (string.IsNullOrWhiteSpace(s)) return false;
+            var v = s.Trim();
+            return v != "0" && v != "-";
+        }
         private async Task NotifyAsync(int[] arrEmpIds, Notification notification)
         {
             foreach (int id in arrEmpIds)

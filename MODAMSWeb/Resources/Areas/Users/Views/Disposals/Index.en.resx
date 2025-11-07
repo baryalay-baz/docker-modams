@@ -126,6 +126,9 @@
   <data name="AssetName" xml:space="preserve">
     <value>Asset Name</value>
   </data>
+  <data name="ByType" xml:space="preserve">
+    <value>By Disposal Type</value>
+  </data>
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>

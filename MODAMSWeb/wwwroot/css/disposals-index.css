@@ -1,0 +1,149 @@
+﻿/* Disposals — clean, modern, subtle */
+.kpi-row .card-kpi {
+    border: 1px solid rgba(0,0,0,.06);
+    box-shadow: 0 6px 18px rgba(0,0,0,.05);
+    transition: transform .06s ease;
+    width: 100%;
+}
+
+    .kpi-row .card-kpi:hover {
+        transform: translateY(-1px);
+    }
+
+.kpi-label {
+    color: var(--bs-secondary-color, #6c757d);
+    font-weight: 600;
+    font-size: .95rem;
+    letter-spacing: .2px;
+}
+
+.kpi-value {
+    font-weight: 800;
+    font-size: 1.6rem;
+    line-height: 1.1;
+}
+
+.kpi-icon i {
+    font-size: 1.4rem;
+    opacity: .7;
+}
+
+/* Table head */
+.table-head {
+    background: linear-gradient(180deg, rgba(0,0,0,.02), rgba(0,0,0,0));
+}
+
+.project-list-main th,
+.project-list-main td {
+    vertical-align: middle;
+}
+
+/* Date pickers consistent sizing */
+.toolbar .picker {
+    min-width: 150px;
+}
+
+/* Keep chart area centered */
+#pieChartDisposals {
+    max-width: 260px;
+    max-height: 260px;
+}
+
+/* Toolbar: keep everything on one row, wrap only when truly needed */
+.toolbar {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    flex-wrap: wrap; /* allows wrap on very small widths instead of overlap */
+    min-height: 42px;
+}
+
+.toolbar__spacer {
+    flex: 1 1 auto; /* pushes filters right */
+}
+
+.toolbar__filters {
+    flex: 0 0 auto;
+}
+
+.toolbar__input {
+    min-width: 160px; /* consistent width so they don't collapse */
+    max-width: 200px; /* prevents overgrowth */
+    flex: 0 0 auto; /* don't stretch */
+}
+
+.toolbar__apply,
+.toolbar__new {
+    flex: 0 0 auto; /* never shrink */
+    white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+    .toolbar__spacer {
+        display: none;
+    }
+    /* let items stack on small screens */
+    .toolbar__filters {
+        width: 100%;
+    }
+    /* filters go full-width under the button */
+    .toolbar__input {
+        flex: 1 1 0;
+        min-width: 0;
+    }
+    /* inputs share the row evenly */
+}
+
+.datepicker {
+    z-index: 1061 !important;
+}
+.store-chip {
+    display: inline-flex;
+    align-items: center;
+    max-width: clamp(220px, 28vw, 420px);
+    padding: .35rem .6rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 999px;
+    background: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    box-shadow: 0 2px 8px rgba(0,0,0,.05);
+    line-height: 1;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.store-chip__text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Professional image frame for preview modal */
+.photo-frame {
+    display: inline-block;
+    background: linear-gradient(180deg, rgba(0,0,0,.03), rgba(0,0,0,0)) padding-box, linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,0)) border-box;
+    border: 1px solid var(--bs-border-color);
+    box-shadow: 0 8px 24px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.06);
+    padding: 8px;
+    border-radius: 10px; /* frame has soft corners */
+}
+
+.photo-frame__img {
+    display: block;
+    max-height: 360px; /* keeps it tidy in the modal */
+    max-width: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain; /* no crop */
+    background: #fff; /* clean backdrop around transparent PNGs */
+    border: 1px solid rgba(0,0,0,.06);
+    border-radius: 0; /* image itself NOT rounded */
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,.06));
+}
+
+.photo-frame__cap {
+    margin-top: 6px;
+    font-size: .8rem;
+    color: var(--bs-secondary-color);
+    text-align: center;
+    user-select: none;
+}

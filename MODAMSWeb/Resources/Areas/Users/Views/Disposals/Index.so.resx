@@ -126,6 +126,9 @@
   <data name="AssetName" xml:space="preserve">
     <value>Magaca Hantida</value>
   </data>
+  <data name="ByType" xml:space="preserve">
+    <value>Nooca Ka-Takhaluska</value>
+  </data>
   <data name="Cancel" xml:space="preserve">
     <value>Jooji</value>
   </data>

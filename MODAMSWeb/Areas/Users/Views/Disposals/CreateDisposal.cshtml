@@ -6,6 +6,7 @@
 
 @{
     ViewData["TourPageKey"] = "Disposals/CreateDisposal";
+    bool _isSomali = CultureInfo.CurrentUICulture.Name == "so";
 }
 
 <style>
@@ -20,10 +21,7 @@
     }
 
     .bordered-div {
-        border-left: 1px solid lightgray;
-        border-top: 1px solid lightgray;
-        border-right: 1px solid lightgray;
-        border-bottom: 1px solid lightgray;
+        border: 1px solid lightgray;
     }
 
     .bordered-div-top {
@@ -47,46 +45,46 @@
     }
 
     .selected {
-        background-color: #f5f5f5; /* Change to your desired background color */
+        background-color: #f5f5f5;
     }
-
 </style>
-@{
-    bool _isSomali = CultureInfo.CurrentUICulture.Name == "so";
-}
-<div class="page-header">
+
+<div class="page-header" data-tour="cd.headerbar">
     <div>
-        <h1 class="page-title">@Localizer["CreateDisposal"]</h1>
+        <h1 class="page-title" data-tour="cd.title">@Localizer["CreateDisposal"]</h1>
     </div>
     <div class="ms-auto pageheader-btn">
-        <ol class="breadcrumb">
+        <ol class="breadcrumb" data-tour="cd.breadcrumbs">
             <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">@Localizer["Dashboard"]</a></li>
             <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Disposals" asp-action="Index">@Localizer["Disposals"]</a></li>
             <li class="breadcrumb-item active" aria-current="page">@Localizer["CreateDisposal"]</li>
         </ol>
     </div>
 </div>
+
 <div class="row">
     <div class="col-md-12">
         <div class="card divShadow">
             <div class="card-body p-4">
                 <div class="d-flex align-items-center justify-content-between">
-                    <h4 class="m-0">@Localizer["CreateNewDisposal"]</h4>
+                    <h4 class="m-0" data-tour="cd.sectionTitle">@Localizer["CreateNewDisposal"]</h4>
                 </div>
             </div>
         </div>
     </div>
+
     <div class="col-md-12 mb-3">
         @{
-            string sDisabled = "disabled";
-            if (Model.IsAuthorized)
-            {
-                sDisabled = "";
-            }
+            string sDisabled = Model.IsAuthorized ? "" : "disabled";
         }
         <div class="card">
             <div class="card-body">
-                <form method="post" asp-action="CreateDisposal" id="frmDisposal" enctype="multipart/form-data">
+                <form method="post"
+                      asp-action="CreateDisposal"
+                      id="frmDisposal"
+                      enctype="multipart/form-data"
+                      data-tour="cd.form">
+
                     <div class="row">
                         <div class="col-md-8">
                             <div class="card">
@@ -97,58 +95,78 @@
                                             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
                                             <div class="mb-3 form-group">
                                                 <label>@Localizer["Store"]</label>
-                                                <span id="StoreName" type="text" class="form-control" readonly>@Model.StoreName</span>
+                                                <span id="StoreName" type="text" class="form-control" readonly data-tour="cd.storeName">@Model.StoreName</span>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="mb-3 form-group">
                                                 <label>@Localizer["StoreOwner"]</label>
-                                                <span id="StoreOwner" type="text" class="form-control" readonly>@Model.StoreOwner</span>
+                                                <span id="StoreOwner" type="text" class="form-control" readonly data-tour="cd.storeOwner">@Model.StoreOwner</span>
                                             </div>
-
                                         </div>
                                     </div>
+
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="mb-3 form-group">
                                                 <label asp-for="Disposal.DisposalDate"></label>
-                                                <input asp-for="Disposal.DisposalDate" asp-format="{0:dd-MMM-yyyy}" class="form-control picker" aria-required="true" type="text" autocomplete="off" />
+                                                <input asp-for="Disposal.DisposalDate"
+                                                       asp-format="{0:dd-MMM-yyyy}"
+                                                       class="form-control picker"
+                                                       aria-required="true"
+                                                       type="text"
+                                                       autocomplete="off"
+                                                       data-tour="cd.date" />
                                                 <span asp-validation-for="Disposal.DisposalDate" class="text-danger"></span>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="mb-3 form-group">
                                                 <label asp-for="Disposal.DisposalTypeId"></label>
-                                                <select asp-for="Disposal.DisposalTypeId" asp-items="@Model.DisposalTypeList"
-                                                        class="form-control select2 form-select">
+                                                <select asp-for="Disposal.DisposalTypeId"
+                                                        asp-items="@Model.DisposalTypeList"
+                                                        class="form-control select2 form-select"
+                                                        data-tour="cd.type">
                                                     <option disabled selected>-@Localizer["SelectDisposalType"]-</option>
                                                 </select>
                                                 <span asp-validation-for="Disposal.DisposalTypeId" class="text-danger"></span>
                                             </div>
                                         </div>
                                     </div>
+
                                     <div class="row">
                                         <div class="col-md-12">
                                             <div class="mb-3 form-group">
                                                 <label asp-for="Disposal.Notes"></label>
-                                                <textarea asp-for="Disposal.Notes" class="form-control mb-4" placeholder="" rows="3"></textarea>
+                                                <textarea asp-for="Disposal.Notes"
+                                                          class="form-control mb-4"
+                                                          placeholder=""
+                                                          rows="3"
+                                                          data-tour="cd.notes"></textarea>
                                                 <span asp-validation-for="Disposal.Notes" class="text-danger"></span>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row">
+
+                                    <div class="row" data-tour="cd.assetPicker">
                                         <div class="col-md-12">
                                             <div aria-multiselectable="true" class="accordion-dark mb-3" id="accordion8" role="tablist">
                                                 <div class="card mb-0">
                                                     <div class="card-header border-bottom-0" id="heading8" role="tab">
-                                                        <a id="collapse-button" class="accor-style2 collapsed" aria-controls="collapse8" aria-expanded="true" data-bs-toggle="collapse" href="#collapse8">
+                                                        <a id="collapse-button"
+                                                           class="accor-style2 collapsed"
+                                                           aria-controls="collapse8"
+                                                           aria-expanded="true"
+                                                           data-bs-toggle="collapse"
+                                                           href="#collapse8"
+                                                           data-tour="cd.assetPickerToggle">
                                                             <i class="fe fe-plus-circle me-2"></i>@Localizer["SelectAssetToDispose"]
                                                         </a>
                                                     </div>
                                                     <div aria-labelledby="heading8" class="collapse" data-bs-parent="#accordion8" id="collapse8" role="tabpanel">
                                                         <div class="card-body">
                                                             <div class="table-responsive">
-                                                                <table id="tblAssets" class="table text-nowrap mb-0 table-bordered key-buttons border-top border-bottom project-list-main">
+                                                                <table id="tblAssets" class="table text-nowrap mb-0 table-bordered key-buttons border-top border-bottom project-list-main" data-tour="cd.assetTable">
                                                                     <thead class="bg-primary-gradient ms-auto divShadow">
                                                                         <tr>
                                                                             <th class="text-white bg-transparent border-bottom-0 w-2"></th>
@@ -168,7 +186,14 @@
                                                                             {
                                                                                 sCounter = nCounter < 10 ? "0" + nCounter.ToString() : nCounter.ToString();
                                                                                 <tr>
-                                                                                    <td><button type="button" class="selectionButton btn btn-primary btn-sm" onclick="return selectAsset(@asset.Id,this,event);">select</button></td>
+                                                                                    <td>
+                                                                                        <button type="button"
+                                                                                                class="selectionButton btn btn-primary btn-sm"
+                                                                                                onclick="return selectAsset(@asset.Id,this,event);"
+                                                                                                data-tour="cd.assetSelectBtn">
+                                                                                            select
+                                                                                        </button>
+                                                                                    </td>
                                                                                     <td>@asset.CategoryName</td>
                                                                                     <td>@asset.Make</td>
                                                                                     <td>@asset.Model</td>
@@ -176,6 +201,7 @@
                                                                                     <td>@asset.Identification</td>
                                                                                     <td>@asset.Barcode</td>
                                                                                 </tr>
+                                                                                nCounter++;
                                                                             }
                                                                         }
                                                                     </tbody>
@@ -187,7 +213,8 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div id="AssetDetails" style="display:none;">
+
+                                    <div id="AssetDetails" style="display:none;" data-tour="cd.assetDetails">
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="mb-3 form-group">
@@ -217,29 +244,33 @@
                                             </div>
                                         </div>
                                     </div>
+
                                     <div class="flex">
                                         @{
-                                            sDisabled = Model.Assets.Count<1? "disabled" : "";
-                                            <button type="button" class="btn btn-info-gradient @sDisabled" id="btnSubmit">
-                                                <i class="fa fa-check-circle"></i>&nbsp;@Localizer["SaveDisposal"]
-                                            </button>
-                                            <a asp-action="Index" asp-controller="Disposals" id="btnCancel" class="btn btn-gray"><i class="fa fa-close"></i>&nbsp;@Localizer["Cancel"]</a>
+                                            sDisabled = Model.Assets.Count < 1 ? "disabled" : "";
                                         }
-
+                                        <button type="button" class="btn btn-info-gradient @sDisabled" id="btnSubmit" data-tour="cd.save">
+                                            <i class="fa fa-check-circle"></i>&nbsp;@Localizer["SaveDisposal"]
+                                        </button>
+                                        <a asp-action="Index" asp-controller="Disposals" id="btnCancel" class="btn btn-gray" data-tour="cd.cancel">
+                                            <i class="fa fa-close"></i>&nbsp;@Localizer["Cancel"]
+                                        </a>
                                     </div>
 
                                 </div>
                             </div>
                         </div>
+
                         <div class="col-md-4">
                             <div class="card">
                                 <div class="card-status bg-info br-tr-7 br-tl-7"></div>
                                 <div id="card-body-file" class="card-body table-bordered" style="height: 412px; display: flex; justify-content: center; align-items: center;">
-                                    <input asp-for="file" type="file" class="dropify" data-height="400" />
+                                    <input asp-for="file" type="file" class="dropify" data-height="400" data-tour="cd.imageInput" />
                                 </div>
                             </div>
                         </div>
                     </div>
+
                     <input asp-for="Disposal.AssetId" hidden />
                 </form>
             </div>
@@ -248,92 +279,19 @@
 </div>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dropify/dist/css/dropify.min.css">
-<script src="https://cdn.jsdelivr.net/npm/dropify/dist/js/dropify.min.js"></script>
 
 @section scripts {
+    <script src="https://cdn.jsdelivr.net/npm/dropify/dist/js/dropify.min.js"></script>
+    <partial name="_DatatablesAssets" />
+    
     <script>
-        $(document).ready(() => {
-            hideMenu();
-
-            $('.picker').datepicker({
-                autoclose: true,
-                format: 'dd-MM-yyyy',
-                todayHighlight: true
-            });
-            const currentDate = new Date();
-            $('.picker').datepicker('setDate', currentDate).val("");
-
-            makeDataTable('#tblAssets', "1");
-            const isSomali = getCurrentLanguage() === "so";
-            $("#btnSubmit").on("click", (e) => {
-                e.preventDefault();
-                if ($("#Disposal_AssetId").val() == 0) {
-                    notif({
-                        type: "error",
-                        msg: isSomali ? "<b>Khalad: </b>Hanti lama dooran: ":"<b>Error: </b>No asset selected!",
-                        position: "center",
-                        width: 500,
-                        height: 60,
-                        autohide: false
-                    });
-                } else {
-                    $("#frmDisposal").submit();
-                }
-            });
-
-            localizeDropify(isSomali);
-        });
-
-        const localizeDropify = (isSomali) => {
-            const $original = $('#file');
-            const $clone = $original.clone(); // clean clone
-
-            // Replace original with clone
-            $original.replaceWith($clone);
-
-            // Re-initialize dropify
-            $clone.dropify({
-                messages: isSomali ? {
-                    default: 'Jiid oo dhig faylka ama guji',
-                    replace: 'Jiid oo dhig si aad u beddesho faylka',
-                    remove:  'Tirtir',
-                    error:   'Khalad ayaa dhacay'
-                } : {
-                    default: 'Drag and drop a file or click',
-                    replace: 'Drag and drop or click to replace',
-                    remove:  'Remove',
-                    error:   'Oops, something wrong happened.'
-                }
-            });
-        };
-        const selectAsset = (id,btn,e) => {
-            e.preventDefault();
-            $('.selectionButton').prop('disabled', false);
-            $(btn).prop('disabled', true); // jQuery way
-
-            const assets = JSON.parse('@Html.Raw(Json.Serialize(Model.Assets))');
-            if (assets && assets.length > 0) {
-                const selectedAsset = assets.find(asset => asset.id === id);
-
-                if (selectedAsset) {
-                    $("#spnMake").html(selectedAsset.make);
-                    $("#spnModel").html(selectedAsset.model);
-                    $("#spnAssetName").html(selectedAsset.assetName);
-
-                    const categoryName = selectedAsset.categoryName;
-                    const identification = selectedAsset.identification;
-
-                    $("#spnIdentification").html(identification);
-                }
+        window.CREATE_DISPOSAL = {
+            isSomali: "@(_isSomali ? "true" : "false")",
+            i18n: {
+                noAssetErrorHtml: "@Html.Raw((_isSomali ? "<b>Khalad: </b>Hanti lama dooran" : "<b>Error: </b>No asset selected!"))"
             }
-
-            $("#Disposal_AssetId").val(id);
-            $("#collapse8").collapse("hide");
-            $("#AssetDetails").show();
-
-            $("#card-body-file").css("height", "575px");
         };
-
-
     </script>
+    <script src="~/assets/plugins/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+    <script src="~/js/pages/disposals-createdisposal.js"></script>
 }

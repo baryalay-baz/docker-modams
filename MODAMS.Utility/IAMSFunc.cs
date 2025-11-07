@@ -58,6 +58,6 @@ namespace MODAMS.Utility
         public void LogException(ILogger logger, Exception ex);
         public Task SendNotificationAsync(Notification notification);
         public Task<bool> CanModifyStoreAsync(int storeId, int employeeId);
-
+        public string BuildVehicleIdentification(string? plate, string? chassisNo, string? engineNo);
     }
 }

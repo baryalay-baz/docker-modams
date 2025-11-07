@@ -427,29 +427,29 @@ namespace MODAMS.ApplicationServices
             var assetsField = dto.GetType().GetProperty("Assets");
             var disposalTypeListField = dto.GetType().GetProperty("DisposalTypeList");
 
-            //_employeeId = IsInRole("User") ? await _func.GetSupervisorIdAsync(_employeeId) : _employeeId;
             _storeId = await _func.GetStoreIdByEmployeeIdAsync(_employeeId);
 
             // Populate Assets
             if (assetsField != null)
             {
                 var assetList = await _db.Assets
-                    .Include(m => m.SubCategory).ThenInclude(m => m.Category)
-                    .Where(m => m.AssetStatusId == SD.Asset_Available && m.StoreId == _storeId)
-                    .Select(a => new DisposalAssetDto
-                    {
-                        Id = a.Id,
-                        CategoryName = _isSomali ? a.SubCategory.Category.CategoryNameSo : a.SubCategory.Category.CategoryName,
-                        SubCategoryName = _isSomali ? a.SubCategory.SubCategoryNameSo : a.SubCategory.SubCategoryName,
-                        AssetName = a.Name,
-                        Make = a.Make,
-                        Model = a.Model,
-                        Barcode = a.Barcode,
-                        Identification = a.SubCategory.Category.CategoryName == "Vehicles"
-                        ? (_isSomali ? "Taarikada: " : "Plate No: ") + a.Plate
-                        : (_isSomali ? "Sereelka: " : "SN: ") + a.SerialNo
-                    }).ToListAsync();
-
+                .Include(m => m.SubCategory).ThenInclude(m => m.Category)
+                .Where(m => m.AssetStatusId == SD.Asset_Available && m.StoreId == _storeId)
+                .Select(a => new DisposalAssetDto
+                {
+                    Id = a.Id,
+                    CategoryName = _isSomali ? a.SubCategory.Category.CategoryNameSo : a.SubCategory.Category.CategoryName,
+                    SubCategoryName = _isSomali ? a.SubCategory.SubCategoryNameSo : a.SubCategory.SubCategoryName,
+                    AssetName = a.Name,
+                    Make = a.Make,
+                    Model = a.Model,
+                    Barcode = a.Barcode,
+                    Identification =
+                    a.SubCategory.Category.CategoryName == "Vehicles"
+                    ? _func.BuildVehicleIdentification(a.Plate, a.Chasis, a.Engine)
+                    : ((_isSomali ? "Sereelka: " : "SN: ") + (a.SerialNo ?? ""))
+                })
+                .ToListAsync();
                 assetsField.SetValue(dto, assetList);
             }
 
