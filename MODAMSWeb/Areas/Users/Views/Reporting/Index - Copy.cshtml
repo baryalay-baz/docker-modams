@@ -8,11 +8,9 @@
 @{
     ViewData["TourPageKey"] = "Reporting/Index";
     bool _isSomali = CultureInfo.CurrentUICulture.Name == "so";
-    // Use your existing store from the model (as you prefer)
-    var defaultStoreId = Model?.AssetStoreId ?? 0;
 }
 
-<link href="~/css/reporting-index.css" rel="stylesheet" />
+<link href="~/css/reports-index.css" rel="stylesheet" />
 
 <div class="page-header">
     <div>
@@ -30,18 +28,17 @@
 
 <div class="rp-wrapper" data-tour="rp.layout">
     <div class="row g-3">
-        <!-- ===== LEFT: Catalog + Filters + Actions ===== -->
+        <!-- ===== Left: Report Catalog ===== -->
         <div class="col-lg-5">
-            <div class="card h-100" data-tour="rp.left">
-                <div class="card-body rp-left">
-                    <!-- Catalog -->
+            <div class="card h-100" data-tour="rp.catalog">
+                <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <h5 class="mb-0">@Localizer["ReportCatalog"]</h5>
                         <input type="search" class="form-control form-control-sm w-auto" id="rp-search"
                                placeholder="@Localizer["SearchReports"]" data-tour="rp.search" />
                     </div>
 
-                    <div class="row g-2 mb-3" id="rp-catalog">
+                    <div class="row g-2" id="rp-catalog">
                         <div class="col-6">
                             <button type="button" class="rp-tile" data-report="asset" data-tour="rp.tile.asset">
                                 <i class="bi bi-archive rp-tile__icon" aria-hidden="true"></i>
@@ -71,13 +68,17 @@
                             </button>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
 
-                    <hr class="my-3">
-
-                    <!-- Header + Presets + Actions (left) -->
-                    <div class="d-flex align-items-start justify-content-between flex-wrap gap-2 mb-2">
+        <!-- ===== Right: Focus Panel ===== -->
+        <div class="col-lg-7">
+            <div class="card h-100" id="rp-panel" data-tour="rp.panel">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
                         <div>
-                            <h6 class="mb-1" id="rp-panel-title" data-tour="rp.panel.title">@Localizer["Assets"]</h6>
+                            <h5 class="mb-1" id="rp-panel-title" data-tour="rp.panel.title">@Localizer["Assets"]</h5>
                             <div class="rp-presets" id="rp-presets" data-tour="rp.presets">
                                 <button type="button" class="btn btn-light btn-sm rp-preset" data-preset="all">@Localizer["All"]</button>
                                 <button type="button" class="btn btn-light btn-sm rp-preset" data-preset="byStore">@Localizer["ByStore"]</button>
@@ -85,25 +86,27 @@
                             </div>
                         </div>
 
-                        <div class="btn-group mt-1" data-tour="rp.actions">
-                            <button type="button" class="btn btn-primary" id="rp-generate" disabled>
-                                <i class="fa fa-eye me-1"></i>@Localizer["Preview"]
+                        <div class="btn-group" data-tour="rp.actions">
+                            <button type="button" class="btn btn-primary" id="rp-generate">
+                                <i class="fa fa-print me-1"></i>@Localizer["GenerateReport"]
                             </button>
                             <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split"
                                     data-bs-toggle="dropdown" aria-expanded="false">
                                 <span class="visually-hidden">Toggle</span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end" id="rp-action-menu">
-                                <li><a class="dropdown-item" data-action="export-pdf">@Localizer["ExportPDF"]</a></li>
                                 <li><a class="dropdown-item" data-action="window">@Localizer["OpenInNewWindow"]</a></li>
+                                <li><a class="dropdown-item" data-action="modal">@Localizer["PreviewInModal"]</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" data-action="export-pdf">@Localizer["ExportPDF"]</a></li>
                             </ul>
                         </div>
                     </div>
 
-                    <!-- Filters block (now under catalog, left side) -->
+                    <!-- ===== Filters: swap by report ===== -->
                     <div id="rp-filters" class="rp-filters" data-tour="rp.filters">
-                        <!-- Assets (default) -->
-                        <form method="get" target="rpPreviewFrame"
+                        <!-- Assets (default visible) -->
+                        <form method="get" target="_blank"
                               asp-area="Users" asp-controller="Reporting" asp-action="ReportViewer"
                               id="frmAssetReport" class="rp-form" data-report="asset">
                             <input type="hidden" name="ReportId" value="AssetReport" />
@@ -111,49 +114,39 @@
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label asp-for="AssetStoreId" class="form-label"></label>
-                                    <select asp-for="AssetStoreId" asp-items="@Model.AssetStores" class="form-control select2" data-all="0">
+                                    <select asp-for="AssetStoreId" asp-items="@Model.AssetStores" class="form-control select2">
                                         <option value="0">@Localizer["AllStores"]</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6">
                                     <label asp-for="AssetStatusId" class="form-label"></label>
-                                    <select asp-for="AssetStatusId" asp-items="@Model.AssetStatuses" class="form-control select2" data-all="0">
+                                    <select asp-for="AssetStatusId" asp-items="@Model.AssetStatuses" class="form-control select2">
                                         <option value="0">@Localizer["AllStatuses"]</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6">
                                     <label asp-for="CategoryId" class="form-label"></label>
-                                    <select asp-for="CategoryId" asp-items="@Model.Categories" class="form-control select2" data-all="0">
+                                    <select asp-for="CategoryId" asp-items="@Model.Categories" class="form-control select2">
                                         <option value="0">@Localizer["AllCategories"]</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6">
                                     <label asp-for="AssetConditionId" class="form-label"></label>
-                                    <select asp-for="AssetConditionId" asp-items="@Model.Conditions" class="form-control select2" data-all="0">
+                                    <select asp-for="AssetConditionId" asp-items="@Model.Conditions" class="form-control select2">
                                         <option value="0">@Localizer["AllConditions"]</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6">
                                     <label asp-for="DonorId" class="form-label"></label>
-                                    <select asp-for="DonorId" asp-items="@Model.Donors" class="form-control select2" data-all="0">
+                                    <select asp-for="DonorId" asp-items="@Model.Donors" class="form-control select2">
                                         <option value="0">@Localizer["AllDonors"]</option>
                                     </select>
-                                </div>
-
-                                <!-- NEW: Date range -->
-                                <div class="col-md-6">
-                                    <label class="form-label">@Localizer["DateFrom"]</label>
-                                    <input type="date" class="form-control" name="DateFrom" />
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">@Localizer["DateTo"]</label>
-                                    <input type="date" class="form-control" name="DateTo" />
                                 </div>
                             </div>
                         </form>
 
                         <!-- Transfers -->
-                        <form method="get" target="rpPreviewFrame"
+                        <form method="get" target="_blank"
                               asp-area="Users" asp-controller="Reporting" asp-action="ReportViewer"
                               id="frmTransferReport" class="rp-form d-none" data-report="transfer">
                             <input type="hidden" name="ReportId" value="TransferReport" />
@@ -161,37 +154,28 @@
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label asp-for="StoreFromId" class="form-label"></label>
-                                    <select asp-for="StoreFromId" asp-items="@Model.TransferStores" class="form-control select2" data-all="0">
+                                    <select asp-for="StoreFromId" asp-items="@Model.TransferStores" class="form-control select2">
                                         <option value="0">@Localizer["AllStores"]</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6">
                                     <label asp-for="StoreToId" class="form-label"></label>
-                                    <select asp-for="StoreToId" asp-items="@Model.TransferStores" class="form-control select2" data-all="0">
+                                    <select asp-for="StoreToId" asp-items="@Model.TransferStores" class="form-control select2">
                                         <option value="0">@Localizer["AllStores"]</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6">
                                     <label asp-for="TransferStatusId" class="form-label"></label>
-                                    <select asp-for="TransferStatusId" asp-items="@Model.TransferStatuses" class="form-control select2" data-all="0">
+                                    <select asp-for="TransferStatusId" asp-items="@Model.TransferStatuses" class="form-control select2">
                                         <option value="0">@Localizer["AllStatuses"]</option>
                                     </select>
-                                </div>
-
-                                <!-- NEW: Date range -->
-                                <div class="col-md-6">
-                                    <label class="form-label">@Localizer["DateFrom"]</label>
-                                    <input type="date" class="form-control" name="DateFrom" />
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">@Localizer["DateTo"]</label>
-                                    <input type="date" class="form-control" name="DateTo" />
                                 </div>
                             </div>
                         </form>
 
                         <!-- Disposals -->
-                        <form method="get" target="rpPreviewFrame"
+                        
+                        <form method="get" target="_blank"
                               asp-area="Users" asp-controller="Reporting" asp-action="ReportViewer"
                               id="frmDisposalReport" class="rp-form d-none" data-report="disposal">
                             <input type="hidden" name="ReportId" value="DisposalReport" />
@@ -199,47 +183,30 @@
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label asp-for="DisposalStoreId" class="form-label"></label>
-                                    <select asp-for="DisposalStoreId" asp-items="@Model.AssetStores" class="form-control select2" data-all="0">
+                                    <select asp-for="DisposalStoreId" asp-items="@Model.AssetStores" class="form-control select2">
                                         <option value="0">@Localizer["AllStores"]</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6">
                                     <label asp-for="DisposalTypeId" class="form-label"></label>
-                                    <select asp-for="DisposalTypeId" asp-items="@Model.DisposalTypes" class="form-control select2" data-all="0">
+                                    <select asp-for="DisposalTypeId" asp-items="@Model.DisposalTypes" class="form-control select2">
                                         <option value="0">@Localizer["AllDisposalTypes"]</option>
                                     </select>
                                 </div>
-
-                                <!-- NEW: Date range -->
-                                <div class="col-md-6">
-                                    <label class="form-label">@Localizer["DateFrom"]</label>
-                                    <input type="date" class="form-control" name="DateFrom" />
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">@Localizer["DateTo"]</label>
-                                    <input type="date" class="form-control" name="DateTo" />
-                                </div>
                             </div>
                         </form>
-                    </div>
 
-                    <small class="text-muted d-block mt-2" data-tour="rp.tip">
-                        @Localizer["TipUsePresetsThenAdjust"]
-                    </small>
-                </div>
-            </div>
-        </div>
-
-        <!-- ===== RIGHT: Report Viewer only ===== -->
-        <div class="col-lg-7">
-            <div class="card h-100">
-                <div class="card-body p-2">
-                    <div class="rp-preview h-100">
-                        <iframe name="rpPreviewFrame" id="rpPreviewFrame" title="Report Preview" loading="lazy"></iframe>
-                        <div id="rpEmpty" class="rp-empty">
-                            @(_isSomali ? "Isticmaal sifaynta kadibna guji 'Muuji'." : "Use filters, then click Preview.")
+                        <!-- Verifications (placeholder) -->
+                        <div class="rp-form d-none" data-report="verification">
+                            <div class="alert alert-warning mt-2" role="alert">
+                                @(_isSomali ? "Warbixintan wali lama dhaqan gelin." : "This report is not implemented yet.")
+                            </div>
                         </div>
                     </div>
+
+                    <small class="text-muted d-block mt-3" data-tour="rp.tip">
+                        @Localizer["TipUsePresetsThenAdjust"]
+                    </small>
                 </div>
             </div>
         </div>
@@ -248,15 +215,22 @@
 
 @section scripts {
     <script>
+        // Config for page script
         window.REPORTING = {
             isSomali: "@(_isSomali ? "true" : "false")",
-            // use your existing model store as default
-            defaultStoreId: @defaultStoreId,
+            storesJson: '@Html.Raw(JsonConvert.SerializeObject(Model.TransferStores))',
             i18n: {
+                popupBlocked: "@(_isSomali ? "Daaqad cusub lama furi karo; fadlan hubi xannibaadaha pop-up." : "Unable to open new window; please check pop-up blockers.")",
                 chooseStore: "@(_isSomali ? "Fadlan dooro Bakhaar." : "Please choose a Store.")",
-                chooseStatus: "@(_isSomali ? "Fadlan dooro Xaalad." : "Please choose a Status.")"
+                chooseStatus: "@(_isSomali ? "Fadlan dooro Xaalad." : "Please choose a Status.")",
+                invalidForm: "@(_isSomali ? "Fadlan buuxi xulashooyinka loo baahanyahay." : "Please complete the required selections.")",
+                assets: "@Localizer["Assets"]",
+                transfers: "@Localizer["Transfers"]",
+                disposals: "@Localizer["Disposals"]",
+                verifications: "@Localizer["Verifications"]"
             }
         };
     </script>
+
     <script src="~/js/pages/reporting-index.js"></script>
 }

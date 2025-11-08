@@ -55,7 +55,7 @@ namespace MODAMSWeb.Areas.Users.Controllers
             }
             return View("ReportViewer", dto);
         }
-        [HttpPost]
+        [HttpGet]
         public IActionResult ReportViewer(ReportingDTO dto)
         {
             dto.ReportId = _isSomali? dto.ReportId + "So" : dto.ReportId;
