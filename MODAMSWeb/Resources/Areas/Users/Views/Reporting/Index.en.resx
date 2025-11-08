@@ -165,4 +165,34 @@
   <data name="Dashboard" xml:space="preserve">
     <value>Dashboard</value>
   </data>
+  <data name="ReportCatalog" xml:space="preserve">
+    <value>Report Catalog</value>
+  </data>
+  <data name="SearchReport" xml:space="preserve">
+    <value>Search Report</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="ByStore" xml:space="preserve">
+    <value>By Store</value>
+  </data>
+  <data name="ByStatus" xml:space="preserve">
+    <value>By Status</value>
+  </data>
+  <data name="Preview" xml:space="preserve">
+    <value>Preview</value>
+  </data>
+  <data name="DateFrom" xml:space="preserve">
+    <value>Date From</value>
+  </data>
+  <data name="DateTo" xml:space="preserve">
+    <value>Date To</value>
+  </data>
+  <data name="ComingSoon" xml:space="preserve">
+    <value>Coming Soon</value>
+  </data>
+  <data name="Verifications" xml:space="preserve">
+    <value>Verifications</value>
+  </data>
 </root>

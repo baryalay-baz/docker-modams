@@ -165,4 +165,34 @@
   <data name="Dashboard" xml:space="preserve">
     <value>Dashboard-ka</value>
   </data>
+  <data name="ReportCatalog" xml:space="preserve">
+    <value>Liiska Warbixinaha</value>
+  </data>
+  <data name="SearchReport" xml:space="preserve">
+    <value>Raadi Warbixin</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>Dhammaan</value>
+  </data>
+  <data name="ByStore" xml:space="preserve">
+    <value>Bakhaar ahaan</value>
+  </data>
+  <data name="ByStatus" xml:space="preserve">
+    <value>Xaalad ahaan</value>
+  </data>
+  <data name="Preview" xml:space="preserve">
+    <value>Hordhac</value>
+  </data>
+  <data name="DateFrom" xml:space="preserve">
+    <value>Taariikh laga bilaabo</value>
+  </data>
+  <data name="DateTo" xml:space="preserve">
+    <value>Taariikh ilaa</value>
+  </data>
+  <data name="ComingSoon" xml:space="preserve">
+    <value>Dhawaan</value>
+  </data>
+  <data name="Verifications" xml:space="preserve">
+    <value>Xaqiin</value>
+  </data>
 </root>

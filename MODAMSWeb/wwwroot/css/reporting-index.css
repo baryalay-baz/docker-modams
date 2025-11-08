@@ -187,3 +187,30 @@ select.is-required + .select2 .select2-selection--multiple {
 .is-invalid + .select2 .select2-selection--single {
     border-color: var(--bs-danger) !important;
 }
+
+/* Selected (active) tile state */
+.rp-tile.is-active {
+    border-color: var(--bs-primary);
+    background: color-mix(in srgb, var(--bs-primary) 6%, var(--bs-body-bg));
+    box-shadow: 0 6px 20px rgba(0,0,0,.08);
+    position: relative;
+}
+
+    .rp-tile.is-active::before {
+        content: "";
+        position: absolute;
+        inset-inline-start: 0;
+        top: 8px;
+        bottom: 8px;
+        width: 3px;
+        border-radius: 3px;
+        background: var(--bs-primary);
+    }
+
+    .rp-tile.is-active .rp-tile__icon {
+        opacity: 1;
+    }
+
+    .rp-tile.is-active .rp-tile__title {
+        color: var(--bs-primary);
+    }

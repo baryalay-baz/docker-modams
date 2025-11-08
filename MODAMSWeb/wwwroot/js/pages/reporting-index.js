@@ -1,4 +1,5 @@
-﻿(function ($, window, document) {
+﻿//  /js/pages/reporting-index.js
+(function ($, window, document) {
     "use strict";
 
     // Use your utils namespace (alias)
@@ -34,6 +35,8 @@
         // Apply role-aware defaults once
         applyRoleDefaults();
 
+        setActiveTile(currentReport);
+
         // Initial validity check
         updateGenerateState();
     }
@@ -62,7 +65,19 @@
 
                 currentReport = report;
                 switchReport(report);
+                setActiveTile(report); // NEW: visual + ARIA
             });
+    }
+
+    // NEW: centralize selected-state styling + ARIA
+    function setActiveTile(report) {
+        const $tiles = $(`${SEL.catalog} .rp-tile`);
+        $tiles.removeClass("is-active").attr("aria-pressed", "false");
+        const $active = $tiles.filter(`[data-report="${report}"]`);
+        $active.addClass("is-active").attr("aria-pressed", "true");
+
+        // Ensure the active tile is visible if search is filtering
+        $active.closest(".col-6").removeClass("d-none");
     }
 
     function switchReport(report) {
