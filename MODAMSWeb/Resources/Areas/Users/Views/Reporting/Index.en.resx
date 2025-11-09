@@ -168,8 +168,8 @@
   <data name="ReportCatalog" xml:space="preserve">
     <value>Report Catalog</value>
   </data>
-  <data name="SearchReport" xml:space="preserve">
-    <value>Search Report</value>
+  <data name="SearchReports" xml:space="preserve">
+    <value>Search Reports</value>
   </data>
   <data name="All" xml:space="preserve">
     <value>All</value>

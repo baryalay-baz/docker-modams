@@ -81,11 +81,11 @@
             let params = {};
 
             if (reportId == "AssetReport" || reportId == "AssetReportSo") {
-                let storeId = parseInt('@Model.AssetStoreId');
-                let assetStatusId = parseInt('@Model.AssetStatusId');
-                let categoryId = parseInt('@Model.CategoryId');
+                let storeId          = parseInt('@Model.AssetStoreId');
+                let assetStatusId    = parseInt('@Model.AssetStatusId');
+                let categoryId       = parseInt('@Model.CategoryId');
                 let assetConditionId = parseInt('@Model.AssetConditionId');
-                let donorId = parseInt('@Model.DonorId');
+                let donorId          = parseInt('@Model.DonorId');
 
                 params = {
                     StoreId: storeId,
@@ -96,24 +96,20 @@
                 };
             } else if (reportId == "TransferVoucher" || reportId == "TransferVoucherSo") {
                 let transferId = '@Model.TransferId';
-
-                params = {
-                    TransferId: transferId
-                };
+                params = { TransferId: transferId };
             } else if (reportId == "TransferReport" || reportId == "TransferReportSo") {
-                let storeFromId = '@Model.StoreFromId';
-                let storeToId = '@Model.StoreToId';
-                let transferStatusId = '@Model.TransferStatusId';
+                let storeFromId     = '@Model.StoreFromId';
+                let storeToId       = '@Model.StoreToId';
+                let transferStatusId= '@Model.TransferStatusId';
 
                 params = {
                     StoreFromId: storeFromId,
                     StoreToId: storeToId,
                     TransferStatusId: transferStatusId
                 };
-
             } else if (reportId == "DisposalReport" || reportId == "DisposalReportSo") {
                 let disposalStoreId = '@Model.DisposalStoreId';
-                let disposalTypeId = '@Model.DisposalTypeId';
+                let disposalTypeId  = '@Model.DisposalTypeId';
 
                 params = {
                     StoreId: disposalStoreId,
@@ -121,10 +117,26 @@
                 };
             }
 
-            params = Object.fromEntries(Object.entries(params).filter(([_, value]) => value > 0));
+            // Render to ISO date (no time). If your TRDP expects DateTime, this is fine.
+            const dateFromIso = '@(Model.DateFrom.HasValue? Model.DateFrom.Value.ToString("yyyy-MM-dd") : "")';
+            const dateToIso   = '@(Model.DateTo.HasValue? Model.DateTo.Value.ToString("yyyy-MM-dd")   : "")';
+
+            if (dateFromIso) params.DateFrom = dateFromIso;
+            if (dateToIso)   params.DateTo   = dateToIso;
+
+            // ---- Robust cleanup: keep non-empty strings (like dates), drop 0/empty/null ----
+            params = Object.fromEntries(
+                Object.entries(params).filter(([_, v]) => {
+                    if (v === null || v === undefined) return false;
+                    if (typeof v === 'string') return v.trim() !== '';
+                    if (typeof v === 'number') return v > 0; // keep only positive numeric filters
+                    return true;
+                })
+            );
 
             return params;
-        }
+        };
+
     </script>
 </body>
 </html>

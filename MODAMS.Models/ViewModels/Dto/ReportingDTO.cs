@@ -9,6 +9,16 @@ namespace MODAMS.Models.ViewModels.Dto
     {
         public string ReportId { get; set; }
 
+        //General DateFrom and DateTO
+
+        [Display(Name = "DateFrom", ResourceType = typeof(Reporting))]
+        [DataType(DataType.Date)]
+        public DateTime? DateFrom { get; set; }
+
+        [Display(Name = "DateTo", ResourceType = typeof(Reporting))]
+        [DataType(DataType.Date)]
+        public DateTime? DateTo { get; set; }
+
 
         //Section for Asset Report
         [Display(Name = "Store", ResourceType = typeof(Reporting))]
@@ -59,5 +69,13 @@ namespace MODAMS.Models.ViewModels.Dto
         [Display(Name = "DisposalType", ResourceType = typeof(Reporting))]
         public int DisposalTypeId { get; set; }
         [ValidateNever] public IEnumerable<SelectListItem> DisposalTypes { get; set; }
+
+        private static DateTime TodayInMogadishu()
+        {
+            var tz = TimeZoneInfo.FindSystemTimeZoneById("Africa/Nairobi"); // Somalia uses EAT; Nairobi ID is widely available
+                                                                            // If "Africa/Mogadishu" exists in your container, prefer it:
+                                                                            // var tz = TimeZoneInfo.FindSystemTimeZoneById("Africa/Mogadishu");
+            return TimeZoneInfo.ConvertTime(DateTime.UtcNow, tz).Date;
+        }
     }
 }

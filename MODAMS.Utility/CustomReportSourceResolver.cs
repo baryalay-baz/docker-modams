@@ -86,6 +86,8 @@ namespace MODAMS.Utility
         }
         public async Task<List<vwDisposal>> GetDisposalReport(IDictionary<string, object> currentParameterValues)
         {
+            var (from, toEx) = ParseDateRange(currentParameterValues);
+
             IQueryable<vwDisposal> query = _db.vwDisposals.Select(m => new vwDisposal
             {
                 Id = m.Id,
@@ -100,25 +102,23 @@ namespace MODAMS.Utility
                 Type = m.Type
             });
 
-
             foreach (var parameter in currentParameterValues)
             {
                 if (parameter.Key == "StoreId" && Convert.ToInt64(parameter.Value) > 0)
-                {
                     query = query.Where(m => m.StoreId == Convert.ToInt64(parameter.Value));
-                }
                 else if (parameter.Key == "DisposalTypeId" && Convert.ToInt64(parameter.Value) > 0)
-                {
                     query = query.Where(m => m.DisposalTypeId == Convert.ToInt64(parameter.Value));
-                }
             }
-            var data = await query.ToListAsync();
 
-            return data;
+            if (from.HasValue) query = query.Where(m => m.DisposalDate >= from.Value);
+            if (toEx.HasValue) query = query.Where(m => m.DisposalDate < toEx.Value);
 
+            return await query.ToListAsync();
         }
         public async Task<List<vwTransferVoucher>> GetTransferReport(IDictionary<string, object> currentParameterValues)
         {
+            var (from, toEx) = ParseDateRange(currentParameterValues);
+
             IQueryable<vwTransferVoucher> query = _db.vwTransferVouchers.Select(tv => new vwTransferVoucher
             {
                 Id = tv.Id,
@@ -151,26 +151,20 @@ namespace MODAMS.Utility
                 TransferId = tv.TransferId
             });
 
-
             foreach (var parameter in currentParameterValues)
             {
                 if (parameter.Key == "StoreFromId" && Convert.ToInt64(parameter.Value) > 0)
-                {
                     query = query.Where(m => m.StoreFromId == Convert.ToInt64(parameter.Value));
-                }
                 else if (parameter.Key == "StoreToId" && Convert.ToInt64(parameter.Value) > 0)
-                {
                     query = query.Where(m => m.StoreToId == Convert.ToInt64(parameter.Value));
-                }
                 else if (parameter.Key == "TransferStatusId" && Convert.ToInt64(parameter.Value) > 0)
-                {
                     query = query.Where(m => m.TransferStatusId == Convert.ToInt64(parameter.Value));
-                }
             }
-            var data = await query.ToListAsync();
 
-            return data;
+            if (from.HasValue) query = query.Where(m => m.TransferDate >= from.Value);
+            if (toEx.HasValue) query = query.Where(m => m.TransferDate < toEx.Value);
 
+            return await query.ToListAsync();
         }
         public async Task<List<vwTransferVoucher>> GetTransferVoucherData(IDictionary<string, object> currentParameterValues)
         {
@@ -187,6 +181,8 @@ namespace MODAMS.Utility
         }
         public async Task<List<vwAsset>> GetAssetList(IDictionary<string, object> currentParameterValues)
         {
+            var (from, toEx) = ParseDateRange(currentParameterValues);
+
             IQueryable<vwAsset> query = _db.Assets
                 .Where(m => m.AssetStatusId != SD.Asset_Deleted)
                 .Include(m => m.SubCategory).ThenInclude(m => m.Category)
@@ -227,7 +223,7 @@ namespace MODAMS.Utility
                     DepartmentName = asset.Store.Department.Name,
                     EmployeeId = asset.Store.Department.EmployeeId,
                     StoreOwner = "-",
-                    Identification = asset.SubCategory.Category.CategoryName == "Vehicles" ? "Plate: " + asset.Plate : "SN: " + asset.SerialNo,
+                    Identification = asset.SubCategory.Category.CategoryName == "Vehicles" ? _func.BuildVehicleIdentification(asset.Plate,asset.Chasis,asset.Engine) : "SN: " + asset.SerialNo,
                     StatusName = asset.AssetStatus.StatusName,
                     ConditionName = asset.Condition.ConditionName,
                     ConditionNameSo = asset.Condition.ConditionNameSo,
@@ -261,20 +257,46 @@ namespace MODAMS.Utility
                 {
                     query = query.Where(asset => asset.DonorId == Convert.ToInt64(parameter.Value));
                 }
-                // Add more conditions for other parameters if needed
             }
+
+            // Date range on PurchaseDate (nullable-safe if your column is nullable)
+            if (from.HasValue) query = query.Where(asset => asset.PurchaseDate >= from.Value);
+            if (toEx.HasValue) query = query.Where(asset => asset.PurchaseDate < toEx.Value);
 
             if (storeId == 0)
             {
                 var storeList = await _func.GetStoresByEmployeeIdAsync(_employeeId);
-
                 var storeIds = storeList.Select(s => s.Id).ToList();
                 query = query.Where(asset => storeIds.Contains(asset.StoreId));
             }
 
-            var vwAssets = await query.ToListAsync();
+            return await query.ToListAsync();
+        }
+        private static (DateTime? from, DateTime? toExclusive) ParseDateRange(IDictionary<string, object> p)
+        {
+            DateTime? from = null, toExclusive = null;
 
-            return vwAssets;
+            DateTime parseBoxed(object v)
+            {
+                if (v is DateTime dt) return dt;
+                var s = Convert.ToString(v)?.Trim();
+                // Accept ISO first, then a few common fallbacks
+                var formats = new[] { "yyyy-MM-dd", "dd-MMM-yyyy", "dd/MM/yyyy", "MM/dd/yyyy" };
+                if (DateTime.TryParseExact(s, formats, System.Globalization.CultureInfo.InvariantCulture,
+                                           System.Globalization.DateTimeStyles.AssumeLocal, out var parsed))
+                    return parsed;
+                // Last resort
+                return DateTime.Parse(s);
+            }
+
+            if (p.TryGetValue("DateFrom", out var df) && df is not null && !string.IsNullOrWhiteSpace(df.ToString()))
+                from = parseBoxed(df).Date;
+
+            if (p.TryGetValue("DateTo", out var dt) && dt is not null && !string.IsNullOrWhiteSpace(dt.ToString()))
+                // exclusive end to make the range inclusive by day without using .Date in the query
+                toExclusive = parseBoxed(dt).Date.AddDays(1);
+
+            return (from, toExclusive);
         }
     }
 }

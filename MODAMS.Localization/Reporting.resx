@@ -150,6 +150,12 @@
   <data name="Condition" xml:space="preserve">
     <value>Condition</value>
   </data>
+  <data name="DateFrom" xml:space="preserve">
+    <value>Date From</value>
+  </data>
+  <data name="DateTo" xml:space="preserve">
+    <value>Date To</value>
+  </data>
   <data name="DisposalType" xml:space="preserve">
     <value>Disposal Type</value>
   </data>

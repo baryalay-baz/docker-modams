@@ -142,12 +142,16 @@
 
                                 <!-- NEW: Date range -->
                                 <div class="col-md-6">
-                                    <label class="form-label">@Localizer["DateFrom"]</label>
-                                    <input type="date" class="form-control" name="DateFrom" />
+                                    <label asp-for="DateFrom" class="form-label"></label>
+                                    <input asp-for="DateFrom" class="form-control picker"
+                                           asp-format="{0:dd-MMM-yyyy}" aria-required="true" type="text"
+                                           autocomplete="off" />
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">@Localizer["DateTo"]</label>
-                                    <input type="date" class="form-control" name="DateTo" />
+                                    <label asp-for="DateTo" class="form-label"></label>
+                                    <input asp-for="DateTo" class="form-control picker"
+                                           asp-format="{0:dd-MMM-yyyy}" aria-required="true" type="text"
+                                           autocomplete="off" />
                                 </div>
                             </div>
                         </form>
@@ -180,12 +184,16 @@
 
                                 <!-- NEW: Date range -->
                                 <div class="col-md-6">
-                                    <label class="form-label">@Localizer["DateFrom"]</label>
-                                    <input type="date" class="form-control" name="DateFrom" />
+                                    <label asp-for="DateFrom" class="form-label"></label>
+                                    <input asp-for="DateFrom" class="form-control picker"
+                                           asp-format="{0:dd-MMM-yyyy}" aria-required="true" type="text"
+                                           autocomplete="off" />
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">@Localizer["DateTo"]</label>
-                                    <input type="date" class="form-control" name="DateTo" />
+                                    <label asp-for="DateTo" class="form-label"></label>
+                                    <input asp-for="DateTo" class="form-control picker"
+                                           asp-format="{0:dd-MMM-yyyy}" aria-required="true" type="text"
+                                           autocomplete="off" />
                                 </div>
                             </div>
                         </form>
@@ -212,12 +220,16 @@
 
                                 <!-- NEW: Date range -->
                                 <div class="col-md-6">
-                                    <label class="form-label">@Localizer["DateFrom"]</label>
-                                    <input type="date" class="form-control" name="DateFrom" />
+                                    <label asp-for="DateFrom" class="form-label"></label>
+                                    <input asp-for="DateFrom" class="form-control picker"
+                                           asp-format="{0:dd-MMM-yyyy}" aria-required="true" type="text"
+                                           autocomplete="off" />
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">@Localizer["DateTo"]</label>
-                                    <input type="date" class="form-control" name="DateTo" />
+                                    <label asp-for="DateTo" class="form-label"></label>
+                                    <input asp-for="DateTo" class="form-control picker"
+                                           asp-format="{0:dd-MMM-yyyy}" aria-required="true" type="text"
+                                           autocomplete="off" />
                                 </div>
                             </div>
                         </form>
@@ -259,4 +271,5 @@
         };
     </script>
     <script src="~/js/pages/reporting-index.js"></script>
+    <script src="~/assets/plugins/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
 }

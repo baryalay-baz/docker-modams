@@ -32,7 +32,7 @@
     function initDataTable() {
         const make = U.makeDataTable || window.makeDataTable;
         if (typeof make === "function") {
-            make("#tblCategories", "3");
+            make("#tblCategories", 3);
         } else {
             U.log?.("DataTable init skipped: makeDataTable not found");
         }

@@ -150,6 +150,12 @@
   <data name="Condition" xml:space="preserve">
     <value>Heerka Hantida</value>
   </data>
+  <data name="DateFrom" xml:space="preserve">
+    <value>Taariikh laga bilaabo</value>
+  </data>
+  <data name="DateTo" xml:space="preserve">
+    <value>Taariikh ilaa</value>
+  </data>
   <data name="DisposalType" xml:space="preserve">
     <value>Ka-Noqoshada</value>
   </data>

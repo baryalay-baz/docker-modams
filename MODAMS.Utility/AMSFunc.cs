@@ -973,7 +973,7 @@ namespace MODAMS.Utility
         {
             if (string.IsNullOrWhiteSpace(s)) return false;
             var v = s.Trim();
-            return v != "0" && v != "-";
+            return v != "0" && v != "-" && v !="N/A" && v.Length>2;
         }
         private async Task NotifyAsync(int[] arrEmpIds, Notification notification)
         {
@@ -1089,5 +1089,4 @@ namespace MODAMS.Utility
             public DateTime? RecieptDate { get; set; }
         }
     }
-
 }

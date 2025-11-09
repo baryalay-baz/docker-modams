@@ -17,7 +17,8 @@
         forms: ".rp-form",
         select2: ".select2",
         previewFrame: "#rpPreviewFrame",
-        empty: "#rpEmpty"
+        empty: "#rpEmpty",
+        pickers: ".picker"
     };
 
     let currentReport = "asset";
@@ -31,7 +32,7 @@
         bindPresets();
         bindActions();
         bindSearch();
-
+        initDatePickers();
         // Apply role-aware defaults once
         applyRoleDefaults();
 
@@ -223,6 +224,19 @@
                     $(this).closest(".col-6").toggleClass("d-none", !text.includes(q));
                 });
             });
+    }
+
+    // ===== Datepickers =====
+    function initDatePickers() {
+        if ($.fn && $.fn.datepicker) {
+            $(SEL.pickers).datepicker({
+                autoclose: true,
+                format: "dd-MM-yyyy",
+                todayHighlight: true,
+            });
+        } else {
+            console.warn("[AMS] bootstrap-datepicker not found; skipping .picker datepicker init");
+        }
     }
 
     // ===== Role-aware defaults =====
