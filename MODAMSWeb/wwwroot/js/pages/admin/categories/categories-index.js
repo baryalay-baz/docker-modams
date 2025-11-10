@@ -138,6 +138,16 @@
 
         // Build WITHOUT an Action column; rows carry data-id for hover-actions.
         let html = `
+        <div class="toolbar d-flex align-items-center gap-2 flex-wrap mb-2">
+            <a asp-area="Admin"
+                asp-controller="Categories"
+                asp-action="CreateSubCategory"
+                class="btn btn-outline-primary"
+                data-tour="cat.sub.new" title="${localize("NewSubCategory")}">
+                <i class="fa fa-circle-plus" aria-hidden="true"></i>
+                <span>${localize("NewSubCategory")}</span>
+            </a>
+        </div>
       <table id="tblSubCategories"
              class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main"
              data-tour="cat.sub.table">
@@ -193,6 +203,7 @@
         const map = {
             SubCategoryName: so ? "Magaca Qayb-hoosaad" : "Sub-Category Name",
             SubCategoryNameSomali: so ? "Magaca Qayb-hoosaad (Somali)" : "Sub-Category (Somali)",
+            NewSubCategory: so ? "Qayb-hoosaad Cusub" : "New Sub-Category",
         };
         return map[key] || key;
     }

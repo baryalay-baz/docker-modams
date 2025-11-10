@@ -1,4 +1,5 @@
 ﻿@* Views/Shared/_Notification.cshtml *@
+
 @{
     var errorMessage = TempData["error"] as string;
     var successMessage = TempData["success"] as string;
@@ -9,53 +10,6 @@
 
 @if (hasAny)
 {
-    <style>
-        .notification-container {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1050; /* above modals? If not, bump to 2000+ */
-            width: 500px;
-            max-width: 92vw; /* responsive */
-            pointer-events: none; /* don't block clicks on page */
-        }
-
-        .notification-message {
-            margin-bottom: 10px;
-            border-radius: 6px;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
-            pointer-events: auto; /* allow close button clicks */
-            overflow: hidden;
-        }
-
-        .alert-danger {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .notification-message .bi,
-        .notification-message .fe {
-            font-size: 1.1em;
-        }
-
-        /* Optional subtle top separators for headers */
-        .border-bottom-success-light {
-            border-bottom: 1px solid rgba(40, 167, 69, 0.25) !important;
-        }
-
-        .border-bottom-danger-light {
-            border-bottom: 1px solid rgba(220, 53, 69, 0.25) !important;
-        }
-    </style>
-
     <div class="notification-container">
         @* Error *@
         @if (!string.IsNullOrEmpty(errorMessage))
