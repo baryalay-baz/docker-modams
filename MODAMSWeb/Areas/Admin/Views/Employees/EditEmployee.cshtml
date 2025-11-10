@@ -8,9 +8,8 @@
     ViewData["TourPageKey"] = "Employees/EditEmployee";
 }
 
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <!-- PAGE-HEADER -->
-<div class="page-header">
+<div class="page-header" data-tour="emp.edit.header">
     <div>
         <h1 class="page-title">@Localizer["EditEmployee"]</h1>
     </div>
@@ -23,88 +22,98 @@
     </div>
 </div>
 <!-- PAGE-HEADER END -->
-<!--ROW OPENED-->
+
 <style>
     #profile-image {
         height: 128px;
         overflow: hidden;
     }
+
         #profile-image img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
 </style>
+
+<!--ROW OPENED-->
 <div class="row">
     <div class="col-lg-12 col-md-12">
         <div class="card">
             <div class="card-header border-bottom">
-                <h4 class="mb-0">@Localizer["EmployeeDetails"]</h4>
+                <h4 class="mb-0" data-tour="emp.edit.section">@Localizer["EmployeeDetails"]</h4>
             </div>
+
             <div class="card-body p-0">
                 <div class="row p-5 border-bottom">
                     <div class="col-lg-8 col-md-8">
-                        <form method="post" asp-action="EditEmployee" id="frmEmployee">
+                        <form method="post" asp-action="EditEmployee" id="frmEmployee" data-tour="emp.edit.form">
                             <div class="card-body">
                                 <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-                                <input asp-for="Employee.Id" hidden />
-                                @*<input asp-for="Employee.RoleName" hidden />*@
+                                <input asp-for="Employee.Id" type="hidden" />
+
                                 <div class="row">
                                     <div class="col-sm-6">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="emp.edit.fullname">
                                             <label asp-for="Employee.FullName"></label>
-                                            <input asp-for="Employee.FullName" class="form-control" aria-required="true"/>
+                                            <input asp-for="Employee.FullName" class="form-control" aria-required="true" autocomplete="off" />
                                             <span asp-validation-for="Employee.FullName" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-sm-6">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="emp.edit.jobtitle">
                                             <label asp-for="Employee.JobTitle"></label>
-                                            <input asp-for="Employee.JobTitle" class="form-control" aria-required="true"/>
+                                            <input asp-for="Employee.JobTitle" class="form-control" aria-required="true" autocomplete="off" />
                                             <span asp-validation-for="Employee.JobTitle" class="text-danger"></span>
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row">
                                     <div class="col-sm-6">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="emp.edit.email">
                                             <label asp-for="Employee.Email"></label>
-                                            <input asp-for="Employee.Email" readonly class="form-control" aria-required="true" placeholder="email@gmail.com" />
+                                            <input asp-for="Employee.Email" class="form-control" aria-required="true" placeholder="email@gmail.com" readonly />
                                             <span asp-validation-for="Employee.Email" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-sm-6">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="emp.edit.phone">
                                             <label asp-for="Employee.Phone"></label>
-                                            <input asp-for="Employee.Phone" class="form-control" aria-required="true" />
+                                            <input asp-for="Employee.Phone" class="form-control" aria-required="true" autocomplete="off" />
                                             <span asp-validation-for="Employee.Phone" class="text-danger"></span>
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row">
                                     <div class="col-sm-6">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="emp.edit.card">
                                             <label asp-for="Employee.CardNumber"></label>
-                                            <input asp-for="Employee.CardNumber" class="form-control" aria-required="true" />
+                                            <input asp-for="Employee.CardNumber" class="form-control" aria-required="true" autocomplete="off" />
                                             <span asp-validation-for="Employee.CardNumber" class="text-danger"></span>
                                         </div>
                                     </div>
+
                                     <div class="col-sm-6">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="emp.edit.supervisor">
                                             <label asp-for="Employee.SupervisorEmployeeId"></label>
-                                            <select asp-for="Employee.SupervisorEmployeeId" asp-items="@Model.Employees"
+                                            <select asp-for="Employee.SupervisorEmployeeId"
+                                                    asp-items="@Model.Employees"
                                                     class="form-control select2 form-select">
-                                                <option disabled selected>-Select Supervisor-</option>
+                                                <option disabled selected>-@Localizer["SelectSupervisor"]-</option>
                                             </select>
                                             <span asp-validation-for="Employee.SupervisorEmployeeId" class="text-danger"></span>
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row">
                                     <div class="col-sm-6">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="emp.edit.role">
                                             <label asp-for="roleId"></label>
-                                            <select asp-for="roleId" asp-items="@Model.RoleList"
+                                            <select asp-for="roleId"
+                                                    asp-items="@Model.RoleList"
                                                     class="form-control select2 form-select">
                                                 <option disabled selected>-@Localizer["SelectRole"]-</option>
                                             </select>
@@ -112,40 +121,37 @@
                                         </div>
                                     </div>
                                     <div class="col-sm-6">
-
+                                        @* reserved *@
                                     </div>
                                 </div>
                             </div>
                         </form>
                     </div>
+
                     <div class="col-lg-4 col-md-4">
                         <div class="card-body d-flex justify-content-center align-items-center" style="height: 300px;">
-                            <div id="profile-image" class="border border-secondary">
+                            <div id="profile-image" class="border border-secondary" data-tour="emp.edit.avatar">
                                 <img src="@Model.Employee.ImageUrl" alt="Employee photo" class="img-fluid" />
                             </div>
                         </div>
                     </div>
                 </div>
+
                 <div class="row p-5">
                     <div class="btn-list">
-                        <button id="btnSubmit" class="btn btn-info"><i class="fa fa-check-circle"></i> @Localizer["SaveEmployee"]</button>
-                        <a asp-area="Admin" asp-controller="Employees" asp-action="Index" class="btn btn-gray"><i class="fa fa-close"></i>&nbsp;@Localizer["Cancel"]</a>
+                        <button id="btnSubmit" class="btn btn-info" data-tour="emp.edit.submit">
+                            <i class="fa fa-check-circle"></i> @Localizer["SaveEmployee"]
+                        </button>
+                        <a asp-area="Admin" asp-controller="Employees" asp-action="Index" class="btn btn-gray" data-tour="emp.edit.cancel">
+                            <i class="fa fa-close"></i>&nbsp;@Localizer["Cancel"]
+                        </a>
                     </div>
                 </div>
-            </div>
+            </div> <!-- /card-body -->
         </div>
     </div>
 </div>
 <!--ROW CLOSED-->
 @section scripts {
-    <script>
-        $(document).ready(() => {
-            $(".select2").select2();
-
-            $("#btnSubmit").on("click", () => {
-                $("#frmEmployee").submit();
-            });
-
-        });
-    </script>
+    <script src="~/js/pages/admin/employees/employees-editemployee.js" asp-append-version="true"></script>
 }

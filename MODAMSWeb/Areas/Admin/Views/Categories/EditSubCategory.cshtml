@@ -9,7 +9,7 @@
 }
 
 <!-- PAGE-HEADER -->
-<div class="page-header">
+<div class="page-header" data-tour="sub.edit.header">
     <div>
         <h1 class="page-title">@Localizer["EditSubCategory"]</h1>
     </div>
@@ -27,82 +27,87 @@
     <div class="col-lg-12 col-md-12">
         <div class="card">
             <div class="card-header border-bottom">
-                <h4 class="mb-0">@Localizer["SubCategoryDetails"]</h4>
+                <h4 class="mb-0" data-tour="sub.edit.section">@Localizer["SubCategoryDetails"]</h4>
             </div>
             <div class="card-body p-0">
                 <div class="row p-5 border-bottom">
                     <div class="col-lg-8 col-md-8">
-                        <form method="post" asp-action="EditSubCategory" id="frmSubCategory">
+                        <form method="post" asp-action="EditSubCategory" id="frmSubCategory" data-tour="sub.edit.form">
                             <div class="card-body">
                                 <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-                                <input asp-for="Id" hidden />
-                                <input asp-for="CategoryId" hidden />
+                                <input asp-for="Id" type="hidden" />
+                                <input asp-for="CategoryId" type="hidden" />
+
                                 <div class="row">
                                     <div class="col-sm-6">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="sub.edit.code">
                                             <label asp-for="SubCategoryCode"></label>
                                             <input asp-for="SubCategoryCode" class="form-control" readonly aria-required="true" />
                                             <span asp-validation-for="SubCategoryCode" class="text-danger"></span>
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row">
                                     <div class="col-sm-6">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="sub.edit.parentName">
                                             <label asp-for="CategoryName"></label>
                                             <input asp-for="CategoryName" class="form-control" readonly aria-required="true" />
                                             <span asp-validation-for="CategoryName" class="text-danger"></span>
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row">
                                     <div class="col-sm-6">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="sub.edit.nameEn">
                                             <label asp-for="SubCategoryName"></label>
                                             <input asp-for="SubCategoryName" class="form-control" aria-required="true" />
                                             <span asp-validation-for="SubCategoryName" class="text-danger"></span>
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row">
                                     <div class="col-sm-6">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="sub.edit.nameSo">
                                             <label asp-for="SubCategoryNameSo"></label>
                                             <input asp-for="SubCategoryNameSo" class="form-control" aria-required="true" />
                                             <span asp-validation-for="SubCategoryNameSo" class="text-danger"></span>
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row">
                                     <div class="col-sm-6">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="sub.edit.lifespan">
                                             <label asp-for="LifeSpan"></label>
                                             <input asp-for="LifeSpan" class="form-control" aria-required="true" />
                                             <span asp-validation-for="LifeSpan" class="text-danger"></span>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> <!-- /card-body -->
                         </form>
                     </div>
                 </div>
+
                 <div class="row p-5">
                     <div class="btn-list">
-                        <button id="btnSubmit" class="btn btn-info"><i class="fa fa-check-circle"></i> @Localizer["SaveChanges"]</button>
-                        <a asp-area="Admin" asp-controller="Categories" asp-action="Index" class="btn btn-gray"><i class="fa fa-close"></i>&nbsp;@Localizer["Cancel"]</a>
+                        <button id="btnSubmit" class="btn btn-info" data-tour="sub.edit.submit">
+                            <i class="fa fa-check-circle"></i> @Localizer["SaveChanges"]
+                        </button>
+                        <a asp-area="Admin" asp-controller="Categories" asp-action="Index"
+                           class="btn btn-gray" data-tour="sub.edit.cancel">
+                            <i class="fa fa-close"></i>&nbsp;@Localizer["Cancel"]
+                        </a>
                     </div>
                 </div>
-            </div>
+            </div> <!-- /card-body -->
         </div>
     </div>
 </div>
 <!--ROW CLOSED-->
 @section scripts {
-    <script>
-        $(document).ready(() => {
-            $("#btnSubmit").on("click", () => {
-                $("#frmSubCategory").submit();
-            });
-        });
-    </script>
+    <script src="~/js/pages/admin/categories/categories-editsubcategory.js" asp-append-version="true"></script>
 }

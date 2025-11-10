@@ -9,7 +9,7 @@
 }
 
 <!-- PAGE-HEADER -->
-<div class="page-header">
+<div class="page-header" data-tour="emp.create.header">
     <div>
         <h1 class="page-title">@Localizer["CreateEmployee"]</h1>
     </div>
@@ -27,60 +27,65 @@
     <div class="col-lg-12 col-md-12">
         <div class="card">
             <div class="card-header border-bottom">
-                <h4 class="mb-0">@Localizer["EmployeeDetails"]</h4>
+                <h4 class="mb-0" data-tour="emp.create.section">@Localizer["EmployeeDetails"]</h4>
             </div>
+
             <div class="card-body p-0">
                 <div class="row p-5 border-bottom">
                     <div class="col-lg-8 col-md-8">
-                        <form method="post" asp-action="CreateEmployee" id="frmEmployee">
+                        <form method="post" asp-action="CreateEmployee" id="frmEmployee" data-tour="emp.create.form">
                             <div class="card-body">
                                 <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-                                <input asp-for="Employee.Id" hidden />
-                                @*<input asp-for="Employee.RoleName" hidden />*@
+                                <input asp-for="Employee.Id" type="hidden" />
+
                                 <div class="row">
                                     <div class="col-sm-6">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="emp.create.fullname">
                                             <label asp-for="Employee.FullName"></label>
-                                            <input asp-for="Employee.FullName" class="form-control" aria-required="true" />
+                                            <input asp-for="Employee.FullName" class="form-control" aria-required="true" autocomplete="off" />
                                             <span asp-validation-for="Employee.FullName" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-sm-6">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="emp.create.jobtitle">
                                             <label asp-for="Employee.JobTitle"></label>
-                                            <input asp-for="Employee.JobTitle" class="form-control" aria-required="true" />
+                                            <input asp-for="Employee.JobTitle" class="form-control" aria-required="true" autocomplete="off" />
                                             <span asp-validation-for="Employee.JobTitle" class="text-danger"></span>
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row">
                                     <div class="col-sm-6">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="emp.create.email">
                                             <label asp-for="Employee.Email"></label>
-                                            <input asp-for="Employee.Email" class="form-control" aria-required="true" placeholder="email@gmail.com" />
+                                            <input asp-for="Employee.Email" class="form-control" aria-required="true" placeholder="email@gmail.com" autocomplete="off" />
                                             <span asp-validation-for="Employee.Email" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-sm-6">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="emp.create.phone">
                                             <label asp-for="Employee.Phone"></label>
-                                            <input asp-for="Employee.Phone" class="form-control" aria-required="true" />
+                                            <input asp-for="Employee.Phone" class="form-control" aria-required="true" autocomplete="off" />
                                             <span asp-validation-for="Employee.Phone" class="text-danger"></span>
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row">
                                     <div class="col-sm-6">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="emp.create.card">
                                             <label asp-for="Employee.CardNumber"></label>
-                                            <input asp-for="Employee.CardNumber" class="form-control" aria-required="true" />
+                                            <input asp-for="Employee.CardNumber" class="form-control" aria-required="true" autocomplete="off" />
                                             <span asp-validation-for="Employee.CardNumber" class="text-danger"></span>
                                         </div>
                                     </div>
+
                                     <div class="col-sm-6">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="emp.create.supervisor">
                                             <label asp-for="Employee.SupervisorEmployeeId"></label>
-                                            <select asp-for="Employee.SupervisorEmployeeId" asp-items="@Model.Employees"
+                                            <select asp-for="Employee.SupervisorEmployeeId"
+                                                    asp-items="@Model.Employees"
                                                     class="form-control select2 form-select">
                                                 <option disabled selected>-@Localizer["SelectSupervisor"]-</option>
                                             </select>
@@ -88,51 +93,48 @@
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row">
                                     <div class="col-sm-6">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="emp.create.role">
                                             <label asp-for="Employee.InitialRole"></label>
-                                            <select asp-for="Employee.InitialRole" asp-items="@Model.RoleList"
+                                            <select asp-for="Employee.InitialRole"
+                                                    asp-items="@Model.RoleList"
                                                     class="form-control select2 form-select">
                                             </select>
                                             <span asp-validation-for="Employee.InitialRole" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-sm-6">
+                                        @* reserved for future fields *@
                                     </div>
                                 </div>
                             </div>
                         </form>
                     </div>
+
                     <div class="col-lg-4 col-md-4">
                         <div class="card-body">
-                            <div class="profile-img-main rounded" id="profile-image">
-                                
-                            </div>
+                            <div class="profile-img-main rounded" id="profile-image" data-tour="emp.create.avatar"></div>
                         </div>
                     </div>
                 </div>
+
                 <div class="row p-5">
                     <div class="btn-list">
-                        <button id="btnSubmit" class="btn btn-info"><i class="fa fa-check-circle"></i> @Localizer["SaveEmployee"]</button>
-                        <a asp-area="Admin" asp-controller="Employees" asp-action="Index" class="btn btn-gray"><i class="fa fa-close"></i>&nbsp;@Localizer["Cancel"]</a>
+                        <button id="btnSubmit" class="btn btn-info" data-tour="emp.create.submit">
+                            <i class="fa fa-check-circle"></i> @Localizer["SaveEmployee"]
+                        </button>
+                        <a asp-area="Admin" asp-controller="Employees" asp-action="Index" class="btn btn-gray" data-tour="emp.create.cancel">
+                            <i class="fa fa-close"></i>&nbsp;@Localizer["Cancel"]
+                        </a>
                     </div>
                 </div>
-            </div>
+            </div> <!-- /card-body -->
         </div>
     </div>
 </div>
 <!--ROW CLOSED-->
 @section scripts {
-    <script>
-        $(document).ready(() => {
-            $('.select2').select2();
-
-            $("#btnSubmit").on("click", ()=>{
-                $("#frmEmployee").submit();
-            });
-
-
-        });
-    </script>
+    <script src="~/js/pages/admin/employees/employees-createemployee.js" asp-append-version="true"></script>
 }

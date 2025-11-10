@@ -250,6 +250,47 @@
         return tpl.replace(/\{([^}]+)\}/g, (_, k) => String(row?.[k] ?? ""));
     };
 
+    // ---------- INTERNAL: one-time global CSS for hover-actions ----------
+    function ensureGlobalHoverActionsStyle() {
+        const id = "ams-hover-actions-style";
+        if (document.getElementById(id)) return;
+
+        const style = document.createElement("style");
+        style.id = id;
+        style.textContent = `
+/* Keep hover action buttons visible and colored even when DT/Bootstrap apply :hover styles */
+.table--hover-actions .row-actions{
+  position:absolute; right:.5rem; top:50%; transform:translateY(-50%);
+  display:flex; gap:.5rem; background:rgba(255,255,255,.85);
+  border-radius:2rem; padding:.25rem .4rem; box-shadow:0 6px 18px rgba(0,0,0,.12);
+  opacity:0; pointer-events:none; transition:opacity .15s ease;
+}
+.table--hover-actions tbody tr:hover .row-actions,
+.table--hover-actions tbody tr.show-actions .row-actions{opacity:1; pointer-events:auto;}
+.table--hover-actions tbody tr{position:relative;}
+.table--hover-actions td.with-actions-pad{padding-inline-end:128px}
+
+/* Button visual: lock/edit/etc must not turn white on hover */
+.table--hover-actions .row-actions .btn{
+  color:var(--bs-primary) !important;
+  border-color:rgba(13,110,253,.35) !important;
+  background-color:#fff !important;
+}
+.table--hover-actions .row-actions .btn:hover{
+  color:var(--bs-primary) !important;
+  background-color:#fff !important;
+  border-color:rgba(13,110,253,.55) !important;
+  filter:brightness(1.02);
+}
+
+/* Icon inside keep current color */
+.table--hover-actions .row-actions .btn i,
+.table--hover-actions .row-actions .btn svg{
+  color:inherit !important; fill:currentColor;
+}`;
+        document.head.appendChild(style);
+    }
+
     U.makeDataTable = function (tableRef, type = "1", recordsPerPage = 10, actionsConfig) {
         if (!w.jQuery || !$.fn || !$.fn.DataTable) {
             console.error("[AMS] DataTables not loaded.");
@@ -360,6 +401,9 @@
             Array.isArray(actionsConfig.buttons) &&
             actionsConfig.buttons.length > 0;
 
+        // Inject global CSS once for hover actions
+        if (wantsActions) ensureGlobalHoverActionsStyle();
+
         function ensurePaddingOverrideIfAny() {
             if (!wantsActions) return;
             if (!Number.isFinite(actionsConfig.paddingPx)) return;
@@ -377,15 +421,15 @@
             return `
                 <div class="row-actions">
                   ${buttons.map((b) => {
-                        // Choose the right title per language, with safe fallbacks
-                        const rawTitle = isSo
-                            ? (b.titleSo || b.titleEn || b.title || "")
-                            : (b.titleEn || b.titleSo || b.title || "");
-                        const title = U.escapeHtml(rawTitle);
-                        const icon = b.iconHtml || "";
-                        const extra = b.className ? " " + U.escapeHtml(b.className) : "";
+                // Choose the right title per language, with safe fallbacks
+                const rawTitle = isSo
+                    ? (b.titleSo || b.titleEn || b.title || "")
+                    : (b.titleEn || b.titleSo || b.title || "");
+                const title = U.escapeHtml(rawTitle);
+                const icon = b.iconHtml || "";
+                const extra = b.className ? " " + U.escapeHtml(b.className) : "";
 
-                        return `<button type="button"
+                return `<button type="button"
                                     class="btn btn-sm act-${U.escapeHtml(b.key)}${extra}"
                                     data-bs-toggle="tooltip"
                                     data-bs-placement="top"
@@ -394,10 +438,9 @@
                                     data-action="${U.escapeHtml(b.key)}">
                                     ${icon || title}
                                 </button>`;
-                    }).join("")}
+            }).join("")}
                 </div>`;
         }
-
 
         function applyHoverActions(dtApi) {
             if (!wantsActions) return;
@@ -424,7 +467,6 @@
             });
 
             // Delegated click handling
-            // Delegated click handling (read id from <tr data-id>)
             $tbl.off(".amsRowActions").on("click.amsRowActions", "tbody .row-actions [data-action]", function (e) {
                 e.stopPropagation();
 
@@ -461,7 +503,6 @@
                 }
             });
 
-
             // Touch: tap row to show pills briefly
             $tbl.on("click.amsRowActions", "tbody tr", function (e) {
                 if ($(e.target).closest(".row-actions").length) return;
@@ -472,7 +513,6 @@
                 }
             });
         }
-
 
         // ======================================================================
 
@@ -489,6 +529,7 @@
 
                 wireSearchDelegated(api);
                 wireLengthDelegated(api);
+                ensurePaddingOverrideIfAny();   // <-- added
 
                 api.off("draw._amsHover").on("draw._amsHover", function () {
                     applyHoverActions(api);
@@ -523,6 +564,7 @@
                     U.styleDataTableButtonsAndPagination?.(sel, tMode);
                     wireSearchDelegated(dtApi);
                     wireLengthDelegated(dtApi);
+                    ensurePaddingOverrideIfAny();   // <-- added
 
                     dtApi.off("draw._amsHover").on("draw._amsHover", function () {
                         applyHoverActions(dtApi);

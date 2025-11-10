@@ -6,10 +6,52 @@
 
 @{
     ViewData["TourPageKey"] = "Employees/Index";
+    bool _isSomali = CultureInfo.CurrentUICulture.Name == "so";
 }
 
+<style>
+    /* Keep action icons visible on hover inside row-actions */
+    .table--hover-actions .row-actions .btn i {
+        color: currentColor;
+    }
+
+    /* Lock = danger tone */
+    .table--hover-actions .row-actions .act-lock {
+        color: #dc3545; /* danger */
+        border-color: rgba(220,53,69,.45);
+    }
+
+        .table--hover-actions .row-actions .act-lock:hover,
+        .table--hover-actions .row-actions .act-lock:focus {
+            background: rgba(220,53,69,.12);
+            color: #dc3545;
+            border-color: rgba(220,53,69,.6);
+        }
+
+    /* Unlock = success tone */
+    .table--hover-actions .row-actions .act-unlock {
+        color: #198754; /* success */
+        border-color: rgba(25,135,84,.45);
+    }
+
+        .table--hover-actions .row-actions .act-unlock:hover,
+        .table--hover-actions .row-actions .act-unlock:focus {
+            background: rgba(25,135,84,.12);
+            color: #198754;
+            border-color: rgba(25,135,84,.6);
+        }
+
+    /* Safety: neutralize outline-light going white-on-white */
+    .table--hover-actions .row-actions .btn.btn-outline-light:hover,
+    .table--hover-actions .row-actions .btn.btn-outline-light:focus {
+        background: #eef2f7;
+        color: #0d6efd;
+        border-color: rgba(13,110,253,.35);
+    }
+
+</style>
 <!-- PAGE-HEADER -->
-<div class="page-header">
+<div class="page-header" data-tour="emp.header">
     <div>
         <h1 class="page-title">@Localizer["Employees"]</h1>
     </div>
@@ -21,40 +63,36 @@
     </div>
 </div>
 <!-- PAGE-HEADER END -->
-<!--ROW OPENED-->
-@{
-    bool _isSomali = CultureInfo.CurrentUICulture.Name == "so";
-}
+
 <div class="row">
     <div class="col-md-12">
         <div class="card">
             <div class="card-body p-4">
                 <div class="d-flex align-items-center justify-content-between">
                     <h4 class="m-0">@Localizer["EmployeeList"]</h4>
-                    <div class="btn-list">
-                        @*<a class="btn btn-outline-primary" asp-area="Admin" asp-controller="Employees" asp-action="Index">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-inner-icn" enable-background="new 0 0 24 24" viewBox="0 0 24 24"><path d="M21.5,13h-8.0005493C13.2234497,13.0001831,12.9998169,13.223999,13,13.5v8.0005493C13.0001831,21.7765503,13.223999,22.0001831,13.5,22h8.0006104C21.7765503,21.9998169,22.0001831,21.776001,22,21.5v-8.0006104C21.9998169,13.2234497,21.776001,12.9998169,21.5,13z M21,21h-7v-7h7V21z M10.5,2H2.4993896C2.2234497,2.0001831,1.9998169,2.223999,2,2.5v8.0005493C2.0001831,10.7765503,2.223999,11.0001831,2.5,11h8.0006104C10.7765503,10.9998169,11.0001831,10.776001,11,10.5V2.4993896C10.9998169,2.2234497,10.776001,1.9998169,10.5,2z M10,10H3V3h7V10z M10.5,13H2.4993896C2.2234497,13.0001831,1.9998169,13.223999,2,13.5v8.0005493C2.0001831,21.7765503,2.223999,22.0001831,2.5,22h8.0006104C10.7765503,21.9998169,11.0001831,21.776001,11,21.5v-8.0006104C10.9998169,13.2234497,10.776001,12.9998169,10.5,13z M10,21H3v-7h7V21z M21.5,2h-8.0005493C13.2234497,2.0001831,12.9998169,2.223999,13,2.5v8.0005493C13.0001831,10.7765503,13.223999,11.0001831,13.5,11h8.0006104C21.7765503,10.9998169,22.0001831,10.776001,22,10.5V2.4993896C21.9998169,2.2234497,21.776001,1.9998169,21.5,2z M21,10h-7V3h7V10z" /></svg>
-                        </a>
-                        <a class="btn btn-primary" href="#">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-inner-icn text-white" enable-background="new 0 0 24 24" viewBox="0 0 24 24"><path d="M3.5,12C3.223877,12,3,12.223877,3,12.5S3.223877,13,3.5,13S4,12.776123,4,12.5S3.776123,12,3.5,12z M6.5,8h15C21.776123,8,22,7.776123,22,7.5S21.776123,7,21.5,7h-15C6.223877,7,6,7.223877,6,7.5S6.223877,8,6.5,8z M3.5,17C3.223877,17,3,17.223877,3,17.5S3.223877,18,3.5,18S4,17.776123,4,17.5S3.776123,17,3.5,17z M21.5,12h-15C6.223877,12,6,12.223877,6,12.5S6.223877,13,6.5,13h15c0.276123,0,0.5-0.223877,0.5-0.5S21.776123,12,21.5,12z M3.5,7C3.223877,7,3,7.223877,3,7.5S3.223877,8,3.5,8S4,7.776123,4,7.5S3.776123,7,3.5,7z M21.5,17h-15C6.223877,17,6,17.223877,6,17.5S6.223877,18,6.5,18h15c0.276123,0,0.5-0.223877,0.5-0.5S21.776123,17,21.5,17z" /></svg>
-                        </a>*@
-                    </div>
+                    <div class="btn-list"></div>
                 </div>
             </div>
         </div>
     </div>
+
     <div class="col-md-12 mb-3">
         <div class="btn-list">
-            <a asp-area="Admin" asp-controller="Employees" asp-action="CreateEmployee" class="btn btn-info-gradient trShadow">
+            <a asp-area="Admin"
+               asp-controller="Employees"
+               asp-action="CreateEmployee"
+               class="btn btn-info-gradient trShadow"
+               data-tour="emp.new">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-inner-icn text-white" enable-background="new 0 0 24 24" viewBox="0 0 24 24"><path d="M16,11.5h-3.5V8c0-0.276123-0.223877-0.5-0.5-0.5S11.5,7.723877,11.5,8v3.5H8c-0.276123,0-0.5,0.223877-0.5,0.5s0.223877,0.5,0.5,0.5h3.5v3.5005493C11.5001831,16.2765503,11.723999,16.5001831,12,16.5h0.0006104C12.2765503,16.4998169,12.5001831,16.276001,12.5,16v-3.5H16c0.276123,0,0.5-0.223877,0.5-0.5S16.276123,11.5,16,11.5z M12,2C6.4771729,2,2,6.4771729,2,12s4.4771729,10,10,10c5.5202026-0.0062866,9.9937134-4.4797974,10-10C22,6.4771729,17.5228271,2,12,2z M12,21c-4.9705811,0-9-4.0294189-9-9s4.0294189-9,9-9c4.9682617,0.0056152,8.9943848,4.0317383,9,9C21,16.9705811,16.9705811,21,12,21z" /></svg>
                 @Localizer["NewEmployee"]
             </a>
         </div>
     </div>
+
     <div class="col-12 col-sm-12">
         <div class="card">
             <div class="card-body project-list-table-container">
-                <div class="table-responsive">
+                <div class="table-responsive" data-tour="emp.table">
                     <table id="tblEmployees" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
                         <thead class="table-head">
                             <tr>
@@ -64,7 +102,7 @@
                                 <th class="bg-transparent border-bottom-0">@Localizer["RoleName"]</th>
                                 <th class="bg-transparent border-bottom-0">@Localizer["Department"]</th>
                                 <th class="bg-transparent border-bottom-0">@Localizer["IsActive"]</th>
-                                <th class="bg-transparent border-bottom-0 no-btn">@Localizer["Action"]</th>
+                                @* Action column removed; hover actions will be injected by JS *@
                             </tr>
                         </thead>
                         <tbody class="table-body">
@@ -72,9 +110,6 @@
                                 var nCounter = 0;
                                 var sCounter = "";
                                 var sDepartmentName = "";
-
-                                //var notAssignedEn = "No Department Assigned";
-                                //var notAssignedSo = "Waax aan la qoondeyn"; // Somali translation
 
                                 foreach (var employee in Model)
                                 {
@@ -84,11 +119,7 @@
                                     sDepartmentName = _isSomali ? employee.DepartmentNameSo : employee.DepartmentName;
                                     sDepartmentName = sDepartmentName == "No Department Assigned" ? "" : sDepartmentName;
 
-                                    // sDepartmentName = _isSomali
-                                    // ? (employee.DepartmentNameSo == notAssignedEn ? notAssignedSo : employee.DepartmentNameSo)
-                                    // : employee.DepartmentName;
-
-                                    <tr>
+                                    <tr data-id="@employee.Id" data-active="@employee.IsActive.ToString().ToLower()">
                                         <td class="text-muted fs-15 fw-semibold text-center">@sCounter.</td>
                                         <td>
                                             <div class="d-flex align-items-center">
@@ -107,71 +138,18 @@
                                         <td class="text-muted fs-15 fw-semibold">@employee.RoleName</td>
                                         <td class="text-muted fs-15 fw-semibold">@sDepartmentName</td>
                                         <td class="text-muted fs-15 fw-semibold">
-                                            @{
-                                                if (employee.IsActive)
-                                                {
-                                                    <span class="text-primary">
-                                                        <span class="mb-0 mt-1 badge rounded-pill bg-primary-transparent text-blue">@Localizer["Active"]</span>
-                                                    </span>
-                                                }
-                                                else
-                                                {
-                                                    <span class="text-secondary">
-                                                        <span class="mb-0 mt-1 badge rounded-pill bg-secondary-transparent text-danger">@Localizer["Locked"]</span>
-                                                    </span>
-                                                }
+                                            @if (employee.IsActive)
+                                            {
+                                                <span class="text-primary">
+                                                    <span class="mb-0 mt-1 badge rounded-pill bg-primary-transparent text-blue">@Localizer["Active"]</span>
+                                                </span>
                                             }
-                                        </td>
-
-                                        <td>
-                                            <div class="d-flex align-items-stretch">
-                                                <a asp-controller="Employees" asp-action="EditEmployee" asp-route-id="@employee.Id" class="btn btn-sm btn-outline-info me-1" data-bs-toggle="tooltip" data-bs-original-title="@Localizer["EditEmployee"]">
-                                                    <i class="fe fe-edit"></i>
-                                                </a>
-                                                @{
-                                                    if (employee.IsActive)
-                                                    {
-                                                        <a class="btn btn-sm btn-outline-secondary me-1" data-bs-toggle="dropdown" data-bs-original-title="@Localizer["LockAccount"]">
-                                                            <i class="fe fe-lock"></i>
-                                                        </a>
-                                                    }
-                                                    else
-                                                    {
-                                                        <a class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="dropdown" data-bs-original-title="@Localizer["UnlockAccount"]">
-                                                            <i class="fe fe-unlock"></i>
-                                                        </a>
-                                                    }
-                                                }
-                                                <div class="dropdown-menu" style="">
-                                                    <div class="p-5">
-                                                        @{
-                                                            if (employee.IsActive)
-                                                            {
-                                                                <h4 class="dropdown-title"><i class="fa fa-lock"></i> @Localizer["LockAccount"]</h4>
-                                                                <br />
-                                                                //<p>Are you sure you want to lock this account?</p>
-                                                                <p>@Localizer["LockConfirmationMessage"]</p>
-                                                                <a asp-area="Admin" asp-controller="Employees" asp-action="LockAccount" asp-route-id="@employee.Id" class="btn btn-secondary btn-sm">
-                                                                    <i class="fa fa-lock"></i>
-                                                                    @Localizer["LockAccount"]
-                                                                </a>
-                                                            }
-                                                            else
-                                                            {
-                                                                <h4 class="dropdown-title"><i class="fa fa-unlock"></i>  @Localizer["UnlockAccount"]</h4>
-                                                                <br />
-                                                                //<p>Are you sure you want to unlock this account?</p>\
-                                                                <p>@Localizer["UnlockConfirmationMessage"]</p>
-                                                                <a asp-area="Admin" asp-controller="Employees" asp-action="UnlockAccount" asp-route-id="@employee.Id" class="btn btn-primary btn-sm">
-                                                                    <i class="fa fa-unlock"></i>
-                                                                    @Localizer["UnlockAccount"]
-                                                                </a>
-                                                            }
-                                                        }
-
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            else
+                                            {
+                                                <span class="text-secondary">
+                                                    <span class="mb-0 mt-1 badge rounded-pill bg-secondary-transparent text-danger">@Localizer["Locked"]</span>
+                                                </span>
+                                            }
                                         </td>
                                     </tr>
                                 }
@@ -181,30 +159,16 @@
                 </div>
             </div>
             <div class="card-footer">
-                <a asp-area="Users" asp-controller="Home" asp-action="Index" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;@Localizer["Previous"]</a>
+                <a asp-area="Users" asp-controller="Home" asp-action="Index" class="btn btn-outline-default">
+                    <i class="fe fe-corner-up-left"></i>&nbsp;@Localizer["Previous"]
+                </a>
             </div>
         </div>
     </div>
     <!-- COL END -->
 </div>
-<!--ROW CLOSED-->
+
 @section scripts {
-
-    <!-- PROJECT-LIST JS-->
-    @*<script src="~/assets/js/project-list.js"></script>*@
-    <script>
-        $(document).ready(function () {
-            hideMenu();
-            makeDataTable("#tblEmployees");
-
-            // $('#tblEmployees').DataTable({
-            //     language: {
-            //         searchPlaceholder: 'Search...',
-            //         sSearch: '',
-            //     }
-            // });
-        });
-    </script>
-
-
+    <partial name="_DataTablesAssets" />
+    <script src="~/js/pages/admin/employees/employees-index.js" asp-append-version="true"></script>
 }

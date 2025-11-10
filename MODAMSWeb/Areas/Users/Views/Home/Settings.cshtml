@@ -7,11 +7,11 @@
 }
 
 <!-- PAGE-HEADER -->
-<div class="page-header">
+<div class="page-header" data-tour="hs.header">
     <div>
-        <h1 class="page-title">@Localizer["AccountSettings"]</h1>
+        <h1 class="page-title" data-tour="hs.title">@Localizer["AccountSettings"]</h1>
     </div>
-    <div class="ms-auto pageheader-btn">
+    <div class="ms-auto pageheader-btn" data-tour="hs.breadcrumbs">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">@Localizer["Dashboard"]</a></li>
             <li class="breadcrumb-item active" aria-current="page">@Localizer["AccountSettings"]</li>
@@ -20,45 +20,53 @@
 </div>
 <!-- PAGE-HEADER END -->
 <!-- ROW-1 OPEN -->
-<div class="row">
+<div class="row" data-tour="hs.container">
     <div class="col-md-12">
-        <div class="card">
+        <div class="card" data-tour="hs.card">
             <div class="card-body text-center">
-                <h3 class="text-muted"><i class="fa fa-key"></i> @Localizer["ResetPassword"] </h3>
+                <h3 class="text-muted" data-tour="hs.reset.heading">
+                    <i class="fa fa-key"></i> @Localizer["ResetPassword"]
+                </h3>
                 <br />
-                <p style="font-size: 16px;">@Localizer["ResetInstructions"]</p>
-                <button class="btn btn-pill btn-outline-secondary" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="fa fa-key"></i> @Localizer["ResetPassword"] <i class="icon ion-ios-arrow-down text-12"></i>
+                <p style="font-size: 16px;" data-tour="hs.reset.instructions">@Localizer["ResetInstructions"]</p>
+
+                <button class="btn btn-pill btn-outline-secondary"
+                        data-bs-toggle="dropdown" aria-expanded="false"
+                        data-tour="hs.reset.dropdown">
+                    <i class="fa fa-key"></i> @Localizer["ResetPassword"]
+                    <i class="icon ion-ios-arrow-down text-12"></i>
                 </button>
-                <div class="dropdown-menu" style="">
-                    <div class="p-5">
+
+                <div class="dropdown-menu">
+                    <div class="p-5" data-tour="hs.reset.menu">
                         <h4 class="dropdown-title">@Localizer["ResetPassword"]</h4><br />
                         <p>@Localizer["ResetConfirmation"]<br /><br />@Localizer["AreYouSure"]?</p>
-                        <a asp-area="Users" asp-action="ResetPassword" asp-controller="Home" asp-route-id="1" class="btn btn-secondary btn-sm"><i class="mdi mdi-checkbox-marked-circle-outline"></i> @Localizer["ResetPassword"]</a>
+                        <a asp-area="Users" asp-action="ResetPassword" asp-controller="Home" asp-route-id="1"
+                           class="btn btn-secondary btn-sm" data-tour="hs.reset.confirm">
+                            <i class="mdi mdi-checkbox-marked-circle-outline"></i> @Localizer["ResetPassword"]
+                        </a>
                     </div>
                 </div>
+
                 <br /><br />
                 <hr />
                 <br />
-                <h3 class="text-muted"><i class="fa fa-lock"></i> @Localizer["2FA"] </h3>
+
+                <h3 class="text-muted" data-tour="hs.2fa.heading">
+                    <i class="fa fa-lock"></i> @Localizer["2FA"]
+                </h3>
                 <br />
-                @*To enable Two Factor Authentication, please download and install Google Authenticator and follow the instructions on the next page*@
-                <p style="font-size: 16px;">@Localizer["2FAMessage"]</p>
-                <a href="/Identity/Account/Manage/TwoFactorAuthentication" class="btn btn-pill btn-outline-primary"><i class="fa fa-lock"></i> @Localizer["2FA"]</a>
+                <p style="font-size: 16px;" data-tour="hs.2fa.text">@Localizer["2FAMessage"]</p>
+
+                <a href="/Identity/Account/Manage/TwoFactorAuthentication"
+                   class="btn btn-pill btn-outline-primary" data-tour="hs.2fa.link">
+                    <i class="fa fa-lock"></i> @Localizer["2FA"]
+                </a>
             </div>
         </div>
     </div>
 </div>
-<!--End Modals-->
-@section Scripts{
-    <script>
-        $(document).ready(() => {
 
-        });
-
-        const loadForm = () => {
-
-        }
-    </script>
+@section Scripts {
+    <script src="~/js/pages/users/home/home-settings.js"></script>
 }
-

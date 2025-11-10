@@ -10,13 +10,17 @@
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/c3@0.7.20/c3.min.css">
 
-<div class="page-header">
+
+
+<div class="page-header" data-tour="vi.header">
     <div>
         <h1 class="page-title" data-tour="vi.pagetitle">@Localizer["AssetVerifications"]</h1>
     </div>
-    <div class="ms-auto pageheader-btn">
+    <div class="ms-auto pageheader-btn" data-tour="vi.breadcrumbs">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">@Localizer["Dashboard"]</a></li>
+            <li class="breadcrumb-item">
+                <a asp-area="Users" asp-controller="Home" asp-action="Index">@Localizer["Dashboard"]</a>
+            </li>
             <li class="breadcrumb-item active" aria-current="page">@Localizer["Verifications"]</li>
         </ol>
     </div>
@@ -24,11 +28,11 @@
 @{
     string sDisabled = "";
 }
-<div class="card">
+<div class="card" data-tour="vi.container">
     <div class="card-body">
         <div class="row">
             <div class="col-md-12">
-                <div class="card divShadow">
+                <div class="card divShadow" data-tour="vi.headercard">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center justify-content-between">
                             <h4 class="m-0">@Localizer["AssetVerifications"]</h4>
@@ -37,31 +41,41 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+        <style>
+            /* If a row isn't Pending, hide Edit/Delete pills when they exist */
+            #tblSchedule tbody tr[data-status]:not([data-status="Pending"]) .row-actions .act-edit,
+            #tblSchedule tbody tr[data-status]:not([data-status="Pending"]) .row-actions .act-delete {
+                display: none !important;
+            }
+        </style>
+        <div class="row" data-tour="vi.mainrow">
             <div class="col-md-8 col-sm-8">
-                <div class="card">
+                <div class="card" data-tour="vi.listcard">
                     <div class="card-status bg-primary-gradient br-tr-7 br-tl-7"></div>
                     <div class="card-body">
                         @{
                             var sCreateDisabled = Model.IsAuthorized ? "" : "disabled";
                         }
                         <a asp-area="Users" asp-controller="Verifications" asp-action="CreateSchedule"
-                           class="btn btn-info-gradient divShadow--xs @sCreateDisabled mb-2" data-tour="vi.newschedule">
+                           class="btn btn-info-gradient divShadow--xs @sCreateDisabled mb-2"
+                           data-tour="vi.newschedule">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-inner-icn text-white" enable-background="new 0 0 24 24" viewBox="0 0 24 24"><path d="M16,11.5h-3.5V8c0-0.276123-0.223877-0.5-0.5-0.5S11.5,7.723877,11.5,8v3.5H8c-0.276123,0-0.5,0.223877-0.5,0.5s0.223877,0.5,0.5,0.5h3.5v3.5005493C11.5001831,16.2765503,11.723999,16.5001831,12,16.5h0.0006104C12.2765503,16.4998169,12.5001831,16.276001,12.5,16v-3.5H16c0.276123,0,0.5-0.223877,0.5-0.5S16.276123,11.5,16,11.5z M12,2C6.4771729,2,2,6.4771729,2,12s4.4771729,10,10,10c5.5202026-0.0062866,9.9937134-4.4797974,10-10C22,6.4771729,17.5228271,2,12,2z M12,21c-4.9705811,0-9-4.0294189-9-9s4.0294189-9,9-9c4.9682617,0.0056152,8.9943848,4.0317383,9,9C21,16.9705811,16.9705811,21,12,21z" /></svg>
                             @Localizer["NewSchedule"]
                         </a>
-                        <div class="table-responsive export-table" style="overflow-x: auto; overflow-y: visible;">
-                            <table id="tblSchedule" class="table text-nowrap mb-0 table-bordered key-buttons border-top border-bottom project-list-main" data-tour="vi.table">
-                                <thead class="bg-primary-gradient ms-auto divShadow">
+
+                        <div class="table-responsive export-table" style="overflow-x: auto; overflow-y: visible;" data-tour="vi.tablewrap">
+                            <table id="tblSchedule"
+                                   class="table text-nowrap mb-0 table-bordered key-buttons border-top border-bottom project-list-main"
+                                   data-tour="vi.table">
+                                <thead class="bg-primary-gradient ms-auto divShadow" data-tour="vi.thead">
                                     <tr>
-                                        <th class="text-black bg-transparent border-bottom-0 w-2">#</th>
-                                        <th class="text-black bg-transparent border-bottom-0 w-20">@Localizer["Department"]</th>
-                                        <th class="text-black bg-transparent border-bottom-0 w-10">@Localizer["VerificationType"]</th>
-                                        <th class="text-black bg-transparent border-bottom-0 w-30" data-tour="vi.teamcol">@Localizer["Team"]</th>
-                                        <th class="text-black bg-transparent border-bottom-0 w-10">@Localizer["Start"]</th>
-                                        <th class="text-black bg-transparent border-bottom-0 w-10">@Localizer["End"]</th>
-                                        <th class="text-black bg-transparent border-bottom-0 w-20" data-tour="vi.statuscol">@Localizer["Status"]</th>
-                                        <th class="text-black bg-transparent border-bottom-0 w-5 no-btn" data-tour="vi.actionscol"></th>
+                                        <th class="text-black bg-transparent border-bottom-0 w-2" data-tour="vi.col.idx">#</th>
+                                        <th class="text-black bg-transparent border-bottom-0 w-20" data-tour="vi.col.dept">@Localizer["Department"]</th>
+                                        <th class="text-black bg-transparent border-bottom-0 w-10" data-tour="vi.col.type">@Localizer["VerificationType"]</th>
+                                        <th class="text-black bg-transparent border-bottom-0 w-30" data-tour="vi.col.team">@Localizer["Team"]</th>
+                                        <th class="text-black bg-transparent border-bottom-0 w-10" data-tour="vi.col.start">@Localizer["Start"]</th>
+                                        <th class="text-black bg-transparent border-bottom-0 w-10" data-tour="vi.col.end">@Localizer["End"]</th>
+                                        <th class="text-black bg-transparent border-bottom-0 w-20" data-tour="vi.col.status">@Localizer["Status"]</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -73,12 +87,15 @@
                                         {
                                             nCounter++;
                                             sCounter = nCounter < 10 ? "0" + nCounter : nCounter.ToString();
-                                            sDisabled = schedule.VerificationStatus != "Pending" ? "disabled" : "";
-                                            <tr>
+                                            var canEditOrDelete = schedule.VerificationStatus == "Pending";
+                                            <tr data-id="@schedule.Id"
+                                                data-status="@schedule.VerificationStatus"
+                                                data-canedit="@(canEditOrDelete.ToString().ToLower())"
+                                                data-tour="vi.tablerow">
                                                 <td class="text-black bg-transparent border-bottom-0 w-2">@sCounter</td>
                                                 <td class="text-black bg-transparent border-bottom-0 w-20">@(isSomali? schedule.Store.Department.NameSo : schedule.Store.Department.Name)</td>
                                                 <td class="text-black bg-transparent border-bottom-0 w-10">@Localizer[schedule.VerificationType]</td>
-                                                <td class="text-black bg-transparent border-bottom-0 w-30">
+                                                <td class="text-black bg-transparent border-bottom-0 w-30" data-tour="vi.teamcol">
                                                     <div class="avatar-list avatar-list-stacked" data-tour="vi.teamavatars">
                                                         @foreach (var emp in schedule.VerificationTeams)
                                                         {
@@ -92,7 +109,8 @@
                                                                    data-bs-popover-color="default"
                                                                    data-bs-toggle="popover"
                                                                    data-bs-original-title="@emp.Employee.FullName"
-                                                                   role="button" tabindex="0" data-bs-trigger="hover">
+                                                                   role="button" tabindex="0" data-bs-trigger="hover"
+                                                                   data-tour="vi.teamavatar">
                                                                     <span><img src="@emp.Employee.ImageUrl" alt="profile-user" class="avatar bradius cover-image"></span>
                                                                 </a>
                                                             }
@@ -101,40 +119,26 @@
                                                 </td>
                                                 <td class="text-black bg-transparent border-bottom-0 w-10">@schedule.StartDate.ToString("dd-MMM-yy")</td>
                                                 <td class="text-black bg-transparent border-bottom-0 w-10">@schedule.EndDate.ToString("dd-MMM-yy")</td>
-                                                <td class="text-black bg-transparent border-bottom-0 w-20">@Localizer[schedule.VerificationStatus]</td>
-                                                <td class="text-muted fs-15 fw-semibold" data-tour="vi.rowactions">
-                                                    <div class="d-flex align-items-stretch">
-                                                        <a asp-controller="Verifications" asp-action="PreviewSchedule" asp-route-id="@schedule.Id"
-                                                           class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="tooltip" data-bs-original-title="@Localizer["PreviewSchedule"]">
-                                                            <i class="fe fe-eye"></i>
-                                                        </a>
-                                                        <a asp-controller="Verifications" asp-action="EditSchedule" asp-route-id="@schedule.Id"
-                                                           class="btn btn-sm btn-outline-info me-1 @sDisabled" data-bs-toggle="tooltip" data-bs-original-title="@Localizer["EditSchedule"]">
-                                                            <i class="fe fe-edit"></i>
-                                                        </a>
-                                                        <button type="button"
-                                                                class="btn btn-sm btn-outline-danger me-1 js-del-schedule @(schedule.VerificationStatus != "Pending" ? "disabled" : "")"
-                                                                data-schedule-id="@schedule.Id"
-                                                                @(schedule.VerificationStatus != "Pending" ? "disabled" : null)>
-                                                            <i class="fe fe-trash"></i>
-                                                        </button>
-                                                    </div>
-                                                </td>
+                                                <td class="text-black bg-transparent border-bottom-0 w-20" data-tour="vi.statuscol">@Localizer[schedule.VerificationStatus]</td>
                                             </tr>
                                         }
                                     }
                                 </tbody>
                             </table>
                         </div>
+                        <div class="small text-muted mt-2" data-tour="vi.hoverhint">
+                            @Localizer["Hint"] : @Localizer["HoverOverARowToSeeActions"]
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 col-sm-4">
+
+            <div class="col-md-4 col-sm-4" data-tour="vi.sidebar">
                 <div class="row">
                     <div class="col-md-12 col-sm-12">
-                        <div class="card">
+                        <div class="card" data-tour="vi.chartcard">
                             <div class="card-header border-bottom">
-                                <h3 class="card-title">@Localizer["VerificationScheduleByStatus"]</h3>
+                                <h3 class="card-title" data-tour="vi.charttitle">@Localizer["VerificationScheduleByStatus"]</h3>
                             </div>
                             <div class="card-status bg-secondary-gradient br-tr-7 br-tl-7"></div>
                             <div class="card-body" style="height:250px;">
@@ -144,12 +148,15 @@
                     </div>
                 </div>
             </div>
-        </div>
+
+        </div><!-- /row -->
     </div>
 </div>
+
 @await Html.PartialAsync("~/Views/Shared/_Confirmation.cshtml")
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+
 @section scripts {
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.0/dist/echarts.min.js"></script>
     <partial name="_ChartAssets" />
@@ -161,7 +168,5 @@
           chartData: @Html.Raw(Json.Serialize(Model.GetBarChartData()))
         };
     </script>
-
-    <script src="~/js/pages/verifications-index.js"></script>
-
+    <script src="~/js/pages/users/verifications/verifications-index.js"></script>
 }

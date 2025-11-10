@@ -1,0 +1,92 @@
+﻿/* /wwwroot/css/admin/categories-index.css */
+
+/* Scrollable tabs */
+.cats-tabs {
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+    .cats-tabs::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    .cats-tabs::-webkit-scrollbar-thumb {
+        background-color: rgba(0,0,0,.15);
+        border-radius: 4px;
+    }
+
+    .cats-tabs .nav-link {
+        border-radius: 9999px;
+        padding: .4rem .8rem;
+        background: transparent;
+        border: 1px solid rgba(0,0,0,.08);
+    }
+
+        .cats-tabs .nav-link.active {
+            background: var(--bs-primary);
+            color: #fff;
+            border-color: var(--bs-primary);
+        }
+
+.cat-chip {
+    display: inline-flex;
+    flex-direction: column;
+    line-height: 1.1;
+}
+
+    .cat-chip .cat-name {
+        font-weight: 600;
+    }
+
+    .cat-chip .cat-code {
+        font-size: .7rem;
+    }
+
+/* Sub cards + hover actions */
+.sub-card {
+    position: relative;
+    border: 1px solid rgba(0,0,0,.06);
+    box-shadow: 0 4px 14px rgba(0,0,0,.05);
+    transition: transform .12s ease, box-shadow .12s ease;
+}
+
+    .sub-card:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(0,0,0,.08);
+    }
+
+.hover-actions .row-actions {
+    position: absolute;
+    right: .5rem;
+    top: .5rem;
+    display: flex;
+    gap: .25rem;
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: opacity .12s ease, transform .12s ease;
+}
+
+.hover-actions:hover .row-actions {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Small tweaks */
+.scroller-x {
+    overflow-x: auto;
+}
+
+.bg-secondary-transparent {
+    background: rgba(var(--bs-secondary-rgb), .08) !important;
+}
+
+/* Mobile: keep tabs usable and cards full width */
+@media (max-width: 576px) {
+    .cats-tabs .nav-link {
+        padding: .4rem .6rem;
+    }
+
+    .cat-chip .cat-code {
+        display: none;
+    }
+}

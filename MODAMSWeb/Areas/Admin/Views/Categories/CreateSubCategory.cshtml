@@ -9,7 +9,7 @@
 }
 
 <!-- PAGE-HEADER -->
-<div class="page-header">
+<div class="page-header" data-tour="sub.create.header">
     <div>
         <h1 class="page-title">@Localizer["CreateSubCategory"]</h1>
     </div>
@@ -27,102 +27,95 @@
     <div class="col-lg-12 col-md-12">
         <div class="card">
             <div class="card-header border-bottom">
-                <h4 class="mb-0">@Localizer["SubCategoryDetails"]</h4>
+                <h4 class="mb-0" data-tour="sub.create.section">@Localizer["SubCategoryDetails"]</h4>
             </div>
+
             <div class="card-body p-0">
                 <div class="row p-5 border-bottom">
                     <div class="col-lg-8 col-md-8">
-                        <form method="post" asp-action="CreateSubCategory" id="frmSubCategory">
+                        <form method="post" asp-action="CreateSubCategory" id="frmSubCategory" data-tour="sub.create.form">
                             <div class="card-body">
                                 <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-                                <input asp-for="Id" hidden />
-                                <input asp-for="CategoryId" hidden />
+
+                                <input asp-for="Id" type="hidden" />
+                                <input asp-for="CategoryId" type="hidden" />
+
                                 <div class="row">
                                     <div class="col-sm-6">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="sub.create.categoryName">
                                             <label asp-for="CategoryName"></label>
                                             <input asp-for="CategoryName" readonly class="form-control" aria-required="true" />
                                             <span asp-validation-for="CategoryName" class="text-danger"></span>
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row">
                                     <div class="col-sm-6">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="sub.create.code">
                                             <label asp-for="SubCategoryCode"></label>
-                                            <input asp-for="SubCategoryCode" value="@Model.CategoryCode" readonly class="form-control" aria-required="true" />
+                                            <!-- seed with base code + make base code available to JS via data attribute -->
+                                            <input asp-for="SubCategoryCode"
+                                                   value="@Model.CategoryCode"
+                                                   class="form-control"
+                                                   readonly
+                                                   aria-required="true"
+                                                   data-base-code="@Model.CategoryCode" />
                                             <span asp-validation-for="SubCategoryCode" class="text-danger"></span>
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row">
                                     <div class="col-sm-6">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="sub.create.nameEn">
                                             <label asp-for="SubCategoryName"></label>
                                             <input asp-for="SubCategoryName" class="form-control" aria-required="true" autocomplete="off" />
                                             <span asp-validation-for="SubCategoryName" class="text-danger"></span>
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row">
                                     <div class="col-sm-6">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="sub.create.nameSo">
                                             <label asp-for="SubCategoryNameSo"></label>
-                                            <input asp-for="SubCategoryNameSo" class="form-control" aria-required="true" autocomplete="off">
+                                            <input asp-for="SubCategoryNameSo" class="form-control" aria-required="true" autocomplete="off" />
                                             <span asp-validation-for="SubCategoryNameSo" class="text-danger"></span>
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row">
                                     <div class="col-sm-6">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="sub.create.lifespan">
                                             <label asp-for="LifeSpan"></label>
                                             <input asp-for="LifeSpan" class="form-control" aria-required="true" />
                                             <span asp-validation-for="LifeSpan" class="text-danger"></span>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> <!-- /card-body -->
                         </form>
                     </div>
                 </div>
+
                 <div class="row p-5">
                     <div class="btn-list">
-                        <button id="btnSubmit" class="btn btn-info"><i class="fa fa-check-circle"></i> @Localizer["SaveChanges"]</button>
-                        <a asp-area="Admin" asp-controller="Categories" asp-action="Index" class="btn btn-gray"><i class="fa fa-close"></i>&nbsp;@Localizer["Cancel"]</a>
+                        <button id="btnSubmit" class="btn btn-info" data-tour="sub.create.submit">
+                            <i class="fa fa-check-circle"></i> @Localizer["SaveChanges"]
+                        </button>
+                        <a asp-area="Admin" asp-controller="Categories" asp-action="Index"
+                           class="btn btn-gray" data-tour="sub.create.cancel">
+                            <i class="fa fa-close"></i>&nbsp;@Localizer["Cancel"]
+                        </a>
                     </div>
                 </div>
-            </div>
+            </div> <!-- /card-body -->
         </div>
     </div>
 </div>
 <!--ROW CLOSED-->
 @section scripts {
-    <script>
-        $(document).ready(() => {
-            $("#btnSubmit").on("click", () => {
-                $("#frmSubCategory").submit();
-            });
-            $("#SubCategoryName").on("input", () => {
-                generateSubCategoryCode();
-            });
-        });
-
-        function generateSubCategoryCode() {
-            let subCategoryName = $("#SubCategoryName").val().trim();
-            let subCategoryCode = "@Model.CategoryCode" + "-";
-            if (subCategoryName) {
-                // Remove any non-alphabet characters and get first 3 letters
-                let lettersOnly = subCategoryName.replace(/[^a-zA-Z]/g, '');
-                let codePart = lettersOnly.substring(0, 4).toUpperCase();
-                // Pad with X if less than 3 letters
-                codePart = codePart.padEnd(3, 'X');
-                subCategoryCode += codePart;
-            } else {
-                subCategoryCode = '';
-            }
-            $("#SubCategoryCode").val(subCategoryCode);
-        }
-
-    </script>
+    <script src="~/js/pages/admin/categories/categories-createsubcategory.js" asp-append-version="true"></script>
 }

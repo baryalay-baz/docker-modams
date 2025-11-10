@@ -9,7 +9,7 @@
 }
 
 <!-- PAGE-HEADER -->
-<div class="page-header">
+<div class="page-header" data-tour="cat.edit.header">
     <div>
         <h1 class="page-title">@Localizer["EditCategory"]</h1>
     </div>
@@ -22,89 +22,72 @@
     </div>
 </div>
 <!-- PAGE-HEADER END -->
-<!--ROW OPENED-->
+<!-- ROW OPENED -->
 <div class="row">
     <div class="col-lg-12 col-md-12">
         <div class="card">
             <div class="card-header border-bottom">
-                <h4 class="mb-0">@Localizer["CategoryDetails"]</h4>
+                <h4 class="mb-0" data-tour="cat.edit.section">@Localizer["CategoryDetails"]</h4>
             </div>
+
             <div class="card-body p-0">
                 <div class="row p-5 border-bottom">
                     <div class="col-lg-8 col-md-8">
-                        <form method="post" asp-action="EditCategory" id="frmCategory">
+                        <form method="post" asp-action="EditCategory" id="frmCategory" data-tour="cat.edit.form">
                             <div class="card-body">
                                 <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-                                <input asp-for="Id" hidden />
-                                @*<input asp-for="Employee.RoleName" hidden />*@
+                                <input asp-for="Id" type="hidden" />
+
                                 <div class="row">
                                     <div class="col-sm-6">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="cat.edit.code">
                                             <label asp-for="CategoryCode"></label>
                                             <input asp-for="CategoryCode" class="form-control" readonly aria-required="true" />
                                             <span asp-validation-for="CategoryCode" class="text-danger"></span>
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row">
                                     <div class="col-sm-6">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="cat.edit.name">
                                             <label asp-for="CategoryName"></label>
                                             <input asp-for="CategoryName" class="form-control" aria-required="true" />
                                             <span asp-validation-for="CategoryName" class="text-danger"></span>
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row">
                                     <div class="col-sm-6">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="cat.edit.nameSo">
                                             <label asp-for="CategoryNameSo"></label>
                                             <input asp-for="CategoryNameSo" class="form-control" aria-required="true" />
                                             <span asp-validation-for="CategoryNameSo" class="text-danger"></span>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> <!-- /card-body -->
                         </form>
                     </div>
                 </div>
+
                 <div class="row p-5">
                     <div class="btn-list">
-                        <button id="btnSubmit" class="btn btn-info"><i class="fa fa-check-circle"></i> @Localizer["SaveChanges"]</button>
-                        <a asp-area="Admin" asp-controller="Categories" asp-action="Index" class="btn btn-gray"><i class="fa fa-close"></i>&nbsp;@Localizer["Cancel"]</a>
+                        <button id="btnSubmit" class="btn btn-info" data-tour="cat.edit.submit">
+                            <i class="fa fa-check-circle"></i> @Localizer["SaveChanges"]
+                        </button>
+                        <a asp-area="Admin" asp-controller="Categories" asp-action="Index"
+                           class="btn btn-gray" data-tour="cat.edit.cancel">
+                            <i class="fa fa-close"></i>&nbsp;@Localizer["Cancel"]
+                        </a>
                     </div>
                 </div>
-            </div>
+            </div> <!-- /card-body -->
         </div>
     </div>
 </div>
-<!--ROW CLOSED-->
+<!-- ROW CLOSED -->
 @section scripts {
-    <script>
-        $(document).ready(() => {
-            $("#btnSubmit").on("click", () => {
-                $("#frmCategory").submit();
-            });
-
-            $("#CategoryName").on("change", () => {
-                generateCategoryCode();
-            });
-        });
-
-        function generateCategoryCode() {
-            let categoryName = $("#CategoryName").val().trim();
-            let categoryCode = "MOD-";
-            if (categoryName) {
-                // Remove any non-alphabet characters and get first 3 letters
-                let lettersOnly = categoryName.replace(/[^a-zA-Z]/g, '');
-                let codePart = lettersOnly.substring(0, 4).toUpperCase();
-                // Pad with X if less than 3 letters
-                codePart = codePart.padEnd(3, 'X');
-                categoryCode += codePart;
-            } else {
-                categoryCode = '';
-            }
-            $("#CategoryCode").val(categoryCode);
-        }
-    </script>
+    <script src="~/js/pages/admin/categories/categories-editcategory.js" asp-append-version="true"></script>
 }

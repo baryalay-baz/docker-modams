@@ -15,86 +15,82 @@
     }
 </style>
 
-<div class="page-header">
+<div class="page-header" data-tour="cat.header">
     <div>
         <h1 class="page-title">@Localizer["ManageCategories"]</h1>
     </div>
     <div class="ms-auto pageheader-btn">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">@Localizer["Dashboard"]</a></li>
+            <li class="breadcrumb-item">
+                <a asp-area="Users" asp-controller="Home" asp-action="Index">@Localizer["Dashboard"]</a>
+            </li>
             <li class="breadcrumb-item active" aria-current="page">@Localizer["Categories"]</li>
         </ol>
     </div>
 </div>
 
 <div class="row">
+    <!-- Left: Categories -->
     <div class="col-md-6">
         <div class="card">
             <div class="card-body p-4">
                 <div class="d-flex align-items-center justify-content-between">
                     <h4 class="m-0">@Localizer["Categories"]</h4>
-                    <div class="btn-list">
-                    </div>
+                    <div class="btn-list"></div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-body p-4 trShadow">
-                <div class="d-flex align-items-center justify-content-between">
-                    <h4 class="m-0" id="lblCategory">@Localizer["SubCategories"]</h4>
-                    <div class="btn-list">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6 col-sm-6 mb-3">
+
         <div class="btn-list">
-            <a asp-area="Admin" asp-controller="Categories" asp-action="CreateCategory" class="btn btn-info-gradient mb-4 trShadow">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-inner-icn text-white" enable-background="new 0 0 24 24" viewBox="0 0 24 24"><path d="M16,11.5h-3.5V8c0-0.276123-0.223877-0.5-0.5-0.5S11.5,7.723877,11.5,8v3.5H8c-0.276123,0-0.5,0.223877-0.5,0.5s0.223877,0.5,0.5,0.5h3.5v3.5005493C11.5001831,16.2765503,11.723999,16.5001831,12,16.5h0.0006104C12.2765503,16.4998169,12.5001831,16.276001,12.5,16v-3.5H16c0.276123,0,0.5-0.223877,0.5-0.5S16.276123,11.5,16,11.5z M12,2C6.4771729,2,2,6.4771729,2,12s4.4771729,10,10,10c5.5202026-0.0062866,9.9937134-4.4797974,10-10C22,6.4771729,17.5228271,2,12,2z M12,21c-4.9705811,0-9-4.0294189-9-9s4.0294189-9,9-9c4.9682617,0.0056152,8.9943848,4.0317383,9,9C21,16.9705811,16.9705811,21,12,21z" /></svg>
+            <a asp-area="Admin"
+               asp-controller="Categories"
+               asp-action="CreateCategory"
+               class="btn btn-info-gradient mb-4 trShadow"
+               data-tour="cat.new">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-inner-icn text-white" enable-background="new 0 0 24 24" viewBox="0 0 24 24">
+                    <path d="M16,11.5h-3.5V8c0-0.276123-0.223877-0.5-0.5-0.5S11.5,7.723877,11.5,8v3.5H8c-0.276123,0-0.5,0.223877-0.5,0.5
+                             s0.223877,0.5,0.5,0.5h3.5v3.5005493C11.5001831,16.2765503,11.723999,16.5001831,12,16.5h0.0006104
+                             C12.2765503,16.4998169,12.5001831,16.276001,12.5,16v-3.5H16c0.276123,0,0.5-0.223877,0.5-0.5S16.276123,11.5,16,11.5z
+                             M12,2C6.4771729,2,2,6.4771729,2,12s4.4771729,10,10,10c5.5202026-0.0062866,9.9937134-4.4797974,10-10
+                             C22,6.4771729,17.5228271,2,12,2z M12,21c-4.9705811,0-9-4.0294189-9-9s4.0294189-9,9-9
+                             c4.9682617,0.0056152,8.9943848,4.0317383,9,9C21,16.9705811,16.9705811,21,12,21z" />
+                </svg>
                 @Localizer["NewCategory"]
             </a>
         </div>
+
         <div class="card">
             <div class="card-body project-list-table-container">
                 <div class="table-responsive">
                     <table id="tblCategories"
-                           class="table table-bordered text-nowrap border-bottom dataTable no-footer">
-                        @*class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main"*@
+                           class="table table-bordered text-nowrap border-bottom dataTable no-footer"
+                           data-tour="cat.table">
                         <thead class="table-head">
                             <tr>
                                 <th class="bg-transparent border-bottom-0 w-5">#</th>
                                 <th class="bg-transparent border-bottom-0">@Localizer["CategoryName"]</th>
                                 <th class="bg-transparent border-bottom-0">@Localizer["CategoryNameSomali"]</th>
-                                <th class="bg-transparent border-bottom-0 no-btn">@Localizer["Action"]</th>
+                                @* Action column REMOVED *@
                             </tr>
                         </thead>
                         <tbody class="table-body">
                             @{
                                 var nCounter = 0;
                                 var sCounter = "";
-                                var sSelected = "";
+                                string sSelected = "";
 
                                 foreach (var category in Model.categories)
                                 {
                                     sSelected = (category.Id == Model.SelectedCategoryId) ? "class=trShadow" : "";
-
                                     nCounter++;
                                     sCounter = (nCounter < 10) ? "0" + nCounter : nCounter.ToString();
-                                    <tr @sSelected style="cursor:pointer;">
-                                        <td class="text-muted fs-15 fw-semibold text-center"><span class="cid" style="display:none;">@category.Id</span>@sCounter.</td>
+                                    <tr data-id="@category.Id" @sSelected style="cursor:pointer;">
+                                        <td class="text-muted fs-15 fw-semibold text-center">
+                                            <span class="cid" style="display:none;">@category.Id</span>@sCounter.
+                                        </td>
                                         <td class="cn text-muted fs-15 fw-semibold">@category.CategoryName</td>
                                         <td class="text-muted fs-15 fw-semibold">@category.CategoryNameSo</td>
-                                        <td class="text-muted fs-15 fw-semibold">
-                                            <div class="d-flex align-items-stretch">
-                                                <a asp-controller="Categories" asp-action="EditCategory" asp-route-id="@category.Id"
-                                                   class="btn btn-sm btn-outline-info me-1" data-bs-toggle="tooltip" data-bs-original-title="@Localizer["EditCategory"]">
-                                                    <i class="fe fe-edit"></i>
-                                                </a>
-                                            </div>
-                                        </td>
+                                        @* Action cell REMOVED *@
                                     </tr>
                                 }
                             }
@@ -102,31 +98,59 @@
                     </table>
                 </div>
             </div>
+
             <div class="card-footer">
-                <a asp-area="Users" asp-controller="Home" asp-action="Index" class="btn btn-outline-default"><i class="fe fe-corner-up-left"></i>&nbsp;@Localizer["Previous"]</a>
+                <a asp-area="Users" asp-controller="Home" asp-action="Index" class="btn btn-outline-default">
+                    <i class="fe fe-corner-up-left"></i>&nbsp;@Localizer["Previous"]
+                </a>
             </div>
         </div>
     </div>
-    <div class="col-md-6 col-sm-6 mb-3">
+
+    <!-- Right: Sub-Categories -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body p-4 trShadow">
+                <div class="d-flex align-items-center justify-content-between">
+                    <h4 class="m-0" id="lblCategory" data-tour="cat.sub.title">@Localizer["SubCategories"]</h4>
+                    <div class="btn-list"></div>
+                </div>
+            </div>
+        </div>
+
         <div class="btn-list">
-            <a onclick="return setRouteParameter();" asp-area="Admin" asp-controller="Categories" asp-action="CreateSubCategory" class="btn btn-primary mb-4 trShadow disabled" id="btnCreateSubCategory">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-inner-icn text-white" enable-background="new 0 0 24 24" viewBox="0 0 24 24"><path d="M16,11.5h-3.5V8c0-0.276123-0.223877-0.5-0.5-0.5S11.5,7.723877,11.5,8v3.5H8c-0.276123,0-0.5,0.223877-0.5,0.5s0.223877,0.5,0.5,0.5h3.5v3.5005493C11.5001831,16.2765503,11.723999,16.5001831,12,16.5h0.0006104C12.2765503,16.4998169,12.5001831,16.276001,12.5,16v-3.5H16c0.276123,0,0.5-0.223877,0.5-0.5S16.276123,11.5,16,11.5z M12,2C6.4771729,2,2,6.4771729,2,12s4.4771729,10,10,10c5.5202026-0.0062866,9.9937134-4.4797974,10-10C22,6.4771729,17.5228271,2,12,2z M12,21c-4.9705811,0-9-4.0294189-9-9s4.0294189-9,9-9c4.9682617,0.0056152,8.9943848,4.0317383,9,9C21,16.9705811,16.9705811,21,12,21z" /></svg>
+            <a asp-area="Admin"
+               asp-controller="Categories"
+               asp-action="CreateSubCategory"
+               class="btn btn-primary mb-4 trShadow disabled"
+               id="btnCreateSubCategory"
+               data-tour="cat.sub.new">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-inner-icn text-white" enable-background="new 0 0 24 24" viewBox="0 0 24 24">
+                    <path d="M16,11.5h-3.5V8c0-0.276123-0.223877-0.5-0.5-0.5S11.5,7.723877,11.5,8v3.5H8c-0.276123,0-0.5,0.223877-0.5,0.5
+                             s0.223877,0.5,0.5,0.5h3.5v3.5005493C11.5001831,16.2765503,11.723999,16.5001831,12,16.5h0.0006104
+                             C12.2765503,16.4998169,12.5001831,16.276001,12.5,16v-3.5H16c0.276123,0,0.5-0.223877,0.5-0.5S16.276123,11.5,16,11.5z
+                             M12,2C6.4771729,2,2,6.4771729,2,12s4.4771729,10,10,10c5.5202026-0.0062866,9.9937134-4.4797974,10-10
+                             C22,6.4771729,17.5228271,2,12,2z M12,21c-4.9705811,0-9-4.0294189-9-9s4.0294189-9,9-9
+                             c4.9682617,0.0056152,8.9943848,4.0317383,9,9C21,16.9705811,16.9705811,21,12,21z" />
+                </svg>
                 @Localizer["NewSubCategory"]
             </a>
         </div>
+
         <div class="card trShadow">
             <div class="card-body project-list-table-container">
                 <div class="table-responsive" id="dvSubCategories">
-                    <table id="tblSubCategories" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
+                    <table id="tblSubCategories"
+                           class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main"
+                           data-tour="cat.sub.table">
                         <thead class="table-head bg-primary-gradient ms-auto divShadow">
                             <tr>
                                 <th class="bg-transparent border-bottom-0 w-5">#</th>
                                 <th class="bg-transparent border-bottom-0">@Localizer["SubCategoryName"]</th>
                                 <th class="bg-transparent border-bottom-0">@Localizer["SubCategoryNameSomali"]</th>
-                                <th class="bg-transparent border-bottom-0 no-btn">@Localizer["Action"]</th>
+                                @* Action column REMOVED *@
                             </tr>
                         </thead>
-
                         <tbody class="table-body">
                             @{
                                 nCounter = 0;
@@ -137,18 +161,11 @@
                                     nCounter++;
                                     sCounter = (nCounter < 10) ? "0" + nCounter : nCounter.ToString();
                                     nCategoryId = subCategory.CategoryId;
-                                    <tr>
+                                    <tr data-id="@subCategory.Id">
                                         <td class="text-muted fs-15 fw-semibold text-center">@sCounter.</td>
                                         <td class="text-muted fs-15 fw-semibold">@subCategory.SubCategoryName</td>
-                                        <td class="text-muted fs-15 fw-semibold">@subCategory.CategoryId</td>
-                                        <td class="text-muted fs-15 fw-semibold">
-                                            <div class="d-flex align-items-stretch">
-                                                <a asp-controller="Categories" asp-action="EditSubCategory" asp-route-id="@subCategory.Id"
-                                                   class="btn btn-sm btn-outline-info me-1 data-bs-toggle="tooltip" data-bs-original-title="@Localizer["EditCategory"]">
-                                                    <i class="fe fe-edit"></i>
-                                                </a>
-                                            </div>
-                                        </td>
+                                        <td class="text-muted fs-15 fw-semibold">@subCategory.SubCategoryNameSo</td>
+                                        @* Action cell REMOVED *@
                                     </tr>
                                 }
                             }
@@ -158,99 +175,12 @@
             </div>
         </div>
     </div>
-
 </div>
+
 <section id="dvSubCategoriesData" style="display:none;"></section>
 <input type="hidden" id="hiddenCategoryId" value="@nCategoryId" />
+
 @section scripts {
-
-    <!-- PROJECT-LIST JS-->
-    @*<script src="~/assets/js/project-list.js"></script>*@
-    <script>
-        $(document).ready(function () {
-            hideMenu();
-
-            var tblCategories = makeDataTable('#tblCategories',"1",100);
-
-            makeDataTable('#tblSubCategories',"1",100);
-
-            $('#tblCategories tbody').on('click', 'tr', function () {
-                if ($(this).hasClass('trShadow')) {
-                    $(this).removeClass('trShadow');
-                }
-                else {
-                    tblCategories.$('tr.trShadow').removeClass('trShadow');
-                    $(this).addClass('trShadow');
-                    loadSubCategoryData($(this).find(".cn").text());
-                    $("#btnCreateSubCategory").removeClass('disabled');
-                    $("#hiddenCategoryId").val("").val($(this).find(".cid").text());
-                }
-            });
-        });
-
-        const loadSubCategoryData = async (categoryName) => {
-            try {
-                $("#lblCategory").text(categoryName);
-
-                const response = await fetch(`/Admin/Categories/GetSubCategories?categoryName=${encodeURIComponent(categoryName)}`);
-                if (!response.ok) {
-                    showErrorMessageJs(response.status);
-                }
-                const data = await response.json();
-                populateSubCategoriesTable(data);
-
-            } catch (error) {
-                console.error("Error fetching subcategories:", error);
-                $("#dvSubCategories").html('<p class="text-danger">Failed to load subcategories.</p>');
-            }
-        };
-
-        const populateSubCategoriesTable = (data) => {
-            if (!data || data.length === 0) {
-                $("#dvSubCategories").html('<p class="text-muted">No records found.</p>');
-                return;
-            }
-
-            let sHtml = `<table id="tblSubCategories" class="table text-nowrap mb-0 table-bordered border-top border-bottom project-list-main">
-                <thead class="table-head bg-primary-gradient ms-auto divShadow">
-                    <tr>
-                        <th class="text-white bg-transparent border-bottom-0 w-5">#</th>
-                        <th class="text-white bg-transparent border-bottom-0">@Localizer["SubCategoryName"]</th>
-                        <th class="text-white bg-transparent border-bottom-0">@Localizer["SubCategoryNameSomali"]</th>
-                        <th class="text-white bg-transparent border-bottom-0 no-btn">@Localizer["Action"]</th>
-                    </tr>
-                </thead>
-                <tbody>`;
-
-            data.forEach((e, index) => {
-                const counter = (index + 1).toString().padStart(2, '0');
-                sHtml += `<tr>
-                    <td class="text-muted fs-15 fw-semibold text-center">${counter}</td>
-                    <td class="text-muted fs-15 fw-semibold">${e.subCategoryName}</td>
-                    <td class="text-muted fs-15 fw-semibold">${e.subCategoryNameSo}</td>
-                    <td class="text-muted fs-15 fw-semibold">
-                        <div class="d-flex align-items-stretch">
-                            <a href="/Admin/Categories/EditSubCategory/${e.id}"
-                               class="btn btn-sm btn-outline-primary me-1"
-                               data-bs-toggle="tooltip" title="Edit">
-                                <i class="fe fe-edit"></i>
-                            </a>
-                        </div>
-                    </td>
-                </tr>`;
-            });
-
-            sHtml += '</tbody></table>';
-
-            $("#dvSubCategories").html(sHtml);
-            makeDataTable('#tblSubCategories', "1", 100); // Re-initialize DataTables
-        };
-
-
-        const setRouteParameter = ()=> {
-            var newhref = $("#btnCreateSubCategory").attr('href') + '/' + $("#hiddenCategoryId").val();
-            $("#btnCreateSubCategory").attr("href", newhref);
-        }
-
-    </script>
+    <partial name="_DataTablesAssets" />
+    <script src="~/js/pages/admin/categories/categories-index.js" asp-append-version="true"></script>
 }

@@ -9,132 +9,129 @@
 }
 
 <!-- PAGE-HEADER -->
-<div class="page-header">
+<div class="page-header" data-tour="hp.header">
     <div>
-        <h1 class="page-title">@Localizer["Profile"]</h1>
+        <h1 class="page-title" data-tour="hp.title">@Localizer["Profile"]</h1>
     </div>
-    <div class="ms-auto pageheader-btn">
+    <div class="ms-auto pageheader-btn" data-tour="hp.breadcrumbs">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">@Localizer["Dashboard"]</a></li>
+            <li class="breadcrumb-item">
+                <a asp-area="Users" asp-controller="Home" asp-action="Index">@Localizer["Dashboard"]</a>
+            </li>
             <li class="breadcrumb-item active" aria-current="page">@Localizer["Profile"]</li>
         </ol>
     </div>
 </div>
 <!-- PAGE-HEADER END -->
 <!-- ROW-1 OPEN -->
-<div class="row" id="user-profile">
+<div class="row" id="user-profile" data-tour="hp.container">
     <div class="col-lg-12">
-        <div class="card">
+        <div class="card" data-tour="hp.profilecard">
             <div class="card-body">
                 <div class="row align-items-center">
                     <div class="col-lg-12 col-md-12 col-xl-6">
                         <div class="d-flex flex-wrap align-items-center">
-                            <div class="profile-img-main rounded" id="profile-image">
+                            <div class="profile-img-main rounded" id="profile-image" data-tour="hp.avatar">
                                 <img src="@Model.ImageUrl" alt="img" class="m-0 p-1 rounded hrem-6">
                             </div>
-                            <div class="ms-4" id="dvInfo">
+                            <div class="ms-4" id="dvInfo" data-tour="hp.identifiers">
                                 <h4 id="lblFullName">@Model.FullName</h4>
                                 <p class="text-muted mb-2" id="lblJobTitle">@Model.JobTitle</p>
 
-                                <div class="main-dropdown-form-demo">
-                                    <button class="btn btn-primary btn-sm" data-bs-toggle="dropdown" area-expandexd="false">
+                                <div class="main-dropdown-form-demo" data-tour="hp.actions">
+                                    <!-- Edit Picture -->
+                                    <button class="btn btn-primary btn-sm" data-bs-toggle="dropdown" aria-expanded="false" data-tour="hp.btn.editpic">
                                         <i class="fa fa-pencil"></i> @Localizer["EditPicture"]
                                     </button>
-                                    <div class="dropdown-menu" style="">
-                                        <div class="p-1">
+                                    <div class="dropdown-menu">
+                                        <div class="p-1" data-tour="hp.editpic.menu">
                                             <h4 class="dropdown-title">@Localizer["UploadProfilePicture"]</h4><br />
-                                            <p class="text-muted" style="font-size:10px;">@Localizer["PictureSize"]: <b>128px * 128px (@Localizer["Height"] * @Localizer["Width"])</b></p>
-                                            <form method="post" asp-action="UploadPicture" enctype="multipart/form-data">
+                                            <p class="text-muted" style="font-size:10px;">
+                                                @Localizer["PictureSize"]: <b>128px * 128px (@Localizer["Height"] * @Localizer["Width"])</b>
+                                            </p>
+                                            <form method="post" asp-action="UploadPicture" enctype="multipart/form-data" data-tour="hp.editpic.form">
                                                 <div class="form-group">
-                                                    <input class="form-control file-input form-control-sm" type="file" name="file">
+                                                    <input class="form-control file-input form-control-sm" type="file" name="file" data-tour="hp.editpic.file">
                                                     <span asp-validation-for="ImageUrl" class="text-danger"></span>
                                                 </div>
                                                 <div class="form-group">
-                                                    <button class="btn btn-primary btn-sm"><i class="fa fa-solid fa-upload"></i> @Localizer["Upload"]</button>
-                                                </div>                                                
-                                            </form>   
+                                                    <button class="btn btn-primary btn-sm" data-tour="hp.editpic.upload">
+                                                        <i class="fa fa-solid fa-upload"></i> @Localizer["Upload"]
+                                                    </button>
+                                                </div>
+                                            </form>
                                         </div>
                                     </div>
-                                    <button class="btn btn-secondary btn-sm" data-bs-toggle="dropdown" aria-expanded="false">
+
+                                    <!-- Reset Password -->
+                                    <button class="btn btn-secondary btn-sm" data-bs-toggle="dropdown" aria-expanded="false" data-tour="hp.btn.resetpwd">
                                         <i class="fa fa-key"></i> @Localizer["ResetPassword"] <i class="icon ion-ios-arrow-down text-12"></i>
                                     </button>
-                                    <div class="dropdown-menu" style="">
-                                        <div class="p-1">
+                                    <div class="dropdown-menu">
+                                        <div class="p-1" data-tour="hp.resetpwd.menu">
                                             <h4 class="dropdown-title">@Localizer["ResetPassword"]</h4><br />
                                             <p>@Localizer["ResetConfirmationMessage"]<br /><br />@Localizer["AreYouSure"]?</p>
-                                            <a asp-area="Users" asp-action="ResetPassword" asp-controller="Home" class="btn btn-primary btn-sm"><i class="mdi mdi-checkbox-marked-circle-outline"></i> @Localizer["ResetPassword"]</a>
+                                            <a asp-area="Users" asp-action="ResetPassword" asp-controller="Home" class="btn btn-primary btn-sm" data-tour="hp.resetpwd.confirm">
+                                                <i class="mdi mdi-checkbox-marked-circle-outline"></i> @Localizer["ResetPassword"]
+                                            </a>
                                         </div>
                                     </div>
-                                </div>
+                                </div><!-- /.main-dropdown-form-demo -->
                             </div>
                         </div>
                     </div>
                     <div class="col-lg-12 col-md-12 col-xl-6">
-                        <div class="d-md-flex flex-wrap justify-content-lg-end">
-                        </div>
+                        <div class="d-md-flex flex-wrap justify-content-lg-end"></div>
                     </div>
                 </div>
             </div>
+
             <div class="border-top">
                 <div class="wideget-user-tab">
-                    <div class="tab-menu-heading">
+                    <div class="tab-menu-heading" data-tour="hp.tabs">
                         <div class="tabs-menu1">
                             <ul class="nav">
-                                <li><a href="#profileMain" class="active show" data-bs-toggle="tab">@Localizer["Profile"]</a></li>
-                                <li><a href="#editProfile" data-bs-toggle="tab">@Localizer["EditProfile"]</a></li>
+                                <li><a href="#profileMain" class="active show" data-bs-toggle="tab" data-tour="hp.tab.profile">@Localizer["Profile"]</a></li>
+                                <li><a href="#editProfile" data-bs-toggle="tab" data-tour="hp.tab.edit">@Localizer["EditProfile"]</a></li>
                             </ul>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+
+        </div><!-- /.card -->
+
         <div class="tab-content">
-            <div class="tab-pane active show" id="profileMain">
+            <div class="tab-pane active show" id="profileMain" data-tour="hp.profiletab">
                 <div class="card">
                     <div class="card-body p-0">
-
                         <div class="border-top"></div>
-                        <div class="table-responsive p-5">
+                        <div class="table-responsive p-5" data-tour="hp.personalinfo">
                             <h3 class="card-title">@Localizer["PersonalInfo"]</h3>
                             <table class="table row table-borderless">
                                 <tbody class="col-lg-12 col-xl-6 p-0">
-                                    <tr>
-                                        <td><strong>@Localizer["FullName"] :</strong> @Model.FullName</td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>@Localizer["JobTitle"] :</strong> @Model.JobTitle</td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Email :</strong> @Model.Email</td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>@Localizer["IDCardNumber"] :</strong> @Model.CardNumber</td>
-                                    </tr>
+                                    <tr><td><strong>@Localizer["FullName"] :</strong> @Model.FullName</td></tr>
+                                    <tr><td><strong>@Localizer["JobTitle"] :</strong> @Model.JobTitle</td></tr>
+                                    <tr><td><strong>Email :</strong> @Model.Email</td></tr>
+                                    <tr><td><strong>@Localizer["IDCardNumber"] :</strong> @Model.CardNumber</td></tr>
                                 </tbody>
                                 <tbody class="col-lg-12 col-xl-6 p-0 border-top-0">
-                                    <tr>
-                                        <td><strong>@Localizer["Department"] :</strong> @Model.Department</td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>@Localizer["Role"] :</strong> @Model.RoleName</td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>@Localizer["Supervisor"] :</strong> @Model.SupervisorName </td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                    </tr>
+                                    <tr><td><strong>@Localizer["Department"] :</strong> @Model.Department</td></tr>
+                                    <tr><td><strong>@Localizer["Role"] :</strong> @Model.RoleName</td></tr>
+                                    <tr><td><strong>@Localizer["Supervisor"] :</strong> @Model.SupervisorName </td></tr>
+                                    <tr><td></td></tr>
                                 </tbody>
                             </table>
                         </div>
+
                         <div class="border-top"></div>
-                        <div class="p-4">
+                        <div class="p-4" data-tour="hp.contact">
                             <h3 class="card-title">@Localizer["Contact"]</h3>
                             <div class="d-sm-flex">
                                 <div>
-                                    <div class="main-profile-contact-list">
+                                    <div class="main-profile-contact-list" data-tour="hp.contact.phone">
                                         <div class="media mx-2">
-                                            <div class="media-icon bg-primary-transparent text-primary"> <i class="fe fe-phone fs-21"></i> </div>
+                                            <div class="media-icon bg-primary-transparent text-primary"><i class="fe fe-phone fs-21"></i></div>
                                             <div class="media-body ms-2">
                                                 <span class="text-muted">@Localizer["Mobile"]</span>
                                                 <p class="mb-0">@Model.Phone</p>
@@ -143,9 +140,9 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <div class="main-profile-contact-list">
+                                    <div class="main-profile-contact-list" data-tour="hp.contact.email">
                                         <div class="media mx-2">
-                                            <div class="media-icon bg-success-transparent text-success"> <i class="fa fa-solid fa-envelope"></i> </div>
+                                            <div class="media-icon bg-success-transparent text-success"><i class="fa fa-solid fa-envelope"></i></div>
                                             <div class="media-body ms-2">
                                                 <span class="text-muted">Email</span>
                                                 <p class="mb-0">@Model.Email</p>
@@ -153,42 +150,47 @@
                                         </div>
                                     </div>
                                 </div>
-
-                            </div>
+                            </div><!-- /.d-sm-flex -->
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="tab-pane" id="editProfile">
+
+            <div class="tab-pane" id="editProfile" data-tour="hp.edittab">
                 <div class="card">
                     <div class="card-body border-0">
-                        <form class="form-horizontal" method="post" asp-action="SaveProfile">
+                        <form class="form-horizontal" method="post" asp-action="SaveProfile" data-tour="hp.edit.form">
                             <input asp-for="Id" hidden />
                             <input asp-for="Email" hidden />
+
                             <div class="row mb-4">
                                 <p class="mb-4 text-17">@Localizer["PersonalInfo"]</p>
-                                <div class="col-md-12 col-lg-12 col-xl-6">
+
+                                <div class="col-md-12 col-lg-12 col-xl-6" data-tour="hp.edit.fullname">
                                     <div class="form-group">
                                         <label asp-for="FullName" class="form-label"></label>
                                         <input asp-for="FullName" class="form-control">
                                         <span asp-validation-for="FullName" class="text-danger"></span>
                                     </div>
                                 </div>
-                                <div class="col-md-12 col-lg-12 col-xl-6">
+
+                                <div class="col-md-12 col-lg-12 col-xl-6" data-tour="hp.edit.jobtitle">
                                     <div class="form-group">
                                         <label asp-for="JobTitle" class="form-label"></label>
                                         <input asp-for="JobTitle" class="form-control">
                                         <span asp-validation-for="JobTitle" class="text-danger"></span>
                                     </div>
                                 </div>
-                                <div class="col-md-12 col-lg-12 col-xl-6">
+
+                                <div class="col-md-12 col-lg-12 col-xl-6" data-tour="hp.edit.cardnumber">
                                     <div class="form-group">
                                         <label asp-for="CardNumber" class="form-label"></label>
                                         <input asp-for="CardNumber" class="form-control">
                                         <span asp-validation-for="CardNumber" class="text-danger"></span>
                                     </div>
                                 </div>
-                                <div class="col-md-12 col-lg-12 col-xl-6">
+
+                                <div class="col-md-12 col-lg-12 col-xl-6" data-tour="hp.edit.phone">
                                     <div class="form-group">
                                         <label asp-for="Phone" class="form-label" placeholder="(+000) 000 000000"></label>
                                         <input asp-for="Phone" class="form-control">
@@ -196,35 +198,22 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-12 col-lg-12 col-xl-6">
+                                <div class="col-md-12 col-lg-12 col-xl-6" data-tour="hp.edit.save">
                                     <div class="form-group">
-                                        <button id="btnSaveChanges" type="submit" class="btn btn-primary">
+                                        <button id="btnSaveChanges" type="submit" class="btn btn-primary" data-tour="hp.btn.save">
                                             <i class="mdi mdi-checkbox-marked-circle-outline"></i> @Localizer["SaveChanges"]
                                         </button>
                                     </div>
                                 </div>
-                            </div>
+                            </div><!-- /.row -->
                         </form>
                     </div>
                 </div>
             </div>
-        </div>
+        </div><!-- /.tab-content -->
     </div><!-- COL-END -->
 </div>
 
-<!--End Modals-->
-@section Scripts{
-    <script>
-        $(document).ready(() => {
-            $("#btnCancel").on("click", () => {
-                $("#dvInfo").show(300);
-                $("#dvProfilePictureForm").hide(300);
-            });
-        });
-
-        const loadForm = () => {
-            $("#dvInfo").hide(300);
-            $("#dvProfilePictureForm").show(300);
-        }
-    </script>
+@section Scripts {
+    <script src="~/js/pages/users/home/home-profile.js"></script>
 }

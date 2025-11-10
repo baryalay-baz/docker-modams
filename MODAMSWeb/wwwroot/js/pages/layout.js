@@ -1,4 +1,4 @@
-﻿// ~/js/pages/layout.js   (make sure your _Layout.cshtml points to this exact path)
+﻿// ~/js/pages/layout.js 
 (function (w, $) {
     "use strict";
 
