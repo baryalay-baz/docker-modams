@@ -9,11 +9,11 @@
 }
 
 <!-- PAGE-HEADER -->
-<div class="page-header">
+<div class="page-header" data-tour="dept.create.header">
     <div>
-        <h1 class="page-title">@Localizer["CreateDepartment"]</h1>
+        <h1 class="page-title" data-tour="dept.create.title">@Localizer["CreateDepartment"]</h1>
     </div>
-    <div class="ms-auto pageheader-btn">
+    <div class="ms-auto pageheader-btn" data-tour="dept.create.breadcrumbs">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a asp-area="Users" asp-controller="Home" asp-action="Index">@Localizer["Dashboard"]</a></li>
             <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Departments" asp-action="Index">@Localizer["DepartmentList"]</a></li>
@@ -27,40 +27,44 @@
     <div class="col-lg-12 col-md-12">
         <div class="card">
             <div class="card-header border-bottom">
-                <h4 class="mb-0">@Localizer["DepartmentDetails"]</h4>
+                <h4 class="mb-0" data-tour="dept.create.section">@Localizer["DepartmentDetails"]</h4>
             </div>
+
             <div class="card-body p-0">
                 <div class="row p-5 border-bottom">
                     <div class="col-lg-8 col-md-8">
-                        <form method="post" asp-action="CreateDepartment" id="frmDepartment">
+                        <form method="post" asp-action="CreateDepartment" id="frmDepartment" data-tour="dept.create.form">
                             <div class="card-body">
                                 <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
                                 <input asp-for="department.Id" hidden />
-                                @*<input asp-for="Employee.RoleName" hidden />*@
+
                                 <div class="row">
                                     <div class="col-sm-6">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="dept.create.name">
                                             <label asp-for="department.Name"></label>
-                                            <input asp-for="department.Name" class="form-control" aria-required="true" autocomplete="off"/>
+                                            <input asp-for="department.Name" class="form-control" aria-required="true" autocomplete="off" />
                                             <span asp-validation-for="department.Name" class="text-danger"></span>
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row">
                                     <div class="col-sm-6">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="dept.create.nameSo">
                                             <label asp-for="department.NameSo"></label>
                                             <input asp-for="department.NameSo" class="form-control" aria-required="true" autocomplete="off" />
                                             <span asp-validation-for="department.NameSo" class="text-danger"></span>
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row">
                                     <div class="col-sm-6">
-                                        <div class="mb-3 form-group">
+                                        <div class="mb-3 form-group" data-tour="dept.create.upper">
                                             <label asp-for="department.UpperLevelDeptId"></label>
                                             <select asp-for="department.UpperLevelDeptId" asp-items="@Model.Departments"
-                                                    class="form-control select2 form-select">
+                                                    class="form-control select2 form-select"
+                                                    data-placeholder="-@Localizer["SelectDepartment"]-">
                                                 <option disabled selected>-@Localizer["SelectDepartment"]-</option>
                                             </select>
                                             <span asp-validation-for="department.UpperLevelDeptId" class="text-danger"></span>
@@ -70,34 +74,24 @@
                             </div>
                         </form>
                     </div>
-                    <div class="col-lg-4 col-md-4">
-                        <div class="card-body">
-                            <div class="profile-img-main rounded" id="profile-image">
-                            </div>
-                        </div>
-                    </div>
                 </div>
+
                 <div class="row p-5">
                     <div class="btn-list">
-                        <button id="btnSubmit" class="btn btn-info"><i class="fa fa-check-circle"></i> @Localizer["SaveDepartment"]</button>
-                        <a asp-area="Admin" asp-controller="Departments" asp-action="Index" class="btn btn-gray"><i class="fa fa-close"></i>&nbsp;@Localizer["Cancel"]</a>
+                        <button id="btnSubmit" class="btn btn-info" data-tour="dept.create.submit">
+                            <i class="fa fa-check-circle"></i> @Localizer["SaveDepartment"]
+                        </button>
+                        <a asp-area="Admin" asp-controller="Departments" asp-action="Index" class="btn btn-gray" data-tour="dept.create.cancel">
+                            <i class="fa fa-close"></i>&nbsp;@Localizer["Cancel"]
+                        </a>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
 <!--ROW CLOSED-->
 @section scripts {
-    <script>
-        $(document).ready(() => {
-            $('.select2').select2();
-
-            $("#btnSubmit").on("click", () => {
-                $("#frmDepartment").submit();
-            });
-
-
-        });
-    </script>
+    <script src="~/js/pages/admin/departments/departments-createdepartment.js" asp-append-version="true"></script>
 }
