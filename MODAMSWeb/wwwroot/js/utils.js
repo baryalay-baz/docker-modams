@@ -197,6 +197,46 @@
     };
     U.getCurrentLanguage = U.lang;
 
+    //----------- Select2 Initialization ----------
+    U.initSelect2 = function initSelect2(opts = {}) {
+        if (!window.jQuery || !jQuery.fn || !jQuery.fn.select2) {
+            console.error("[AMS] Select2 JS not loaded.");
+            return;
+        }
+        const $root = (opts.root && (opts.root.jquery ? opts.root : jQuery(opts.root))) || jQuery(document);
+        const selector = opts.selector || ".select2";
+        const dropdownParent = opts.dropdownParent ? (opts.dropdownParent.jquery ? opts.dropdownParent : jQuery(opts.dropdownParent)) : jQuery(document.body);
+        const width = opts.width || "100%";
+        const allowClear = opts.allowClear !== false;
+
+        $root.find(selector).each(function () {
+            const $el = jQuery(this);
+
+            // If already enhanced, destroy then remove any orphaned containers
+            if ($el.hasClass("select2-hidden-accessible")) {
+                try { $el.select2("destroy"); } catch (_) { }
+                $el.siblings(".select2-container").remove();
+            }
+
+            // Init
+            $el.select2({
+                width,
+                dropdownParent,
+                placeholder: $el.attr("data-placeholder") || $el.data("placeholder") || "",
+                allowClear
+            });
+
+            // Ensure placeholder shows if empty or "0"
+            const v = ($el.val() ?? "").toString();
+            if (v === "" || v === "0") {
+                $el.val(null).trigger("change");
+            }
+        });
+    };
+    U.initOneSelect2 = function initOneSelect2(el, opts = {}) {
+        return U.initSelect2({ ...opts, root: el, selector: el });
+    };
+
     // ---------- DataTables Language ----------
     U.getDataTableLanguageOptions = function (languageCode) {
         if (languageCode === "so") {
@@ -418,29 +458,70 @@
 
         function buildRowActionsHtml(buttons) {
             const isSo = (U.getCurrentLanguage?.() === "so");
+
+            // small helper: map bootstrap-ish variants to hex if user passes {variant:"danger"}
+            const VARIANT_MAP = {
+                primary: "#0d6efd",
+                secondary: "#6c757d",
+                success: "#198754",
+                danger: "#dc3545",
+                warning: "#ffc107",
+                info: "#0dcaf0",
+                dark: "#212529",
+                purple: "#6f42c1",
+                orange: "#fd7e14",
+                teal: "#20c997"
+            };
+
             return `
-                <div class="row-actions">
-                  ${buttons.map((b) => {
-                // Choose the right title per language, with safe fallbacks
-                const rawTitle = isSo
-                    ? (b.titleSo || b.titleEn || b.title || "")
+      <div class="row-actions">
+        ${buttons.map((b) => {
+                // Titles
+                const rawTitle = isSo ? (b.titleSo || b.titleEn || b.title || "")
                     : (b.titleEn || b.titleSo || b.title || "");
                 const title = U.escapeHtml(rawTitle);
                 const icon = b.iconHtml || "";
                 const extra = b.className ? " " + U.escapeHtml(b.className) : "";
 
+                // Per-button color control:
+                // Accept either explicit color/tint or a variant key (danger, success, etc.)
+                const variant = (b.variant || "").toLowerCase().trim();
+                const base = b.color || (variant && VARIANT_MAP[variant]) || ""; // hex/rgb
+                const tint = (typeof b.tint === "string")
+                    ? b.tint
+                    : (base ? "rgba(" + hexToRgb(base) + ", .12)" : "transparent");
+
+                // Inline CSS variables to beat specificity wars
+                const styleVars = [
+                    base ? `--btn-color:${base}` : "",
+                    `--btn-tint:${tint}`
+                ].filter(Boolean).join("; ");
+
                 return `<button type="button"
-                                    class="btn btn-sm act-${U.escapeHtml(b.key)}${extra}"
-                                    data-bs-toggle="tooltip"
-                                    data-bs-placement="top"
-                                    data-bs-trigger="hover focus"
-                                    title="${title}"
-                                    data-action="${U.escapeHtml(b.key)}">
-                                    ${icon || title}
-                                </button>`;
+                        class="btn btn-sm act-${U.escapeHtml(b.key)}${extra}"
+                        data-bs-toggle="tooltip"
+                        data-bs-placement="top"
+                        data-bs-trigger="hover focus"
+                        title="${title}"
+                        data-action="${U.escapeHtml(b.key)}"
+                        style="${styleVars}">
+                        ${icon || title}
+                    </button>`;
             }).join("")}
-                </div>`;
+      </div>`;
         }
+
+        /* helper local to U.makeDataTable scope */
+        function hexToRgb(hex) {
+            // supports #rgb, #rrggbb
+            let c = hex.replace("#", "").trim();
+            if (c.length === 3) c = c.split("").map(ch => ch + ch).join("");
+            const n = parseInt(c, 16);
+            if (Number.isNaN(n) || c.length !== 6) return "220,53,69"; // fallback = danger
+            const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+            return `${r},${g},${b}`;
+        }
+
 
         function applyHoverActions(dtApi) {
             if (!wantsActions) return;

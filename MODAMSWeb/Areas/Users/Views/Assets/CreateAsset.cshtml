@@ -59,7 +59,7 @@
                                         <div class="mb-3 form-group" data-tour="ca.category">
                                             <label asp-for="CategoryId"></label>
                                             <select asp-for="CategoryId" asp-items="@Model.Categories"
-                                                    class="form-control select2 form-select">
+                                                    class="select2 form-select">
                                                 <option disabled selected>-@Localizer["SelectCategory"]-</option>
                                             </select>
                                             <span asp-validation-for="CategoryId" class="text-danger"></span>
@@ -70,7 +70,7 @@
                                         <div class="mb-3 form-group" data-tour="ca.subcategory">
                                             <label asp-for="SubCategoryId"></label>
                                             <select asp-for="SubCategoryId" asp-items="@Model.SubCategories"
-                                                    class="form-control select2 form-select" >
+                                                    class="select2 form-select" >
                                                 <option disabled selected>-@Localizer["SelectSubCategory"]-</option>
                                             </select>
                                             <span asp-validation-for="SubCategoryId" class="text-danger"></span>

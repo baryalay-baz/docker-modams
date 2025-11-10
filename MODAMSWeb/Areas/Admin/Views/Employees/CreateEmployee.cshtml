@@ -86,8 +86,9 @@
                                             <label asp-for="Employee.SupervisorEmployeeId"></label>
                                             <select asp-for="Employee.SupervisorEmployeeId"
                                                     asp-items="@Model.Employees"
-                                                    class="form-control select2 form-select">
-                                                <option disabled selected>-@Localizer["SelectSupervisor"]-</option>
+                                                    class="select2"
+                                                    data-placeholder="@Localizer["SelectSupervisor"]">
+                                                <option value=""></option> @* required for Select2 placeholder/clear *@
                                             </select>
                                             <span asp-validation-for="Employee.SupervisorEmployeeId" class="text-danger"></span>
                                         </div>
@@ -100,7 +101,9 @@
                                             <label asp-for="Employee.InitialRole"></label>
                                             <select asp-for="Employee.InitialRole"
                                                     asp-items="@Model.RoleList"
-                                                    class="form-control select2 form-select">
+                                                    class="select2"
+                                                    data-placeholder="@Localizer["SelectRole"]">
+                                                <option value=""></option>
                                             </select>
                                             <span asp-validation-for="Employee.InitialRole" class="text-danger"></span>
                                         </div>
@@ -136,5 +139,9 @@
 </div>
 <!--ROW CLOSED-->
 @section scripts {
+    <script>
+        console.log("Employees in Model: ");
+        console.log(@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Employees)));
+    </script>
     <script src="~/js/pages/admin/employees/employees-createemployee.js" asp-append-version="true"></script>
 }

@@ -8,23 +8,21 @@
     function init() {
         U.hideMenu?.();
 
-        // Enhance selects
-        if ($.fn.select2) {
-            $(".select2").each(function () {
-                if (!$(this).data("select2")) $(this).select2({ width: "resolve" });
-            });
-        }
+        // Initialize all .select2 inside the form, with dropdown attached to <body>
+        U.initSelect2({ root: "#frmEmployee", dropdownParent: document.body });
 
-        // Submit handler
+        bindSubmit();
+        attachAvatarPreview();
+    }
+
+    function bindSubmit() {
         $("#btnSubmit").on("click", function (e) {
             e.preventDefault();
             $("#frmEmployee").trigger("submit");
         });
-
-        // Optional: build a lightweight avatar preview if Email present
-        attachAvatarPreview();
     }
 
+    // Simple initials avatar from email (no external calls)
     function attachAvatarPreview() {
         const $email = $("#Employee_Email");
         const $target = $("#profile-image");
@@ -33,10 +31,9 @@
         const render = U.debounce(() => {
             const val = ($email.val() || "").toString().trim();
             if (!val) {
-                $target.html("");
+                $target.empty();
                 return;
             }
-            // Gravatar-style placeholder (no external calls) — just initials
             const initials = val.split("@")[0].slice(0, 2).toUpperCase();
             const html = `
         <div class="d-flex align-items-center justify-content-center"

@@ -9,7 +9,6 @@
     box-shadow: none;
     overflow: visible; /* don't clip tooltips/popovers */
 }
-
     /* Hover-only soft shade (top & bottom bands) */
     .table--hover-actions tbody tr:hover,
     .table--hover-actions tbody tr:focus-within,
@@ -36,14 +35,13 @@
     gap: .5rem;
     padding: .375rem .5rem;
     border-radius: 999px;
-    background: rgba(248, 249, 250, .96); /* faint gray to avoid white-on-white */
+    background: rgba(248,249,250,.96); /* faint gray to avoid white-on-white */
     backdrop-filter: blur(6px);
     box-shadow: 0 4px 12px rgba(0,0,0,.12);
     z-index: 20; /* above row text, below tooltips */
     white-space: nowrap;
     pointer-events: auto;
 }
-
 /* Reveal pills */
 .table--hover-actions tbody tr:hover .row-actions,
 .table--hover-actions tbody tr:focus-within .row-actions,
@@ -54,27 +52,35 @@
 /* ---------- Outline style pills (with explicit color vars) ---------- */
 .table--hover-actions .row-actions .btn {
     /* Each button defines --btn-color and --btn-tint below */
-    background-color: var(--btn-tint, rgba(0,0,0,.05)) !important;
-    border: 1.5px solid var(--btn-color, #0d6efd) !important;
-    color: var(--btn-color, #0d6efd) !important;
+    --btn-color: #0d6efd;
+    --btn-tint: rgba(13,110,253,.10);
+    background-color: var(--btn-tint) !important;
+    border: 1.5px solid var(--btn-color) !important;
+    color: var(--btn-color) !important;
     border-radius: 999px;
     padding: .35rem .55rem;
     line-height: 1;
     box-shadow: none;
     transition: transform .08s ease, box-shadow .12s ease, background-color .12s ease, color .12s ease, border-color .12s ease;
     font-weight: 400 !important; /* not bold */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none !important;
+    background-clip: padding-box;
 }
-
     /* Icons inherit text color and flip on hover */
     .table--hover-actions .row-actions .btn i,
     .table--hover-actions .row-actions .btn svg {
         font-weight: 400 !important;
         font-size: 1rem;
         line-height: 1;
-        color: inherit !important;
+        color: currentColor !important;
+        fill: currentColor;
+        stroke: currentColor;
     }
 
-    /* Per-action colors (define the variables once) */
+    /* Per-action palettes */
     .table--hover-actions .row-actions .btn.act-info {
         --btn-color: #0d6efd;
         --btn-tint: rgba(13,110,253,.10);
@@ -99,17 +105,46 @@
         --btn-color: #dc3545;
         --btn-tint: rgba(220,53,69,.10);
     }
+    /* New common ones you use elsewhere */
+    .table--hover-actions .row-actions .btn.act-preview,
+    .table--hover-actions .row-actions .btn.act-view {
+        --btn-color: #198754;
+        --btn-tint: rgba(25,135,84,.12);
+    }
 
-    /* Hover = solid fill using the explicit variable (never white) */
-    .table--hover-actions .row-actions .btn:hover {
+    .table--hover-actions .row-actions .btn.act-lock,
+    .table--hover-actions .row-actions .btn.act-unlock {
+        --btn-color: #0aa2c0;
+        --btn-tint: rgba(10,162,192,.12);
+    }
+
+    /* Hover/focus/active = solid fill using the explicit variable (never white) */
+    .table--hover-actions .row-actions .btn:hover,
+    .table--hover-actions .row-actions .btn:focus,
+    .table--hover-actions .row-actions .btn:active,
+    .table--hover-actions .row-actions .btn:focus:hover {
         background-color: var(--btn-color) !important;
-        color: #fff !important;
         border-color: var(--btn-color) !important;
+        color: #fff !important;
         transform: translateY(-1px);
     }
 
         .table--hover-actions .row-actions .btn:hover i,
         .table--hover-actions .row-actions .btn:hover svg {
+            color: #fff !important;
+        }
+    /* If any outline variant slips in, neutralize its white-on-hover */
+    .table--hover-actions .row-actions .btn[class*="btn-outline-"] {
+        background-color: var(--btn-tint) !important;
+        border-color: var(--btn-color) !important;
+        color: var(--btn-color) !important;
+    }
+
+        .table--hover-actions .row-actions .btn[class*="btn-outline-"]:hover,
+        .table--hover-actions .row-actions .btn[class*="btn-outline-"]:focus,
+        .table--hover-actions .row-actions .btn[class*="btn-outline-"]:active {
+            background-color: var(--btn-color) !important;
+            border-color: var(--btn-color) !important;
             color: #fff !important;
         }
 
@@ -118,11 +153,20 @@
         transform: translateY(0);
         opacity: .95;
     }
-
     /* Focus ring picks the action color */
     .table--hover-actions .row-actions .btn:focus-visible {
         outline: none;
         box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--btn-color) !important;
+    }
+    /* Disabled/locked look stays tinted and NEVER flips to white */
+    .table--hover-actions .row-actions .btn:disabled,
+    .table--hover-actions .row-actions .btn.disabled {
+        opacity: .45;
+        cursor: not-allowed;
+        background-color: var(--btn-tint) !important;
+        border-color: var(--btn-color) !important;
+        color: var(--btn-color) !important;
+        filter: none !important;
     }
 
 /* Dark mode chip container */
@@ -133,7 +177,6 @@
     .dark-mode .table--hover-actions .row-actions .btn {
         box-shadow: none;
     }
-
 /* Delete pill = danger red (no extra filters) */
 .table--hover-actions .row-actions .btn.act-delete:hover {
     filter: none;
@@ -172,12 +215,11 @@ table.dataTable tbody td.sorting_3 {
 }
 
 /* ---------- Responsive tweaks ---------- */
-@media (max-width: 576px) {
+@media (max-width:576px) {
     .table--hover-actions .row-actions {
         right: 8px;
         gap: .4rem;
     }
-
         .table--hover-actions .row-actions .btn {
             padding: .3rem .45rem;
         }
@@ -202,7 +244,6 @@ table.dataTable tbody td.sorting_3 {
 .popover {
     z-index: 1085;
 }
-
 /* Dark-mode tooltip tweak (optional) */
 .dark-mode .tooltip .tooltip-inner {
     background-color: #222;

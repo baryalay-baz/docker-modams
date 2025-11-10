@@ -8,13 +8,9 @@
         U.hideMenu?.();
 
         // Enhance selects (idempotent)
-        if ($.fn.select2) {
-            $(".select2").each(function () {
-                if (!$(this).data("select2")) $(this).select2({ width: "resolve" });
-            });
-        } else {
-            U.log?.("Select2 not present; skipping.");
-        }
+
+        U.select2?.({ root: "#frmEmployee", dropdownParent: document.body });
+
 
         // Submit
         $("#btnSubmit").on("click", function (e) {
